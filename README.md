@@ -18,10 +18,18 @@
 
 ---
 
-## tl;dr
+## One-Command Setup
 
 ```bash
 git clone https://github.com/waitdeadai/minmaxing.git && cd minmaxing && ./setup.sh
+```
+
+Then configure your MiniMax API key:
+```bash
+claude mcp add -s user MiniMax \
+  --env MINIMAX_API_KEY=YOUR_TOKEN_PLAN_KEY \
+  --env MINIMAX_API_HOST=https://api.minimax.io \
+  -- uvx minimax-coding-plan-mcp -y
 ```
 
 **What you get:**
