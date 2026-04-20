@@ -3,9 +3,9 @@
 **The ultimate Claude Code harness.** MiniMax 2.7 Highspeed (100 TPS, 204K context) + GStack skills + Karpathy workflows + ForgeGod 5-tier memory. One command setup. Built for developers who ship.
 
 <p align="center">
-  <a href="https://github.com/waitdeadai/waitdeadai-minimaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/waitdeadai-minimaxing?style=flat-square&logo=github" alt="Stars"></a>
-  <a href="https://github.com/waitdeadai/waitdeadai-minimaxing/network/members"><img src="https://img.shields.io/github/forks/waitdeadai/waitdeadai-minimaxing?style=flat-square&logo=github" alt="Forks"></a>
-  <a href="https://github.com/waitdeadai/waitdeadai-minimaxing/issues"><img src="https://img.shields.io/github/issues/waitdeadai/waitdeadai-minimaxing?style=flat-square&logo=github" alt="Issues"></a>
+  <a href="https://github.com/waitdeadai/minmaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Stars"></a>
+  <a href="https://github.com/waitdeadai/minmaxing/network/members"><img src="https://img.shields.io/github/forks/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Forks"></a>
+  <a href="https://github.com/waitdeadai/minmaxing/issues"><img src="https://img.shields.io/github/issues/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Issues"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License"></a>
 </p>
 
@@ -14,7 +14,7 @@
 ## tl;dr
 
 ```bash
-git clone https://github.com/waitdeadai/waitdeadai-minimaxing && cd minmaxing && ./setup.sh
+git clone https://github.com/waitdeadai/minmaxing && cd minmaxing && ./setup.sh
 ```
 
 **What you get:**
@@ -49,7 +49,7 @@ git clone https://github.com/waitdeadai/waitdeadai-minimaxing && cd minmaxing &&
 
 ```bash
 # 1. Clone
-git clone https://github.com/waitdeadai/waitdeadai-minimaxing
+git clone https://github.com/waitdeadai/minmaxing
 cd minmaxing
 
 # 2. Install deps

@@ -10,6 +10,7 @@
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M2.7-highspeed",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M2.7-highspeed",
     "CLAUDE_CODE_SUBAGENT_MODEL": "MiniMax-M2.7-highspeed",
+    "CLAUDE_CODE_EFFORT_LEVEL": "high",
     "DISABLE_AUTO_COMPACT": "1",
     "MAX_THINKING_TOKENS": "1000",
     "CLAUDE_CODE_NO_FLICKER": "1"
