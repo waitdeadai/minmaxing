@@ -4,11 +4,17 @@
 
 **Use when:** User says "build X", "implement Y", "fix Z", or any substantial task.
 
-**Research-backed:** Agent Teams pattern (Planner→Implementer→Tester→Reviewer), TDD loops, Director Mode, Agentic Flywheel.
+**Research-backed:** Agent Teams pattern, TDD loops, Director Mode, Agentic Flywheel with active memory feedback.
 
 ---
 
 ## The Loop (Automated)
+
+### Phase 0: Memory Check (before anything)
+- Query ForgeGod for similar past tasks
+- What worked? What failed? What did user reject?
+- Adjust approach based on past feedback
+- If memory has guidance for this task type → apply it
 
 ### Phase 1: Clarify (if vague)
 - Auto-detect vague input
@@ -37,12 +43,62 @@ For each task in SPEC.md:
 - Run pre-ship checklist
 - Document rollback plan
 
-### Phase 6: Remember (Memory Subagent)
-- Extract session outcome → ForgeGod episodic layer
-- Extract successful patterns → semantic layer
-- Store error→fix pairs → error-solution layer
-- Update entity graph → graph layer
-- Export to obsidian → cross-session persistence
+### Phase 6: Memory + Feedback (after every session)
+**This is the active feedback loop — memory STEERS future behavior.**
+
+1. **What happened?** → Record to episodic layer
+2. **What worked?** → Extract to semantic layer (use this approach again)
+3. **What failed?** → Extract to error-solution layer (avoid this pattern)
+4. **User feedback?** → Store explicitly, steer next SPEC based on it
+5. **What to do differently?** → Write steering directive for similar tasks
+
+---
+
+## Active Memory Steering
+
+### Before Next Workflow — Memory Query
+
+```
+Before starting a new workflow:
+1. Search past tasks for [similar project type]
+2. Extract: "What worked" + "What failed" + "User feedback"
+3. Adjust SPEC generation: lean toward what worked, avoid what failed
+4. If user previously rejected approach X → try approach Y instead
+```
+
+### Steering Directive Format
+
+Stored in ForgeGod after each session:
+
+```markdown
+## Steering Directive: [task type]
+
+### What Worked
+- Approach: [specific approach that passed easily]
+- SPEC style: [verbose/concise, heavy/light verification]
+
+### What Failed
+- Pattern: [specific pattern that caused failures]
+- Avoid: [what to not do next time]
+
+### User Feedback
+- "[Explicit quote from developer on what they wanted different]"
+- Apply: [how this should change next SPEC]
+
+### Adjusted Approach
+- Next time: [specific change to make]
+- Reason: [why this should work better]
+```
+
+### Feedback Sources
+
+| Source | What It Tells You |
+|--------|------------------|
+| SPEC approval/rejection | Was the scope right? Too ambitious? Too narrow? |
+| /verify failures | Which criteria were hard to satisfy? |
+| /investigate 3-fix limit | Was the implementation approach wrong? |
+| User acceptance/rejection | Did output match what they wanted? |
+| /review findings | What kept being flagged? |
 
 ---
 
@@ -85,26 +141,19 @@ When complete:
 ```
 ## Workflow Complete: [Task]
 
-### SPEC.md
-/path/to/SPEC.md
+### What Worked
+- [specific approach that passed easily]
 
-### Implementation
-- [x] Phase 1: [description] — VERIFIED
-- [x] Phase 2: [description] — VERIFIED
-- [x] Phase N: [description] — VERIFIED
+### What Failed
+- [specific pattern that caused failures]
 
-### Review
-/review findings: [summary]
+### User Feedback
+- "[explicit developer feedback]"
 
-### Ship
-/pre-ship checklist: PASS
-Rollback plan: [documented]
-
-### Memory
-- Episodic: Recorded (task, outcome, duration)
-- Semantic: [N] patterns extracted
-- Error-Solution: [N] failures → fixes documented
-- Obsidian: Exported
+### Memory Updated
+- Steering directive stored for [task type]
+- Approach adjusted: [what changes for next similar task]
+- Error-solution pairs: [N] documented
 
 ### Result
 **ACCEPTED** — All criteria verified against SPEC.md
@@ -117,5 +166,7 @@ Rollback plan: [documented]
 - Proceeding without SPEC.md → BLOCK
 - Skipping /verify between phases → BLOCK
 - Skipping /review before ship → BLOCK
+- Skipping memory update after session → BLOCK
 - Accepting "looks good" as evidence → BLOCK
 - Bypassing human checkpoints → BLOCK
+- Ignoring past steering directives → BLOCK
