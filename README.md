@@ -18,13 +18,22 @@
 
 ---
 
-## One-Command Setup
+## Setup (Two Options)
 
+### Option 1: Clone + Setup (Recommended)
 ```bash
 git clone https://github.com/waitdeadai/minmaxing.git && cd minmaxing && ./setup.sh
 ```
 
-Then configure your MiniMax API key:
+This downloads all harness files AND installs dependencies in one go.
+
+### Option 2: Run Setup Only (Existing Project)
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
+```
+This only installs dependencies into an existing folder. Use this if you already have a project and just want the harness files copied into it.
+
+### Then Configure Your API Key
 ```bash
 claude mcp add -s user MiniMax \
   --env MINIMAX_API_KEY=YOUR_TOKEN_PLAN_KEY \
