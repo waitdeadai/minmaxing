@@ -1,3 +1,7 @@
+---
+description: Autonomous SOTA workflow - drives full implementation loop automatically
+---
+
 # /workflow
 
 **THE AUTONOMOUS WORKFLOW** — One command drives the entire implementation loop automatically. AI acts as technical lead, routing to you only at decision points.
