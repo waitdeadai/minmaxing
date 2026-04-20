@@ -20,8 +20,14 @@ Stop spending hours re-doing AI work because it didn't match the spec. This harn
 
 ## One-Command Setup
 
+**macOS / Linux:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.ps1 | iex -ApiKey "YOUR_TOKEN_PLAN_KEY"
 ```
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
