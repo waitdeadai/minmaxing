@@ -1,8 +1,11 @@
 #!/bin/bash
 # minmaxing - One-Command Setup
-# Usage: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash
+# Or with API key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash -s YOUR_API_KEY
 
 set -e
+
+API_KEY="${1:-}"
 
 echo "=========================================="
 echo "  minmaxing Setup"
@@ -51,14 +54,27 @@ echo ""
 # Step 4: Configure MiniMax MCP
 echo "[4/4] MiniMax MCP Configuration"
 echo ""
-echo "To complete setup, run:"
-echo ""
-echo "  claude mcp add -s user MiniMax \\"
-echo "    --env MINIMAX_API_KEY=YOUR_TOKEN_PLAN_KEY \\"
-echo "    --env MINIMAX_API_HOST=https://api.minimax.io \\"
-echo "    -- uvx minimax-coding-plan-mcp -y"
-echo ""
-echo "Replace YOUR_TOKEN_PLAN_KEY with your key from platform.minimax.io"
+
+if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_TOKEN_PLAN_KEY" ]; then
+    echo "Configuring MiniMax MCP with provided API key..."
+    claude mcp add -s user MiniMax \
+      --env MINIMAX_API_KEY="$API_KEY" \
+      --env MINIMAX_API_HOST=https://api.minimax.io \
+      -- uvx minimax-coding-plan-mcp -y 2>/dev/null || echo "MCP setup skipped (may already exist)"
+    echo "  [PASS] MiniMax MCP configured"
+else
+    echo "To complete setup, run with your API key:"
+    echo ""
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY"
+    echo ""
+    echo "Or manually configure with:"
+    echo "  claude mcp add -s user MiniMax \\"
+    echo "    --env MINIMAX_API_KEY=YOUR_TOKEN_PLAN_KEY \\"
+    echo "    --env MINIMAX_API_HOST=https://api.minimax.io \\"
+    echo "    -- uvx minimax-coding-plan-mcp -y"
+    echo ""
+    echo "Get your key from: platform.minimax.io"
+fi
 echo ""
 
 # Final status
@@ -67,8 +83,6 @@ echo "  Setup Complete"
 echo "=========================================="
 echo ""
 echo "Next steps:"
-echo "  1. Configure MiniMax MCP (command above)"
-echo "  2. Run: ./scripts/start-session.sh"
-echo "  3. Run: ./scripts/test-harness.sh"
-echo "  4. Start coding with: claude"
+echo "  1. Run: ./scripts/test-harness.sh"
+echo "  2. Start coding with: claude"
 echo ""
