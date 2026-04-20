@@ -12,10 +12,14 @@ echo "  minmaxing Setup"
 echo "=========================================="
 echo ""
 
-# Step 0: Clone repository to current directory
+# Step 0: Clone repository to temp, then move to current directory
 if [ ! -d ".git" ]; then
-    echo "[0/5] Cloning minmaxing repository to current directory..."
-    git clone https://github.com/waitdeadai/minmaxing.git .
+    echo "[0/5] Cloning minmaxing repository..."
+    TEMP_DIR=$(mktemp -d)
+    git clone https://github.com/waitdeadai/minmaxing.git "$TEMP_DIR"
+    cp -r "$TEMP_DIR"/* .
+    cp -r "$TEMP_DIR"/.[!.]* . 2>/dev/null || true
+    rm -rf "$TEMP_DIR"
 else
     echo "[0/5] Using existing minmaxing directory"
 fi
