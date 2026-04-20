@@ -18,35 +18,42 @@
 
 ---
 
-## Setup (Two Options)
+## One-Command Setup
 
-### Option 1: Clone Into New Folder
-```bash
-git clone https://github.com/waitdeadai/minmaxing.git && cd minmaxing && ./setup.sh
-```
-Downloads all files into a `minimaxing/` subfolder and installs dependencies.
+**Everything in one command** — MiniMax M2.7 Highspeed + MCP + skills + rules:
 
-### Option 2: Clone Into Current Folder
 ```bash
-git clone https://github.com/waitdeadai/minimaxing.git .
-```
-Use `.` instead of a folder name to clone directly into your current folder. **Important:** Your folder must be empty. This places `.claude/` in the root so Claude Code picks it up automatically.
-
-### Option 3: Setup Only (Existing Project + Harness)
-```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
-```
-Installs dependencies only. Use when you already have a project and want to add the harness.
-
-### Then Configure Your API Key
-```bash
-claude mcp add -s user MiniMax \
-  --env MINIMAX_API_KEY=YOUR_TOKEN_PLAN_KEY \
-  --env MINIMAX_API_HOST=https://api.minimax.io \
-  -- uvx minimax-coding-plan-mcp -y
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
 ```
 
-**What you get:**
+Get your API key from [platform.minimax.io](https://platform.minimax.io)
+
+**What this sets up:**
+
+| Component | Details |
+|-----------|---------|
+| **Model** | MiniMax M2.7 Highspeed (100 TPS, 204K context, $0.30/M) |
+| **MCP Server** | web_search + understand_image tools enabled |
+| **Memory** | ForgeGod 5-tier memory system |
+| **Skills** | 12 full implementation skills |
+| **Rules** | 5 modular rules (spec, verify, quality, context, delegation) |
+
+**For existing folders** (clone into current directory):
+```bash
+git clone https://github.com/waitdeadai/minimaxing.git . && ./setup.sh YOUR_TOKEN_PLAN_KEY
+```
+
+**Verify setup:**
+```bash
+./scripts/test-harness.sh
+```
+
+**Start coding:**
+```bash
+claude
+```
+
+**What you get:****
 - MiniMax M2.7 Highspeed (100 TPS, 204K context, $0.30/M)
 - **SPEC-first workflow** — no code without a spec
 - **Socratic questioning** — /office-hours transforms vague ideas into buildable specs
