@@ -84,12 +84,32 @@ Every task follows PEV:
 - **Sub-agent isolation**: Clean context per agent, no pollution
 - **Progressive disclosure**: Current → Project → Memory → Web
 
-## Web Research
+## Research-First (NOT Optional)
 
-- Always web_search before guessing
-- Never guess — search first
-- Cite sources in responses
-- Never guess API behavior or error meanings
+AI training data is stale. **Every task starts with research** when it involves:
+- External APIs or SDKs
+- Libraries or frameworks
+- Error messages
+- Technical decisions
+- Best practices claims
+
+**Core rule:** Never assume AI's training data is current. If AI says "recently", "latest", "typically", "best practice" — research it first.
+
+**Research triggers:**
+- "the API recently changed..." → verify
+- "the latest version of X..." → verify
+- "error Y means Z..." → verify (new error codes exist constantly)
+- "everyone uses X for Y..." → verify (landscape changes fast)
+
+**Format:**
+```
+## Research: [Topic]
+### Sources
+- [URL]: [finding]
+### Confirmed/Contradicted
+- AI said: [claim]
+- Reality: [what web shows]
+```
 
 ## Memory (ForgeGod 5-Tier)
 
