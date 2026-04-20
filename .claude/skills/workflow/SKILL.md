@@ -6,6 +6,8 @@ description: Parallel agent supervisor - spawns workers for parallel execution
 
 **SUPERVISOR MODE** — AI acts as supervisor, spawning parallel worker agents for speed while ensuring production readiness.
 
+**Default: 10 parallel agents** (configurable via `MAX_PARALLEL_AGENTS` env var)
+
 **Use when:** User says "build X", "implement Y", "fix Z", or any substantial task.
 
 ---
@@ -30,17 +32,18 @@ description: Parallel agent supervisor - spawns workers for parallel execution
 - Research APIs, libraries, error codes when task involves external dependencies
 
 ### Phase 1: Analyze & Decompose
-**Supervisor analyzes SPEC.md and decomposes into parallelizable tasks:**
+**Supervisor analyzes SPEC.md and decomposes into parallelizable tasks targeting 10-agent pool:**
 
 ```markdown
 ## Task Decomposition: [Project Name]
 
+### Agent Pool: 10 (configurable via MAX_PARALLEL_AGENTS env)
 ### Supervisor Analysis
 - Total tasks: [N]
-- Parallelizable: [M] (different files)
+- Parallelizable: [M] (different files) → targets Worker Pool
 - Sequential: [K] (dependencies)
 
-### Worker Pool
+### Worker Pool (up to 10 agents)
 - Worker 1: [Task 1] → Files: [list]
 - Worker 2: [Task 2] → Files: [list]
 ...
@@ -117,3 +120,26 @@ When coding without explicit /workflow:
 - Marking done without tests passing → BLOCK
 - Workers communicating directly → BLOCK (supervisor only)
 - Ignoring file conflicts → BLOCK
+
+---
+
+## Agent Pool Configuration
+
+**Default: 10 agents** (for 32GB+ RAM, 8+ cores)
+
+To configure for your hardware, add to `~/.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "MAX_PARALLEL_AGENTS": "6"
+  }
+}
+```
+
+| Hardware | MAX_PARALLEL_AGENTS |
+|----------|---------------------|
+| 32GB+ RAM, 8+ cores | 10 |
+| 16GB RAM, 4+ cores | 6 |
+| 8GB RAM, 2+ cores | 3 |
+| Low-end | 2 |

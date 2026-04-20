@@ -54,16 +54,20 @@ What problem does this solve? (1-2 sentences)
 - Component D (reason: out of budget)
 
 ## Implementation Plan
-### Phase 1: Foundation
-- [ ] Task 1 (definition of done)
-- [ ] Task 2 (definition of done)
+### Phase 1: Foundation [PARALLEL: 2 agents]
+- [ ] Task 1 [PARALLEL] (definition of done)
+- [ ] Task 2 [PARALLEL] (definition of done)
 
-### Phase 2: Core Feature
-- [ ] Task 3
-- [ ] Task 4
+### Phase 2: Core Feature [PARALLEL: 4 agents]
+- [ ] Task 3 [PARALLEL]
+- [ ] Task 4 [PARALLEL]
+- [ ] Task 5 [SEQUENTIAL - depends on Task 3]
 
-### Phase 3: Polish
-- [ ] Task 5
+### Phase 3: Polish [PARALLEL: 2 agents]
+- [ ] Task 6 [PARALLEL]
+- [ ] Task 7 [PARALLEL]
+
+**Note:** Tasks tagged [PARALLEL] can run simultaneously with 10-agent pool. Group them to maximize throughput.
 
 ## Verification
 How will we verify each success criterion?
@@ -77,13 +81,21 @@ How do we undo if this breaks production?
 2. Step 2: [database rollback if needed]
 ```
 
-### Step 4: Break Down Tasks
+### Step 4: Break Down Tasks (10-Agent Mindset)
+
+**Always plan for parallel execution.** The supervisor pattern decomposes work into tasks that can run simultaneously.
 
 For each task in SPEC.md:
 
 - Define clear "definition of done"
 - Identify dependencies (what must come first)
 - Estimate complexity (1=single file, 2=few files, 3=architectural)
+- **Tag each task for parallelization:**
+  - `[PARALLEL]` = Can run with other parallel tasks (different files)
+  - `[SEQUENTIAL]` = Must run after dependency completes
+  - `[GATE]` = Must pass before next phase starts
+
+**Target: Maximize PARALLEL tasks.** With 10 agents, aim for 6-8 parallel tasks per phase.
 
 ### Step 5: Output Format
 

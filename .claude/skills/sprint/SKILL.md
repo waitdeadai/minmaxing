@@ -1,6 +1,8 @@
 # /sprint
 
-Parallel execution with 10 agents and FILE ISOLATION. Each agent works on different files to prevent merge conflicts. Context isolation per agent.
+Parallel execution with up to 10 agents and FILE ISOLATION. Each agent works on different files to prevent merge conflicts. Context isolation per agent.
+
+**Default: 10 agents** (configurable via `MAX_PARALLEL_AGENTS` env var)
 
 **Use when:** User says "sprint this", "parallel this", "run in parallel", "split this up".
 
@@ -15,6 +17,31 @@ Achieve parallel speedup without merge conflicts. Realistic speedup ~1/(N × 0.7
 ---
 
 ## Execution Protocol
+
+### Step 0: Read Agent Pool Size
+
+Read `MAX_PARALLEL_AGENTS` from env (default: 10):
+
+```javascript
+const MAX_AGENTS = process.env.MAX_PARALLEL_AGENTS || 10;
+```
+
+**System presets** (set in `~/.claude/settings.json` env):
+| Hardware | MAX_PARALLEL_AGENTS |
+|----------|---------------------|
+| 32GB+ RAM, 8+ cores | 10 (default) |
+| 16GB RAM, 4+ cores | 6 |
+| 8GB RAM, 2+ cores | 3 |
+| Low-end hardware | 2 |
+
+To configure: add to `settings.json`:
+```json
+{
+  "env": {
+    "MAX_PARALLEL_AGENTS": "6"
+  }
+}
+```
 
 ### Step 1: Task Analysis
 
