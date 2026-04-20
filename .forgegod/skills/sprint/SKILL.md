@@ -1,0 +1,2 @@
+# /sprint
+Parallel sprint mode.

@@ -1,0 +1,2 @@
+# /council
+Multi-perspective synthesis.

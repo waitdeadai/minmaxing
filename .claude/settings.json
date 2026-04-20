@@ -1,0 +1,26 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "YOUR_MINIMAX_API_KEY",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "ANTHROPIC_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_SMALL_FAST_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M2.7-highspeed",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "MiniMax-M2.7-highspeed",
+    "DISABLE_AUTO_COMPACT": "1",
+    "MAX_THINKING_TOKENS": "1000",
+    "CLAUDE_CODE_NO_FLICKER": "1"
+  },
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(forgegod *)",
+      "WebSearch",
+      "mcp__MiniMax__web_search",
+      "Bash(bash *.sh)"
+    ]
+  }
+}

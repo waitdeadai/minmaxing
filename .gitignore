@@ -1,0 +1,25 @@
+# API keys and secrets
+.claude/settings.local.json
+.env
+.env.*
+
+# ForgeGod data
+.forgegod/memory.db
+.forgegod/*.db
+.forgegod/gstack/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
