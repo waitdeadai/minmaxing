@@ -1,0 +1,1 @@
+../../../.forgegod/skills/office-hours/SKILL.md

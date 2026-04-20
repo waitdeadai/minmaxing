@@ -1,0 +1,1 @@
+../../../.forgegod/skills/browse/SKILL.md

@@ -1,0 +1,1 @@
+../../../.forgegod/skills/council/SKILL.md

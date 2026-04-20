@@ -1,0 +1,1 @@
+../../../.forgegod/skills/overnight/SKILL.md

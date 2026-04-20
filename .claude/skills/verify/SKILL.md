@@ -1,0 +1,1 @@
+../../../.forgegod/skills/verify/SKILL.md

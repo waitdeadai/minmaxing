@@ -1,0 +1,1 @@
+../../../.forgegod/skills/investigate/SKILL.md

@@ -1,0 +1,1 @@
+../../../.forgegod/skills/workflow/SKILL.md

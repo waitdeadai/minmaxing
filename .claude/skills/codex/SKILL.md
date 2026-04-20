@@ -1,0 +1,1 @@
+../../../.forgegod/skills/codex/SKILL.md

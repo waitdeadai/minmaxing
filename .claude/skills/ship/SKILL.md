@@ -1,0 +1,1 @@
+../../../.forgegod/skills/ship/SKILL.md

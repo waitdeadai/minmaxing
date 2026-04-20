@@ -1,0 +1,1 @@
+../../../.forgegod/skills/qa/SKILL.md

@@ -1,0 +1,1 @@
+../../../.forgegod/skills/autoplan/SKILL.md
