@@ -4,6 +4,8 @@ SPEC-first planning that generates SPEC.md before any implementation. Uses plan 
 
 **This IS plan mode.** `/autoplan` invokes plan mode to draft SPEC.md. You review and approve. The approved plan becomes the source of truth.
 
+**10-Agent Parallel Mindset is DEFAULT.** Every plan assumes max parallel execution (10 agents by default). Effectiveness over efficiency — parallel agents done right = guaranteed results.
+
 **Use when:** User says "plan this", "how do I build", "spec out", "create a plan", or when a new feature/project is described.
 
 **NEVER skip to implementation.** SPEC.md is mandatory before any code.
@@ -105,12 +107,20 @@ SPEC.md created: /path/to/SPEC.md
 ## Summary
 - Scope: [in/out count] components
 - Tasks: [N] verifiable tasks
+- Parallel Tasks: [M] (ready for 10-agent pool)
+- Sequential Tasks: [K]
 - Verification: [N] criteria
+
+## Execution Plan
+With 10-agent pool:
+- Phase 1: [N] tasks in parallel
+- Phase 2: [M] tasks in parallel
+- Phase 3: [K] sequential gate
 
 ## Next Steps
 1. Review SPEC.md
 2. Approve or revise
-3. Execute via /sprint or sequential implementation
+3. Execute via /sprint (parallel by default)
 
 Ready for /sprint when approved.
 ```
