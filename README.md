@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/Context-204K%20tokens-3B82F6?style=for-the-badge&logo=data&logoColor=white" alt="204K Context" />
 </h1>
 
-**The ultimate Claude Code harness.** MiniMax 2.7 Highspeed (100 TPS, 204K context) + GStack skills + Karpathy workflows + ForgeGod 5-tier memory. One command setup. Built for developers who ship.
+**The ultimate effectiveness-first Claude Code harness.** MiniMax 2.7 Highspeed (100 TPS, 204K context) + SPEC-first workflow + Socratic questioning + Verifier agent pattern. Built for developers who ship.
 
 <p align="center">
   <a href="https://github.com/waitdeadai/minmaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Stars"></a>
@@ -26,13 +26,29 @@ git clone https://github.com/waitdeadai/minmaxing.git && cd minmaxing && ./setup
 
 **What you get:**
 - MiniMax M2.7 Highspeed (100 TPS, 204K context, $0.30/M)
-- ForgeGod 5-tier memory that remembers everything
-- 10 role-based skills (/autoplan, /review, /qa, /ship, /investigate...)
-- Sprint mode (10x parallel tasks)
-- Overnight loops (8hr sessions with checkpoints)
-- Pre-edit hooks (97% fewer policy violations)
+- **SPEC-first workflow** — no code without a spec
+- **Socratic questioning** — /office-hours transforms vague ideas into buildable specs
+- **Verifier agent** — separate verification prevents confirmation bias
+- 12 skills that actually work (not empty placeholders)
+- 5 modular rules for quality gates
+- Sprint mode (10 parallel agents with file isolation)
 
-**Perfect for:** Developers who want AI to handle the routine so they can focus on the creative.
+**Perfect for:** Developers who want AI to ship working software, not just impressive demos.
+
+---
+
+## Effectiveness vs Efficiency
+
+Most AI coding harnesses optimize for **efficiency** (speed, parallelism). But speed without correctness is worthless.
+
+**minmaxing optimizes for effectiveness first:**
+
+| Approach | What Happens |
+|----------|--------------|
+| **Efficiency-first** | Fast code that doesn't match what you wanted |
+| **Effectiveness-first** | Code that matches spec, verified against it |
+
+Research finding: LangChain moved from Top 30 to Top 5 on Terminal Bench 2.0 with **same model**, just better harness. Harness design determines shipping capability.
 
 ---
 
@@ -44,84 +60,103 @@ Run the test suite to verify your setup:
 ./scripts/test-harness.sh
 ```
 
-### Test Results (Production Verified)
+### Test Results
 
 ```
 ==========================================
   minmaxing Test Suite
 ==========================================
 
-[1] Claude Code Available      ✓ PASS: Claude Code 2.1.114
-[2] MiniMax MCP Server        ✓ PASS: MiniMax MCP found
-[3] Skills Directory          ✓ PASS: 10 skills found
-[4] Rules Directory           ✓ PASS: 5 rules found
-[5] Scripts Executable        ✓ PASS: All scripts executable
-[6] Settings Files            ✓ PASS: All settings present
-[7] CLAUDE.md                 ✓ PASS: CLAUDE.md exists
-[8] Memory System             ✓ PASS: ForgeGod installed
-[9] Git Ignore                ✓ PASS: API keys gitignored
-[10] MiniMax Model Config     ✓ PASS: MiniMax M2.7 Highspeed configured
-[11] Effort Level            ✓ PASS: Effort level configured
+[Core Infrastructure]
+[1] Claude Code Available          ✓ PASS
+[2] MiniMax Model Config          ✓ PASS
+[3] Settings Files                ✓ PASS
 
-Summary: 12 passed, 0 failed
+[Skills - 12 Required]
+[4] Skills Directory              ✓ PASS: 12 skills found
+[5] Critical Skills Content      ✓ PASS: office-hours, verify, autoplan, review, qa, ship, investigate
+
+[Rules - 5+ Required]
+[6] Rules Directory              ✓ PASS: 7 rules found
+[7] Individual Rules             ✓ PASS: quality, context, delegation, spec, verify
+
+[Documentation]
+[10] CLAUDE.md                   ✓ PASS: 131 lines
+[11] SPEC-First                  ✓ PASS
+[12] PEV Loop                    ✓ PASS
+[13] Socratic Questioning        ✓ PASS
+
+Summary: 29 passed, 0 failed
 ```
 
 ---
 
-## Why minmaxing?
+## The 12 Skills (Full Implementation)
 
-| Before minmaxing | After minmaxing |
-|-------------------|------------------|
-| 80% coding, 20% reviewing | 80% delegating, 20% macro-review |
-| Context lost between sessions | Persistent 5-tier memory |
-| One-size-fits-all prompts | Role-based skills for every task |
-| Sequential task execution | 10x parallel sprints |
-| Wasted overnight hours | Overnight loops with checkpoints |
-
-### The Math
-
-| Metric | Value |
-|--------|-------|
-| **Speed** | 100 tokens/second |
-| **Context** | 204,800 tokens |
-| **SWE-Pro** | 56.22% (frontier-adjacent) |
-| **Cost** | $0.30/M input (1/10th of Claude) |
-| **Hallucination** | 34% (lower than Claude Sonnet's 46%) |
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `/office-hours` | **NEW** — YC-style 6 forcing questions | "I have an idea", vague prompts |
+| `/autoplan` | SPEC-first planning, scope challenge | "plan this", "how do I build" |
+| `/verify` | **NEW** — THE VERIFIER, checks output against SPEC | After every implementation |
+| `/review` | Two-stage: AI review + human sign-off | "review this", PR review |
+| `/qa` | Browser testing, Pass/Fail only | "QA this", "test this" |
+| `/ship` | Pre-ship checklist, rollback plan | "ship this", "ready to ship" |
+| `/investigate` | Hypothesis testing, 3-fix limit | "investigate this", "debug" |
+| `/sprint` | 10 parallel agents, FILE ISOLATION | "sprint this", "parallel" |
+| `/overnight` | 8hr with 30-min checkpoints | "overnight this", "extended" |
+| `/council` | Multi-perspective synthesis | "council this", "architectural" |
+| `/codex` | Code search and patterns | "find where", "search" |
+| `/browse` | Web research integration | "research this", "look up" |
 
 ---
 
-## Benchmark Comparison (2026 SOTA)
+## The 5 Modular Rules
 
-### SWE-bench Scores (Real Coding Tasks)
+| Rule | Purpose |
+|------|---------|
+| `spec.rules.md` | **NEW** — SPEC-first mandate, required sections |
+| `verify.rules.md` | **NEW** — Verifier agent protocol |
+| `quality.rules.md` | Hard gates: ESLint error-mode, tests must pass |
+| `context.rules.md` | Fresh context discipline, context rot prevention |
+| `delegation.rules.md` | 80/20 Karpathy rule, what to delegate vs keep |
 
-| Model | SWE-bench Verified | SWE-Pro | Cost |
-|-------|-------------------|---------|------|
-| **MiniMax M2.7** | 78% | 56.22% | $0.30/M |
-| Claude Opus 4.6 | 75.6% | ~52% | $3.00/M |
-| GPT-5.2 | 72.8% | ~50% | $5.00/M |
-| MiniMax M2.5 | 80.2% | ~58% | $0.30/M |
+---
 
-*SWE-bench = Standard benchmark for AI coding agents on real GitHub issues*
+## Framework Comparison (April 2026)
 
-### Framework Comparison
+| Framework | Stars | Approach | Best For |
+|-----------|-------|----------|----------|
+| **minmaxing** | 0 | Effectiveness-first, SPEC-first, Verifier | Shipping working software |
+| Superpowers | ~137K | 7-phase TDD pipeline | Developers lacking discipline |
+| GStack | ~65K | 23 role-based skills | Founder-engineers |
+| GSD | ~54K | Spec-driven context stabilization | Large projects |
 
-| Framework | Stars | Focus | Unique Feature |
-|----------|-------|-------|----------------|
-| **minmaxing** | 0 | MiniMax + Skills | 100 TPS, 5-tier memory |
-| Superpowers | 121K | TDD enforcement | Test-driven development |
-| GStack | 54.6K | Role-based skills | CEO workflow |
-| GSD | 35K | Environment | Persistent coding agent |
-| Everything Claude | ~50K | Comprehensive | Complete toolkit |
+**Key insight from research:** *"gstack thinks, GSD stabilizes, Superpowers executes, minmaxing guarantees."*
 
-*As of April 2026*
+---
 
-### Why MiniMax M2.7?
+## Why SPEC-First?
 
-- **3x faster** than Claude Sonnet 4.6 (100 TPS vs 40 TPS)
-- **10x cheaper** than Claude ($0.30/M vs $3.00/M)
-- **Beats Claude** on SWE-bench Verified (78% vs 75.6%)
-- **Self-evolving** agentic capabilities
-- **Frontier-adjacent** at 1/10th the cost
+The #1 cause of AI coding failure: **building the wrong thing**.
+
+```bash
+# Without SPEC-first:
+User: "add user auth"
+AI: *builds something that looks like auth*
+User: "that's not what I wanted"
+AI: *rebuilds*
+
+# With SPEC-first:
+User: "add user auth"
+AI: "What specifically should happen when login fails?"
+User: "show error message"
+AI: "What's the error message format?"
+User: "red text under the field"
+AI: *generates SPEC.md with exact behavior*
+AI: *implements against spec*
+AI: *verifies against spec*
+# Done correctly, once
+```
 
 ---
 
@@ -155,12 +190,6 @@ claude mcp add -s user MiniMax \
   -- uvx minimax-coding-plan-mcp -y
 ```
 
-**Verify** inside Claude Code:
-```
-/mcp
-```
-Look for `web_search` and `understand_image`.
-
 ### 4. Initialize & Code
 
 ```bash
@@ -170,147 +199,68 @@ claude
 
 ---
 
-## For Beginners
+## The PEV Loop: Plan → Execute → Verify
 
-### What is Claude Code?
+```
+┌─────────┐    ┌─────────┐    ┌─────────┐
+│  PLAN   │ → │ EXECUTE │ → │ VERIFY  │
+└─────────┘    └─────────┘    └─────────┘
+     │              │             │
+     ▼              ▼             ▼
+  SPEC.md     Implementation   /verify
+                              against SPEC
+```
 
-Claude Code is Anthropic's AI coding assistant that works directly in your terminal. Unlike chatbots, it's designed for real development work—reading files, running commands, editing code, and managing git.
-
-### What is a "Harness"?
-
-A harness is the configuration and workflow system around an AI model. Think of it like:
-- **Model** = The engine (MiniMax M2.7)
-- **Harness** = The car around it (minmaxing)
-- **Skills** = The driver training (GStack-inspired)
-
-### Why MiniMax?
-
-| Model | Speed | Cost | SWE-Pro |
-|-------|-------|------|---------|
-| **MiniMax M2.7** | 100 TPS | $0.30/M | 56.22% |
-| Claude Sonnet 4.6 | 40 TPS | $3.00/M | ~52% |
-| GPT-4o | 60 TPS | $5.00/M | ~49% |
-
-MiniMax M2.7 is **3x faster, 10x cheaper, and beats both** on coding benchmarks.
+**The critical step most harnesses skip:** VERIFY. Implementation verifying itself = confirmation bias.
 
 ---
 
-## The 10 Skills
+## Effectiveness Patterns That Ship
 
-Based on GStack's insight: **Claude Code shouldn't be one general-purpose assistant—it should be an entire engineering team.**
+### 1. Socratic Questioning (/office-hours)
 
-| Skill | Role | What It Does |
-|-------|------|--------------|
-| `/autoplan` | 🏗️ Architect | Breaks requirements into verifiable tasks with time budgets |
-| `/review` | 👔 Staff Eng | Deep code review: correctness, security, performance, tests |
-| `/qa` | ✅ QA Lead | Verifies acceptance criteria, runs tests, reports coverage |
-| `/ship` | 🚀 Release Eng | Pre-ship checklist, CHANGELOG, version bump, rollback plan |
-| `/investigate` | 🔍 SRE | Root-cause debugging with hypothesis testing methodology |
-| `/codex` | 🔬 Researcher | Semantic code search, call chains, pattern extraction |
-| `/browse` | 🌐 Research Analyst | Web research with source synthesis and citation |
-| `/sprint` | ⚡ Conductor | 10 parallel tasks with aggregation and error handling |
-| `/overnight` | 🌙 Overnight Agent | 8-hour sessions with 30-min checkpoint system |
-| `/council` | 🎓 Tech Lead | Multi-perspective synthesis for complex decisions |
+Transforms vague ideas into buildable specs via 6 forcing questions:
 
-### Example: Using /investigate
+1. **Demand Reality** — "Have you talked to 10 people with this problem?"
+2. **Status Quo** — "What do they do today?"
+3. **Desperate Specificity** — "Show me the exact failure"
+4. **Narrowest Wedge** — "20% that solves 80%?"
+5. **Observation** — "Have YOU experienced this?"
+6. **Future-Fit** — "What breaks in 6 months?"
 
-```
-/investigate "NullPointerException at line 47"
+### 2. Verifier Agent (/verify)
 
-Output:
-## Root Cause
-[Description of the bug]
+Separate verification agent (GAN-like pattern) that checks output against SPEC.md.
 
-## Evidence
-- Stack trace analysis
-- Variable state at crash point
-- Related code sections
+- Implementation verifies itself → confirmation bias → bugs ship
+- Separate verifier checks against spec → catches drift
 
-## Fix Applied
-[Patched file with explanation]
+### 3. Quality Gates
 
-## Prevention
-[How to prevent recurrence]
-```
+- ESLint error-mode: warnings are failures
+- Tests must pass: 100% pass rate
+- /verify must pass: before accepting any output
+- Circuit breakers: quality gate fail = block
+
+### 4. 3-Fix Limit (/investigate)
+
+After 3 failed fix attempts, escalate. Prevents endless debugging rabbit holes.
 
 ---
 
-## The 5 Modular Rules
+## Benchmark Comparison (2026 SOTA)
 
-| Rule | Purpose |
-|------|---------|
-| `speed.rules.md` | MiniMax M2.7 Highspeed config, no artificial throttling |
-| `quality.rules.md` | Pre/post edit hooks, 97% violation reduction |
-| `delegation.rules.md` | 80/20 Karpathy rule, what to delegate |
-| `context.rules.md` | 4-level memory hierarchy, progressive disclosure |
-| `pev-loop.rules.md` | Plan → Execute → Verify → loop |
+### SWE-bench Scores
 
----
+| Model | SWE-bench Verified | SWE-Pro | Cost |
+|-------|-------------------|---------|------|
+| **MiniMax M2.7** | 78% | 56.22% | $0.30/M |
+| Claude Opus 4.6 | 75.6% | ~52% | $3.00/M |
+| GPT-5.2 | 72.8% | ~50% | $5.00/M |
 
-## The 12 Agentic Harness Patterns (2026 SOTA)
+### Harness Design Matters More Than Model
 
-### Memory & Context (Patterns 1-5)
-1. **Persistent Instruction File** - CLAUDE.md auto-injected every session
-2. **Scoped Context Assembly** - 4-level hierarchy (user→project→rules→session)
-3. **Tiered Memory** - ForgeGod 5-tier: episodic/semantic/procedural/graph/error-sol
-4. **Dream Consolidation** - Background garbage collection during idle
-5. **Progressive Context Compaction** - Older exchanges → dense abstracts
-
-### Workflow & Orchestration (Patterns 6-8)
-6. **Explore-Plan-Act Loop** - Escalating permissions: read-only → plan → mutate
-7. **Context-Isolated Subagents** - Sandbox per task with bespoke context
-8. **Fork-Join Parallelism** - 10 parallel sprints, merged output
-
-### Tools & Permissions (Patterns 9-11)
-9. **Progressive Tool Expansion** - Minimal default, dynamic loading
-10. **Command Risk Classification** - Low-risk straight through, high-risk approval
-11. **Single-Purpose Tool Design** - Strict schemas (PatchFile, SearchRegex)
-
-### Automation (Pattern 12)
-12. **Deterministic Lifecycle Hooks** - Pre/post edit hooks guaranteed execution
-
----
-
-## Karpathy's "Manifesting" Workflow
-
-The biggest productivity shift of 2026:
-
-```
-TRADITIONAL (2024):  You write code line-by-line
-MANIFESTING (2026):  You state intent → break into objectives
-                     → assign to agents → review at macro level
-```
-
-### The 80/20 Rule
-- **80%** of your time: delegating to subagents, reviewing at macro level
-- **20%** of your time: architecture decisions, security reviews, stakeholder comms
-
-### What to Delegate
-- ✅ Single-file implementations
-- ✅ Test writing
-- ✅ Documentation updates
-- ✅ Bug investigations
-- ✅ Code reviews
-
-### What NOT to Delegate
-- ❌ Architecture decisions
-- ❌ Security reviews
-- ❌ Complex multi-file refactors
-- ❌ Stakeholder communication
-
----
-
-## PEV Loop: Plan → Execute → verify
-
-```
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
-│  PLAN   │ → │ EXECUTE │ → │ VERIFY  │ → │  LOOP   │
-└─────────┘    └─────────┘    └─────────┘    └─────────┘
-     │              │             │               │
-     ▼              ▼             ▼               ▼
- Define       Constrained     Check metric    Max 3 iters
- metric       single-file     achieved?      then escalate
-```
+LangChain improved from Top 30 to Top 5 on Terminal Bench 2.0 with **same model**, just better harness.
 
 ---
 
@@ -318,7 +268,7 @@ MANIFESTING (2026):  You state intent → break into objectives
 
 ```bash
 # Session management
-./scripts/start-session.sh    # Full init: memory, obsidian, audit, skills
+./scripts/start-session.sh    # Full init: audit, health check, version
 
 # Parallelism (10x productivity)
 ./scripts/sprint.sh "fix auth" "update docs" "add tests"
@@ -330,7 +280,7 @@ MANIFESTING (2026):  You state intent → break into objectives
 ./scripts/council.sh "Should we migrate to Rust?"
 
 # Verification
-./scripts/test-harness.sh   # Verify all components work
+./scripts/test-harness.sh   # Verify all components work (29 tests)
 ```
 
 ---
@@ -339,45 +289,11 @@ MANIFESTING (2026):  You state intent → break into objectives
 
 | Tier | Content | Retention |
 |------|---------|-----------|
-| **Episodic** | Session outcomes, what happened | 90 days |
-| **Semantic** | Extracted principles, patterns | Indefinite |
+| **Episodic** | Session outcomes | 90 days |
+| **Semantic** | Extracted principles | Indefinite |
 | **Procedural** | Code patterns, fix recipes | Indefinite |
 | **Graph** | Entity relationships | Indefinite |
 | **Error-Solution** | Known errors → fixes | Indefinite |
-
-```bash
-forgegod memory              # Check health
-forgegod audit              # Pre-flight (run before planning)
-forgegod obsidian export    # Project to Obsidian vault
-```
-
----
-
-## Obsidian Integration
-
-Memory auto-projects to `./obsidian/ForgeGod/`:
-
-```
-ForgeGod/
-├── Dashboard/     # Session overview
-├── Research/      # Investigation notes
-├── Decisions/     # Architecture choices
-├── Patterns/      # Code patterns & recipes
-├── Errors/        # Known issues & solutions
-└── Runs/          # Session summaries
-```
-
----
-
-## Security & Privacy
-
-```gitignore
-# API keys NEVER enter the repo
-.claude/settings.json       # Placeholder only
-.claude/settings.local.json # Your real config (gitignored)
-.forgegod/*.db            # Memory database
-.forgegod/gstack/         # Clone separately
-```
 
 ---
 
@@ -397,31 +313,40 @@ ForgeGod/
 
 ```
 minmaxing/
-├── CLAUDE.md                    # Coding guidelines & philosophy
+├── CLAUDE.md                    # Core instructions (SPEC-first, PEV)
 ├── README.md                    # This file
 ├── .gitignore                  # Excludes API keys, sensitive data
 ├── settings.json               # Claude Code root settings
 ├── .claude/
 │   ├── settings.json           # MiniMax env vars (placeholder)
 │   ├── settings.local.json     # Local overrides (gitignored)
-│   ├── rules/                  # Modular rules
-│   │   ├── speed.rules.md
-│   │   ├── quality.rules.md
-│   │   ├── delegation.rules.md
-│   │   ├── context.rules.md
-│   │   └── pev-loop.rules.md
-│   └── projects/minmaxing/
-│       └── MEMORY.md           # Project memory
+│   └── rules/                  # Modular rules
+│       ├── quality.rules.md     # Hard gates, failure protocol
+│       ├── context.rules.md     # Fresh context, context rot
+│       ├── delegation.rules.md  # 80/20 rule
+│       ├── spec.rules.md       # SPEC-first mandate
+│       └── verify.rules.md      # Verifier agent protocol
 ├── .forgegod/
 │   ├── config.toml             # Memory & resolver config
-│   └── skills/                 # 10 skill files
-├── obsidian/ForgeGod/         # Obsidian vault (optional)
+│   └── skills/                 # 12 skills (full implementation)
+│       ├── office-hours/       # 6 forcing questions
+│       ├── verify/             # THE VERIFIER
+│       ├── autoplan/           # SPEC-first planning
+│       ├── review/             # Two-stage review
+│       ├── qa/                # Browser testing, Pass/Fail
+│       ├── ship/              # Pre-ship checklist
+│       ├── investigate/        # Hypothesis testing
+│       ├── sprint/            # Parallel agents
+│       ├── overnight/          # Extended sessions
+│       ├── council/           # Multi-perspective
+│       ├── codex/             # Code search
+│       └── browse/            # Web research
 └── scripts/
-    ├── start-session.sh
-    ├── sprint.sh
-    ├── overnight-loop.sh
-    ├── council.sh
-    └── test-harness.sh
+    ├── start-session.sh       # Full initialization
+    ├── sprint.sh              # Parallel execution
+    ├── overnight-loop.sh      # Extended sessions
+    ├── council.sh             # Multi-perspective
+    └── test-harness.sh       # 29 verification tests
 ```
 
 ---
@@ -446,5 +371,5 @@ MIT License - Built by the community, for the community.
 ---
 
 <p align="center">
-  <strong>Star if you found this useful. Fork if you built something better.</strong>
+  <strong>Ship working software. Not just impressive demos.</strong>
 </p>

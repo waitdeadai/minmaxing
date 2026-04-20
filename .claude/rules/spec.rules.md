@@ -1,0 +1,102 @@
+# Spec Rules
+
+## Spec-First Mandate
+
+Every meaningful task requires SPEC.md BEFORE any implementation.
+
+**Protocol:**
+1. User describes goal (vague or specific)
+2. If vague → Invoke /office-hours first
+3. Invoke /autoplan to generate SPEC.md
+4. SPEC.md is written and approved
+5. Implementation follows
+6. Verification against SPEC.md
+7. SPEC.md is the contract — implementation must match
+
+## Valid Spec Requirements
+
+A valid SPEC.md contains these required sections:
+
+### 1. Problem Statement
+What problem does this solve? (1-2 sentences maximum)
+
+### 2. Success Criteria
+Measurable outcomes — NOT subjective. Each criterion must be verifiable by:
+- A test that passes/fails
+- A command that succeeds/fails
+- An inspection that finds/doesn't find
+
+**Valid examples:**
+- "API responds within 200ms for 95th percentile"
+- "Login fails with invalid credentials and shows error message"
+- "All existing tests pass after refactor"
+
+**Invalid examples:**
+- "Works well"
+- "Looks good"
+- "Is fast"
+- "Seems correct"
+
+### 3. Scope
+
+**In Scope:**
+- Component A
+- Component B
+
+**Out of Scope:**
+- Component C (reason: requires separate project)
+- Component D (reason: out of budget)
+
+### 4. Implementation Plan
+
+Tasks with definitions of done. Each task must be:
+- Single-responsibility (one clear goal)
+- Verifiable (can prove completion)
+- Bounded (has clear end)
+
+```
+### Task 1: [Name]
+Definition of Done:
+- [ ] Sub-task A
+- [ ] Sub-task B
+
+### Task 2: [Name]
+Definition of Done:
+- [ ] Sub-task A
+```
+
+### 5. Verification
+How will we verify each success criterion?
+- Criterion 1 → [test name or command]
+- Criterion 2 → [inspection method]
+
+### 6. Rollback Plan
+How to undo if this breaks production?
+1. Step 1: [git revert or rollback command]
+2. Step 2: [database rollback if needed]
+3. Step 3: [verification command]
+
+## Spec Enforcement
+
+| Failure | Response |
+|---------|----------|
+| No SPEC.md before code | FAIL — do not write code |
+| Vague success criteria | FAIL — must be objective and verifiable |
+| No rollback plan for production | FAIL — must have rollback |
+| Missing verification method | FAIL — must specify how to verify |
+| Out-of-scope not listed | FAIL — scope must be explicit |
+
+## When to Update Spec
+
+- Scope changes mid-implementation → update spec first, then continue
+- New understanding of problem → update spec first
+- User-requested changes → update spec first
+- **SPEC.md is source of truth, not implementation**
+
+## Anti-Patterns
+
+- Writing code before SPEC.md → BLOCK
+- Accepting vague criteria ("looks good") → BLOCK
+- Skipping rollback plan → BLOCK
+- Implementing without verification method → BLOCK
+- Scope drift without spec update → BLOCK

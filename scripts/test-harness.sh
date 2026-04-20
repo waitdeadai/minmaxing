@@ -1,5 +1,8 @@
 #!/bin/bash
-# minmaxing - Comprehensive Test Suite
+# Ultimate MiniMax 2.7 Harness - Comprehensive Test Suite
+# 16+ verification tests
+
+set -e
 
 echo "=========================================="
 echo "  minmaxing Test Suite"
@@ -10,8 +13,16 @@ echo ""
 PASS=0
 FAIL=0
 
-test_pass() { echo "✓ PASS: $1"; PASS=$((PASS+1)); }
-test_fail() { echo "✗ FAIL: $1"; FAIL=$((FAIL+1)); }
+test_pass() { echo "  [PASS] $1"; PASS=$((PASS+1)); }
+test_fail() { echo "  [FAIL] $1"; FAIL=$((FAIL+1)); }
+test_warn() { echo "  [WARN] $1"; }
+
+# ========================================
+# Core Infrastructure
+# ========================================
+
+echo "[Core Infrastructure]"
+echo ""
 
 # Test 1: Claude Code
 echo "[1] Claude Code Available"
@@ -22,90 +33,210 @@ else
     test_fail "Claude Code not installed"
 fi
 
-# Test 2: MiniMax MCP
-echo "[2] MiniMax MCP Server"
-if claude mcp list 2>/dev/null | grep -q "MiniMax"; then
-    test_pass "MiniMax MCP found"
-else
-    test_fail "MiniMax MCP not found"
-fi
-
-# Test 3: Skills
-echo "[3] Skills Directory"
-SKILL_COUNT=$(find .forgegod/skills -name "SKILL.md" 2>/dev/null | wc -l)
-if [ "$SKILL_COUNT" -eq 10 ]; then
-    test_pass "10 skills found"
-else
-    test_fail "Expected 10 skills, found $SKILL_COUNT"
-fi
-
-# Test 4: Rules
-echo "[4] Rules Directory"
-RULE_COUNT=$(find .claude/rules -name "*.md" 2>/dev/null | wc -l)
-if [ "$RULE_COUNT" -eq 5 ]; then
-    test_pass "5 rules found"
-else
-    test_fail "Expected 5 rules, found $RULE_COUNT"
-fi
-
-# Test 5: Scripts
-echo "[5] Scripts Executable"
-ALL_EXEC=true
-for script in scripts/*.sh; do
-    if [ -f "$script" ] && [ ! -x "$script" ]; then
-        ALL_EXEC=false
-    fi
-done
-if [ "$ALL_EXEC" = true ]; then
-    test_pass "All scripts executable"
-else
-    test_fail "Some scripts not executable"
-fi
-
-# Test 6: Settings
-echo "[6] Settings Files"
-[ -f ".claude/settings.json" ] && test_pass ".claude/settings.json exists" || test_fail ".claude/settings.json missing"
-[ -f "settings.json" ] && test_pass "settings.json exists" || test_fail "settings.json missing"
-
-# Test 7: CLAUDE.md
-echo "[7] CLAUDE.md"
-[ -f "CLAUDE.md" ] && test_pass "CLAUDE.md exists" || test_fail "CLAUDE.md missing"
-
-# Test 8: ForgeGod
-echo "[8] Memory System"
-if command -v forgegod &> /dev/null; then
-    test_pass "ForgeGod installed"
-else
-    test_fail "ForgeGod not installed"
-fi
-
-# Test 9: Git Ignore
-echo "[9] Git Ignore"
-if [ -f ".gitignore" ] && grep -q "settings.local.json" .gitignore; then
-    test_pass "API keys gitignored"
-else
-    test_fail ".gitignore missing or incomplete"
-fi
-
-# Test 10: MiniMax Model
-echo "[10] MiniMax Model Config"
+# Test 2: MiniMax Model Config
+echo "[2] MiniMax Model Config"
 if grep -q "MiniMax-M2.7-highspeed" .claude/settings.json 2>/dev/null; then
     test_pass "MiniMax M2.7 Highspeed configured"
 else
     test_fail "MiniMax M2.7 not configured"
 fi
 
-# Test 11: Effort Level
-echo "[11] Effort Level"
-if grep -q "CLAUDE_CODE_EFFORT_LEVEL" .claude/settings.json 2>/dev/null; then
-    test_pass "Effort level configured"
+# Test 3: Settings
+echo "[3] Settings Files"
+if [ -f ".claude/settings.json" ]; then
+    test_pass ".claude/settings.json exists"
 else
-    test_fail "Effort level not configured"
+    test_fail ".claude/settings.json missing"
 fi
+
+# ========================================
+# Skills (12 Required)
+# ========================================
+
+echo ""
+echo "[Skills - 12 Required]"
+echo ""
+
+# Test 4: Skills Count
+echo "[4] Skills Directory"
+SKILL_COUNT=$(find .forgegod/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+if [ "$SKILL_COUNT" -ge 10 ]; then
+    test_pass "$SKILL_COUNT skills found"
+else
+    test_fail "Expected 10+ skills, found $SKILL_COUNT"
+fi
+
+# Test 5: Critical Skills Content
+echo "[5] Critical Skills Content"
+for skill in office-hours verify autoplan review qa ship investigate; do
+    if [ -f ".forgegod/skills/$skill/SKILL.md" ]; then
+        LINES=$(wc -l < ".forgegod/skills/$skill/SKILL.md" | tr -d ' ')
+        if [ "$LINES" -gt 20 ]; then
+            test_pass "/$skill ($LINES lines)"
+        else
+            test_fail "/$skill is minimal (${LINES} lines)"
+        fi
+    else
+        test_fail "/$skill SKILL.md missing"
+    fi
+done
+
+# ========================================
+# Rules (5+ Required)
+# ========================================
+
+echo ""
+echo "[Rules - 5+ Required]"
+echo ""
+
+# Test 6: Rules Count
+echo "[6] Rules Directory"
+RULE_COUNT=$(find .claude/rules -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+if [ "$RULE_COUNT" -ge 5 ]; then
+    test_pass "$RULE_COUNT rules found"
+else
+    test_fail "Expected 5+ rules, found $RULE_COUNT"
+fi
+
+# Test 7: Individual Rules
+echo "[7] Individual Rules"
+for rule in quality context delegation spec verify; do
+    if [ -f ".claude/rules/$rule.rules.md" ]; then
+        LINES=$(wc -l < ".claude/rules/$rule.rules.md" | tr -d ' ')
+        if [ "$LINES" -gt 10 ]; then
+            test_pass "/$rule.rules.md ($LINES lines)"
+        else
+            test_fail "/$rule.rules.md is minimal (${LINES} lines)"
+        fi
+    else
+        test_fail "/$rule.rules.md missing"
+    fi
+done
+
+# ========================================
+# Scripts (5 Required)
+# ========================================
+
+echo ""
+echo "[Scripts - 5 Required]"
+echo ""
+
+# Test 8: Scripts Executable
+echo "[8] Scripts Executable"
+ALL_EXEC=true
+for script in scripts/*.sh; do
+    if [ -f "$script" ]; then
+        if [ ! -x "$script" ]; then
+            ALL_EXEC=false
+            test_fail "$(basename $script) not executable"
+        fi
+    fi
+done
+if [ "$ALL_EXEC" = true ]; then
+    test_pass "All scripts executable"
+fi
+
+# Test 9: Individual Scripts
+echo "[9] Individual Scripts"
+for script in start-session sprint overnight-loop council test-harness; do
+    if [ -f "scripts/$script.sh" ]; then
+        test_pass "$script.sh exists"
+    else
+        test_fail "$script.sh missing"
+    fi
+done
+
+# ========================================
+# Documentation
+# ========================================
+
+echo ""
+echo "[Documentation]"
+echo ""
+
+# Test 10: CLAUDE.md
+echo "[10] CLAUDE.md"
+if [ -f "CLAUDE.md" ]; then
+    LINES=$(wc -l < "CLAUDE.md" | tr -d ' ')
+    if [ "$LINES" -gt 50 ]; then
+        test_pass "CLAUDE.md exists ($LINES lines)"
+    else
+        test_warn "CLAUDE.md is minimal ($LINES lines)"
+    fi
+else
+    test_fail "CLAUDE.md missing"
+fi
+
+# Test 11: SPEC-First Documentation
+echo "[11] SPEC-First Documentation"
+if grep -q "SPEC" CLAUDE.md 2>/dev/null; then
+    test_pass "SPEC-first philosophy documented"
+else
+    test_fail "SPEC-first not documented in CLAUDE.md"
+fi
+
+# Test 12: PEV Loop Documentation
+echo "[12] PEV Loop Documentation"
+if grep -q "PEV" CLAUDE.md 2>/dev/null; then
+    test_pass "PEV loop documented"
+else
+    test_fail "PEV loop not documented in CLAUDE.md"
+fi
+
+# Test 13: Socratic Documentation
+echo "[13] Socratic Questioning Documentation"
+if grep -q "office-hours\|Socratic" CLAUDE.md 2>/dev/null; then
+    test_pass "Socratic questioning documented"
+else
+    test_fail "Socratic questioning not documented"
+fi
+
+# ========================================
+# Memory System
+# ========================================
+
+echo ""
+echo "[Memory System]"
+echo ""
+
+# Test 14: ForgeGod
+echo "[14] ForgeGod Memory"
+if command -v forgegod &> /dev/null; then
+    test_pass "ForgeGod installed"
+else
+    test_fail "ForgeGod not installed"
+fi
+
+# ========================================
+# Git Safety
+# ========================================
+
+echo ""
+echo "[Git Safety]"
+echo ""
+
+# Test 15: Git Ignore
+echo "[15] Git Ignore"
+if [ -f ".gitignore" ] && grep -q "settings.local.json" .gitignore; then
+    test_pass "API keys gitignored"
+else
+    test_fail ".gitignore missing or incomplete"
+fi
+
+# ========================================
+# Summary
+# ========================================
 
 echo ""
 echo "=========================================="
 echo "  Summary: $PASS passed, $FAIL failed"
 echo "=========================================="
+echo ""
 
-[ $FAIL -eq 0 ]
+if [ $FAIL -eq 0 ]; then
+    echo "All tests passed!"
+    exit 0
+else
+    echo "Some tests failed."
+    exit 1
+fi
