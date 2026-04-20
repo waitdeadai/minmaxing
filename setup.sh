@@ -12,18 +12,10 @@ echo "  minmaxing Setup"
 echo "=========================================="
 echo ""
 
-# Step 0: Clone repository if not already present
-INSTALL_DIR="${2:-./minmaxing}"
-
+# Step 0: Clone repository to current directory
 if [ ! -d ".git" ]; then
-    echo "[0/5] Cloning minmaxing repository..."
-    if [ -d "$INSTALL_DIR" ]; then
-        echo "  Directory $INSTALL_DIR exists, using existing directory"
-    else
-        echo "  Cloning to $INSTALL_DIR..."
-        git clone https://github.com/waitdeadai/minmaxing.git "$INSTALL_DIR"
-    fi
-    cd "$INSTALL_DIR"
+    echo "[0/5] Cloning minmaxing repository to current directory..."
+    git clone https://github.com/waitdeadai/minmaxing.git .
 else
     echo "[0/5] Using existing minmaxing directory"
 fi
