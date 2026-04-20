@@ -12,13 +12,30 @@ echo "  minmaxing Setup"
 echo "=========================================="
 echo ""
 
+# Step 0: Clone repository if not already present
+INSTALL_DIR="${2:-./minmaxing}"
+
+if [ ! -d ".git" ]; then
+    echo "[0/5] Cloning minmaxing repository..."
+    if [ -d "$INSTALL_DIR" ]; then
+        echo "  Directory $INSTALL_DIR exists, using existing directory"
+    else
+        echo "  Cloning to $INSTALL_DIR..."
+        git clone https://github.com/waitdeadai/minmaxing.git "$INSTALL_DIR"
+    fi
+    cd "$INSTALL_DIR"
+else
+    echo "[0/5] Using existing minmaxing directory"
+fi
+echo ""
+
 # Step 1: Install ForgeGod
-echo "[1/4] Installing ForgeGod memory system..."
+echo "[1/5] Installing ForgeGod memory system..."
 pip install forgegod --break-system-packages 2>/dev/null || pip3 install forgegod --break-system-packages 2>/dev/null || echo "ForgeGod install failed (will retry later)"
 echo ""
 
 # Step 2: Install uvx
-echo "[2/4] Checking uvx..."
+echo "[2/5] Checking uvx..."
 if ! command -v uvx &> /dev/null; then
     echo "Installing uvx..."
     curl -LsSf https://astral.sh/uv/install.sh | sh 2>/dev/null || echo "uvx install skipped"
@@ -27,7 +44,7 @@ fi
 echo ""
 
 # Step 3: Verify installation
-echo "[3/4] Verifying installation..."
+echo "[3/5] Verifying installation..."
 PASS=0
 if command -v forgegod &> /dev/null; then
     echo "  [PASS] ForgeGod installed"
@@ -52,7 +69,7 @@ fi
 echo ""
 
 # Step 4: Configure API Key in settings.json
-echo "[4/4] Configuring MiniMax API key..."
+echo "[4/5] Configuring MiniMax API key..."
 echo ""
 
 if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
@@ -86,12 +103,22 @@ else
 fi
 echo ""
 
+# Step 5: Run tests
+echo "[5/5] Running harness tests..."
+echo ""
+if [ -f "./scripts/test-harness.sh" ]; then
+    ./scripts/test-harness.sh
+else
+    echo "  [WARN] test-harness.sh not found"
+fi
+echo ""
+
 # Final status
 echo "=========================================="
 echo "  Setup Complete"
 echo "=========================================="
 echo ""
 echo "Next steps:"
-echo "  1. Run: ./scripts/test-harness.sh"
-echo "  2. Start coding with: claude"
+echo "  1. Run: claude"
+echo "  2. Try: /workflow 'build a REST API'"
 echo ""
