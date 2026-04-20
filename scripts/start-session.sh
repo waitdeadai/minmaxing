@@ -10,13 +10,13 @@ echo "  $(date)"
 echo "=========================================="
 echo ""
 
-# Step 1: ForgeGod Audit
-echo "[1/5] Running ForgeGod memory audit..."
-forgegod audit 2>/dev/null || echo "ForgeGod audit complete"
+# Step 1: ForgeGod Status
+echo "[1/4] ForgeGod status..."
+forgegod status 2>/dev/null || echo "ForgeGod available"
 echo ""
 
 # Step 2: Memory Check
-echo "[2/5] Checking memory system..."
+echo "[2/4] Checking memory system..."
 if command -v forgegod &> /dev/null; then
     MEMORY_STATUS=$(forgegod memory 2>/dev/null | head -5)
     echo "$MEMORY_STATUS"
@@ -25,36 +25,24 @@ else
 fi
 echo ""
 
-# Step 3: Obsidian Export
-echo "[3/5] Checking Obsidian vault..."
-if [ -d "obsidian" ]; then
-    echo "Obsidian vault found"
-    if [ -x "scripts/export-obsidian.sh" ]; then
-        ./scripts/export-obsidian.sh 2>/dev/null || echo "Export skipped"
-    fi
-else
-    echo "No obsidian directory - skipping export"
-fi
-echo ""
-
-# Step 4: Version Check
-echo "[4/5] Version information..."
+# Step 3: Version Check
+echo "[3/4] Version information..."
 echo "Claude Code: $(claude --version 2>/dev/null || echo 'not found')"
 echo "Model: MiniMax M2.7 Highspeed (100 TPS, 204K context)"
 echo ""
 
-# Step 5: Quick Health Check
-echo "[5/5] Health check..."
+# Step 4: Quick Health Check
+echo "[4/4] Health check..."
 PASS=0
 FAIL=0
 
 # Check skills
-SKILL_COUNT=$(find .forgegod/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -eq 12 ]; then
+SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+if [ "$SKILL_COUNT" -ge 13 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 12 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 13 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 

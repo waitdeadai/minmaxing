@@ -13,22 +13,11 @@ echo "=========================================="
 echo ""
 
 # Step 1: Install ForgeGod
-echo "[1/5] Installing ForgeGod memory system..."
+echo "[1/4] Installing ForgeGod memory system..."
 pip install forgegod --break-system-packages 2>/dev/null || pip3 install forgegod --break-system-packages 2>/dev/null || echo "ForgeGod install failed (will retry later)"
 echo ""
 
-# Step 2: Link skills to Claude Code
-echo "[2/5] Linking skills to Claude Code..."
-mkdir -p .claude/skills
-for skill in .forgegod/skills/*/; do
-    name=$(basename "$skill")
-    mkdir -p ".claude/skills/$name"
-    ln -sf "../../../.forgegod/skills/$name/SKILL.md" ".claude/skills/$name/SKILL.md" 2>/dev/null || true
-done
-echo "  [PASS] Skills linked"
-echo ""
-
-# Step 3: Install uvx
+# Step 2: Install uvx
 echo "[2/4] Checking uvx..."
 if ! command -v uvx &> /dev/null; then
     echo "Installing uvx..."
@@ -37,8 +26,8 @@ if ! command -v uvx &> /dev/null; then
 fi
 echo ""
 
-# Step 4: Verify installation
-echo "[4/5] Verifying installation..."
+# Step 3: Verify installation
+echo "[3/4] Verifying installation..."
 PASS=0
 if command -v forgegod &> /dev/null; then
     echo "  [PASS] ForgeGod installed"
@@ -62,8 +51,8 @@ else
 fi
 echo ""
 
-# Step 5: Configure API Key in settings.json
-echo "[5/5] Configuring MiniMax API key..."
+# Step 4: Configure API Key in settings.json
+echo "[4/4] Configuring MiniMax API key..."
 echo ""
 
 if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then

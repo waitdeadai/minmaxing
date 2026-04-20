@@ -59,7 +59,7 @@ echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
-SKILL_COUNT=$(find .forgegod/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
 if [ "$SKILL_COUNT" -ge 10 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
@@ -69,8 +69,8 @@ fi
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
 for skill in office-hours verify autoplan review qa ship investigate; do
-    if [ -f ".forgegod/skills/$skill/SKILL.md" ]; then
-        LINES=$(wc -l < ".forgegod/skills/$skill/SKILL.md" | tr -d ' ')
+    if [ -f ".claude/skills/$skill/SKILL.md" ]; then
+        LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
             test_pass "/$skill ($LINES lines)"
         else

@@ -1,1 +1,2 @@
-../../../.forgegod/skills/codex/SKILL.md
+# /codex
+Code search and understanding.

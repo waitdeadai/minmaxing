@@ -113,7 +113,7 @@ AI training data is stale. **Every task starts with research** when it involves:
 
 ## Memory (ForgeGod 5-Tier)
 
-- Run `forgegod audit` before planning
+- Run `forgegod memory` to check what the system has learned
 - Persist learnings to obsidian
 - Export obsidian notes before session end
 
