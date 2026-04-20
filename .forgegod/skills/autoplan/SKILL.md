@@ -1,18 +1,12 @@
 # /autoplan
 
-SPEC-first planning that generates SPEC.md before any implementation. Challenges scope, breaks objectives into verifiable tasks with metrics.
+SPEC-first planning that generates SPEC.md before any implementation. Uses plan mode to create the spec — you approve the plan, and it becomes the contract.
+
+**This IS plan mode.** `/autoplan` invokes plan mode to draft SPEC.md. You review and approve. The approved plan becomes the source of truth.
 
 **Use when:** User says "plan this", "how do I build", "spec out", "create a plan", or when a new feature/project is described.
 
 **NEVER skip to implementation.** SPEC.md is mandatory before any code.
-
----
-
-## Purpose
-
-Generate SPEC.md that defines what to build, how to verify it, and how to undo it. This is the contract between user and implementation.
-
-**This is not a todo list.** It's a specification document with verifiable success criteria.
 
 ---
 

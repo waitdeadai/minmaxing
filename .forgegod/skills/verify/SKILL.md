@@ -1,6 +1,8 @@
 # /verify
 
-**THE VERIFIER** — mandatory output validation against SPEC.md before accepting. This is the "separate verifier agent" pattern (GAN-like) that catches implementation drift and spec errors.
+**THE VERIFIER** — mandatory output validation against SPEC.md before accepting. This is a **separate check** from the AI that wrote the code.
+
+**This is NOT the same AI that wrote the code.** It verifies independently, adversarially, against the spec.
 
 **Use when:** After every implementation task, code changes, documentation changes, config changes, before shipping, or whenever you need to validate output.
 

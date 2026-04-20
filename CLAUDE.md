@@ -102,15 +102,24 @@ Every task follows PEV:
 ./scripts/start-session.sh
 ```
 
-## Session Flow
+## The Flow
 
-1. `start-session.sh` → audit, obsidian export, version check
-2. User describes goal
-3. If vague → /office-hours (6 questions)
-4. If new project → /autoplan (generate SPEC.md)
-5. If implementation → Execute with PEV loop
-6. Before accepting → /verify against SPEC.md
-7. Before shipping → /ship checklist
+Every task follows this sequence:
+
+1. **You describe what you want** (vague or specific)
+2. **If vague → /office-hours** — 6 questions to extract the real problem
+3. **/autoplan** — Uses plan mode to create SPEC.md. You approve the plan.
+   - `/autoplan` IS plan mode — not a separate thing
+   - SPEC.md = source of truth, persists across sessions
+4. **Implement** — One task at a time, test after each
+5. **/verify** — Separate check against SPEC.md (not the AI that wrote the code)
+6. **/review** — You decide whether to accept
+
+**Verification layers:**
+- Tool level: auto-format/lint on every edit
+- Commit level: tests pass before commit
+- SPEC level: /verify checks every meaningful output against spec
+- CI level: full test suite before merge
 
 ## Effectiveness Metrics
 
@@ -123,9 +132,9 @@ Every task follows PEV:
 
 | Pattern | Source | Impact |
 |---------|--------|--------|
-| Spec-first | Superpowers | Forces clarification |
-| Socratic questions | GStack | Reframes vague ideas |
-| Verifier agent | Martin Fowler | Prevents confirmation bias |
-| PEV loop | Karpathy | Structured quality |
-| 3-fix limit | Research | Prevents rabbit holes |
-| File isolation | GStack | Parallel without conflicts |
+| Spec-first + plan mode | Addy Osmani, Anthropic | Forces clarity before code |
+| Separate verifier | Martin Fowler, research | Prevents confirmation bias |
+| 3-fix limit + escalate | 2026 AI coding research | Prevents rabbit holes |
+| Small phases + commits | Tyler Burleigh | Save points, not big batches |
+| Written artifacts = truth | Addy Osmani | Context persists across sessions |
+| Mechanisms > prompts | Harness engineering 2026 | Quality enforced, not requested |
