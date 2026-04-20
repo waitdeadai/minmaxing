@@ -51,12 +51,21 @@ else
 fi
 echo ""
 
-# Step 4: Configure MiniMax MCP
-echo "[4/4] MiniMax MCP Configuration"
+# Step 4: Configure API Key in settings.json
+echo "[4/4] Configuring MiniMax API key..."
 echo ""
 
 if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_TOKEN_PLAN_KEY" ]; then
-    echo "Configuring MiniMax MCP with provided API key..."
+    # Update settings.json with the actual API key
+    if [ -f ".claude/settings.json" ]; then
+        sed -i "s/YOUR_MINIMAX_API_KEY/$API_KEY/g" .claude/settings.json
+        echo "  [PASS] API key configured in .claude/settings.json"
+    else
+        echo "  [WARN] .claude/settings.json not found"
+    fi
+
+    # Configure MCP server
+    echo "Configuring MiniMax MCP server..."
     claude mcp add -s user MiniMax \
       --env MINIMAX_API_KEY="$API_KEY" \
       --env MINIMAX_API_HOST=https://api.minimax.io \
