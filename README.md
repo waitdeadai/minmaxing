@@ -85,10 +85,11 @@ claude
 
 ---
 
-## The 12 Skills
+## The 13 Skills
 
 | Skill | What It Does |
 |-------|-------------|
+| `/workflow` | **One command** — drives the full loop automatically |
 | `/office-hours` | Asks 6 forcing questions to turn a vague idea into a buildable spec |
 | `/autoplan` | Generates SPEC.md before any code gets written |
 | `/verify` | Checks output against SPEC.md — separate from the AI that wrote it |
@@ -111,7 +112,13 @@ claude
 claude                       # Start coding
 ```
 
-When you have a task:
+**One command does it all:**
+```
+/workflow "build a login system"
+```
+AI drives: SPEC → implement → verify → review → ship → memory
+
+Or step-by-step:
 - Vague idea → `/office-hours` first
 - New feature → `/autoplan` to generate SPEC.md
 - Implementation done → `/verify` checks against spec
@@ -224,7 +231,8 @@ minmaxing/
 │       └── delegation.rules.md  # What to delegate
 ├── .forgegod/
 │   ├── config.toml             # Memory config
-│   └── skills/                 # 12 skills
+│   └── skills/                 # 13 skills
+│       ├── workflow/            # Autonomous full-loop (NEW)
 │       ├── office-hours/        # 6 forcing questions
 │       ├── verify/              # THE VERIFIER
 │       ├── autoplan/            # SPEC-first planning

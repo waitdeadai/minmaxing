@@ -46,6 +46,7 @@ Every task follows PEV:
 
 | Skill | Purpose | When |
 |-------|---------|------|
+| `/workflow` | **AUTONOMOUS** — drives full loop automatically | "build X", "implement Y", any task |
 | `/office-hours` | Reframe vague ideas via 6 forcing questions | "I have an idea", vague prompts |
 | `/autoplan` | SPEC-first planning, scope challenge | "plan this", "how do I build" |
 | `/verify` | **THE VERIFIER** — checks output against SPEC | After every implementation |
