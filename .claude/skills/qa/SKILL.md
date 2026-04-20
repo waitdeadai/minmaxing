@@ -1,147 +1,65 @@
 # /qa
 
-Browser-based QA with atomic bug fixes and regression tests. Pass/Fail only — no "mostly works", no "looks okay".
+Browser-based E2E QA with Playwright. Pass/Fail only — no "mostly works", no "looks okay".
 
-**Use when:** User says "QA this", "test this feature", "browser test", "verify this works", "regression test".
+**Use when:** User says "QA this", "test this feature", "browser test", "E2E test", "verify this works".
 
-**Pass/Fail only.** "Mostly", "seems", "probably" are not acceptable.
-
----
-
-## Purpose
-
-Verify that features work correctly in a browser environment. Atomic bug fixes ensure no regression.
+**Prerequisites:** `npx playwright test` must work in the project.
 
 ---
 
-## Execution Protocol
+## Playwright E2E Protocol
 
-### Step 1: Define Test Plan
+### Step 1: Ensure Playwright is Available
 
-For the feature being tested:
-
-```markdown
-## QA Test Plan: [Feature Name]
-
-### Test Cases
-1. **TC-1: [Name]**
-   - Steps: [numbered steps]
-   - Expected: [result]
-   - Pass/Fail: ___
-
-2. **TC-2: [Name]**
-   - Steps: [numbered steps]
-   - Expected: [result]
-   - Pass/Fail: ___
-
-### Browser Environment
-- Browser: [Chrome/Firefox/Safari]
-- Headless: [yes/no]
-- Viewport: [size]
-
-### Special Setup
-- Login required: [yes/no]
-- Test data needed: [description]
+```bash
+npx playwright --version || npm install -D @playwright/test && npx playwright install chromium
 ```
 
-### Step 2: Execute Tests
+### Step 2: Create/Run Test
 
-For each test case:
+For UI verification, write a Playwright test:
 
-1. Launch browser (or use existing session)
-2. Execute steps precisely
-3. Compare actual vs expected
-4. Record PASS or FAIL with evidence
+```javascript
+// e2e/qa-[feature].spec.js
+const { test, expect } = require('@playwright/test');
 
-### Step 3: Bug Fix Protocol (If QA Finds Issues)
-
-For each failing test:
-
-```markdown
-## Bug: [ID] — [Title]
-
-### Reproduction
-Steps to reproduce:
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-
-Expected: [what should happen]
-Actual: [what happened]
-
-### Root Cause
-[Analysis of why it fails]
-
-### Fix
-[Specific change to make]
-File: [path]
-Line: [number]
-Change: [exact change]
-
-### Verification
-After fix, re-run TC-[N] and confirm PASS
+test('feature works', async ({ page }) => {
+  await page.goto('http://localhost:3000');
+  // ... test steps
+  await expect(page.locator('.result')).toHaveText('expected');
+});
 ```
 
-### Step 4: Regression Testing
-
-After any fix:
-
-1. Re-run failing test — must PASS
-2. Run related tests — must PASS
-3. Run full suite — must PASS
-4. Document what was re-tested
-
-### Step 5: Final Output
-
-```markdown
-## QA Results: [Feature Name]
-**Date**: [timestamp]
-**Browser**: [browser/version]
-**Tester**: Claude Code
-
-### Summary
-- Total Tests: [N]
-- Passed: [N]
-- Failed: [N]
-- Pass Rate: [X%]
-
-### Test Results
-
-| TC-ID | Test Case | Result | Evidence |
-|-------|-----------|--------|----------|
-| TC-1 | [Name] | PASS | [screenshot/error/output] |
-| TC-2 | [Name] | FAIL | [screenshot/error/output] |
-
-### Bugs Found
-- Bug-1: [Title] — [file:line] — FIXED
-- Bug-2: [Title] — [file:line] — FIXED
-
-### Regression Status
-- All fixes verified: [YES/NO]
-- Full suite: [PASS/FAIL]
-
-### Final Verdict
-- **[PASS]** — All tests pass, ready to ship
-- **[FAIL]** — [N] tests failing, blocking
+Run with:
+```bash
+npx playwright test e2e/qa-[feature].spec.js --reporter=line
 ```
+
+### Step 3: Pass/Fail Verification
+
+- **PASS** = test exits with code 0
+- **FAIL** = test exits with non-zero OR assertion error
+
+### Step 4: Atomic Bug Fix
+
+If test fails, fix the bug (not the test) and re-run.
 
 ---
 
-## Quality Gates
+## QA Output Format
 
-- **Pass/Fail only** — no "mostly", "seems", "probably"
-- **Must have evidence** for every pass (screenshot, output, test result)
-- **Must have reproduction steps** for every fail
-- **Must verify fix** before marking fixed
-- **Must run regression tests** after fix
+```
+## QA Results: [Feature]
+- Result: PASS | FAIL
+- Evidence: npx playwright test output
+- Fix: [file:line] if failed
+```
 
 ---
 
 ## Anti-Patterns
 
-- "Looks okay" without verification → BLOCK
-- Skipping edge cases → WARN
-- Fixing without understanding root cause → BLOCK
-- Marking fixed without re-testing → BLOCK
-- Missing test coverage for new features → FAIL
-- "Good enough" mentality → BLOCK
+- Modifying tests to pass instead of fixing code → BLOCK
+- Skipping E2E when UI involved → BLOCK
+- "Looks okay" without running test → BLOCK
