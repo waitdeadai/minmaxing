@@ -229,22 +229,20 @@ minmaxing/
 │       ├── quality.rules.md     # Hard gates
 │       ├── context.rules.md     # Fresh context discipline
 │       └── delegation.rules.md  # What to delegate
-├── .forgegod/
-│   ├── config.toml             # Memory config
-│   └── skills/                 # 13 skills
-│       ├── workflow/            # Autonomous full-loop (NEW)
-│       ├── office-hours/        # 6 forcing questions
-│       ├── verify/              # THE VERIFIER
-│       ├── autoplan/            # SPEC-first planning
-│       ├── review/              # Two-stage review
-│       ├── qa/                 # Browser testing
-│       ├── ship/               # Pre-ship checklist
-│       ├── investigate/         # Hypothesis testing
-│       ├── sprint/             # Parallel execution
-│       ├── overnight/           # Extended sessions
-│       ├── council/            # Multi-perspective
-│       ├── codex/              # Code search
-│       └── browse/             # Web research
+├── .claude/skills/             # 13 skills
+│   ├── workflow/               # Autonomous full-loop
+│   ├── office-hours/           # 6 forcing questions
+│   ├── verify/                 # THE VERIFIER
+│   ├── autoplan/               # SPEC-first planning
+│   ├── review/                 # Two-stage review
+│   ├── qa/                    # Browser testing
+│   ├── ship/                  # Pre-ship checklist
+│   ├── investigate/            # Hypothesis testing
+│   ├── sprint/                # Parallel execution
+│   ├── overnight/              # Extended sessions
+│   ├── council/               # Multi-perspective
+│   ├── codex/                 # Code search
+│   └── browse/                 # Web research
 └── scripts/
     ├── start-session.sh        # Full initialization
     ├── sprint.sh              # Parallel execution
