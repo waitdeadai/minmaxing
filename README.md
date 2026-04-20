@@ -20,18 +20,23 @@
 
 ## Setup (Two Options)
 
-### Option 1: Clone + Setup (Recommended)
+### Option 1: Clone Into New Folder
 ```bash
 git clone https://github.com/waitdeadai/minmaxing.git && cd minmaxing && ./setup.sh
 ```
+Downloads all files into a `minimaxing/` subfolder and installs dependencies.
 
-This downloads all harness files AND installs dependencies in one go.
+### Option 2: Clone Into Current Folder
+```bash
+git clone https://github.com/waitdeadai/minimaxing.git .
+```
+Use `.` instead of a folder name to clone directly into your current folder. **Important:** Your folder must be empty. This places `.claude/` in the root so Claude Code picks it up automatically.
 
-### Option 2: Run Setup Only (Existing Project)
+### Option 3: Setup Only (Existing Project + Harness)
 ```bash
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
 ```
-This only installs dependencies into an existing folder. Use this if you already have a project and just want the harness files copied into it.
+Installs dependencies only. Use when you already have a project and want to add the harness.
 
 ### Then Configure Your API Key
 ```bash
