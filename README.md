@@ -359,6 +359,47 @@ minmaxing/
 
 ---
 
+## Copy-Paste Bootstrap
+
+**minmaxing is a copy-paste bootstrap harness.** Copy it to any project folder and it works immediately.
+
+```bash
+# Copy to any project
+cp -r minmaxing /path/to/your-project
+cd /path/to/your-project
+
+# Fresh ForgeGod (don't copy the db)
+pip install forgegod --break-system-packages
+
+# Skip .claude/settings.local.json (gitignored, contains your API keys)
+
+# Run health check
+./scripts/test-harness.sh
+
+# Start coding
+claude
+```
+
+**What's portable:**
+- `CLAUDE.md` — works on any codebase
+- `.claude/rules/` — modular, no project specifics
+- `.forgegod/skills/` — 12 full skills, no project specifics
+- `scripts/` — all portable
+
+**What's excluded:**
+- `.claude/settings.local.json` — contains your API keys (gitignored)
+- `.forgegod/` — fresh install via pip
+
+**Skills that work on any codebase:**
+- `/office-hours` — 6 forcing questions, any idea
+- `/verify` — checks against any SPEC.md you create
+- `/autoplan` — generates SPEC.md for any project
+- `/sprint` — parallel agents on any codebase
+
+This is the moat: **one harness, any project, works immediately.**
+
+---
+
 ## Contributing
 
 Contributions welcome! Here's how:
