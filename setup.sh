@@ -1,7 +1,7 @@
 #!/bin/bash
 # minmaxing - One-Command Setup
-# Usage: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash
-# Or with API key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash -s YOUR_API_KEY
+# Usage: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
+# Or with API key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_API_KEY
 
 set -e
 
@@ -65,7 +65,7 @@ if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_TOKEN_PLAN_KEY" ]; then
 else
     echo "To complete setup, run with your API key:"
     echo ""
-    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY"
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY"
     echo ""
     echo "Or manually configure with:"
     echo "  claude mcp add -s user MiniMax \\"

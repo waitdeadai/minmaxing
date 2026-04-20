@@ -23,7 +23,7 @@
 ### New Project (Clone + Install)
 
 ```bash
-git clone https://github.com/waitdeadai/minimaxing.git . && ./setup.sh YOUR_TOKEN_PLAN_KEY
+git clone https://github.com/waitdeadai/minmaxing.git . && ./setup.sh YOUR_TOKEN_PLAN_KEY
 ```
 
 Get your API key from [platform.minimax.io](https://platform.minimax.io)
@@ -39,7 +39,7 @@ If you already have the harness cloned:
 Or install dependencies without API key:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
 ```
 
 ### What This Sets Up
