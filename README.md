@@ -18,17 +18,31 @@
 
 ---
 
-## One-Command Setup
+## Setup
 
-**Everything in one command** — MiniMax M2.7 Highspeed + MCP + skills + rules:
+### New Project (Clone + Install)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+git clone https://github.com/waitdeadai/minimaxing.git . && ./setup.sh YOUR_TOKEN_PLAN_KEY
 ```
 
 Get your API key from [platform.minimax.io](https://platform.minimax.io)
 
-**What this sets up:**
+### Existing Project (Install Only)
+
+If you already have the harness cloned:
+
+```bash
+./setup.sh YOUR_TOKEN_PLAN_KEY
+```
+
+Or install dependencies without API key:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minimaxing/main/setup.sh | bash
+```
+
+### What This Sets Up
 
 | Component | Details |
 |-----------|---------|
@@ -38,29 +52,12 @@ Get your API key from [platform.minimax.io](https://platform.minimax.io)
 | **Skills** | 12 full implementation skills |
 | **Rules** | 5 modular rules (spec, verify, quality, context, delegation) |
 
-**For existing folders** (clone into current directory):
-```bash
-git clone https://github.com/waitdeadai/minimaxing.git . && ./setup.sh YOUR_TOKEN_PLAN_KEY
-```
+### Verify & Start
 
-**Verify setup:**
 ```bash
-./scripts/test-harness.sh
+./scripts/test-harness.sh   # Verify everything works
+claude                      # Start coding
 ```
-
-**Start coding:**
-```bash
-claude
-```
-
-**What you get:****
-- MiniMax M2.7 Highspeed (100 TPS, 204K context, $0.30/M)
-- **SPEC-first workflow** — no code without a spec
-- **Socratic questioning** — /office-hours transforms vague ideas into buildable specs
-- **Verifier agent** — separate verification prevents confirmation bias
-- 12 skills that actually work (not empty placeholders)
-- 5 modular rules for quality gates
-- Sprint mode (10 parallel agents with file isolation)
 
 **Perfect for:** Developers who want AI to ship working software, not just impressive demos.
 
