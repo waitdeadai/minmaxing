@@ -1,7 +1,7 @@
 #!/bin/bash
 # minmaxing - One-Command Setup
 # Usage: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
-# Or with API key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_API_KEY
+# Or with API key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_MINIMAX_API_KEY
 
 set -e
 
@@ -55,7 +55,7 @@ echo ""
 echo "[4/4] Configuring MiniMax API key..."
 echo ""
 
-if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_TOKEN_PLAN_KEY" ]; then
+if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
     # Update settings.json with the actual API key
     if [ -f ".claude/settings.json" ]; then
         sed -i "s/YOUR_MINIMAX_API_KEY/$API_KEY/g" .claude/settings.json
@@ -74,11 +74,11 @@ if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_TOKEN_PLAN_KEY" ]; then
 else
     echo "To complete setup, run with your API key:"
     echo ""
-    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY"
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_MINIMAX_API_KEY"
     echo ""
     echo "Or manually configure with:"
     echo "  claude mcp add -s user MiniMax \\"
-    echo "    --env MINIMAX_API_KEY=YOUR_TOKEN_PLAN_KEY \\"
+    echo "    --env MINIMAX_API_KEY=YOUR_MINIMAX_API_KEY \\"
     echo "    --env MINIMAX_API_HOST=https://api.minimax.io \\"
     echo "    -- uvx minimax-coding-plan-mcp -y"
     echo ""
