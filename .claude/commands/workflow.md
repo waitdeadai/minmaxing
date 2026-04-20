@@ -11,8 +11,8 @@
 ## The Loop (Automated)
 
 ### Phase 0: Memory Check (before anything)
-- Query ForgeGod CLI for similar past tasks: `forgegod memory`
-- Check what worked, what failed, what user rejected
+- Query ForgeGod for similar past tasks
+- What worked? What failed? What did user reject?
 - Adjust approach based on past feedback
 - If memory has guidance for this task type → apply it
 

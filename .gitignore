@@ -3,11 +3,6 @@
 .env
 .env.*
 
-# ForgeGod data
-.forgegod/memory.db
-.forgegod/*.db
-.forgegod/gstack/
-
 # OS files
 .DS_Store
 Thumbs.db
