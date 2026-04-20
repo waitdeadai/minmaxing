@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/Context-204K%20tokens-3B82F6?style=for-the-badge&logo=data&logoColor=white" alt="204K Context" />
 </h1>
 
-**The ultimate effectiveness-first Claude Code harness.** MiniMax 2.7 Highspeed (100 TPS, 204K context) + SPEC-first workflow + Socratic questioning + Verifier agent pattern. Built for developers who ship.
+Stop spending hours re-doing AI work because it didn't match the spec. This harness runs a separate check after every AI implementation — verifying output against your spec before you accept it.
 
 <p align="center">
   <a href="https://github.com/waitdeadai/minmaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Stars"></a>
@@ -18,63 +18,98 @@
 
 ---
 
-## Setup
-
-### New Project (Clone + Install)
+## One-Command Setup
 
 ```bash
-git clone https://github.com/waitdeadai/minmaxing.git . && ./setup.sh YOUR_TOKEN_PLAN_KEY
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
 ```
 
-Get your API key from [platform.minimax.io](https://platform.minimax.io)
+Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-### Existing Project (Install Only)
-
-If you already have the harness cloned:
-
-```bash
-./setup.sh YOUR_TOKEN_PLAN_KEY
-```
-
-Or install dependencies without API key:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
-```
-
-### What This Sets Up
-
-| Component | Details |
-|-----------|---------|
-| **Model** | MiniMax M2.7 Highspeed (100 TPS, 204K context, $0.30/M) |
-| **MCP Server** | web_search + understand_image tools enabled |
-| **Memory** | ForgeGod 5-tier memory system |
-| **Skills** | 12 full implementation skills |
-| **Rules** | 5 modular rules (spec, verify, quality, context, delegation) |
-
-### Verify & Start
-
-```bash
-./scripts/test-harness.sh   # Verify everything works
-claude                      # Start coding
-```
-
-**Perfect for:** Developers who want AI to ship working software, not just impressive demos.
+That's it. The setup script installs ForgeGod, uvx, configures your API key, and sets up the MiniMax MCP server.
 
 ---
 
-## Effectiveness vs Efficiency
+## What This Solves
 
-Most AI coding harnesses optimize for **efficiency** (speed, parallelism). But speed without correctness is worthless.
+| Problem | How minmaxing Fixes It |
+|---------|------------------------|
+| AI builds the wrong thing — you wasted time | SPEC-first forces you to write the spec before code |
+| AI code passes tests but doesn't match what you wanted | A separate check verifies output against your spec |
+| Hours debugging AI-generated bugs that seemed to work | 3-fix limit pushes you to escalate instead of rabbit-holing |
+| Context window overflow mid-task | SPEC.md acts as a reset point for fresh context |
+| Setup friction kills your momentum | One command installs everything |
 
-**minmaxing optimizes for effectiveness first:**
+---
 
-| Approach | What Happens |
-|----------|--------------|
-| **Efficiency-first** | Fast code that doesn't match what you wanted |
-| **Effectiveness-first** | Code that matches spec, verified against it |
+## How It Works
 
-Research finding: LangChain moved from Top 30 to Top 5 on Terminal Bench 2.0 with **same model**, just better harness. Harness design determines shipping capability.
+**1. Write the spec first.** Before any code, you define what success looks like in plain English.
+
+**2. AI implements against the spec.** Claude Code builds to the spec, not to a vague prompt.
+
+**3. A separate check verifies output.** Not the same AI that wrote the code — a separate verifier checks against your spec.
+
+**4. You accept or reject.** Based on evidence, not "looks good."
+
+---
+
+## Copy to Any Project
+
+minmaxing is a copy-paste harness. Drop it into any project folder and it works immediately.
+
+```bash
+# Copy to your project
+cp -r minmaxing /path/to/your-project
+cd /path/to/your-project
+
+# Install dependencies
+pip install forgegod --break-system-packages
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Configure once
+./setup.sh YOUR_TOKEN_PLAN_KEY
+
+# Verify
+./scripts/test-harness.sh
+
+# Start
+claude
+```
+
+---
+
+## The 12 Skills
+
+| Skill | What It Does |
+|-------|-------------|
+| `/office-hours` | Asks 6 forcing questions to turn a vague idea into a buildable spec |
+| `/autoplan` | Generates SPEC.md before any code gets written |
+| `/verify` | Checks output against SPEC.md — separate from the AI that wrote it |
+| `/review` | AI review + you decide whether to approve |
+| `/qa` | Browser testing with Pass/Fail only |
+| `/ship` | Pre-ship checklist + rollback plan |
+| `/investigate` | Hypothesis testing — 3 fixes max, then escalate |
+| `/sprint` | Run up to 10 tasks in parallel, different files only |
+| `/overnight` | 8-hour session with 30-minute checkpoint commits |
+| `/council` | Multi-perspective analysis for complex decisions |
+| `/codex` | Search code by pattern or function name |
+| `/browse` | Web research with citations |
+
+---
+
+## Quick Start
+
+```bash
+./scripts/start-session.sh    # Audit memory, check versions, health check
+claude                       # Start coding
+```
+
+When you have a task:
+- Vague idea → `/office-hours` first
+- New feature → `/autoplan` to generate SPEC.md
+- Implementation done → `/verify` checks against spec
+- Ready to ship → `/ship` runs the checklist
 
 ---
 
@@ -85,8 +120,6 @@ Run the test suite to verify your setup:
 ```bash
 ./scripts/test-harness.sh
 ```
-
-### Test Results
 
 ```
 ==========================================
@@ -117,209 +150,40 @@ Summary: 29 passed, 0 failed
 
 ---
 
-## The 12 Skills (Full Implementation)
+## How minmaxing Differs
 
-| Skill | Purpose | When to Use |
-|-------|---------|-------------|
-| `/office-hours` | **NEW** — YC-style 6 forcing questions | "I have an idea", vague prompts |
-| `/autoplan` | SPEC-first planning, scope challenge | "plan this", "how do I build" |
-| `/verify` | **NEW** — THE VERIFIER, checks output against SPEC | After every implementation |
-| `/review` | Two-stage: AI review + human sign-off | "review this", PR review |
-| `/qa` | Browser testing, Pass/Fail only | "QA this", "test this" |
-| `/ship` | Pre-ship checklist, rollback plan | "ship this", "ready to ship" |
-| `/investigate` | Hypothesis testing, 3-fix limit | "investigate this", "debug" |
-| `/sprint` | 10 parallel agents, FILE ISOLATION | "sprint this", "parallel" |
-| `/overnight` | 8hr with 30-min checkpoints | "overnight this", "extended" |
-| `/council` | Multi-perspective synthesis | "council this", "architectural" |
-| `/codex` | Code search and patterns | "find where", "search" |
-| `/browse` | Web research integration | "research this", "look up" |
+| Framework | What It Optimizes | The Problem |
+|-----------|------------------|-------------|
+| Superpowers | 7-phase TDD pipeline | Assumes you already know what to build |
+| GStack | 23 role-based skills | Many skills, no verification step |
+| GSD | Context stabilization | Good for large projects, slow setup |
+| **minmaxing** | **Output matches spec** | **One command to start** |
 
----
-
-## The 5 Modular Rules
-
-| Rule | Purpose |
-|------|---------|
-| `spec.rules.md` | **NEW** — SPEC-first mandate, required sections |
-| `verify.rules.md` | **NEW** — Verifier agent protocol |
-| `quality.rules.md` | Hard gates: ESLint error-mode, tests must pass |
-| `context.rules.md` | Fresh context discipline, context rot prevention |
-| `delegation.rules.md` | 80/20 Karpathy rule, what to delegate vs keep |
-
----
-
-## Framework Comparison (April 2026)
-
-| Framework | Stars | Approach | Best For |
-|-----------|-------|----------|----------|
-| **minmaxing** | 0 | Effectiveness-first, SPEC-first, Verifier | Shipping working software |
-| Superpowers | ~137K | 7-phase TDD pipeline | Developers lacking discipline |
-| GStack | ~65K | 23 role-based skills | Founder-engineers |
-| GSD | ~54K | Spec-driven context stabilization | Large projects |
-
-**Key insight from research:** *"gstack thinks, GSD stabilizes, Superpowers executes, minmaxing guarantees."*
+Same model. Better harness. The LangChain team moved from Top 30 to Top 5 on Terminal Bench 2.0 with the same model — just better harness design.
 
 ---
 
 ## Why SPEC-First?
 
-The #1 cause of AI coding failure: **building the wrong thing**.
+The #1 failure mode for AI coding: **building the wrong thing**.
 
-```bash
-# Without SPEC-first:
+```
+Without SPEC-first:
 User: "add user auth"
 AI: *builds something that looks like auth*
 User: "that's not what I wanted"
 AI: *rebuilds*
 
-# With SPEC-first:
+With SPEC-first:
 User: "add user auth"
-AI: "What specifically should happen when login fails?"
+AI: "What should happen when login fails?"
 User: "show error message"
 AI: "What's the error message format?"
 User: "red text under the field"
-AI: *generates SPEC.md with exact behavior*
-AI: *implements against spec*
+AI: *writes SPEC.md with exact behavior*
+AI: *implements to spec*
 AI: *verifies against spec*
-# Done correctly, once
 ```
-
----
-
-## Quick Start (3 Minutes)
-
-### 1. Clone
-
-```bash
-git clone https://github.com/waitdeadai/minmaxing.git
-cd minmaxing
-```
-
-### 2. Install Dependencies
-
-```bash
-# ForgeGod memory system
-pip install forgegod --break-system-packages
-
-# uvx for MCP
-curl -LsSf https://astral.sh/uv/install.sh | sh
-source ~/.bashrc
-```
-
-### 3. Configure MiniMax MCP
-
-```bash
-# Replace YOUR_MINIMAX_API_KEY with your Token Plan key
-claude mcp add -s user MiniMax \
-  --env MINIMAX_API_KEY=YOUR_MINIMAX_API_KEY \
-  --env MINIMAX_API_HOST=https://api.minimax.io \
-  -- uvx minimax-coding-plan-mcp -y
-```
-
-### 4. Initialize & Code
-
-```bash
-./scripts/start-session.sh
-claude
-```
-
----
-
-## The PEV Loop: Plan → Execute → Verify
-
-```
-┌─────────┐    ┌─────────┐    ┌─────────┐
-│  PLAN   │ → │ EXECUTE │ → │ VERIFY  │
-└─────────┘    └─────────┘    └─────────┘
-     │              │             │
-     ▼              ▼             ▼
-  SPEC.md     Implementation   /verify
-                              against SPEC
-```
-
-**The critical step most harnesses skip:** VERIFY. Implementation verifying itself = confirmation bias.
-
----
-
-## Effectiveness Patterns That Ship
-
-### 1. Socratic Questioning (/office-hours)
-
-Transforms vague ideas into buildable specs via 6 forcing questions:
-
-1. **Demand Reality** — "Have you talked to 10 people with this problem?"
-2. **Status Quo** — "What do they do today?"
-3. **Desperate Specificity** — "Show me the exact failure"
-4. **Narrowest Wedge** — "20% that solves 80%?"
-5. **Observation** — "Have YOU experienced this?"
-6. **Future-Fit** — "What breaks in 6 months?"
-
-### 2. Verifier Agent (/verify)
-
-Separate verification agent (GAN-like pattern) that checks output against SPEC.md.
-
-- Implementation verifies itself → confirmation bias → bugs ship
-- Separate verifier checks against spec → catches drift
-
-### 3. Quality Gates
-
-- ESLint error-mode: warnings are failures
-- Tests must pass: 100% pass rate
-- /verify must pass: before accepting any output
-- Circuit breakers: quality gate fail = block
-
-### 4. 3-Fix Limit (/investigate)
-
-After 3 failed fix attempts, escalate. Prevents endless debugging rabbit holes.
-
----
-
-## Benchmark Comparison (2026 SOTA)
-
-### SWE-bench Scores
-
-| Model | SWE-bench Verified | SWE-Pro | Cost |
-|-------|-------------------|---------|------|
-| **MiniMax M2.7** | 78% | 56.22% | $0.30/M |
-| Claude Opus 4.6 | 75.6% | ~52% | $3.00/M |
-| GPT-5.2 | 72.8% | ~50% | $5.00/M |
-
-### Harness Design Matters More Than Model
-
-LangChain improved from Top 30 to Top 5 on Terminal Bench 2.0 with **same model**, just better harness.
-
----
-
-## Scripts Reference
-
-```bash
-# Session management
-./scripts/start-session.sh    # Full init: audit, health check, version
-
-# Parallelism (10x productivity)
-./scripts/sprint.sh "fix auth" "update docs" "add tests"
-
-# Extended sessions (8hr with checkpoints)
-./scripts/overnight-loop.sh "refactor core" 8
-
-# Consensus for complex decisions
-./scripts/council.sh "Should we migrate to Rust?"
-
-# Verification
-./scripts/test-harness.sh   # Verify all components work (29 tests)
-```
-
----
-
-## Memory System (ForgeGod 5-Tier)
-
-| Tier | Content | Retention |
-|------|---------|-----------|
-| **Episodic** | Session outcomes | 90 days |
-| **Semantic** | Extracted principles | Indefinite |
-| **Procedural** | Code patterns, fix recipes | Indefinite |
-| **Graph** | Entity relationships | Indefinite |
-| **Error-Solution** | Known errors → fixes | Indefinite |
 
 ---
 
@@ -339,104 +203,53 @@ LangChain improved from Top 30 to Top 5 on Terminal Bench 2.0 with **same model*
 
 ```
 minmaxing/
-├── CLAUDE.md                    # Core instructions (SPEC-first, PEV)
+├── CLAUDE.md                    # Core instructions
 ├── README.md                    # This file
-├── .gitignore                  # Excludes API keys, sensitive data
+├── .gitignore                  # Excludes API keys, memory DB
 ├── settings.json               # Claude Code root settings
 ├── .claude/
-│   ├── settings.json           # MiniMax env vars (placeholder)
+│   ├── settings.json           # MiniMax env vars
 │   ├── settings.local.json     # Local overrides (gitignored)
 │   └── rules/                  # Modular rules
-│       ├── quality.rules.md     # Hard gates, failure protocol
-│       ├── context.rules.md     # Fresh context, context rot
-│       ├── delegation.rules.md  # 80/20 rule
-│       ├── spec.rules.md       # SPEC-first mandate
-│       └── verify.rules.md      # Verifier agent protocol
+│       ├── spec.rules.md        # SPEC-first mandate
+│       ├── verify.rules.md      # Separate verification protocol
+│       ├── quality.rules.md     # Hard gates
+│       ├── context.rules.md     # Fresh context discipline
+│       └── delegation.rules.md  # What to delegate
 ├── .forgegod/
-│   ├── config.toml             # Memory & resolver config
-│   └── skills/                 # 12 skills (full implementation)
-│       ├── office-hours/       # 6 forcing questions
-│       ├── verify/             # THE VERIFIER
-│       ├── autoplan/           # SPEC-first planning
-│       ├── review/             # Two-stage review
-│       ├── qa/                # Browser testing, Pass/Fail
-│       ├── ship/              # Pre-ship checklist
-│       ├── investigate/        # Hypothesis testing
-│       ├── sprint/            # Parallel agents
-│       ├── overnight/          # Extended sessions
-│       ├── council/           # Multi-perspective
-│       ├── codex/             # Code search
-│       └── browse/            # Web research
+│   ├── config.toml             # Memory config
+│   └── skills/                 # 12 skills
+│       ├── office-hours/        # 6 forcing questions
+│       ├── verify/              # THE VERIFIER
+│       ├── autoplan/            # SPEC-first planning
+│       ├── review/              # Two-stage review
+│       ├── qa/                 # Browser testing
+│       ├── ship/               # Pre-ship checklist
+│       ├── investigate/         # Hypothesis testing
+│       ├── sprint/             # Parallel execution
+│       ├── overnight/           # Extended sessions
+│       ├── council/            # Multi-perspective
+│       ├── codex/              # Code search
+│       └── browse/             # Web research
 └── scripts/
-    ├── start-session.sh       # Full initialization
+    ├── start-session.sh        # Full initialization
     ├── sprint.sh              # Parallel execution
-    ├── overnight-loop.sh      # Extended sessions
-    ├── council.sh             # Multi-perspective
-    └── test-harness.sh       # 29 verification tests
+    ├── overnight-loop.sh       # Extended sessions
+    ├── council.sh              # Multi-perspective
+    └── test-harness.sh        # 29 verification tests
 ```
-
----
-
-## Copy-Paste Bootstrap
-
-**minmaxing is a copy-paste bootstrap harness.** Copy it to any project folder and it works immediately.
-
-```bash
-# Copy to any project
-cp -r minmaxing /path/to/your-project
-cd /path/to/your-project
-
-# Fresh ForgeGod (don't copy the db)
-pip install forgegod --break-system-packages
-
-# Skip .claude/settings.local.json (gitignored, contains your API keys)
-
-# Run health check
-./scripts/test-harness.sh
-
-# Start coding
-claude
-```
-
-**What's portable:**
-- `CLAUDE.md` — works on any codebase
-- `.claude/rules/` — modular, no project specifics
-- `.forgegod/skills/` — 12 full skills, no project specifics
-- `scripts/` — all portable
-
-**What's excluded:**
-- `.claude/settings.local.json` — contains your API keys (gitignored)
-- `.forgegod/` — fresh install via pip
-
-**Skills that work on any codebase:**
-- `/office-hours` — 6 forcing questions, any idea
-- `/verify` — checks against any SPEC.md you create
-- `/autoplan` — generates SPEC.md for any project
-- `/sprint` — parallel agents on any codebase
-
-This is the moat: **one harness, any project, works immediately.**
 
 ---
 
 ## Contributing
 
-Contributions welcome! Here's how:
-
-1. **Fork** the repository
-2. **Clone** your fork
-3. **Create** a feature branch (`git checkout -b feature/amazing`)
-4. **Commit** your changes (`git commit -m 'Add amazing feature'`)
-5. **Push** to your branch (`git push origin feature/amazing`)
-6. **Open** a Pull Request
+1. Fork the repository
+2. Clone your fork
+3. Create a feature branch (`git checkout -b feature/amazing`)
+4. Commit your changes
+5. Push to your branch
+6. Open a Pull Request
 
 ---
 
-## License
-
-MIT License - Built by the community, for the community.
-
----
-
-<p align="center">
-  <strong>Ship working software. Not just impressive demos.</strong>
-</p>
+MIT License
