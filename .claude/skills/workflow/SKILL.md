@@ -6,9 +6,11 @@ description: Parallel agent supervisor - spawns workers for parallel execution
 
 **SUPERVISOR MODE** — AI acts as supervisor, spawning parallel worker agents for speed while ensuring production readiness.
 
-**Default: 10 parallel agents** (configurable via `MAX_PARALLEL_AGENTS` env var)
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents for autonomous full-implementation loop.
 
-**Use when:** User says "build X", "implement Y", "fix Z", "swarm this", "swarm", or any substantial task.
+**Use when:** User says "build X", "implement Y", "fix Z", "swarm workflow", or any substantial task.
+
+**Swarm:** "swarm" or "swarm workflow" → `/workflow` (10 parallel agents with supervisor pattern).
 
 ---
 

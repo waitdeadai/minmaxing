@@ -4,9 +4,11 @@ SPEC-first planning that generates SPEC.md before any implementation. Uses plan 
 
 **This IS plan mode.** `/autoplan` invokes plan mode to draft SPEC.md. You review and approve. The approved plan becomes the source of truth.
 
-**10-Agent Parallel Mindset is DEFAULT.** Every plan assumes max parallel execution (10 agents by default). Research uses parallel agents for deep research.
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel research agents for deep research during planning.
 
-**Use when:** User says "plan this", "how do I build", "spec out", "create a plan", "swarm", "swarm this", or when a new feature/project is described.
+**Use when:** User says "plan this", "how do I build", "spec out", "create a plan", "swarm", or when a new feature/project is described.
+
+**Swarm:** "swarm" → `/autoplan` with 10 parallel research agents.
 
 **NEVER skip to implementation.** SPEC.md is mandatory before any code.
 

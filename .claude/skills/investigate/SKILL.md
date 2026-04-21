@@ -2,7 +2,11 @@
 
 Systematic root-cause debugging with hypothesis testing. 3-fix limit prevents rabbit holes. Root cause or escalate.
 
-**Use when:** User says "investigate this", "debug this", "what's causing this", "root cause", "why is this broken", "swarm investigate", "swarm this".
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel hypothesis-testing agents investigating different root causes simultaneously.
+
+**Use when:** User says "investigate this", "debug this", "what's causing this", "root cause", "why is this broken", "swarm investigate".
+
+**Swarm:** "swarm investigate" → `/investigate` with 10 parallel agents.
 
 **Hypothesis first, then fix.** Never guess.
 

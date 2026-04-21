@@ -2,9 +2,11 @@
 
 Pre-ship checklist that ensures everything is ready before production deployment. Includes sync, test, coverage audit, push, and rollback plan.
 
-**Use when:** User says "ship this", "ready to ship", "deploy this", "ship it", "swarm ship", "swarm this".
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents running pre-ship checks simultaneously (tests, lint, security scan, coverage).
 
-**ALL gates must pass.** No exceptions, no shortcuts.
+**Use when:** User says "ship this", "ready to ship", "deploy this", "ship it", "swarm ship".
+
+**Swarm:** "swarm ship" → `/ship` with 10 parallel agents.
 
 ---
 

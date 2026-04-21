@@ -1,10 +1,12 @@
 # /browse
 
-**Parallel web research with live data — not stale training data.**
+Parallel web research with live data — not stale training data.
 
-**Use when:** You need current information about APIs, libraries, errors, best practices, "swarm research", "swarm this", or any domain where AI training data might be outdated.
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel web search agents researching different aspects simultaneously.
 
-**Research-First:** This is integrated into `/workflow` automatically. Use `/browse` directly when you want to research something specific outside the workflow.
+**Use when:** You need current information about APIs, libraries, errors, best practices, or any domain where AI training data might be outdated.
+
+**Research-First:** Integrated into `/workflow` automatically. Use `/browse` directly when researching something specific.
 
 ---
 

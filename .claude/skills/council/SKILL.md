@@ -2,7 +2,11 @@
 
 Multi-perspective synthesis for complex decisions. Different viewpoints debate, synthesize into recommendation.
 
-**Use when:** User says "council this", "multiple perspectives", "architectural decision", "what do you think", "weigh the options", "swarm council", "swarm this".
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel perspective agents debating simultaneously.
+
+**Use when:** User says "council this", "multiple perspectives", "architectural decision", "what do you think", "weigh the options", "swarm council".
+
+**Swarm:** "swarm council" → `/council` with 10 parallel agents.
 
 **For complex decisions only.** Not for simple questions.
 

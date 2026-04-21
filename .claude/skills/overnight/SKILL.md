@@ -2,7 +2,9 @@
 
 Extended 8-hour session with 30-minute checkpoints. Results consolidated at end. Auto-resume capability.
 
-**Use when:** User says "overnight this", "run overnight", "extended session", "long running task", "swarm overnight", "swarm this".
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents for long-running task decomposition.
+
+**Use when:** User says "overnight this", "run overnight", "extended session", "long running task".
 
 **Checkpoints every 30 minutes.** No more than 30 minutes of work at risk.
 

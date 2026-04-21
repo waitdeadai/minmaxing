@@ -4,7 +4,11 @@
 
 **This is NOT the same AI that wrote the code.** It verifies independently, adversarially, against the spec.
 
-**Use when:** After every implementation task, code changes, documentation changes, config changes, before shipping, "swarm verify", "swarm this", or whenever you need to validate output.
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel verification agents checking different spec criteria simultaneously.
+
+**Use when:** After every implementation task, code changes, documentation changes, config changes, before shipping, "swarm verify", or whenever you need to validate output.
+
+**Swarm:** "swarm verify" → `/verify` with 10 parallel agents.
 
 **Never skip verification.** If you can't prove it passes, it fails.
 

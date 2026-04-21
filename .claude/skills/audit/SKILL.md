@@ -1,8 +1,12 @@
 # /audit
 
-**Deep codebase analysis with 10-agent parallelism.** Audit any repo to understand its structure, identify issues, and plan improvements.
+Deep codebase analysis with parallel agents. Audit any repo to understand its structure, identify issues, and plan improvements.
 
-**Use when:** User says "audit this", "analyze codebase", "understand this repo", "due diligence on this code", "swarm audit", "swarm this".
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents across all audit tracks simultaneously (security, quality, dependencies, docs, etc.).
+
+**Use when:** User says "audit this", "analyze codebase", "understand this repo", "due diligence on this code", "swarm audit".
+
+**Swarm:** "swarm audit" → `/audit` with 10 parallel agents.
 
 ---
 

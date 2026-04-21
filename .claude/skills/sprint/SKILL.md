@@ -2,9 +2,11 @@
 
 Parallel execution with up to 10 agents and FILE ISOLATION. Each agent works on different files to prevent merge conflicts. Context isolation per agent.
 
-**Default: 10 agents** (configurable via `MAX_PARALLEL_AGENTS` env var)
+**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents for parallel task execution with file isolation.
 
-**Use when:** User says "sprint this", "parallel this", "run in parallel", "split this up", "swarm this", "swarm".
+**Use when:** User says "sprint this", "parallel this", "run in parallel", "split this up", "swarm sprint".
+
+**Swarm:** "swarm sprint" → `/sprint` (10 parallel agents with file isolation).
 
 **FILE ISOLATION is mandatory.** Parallel only when agents touch different files.
 
