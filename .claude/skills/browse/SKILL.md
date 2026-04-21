@@ -1,6 +1,6 @@
 # /browse
 
-**Web research with live data — not stale training data.**
+**Parallel web research with live data — not stale training data.**
 
 **Use when:** You need current information about APIs, libraries, errors, best practices, or any domain where AI training data might be outdated.
 
@@ -28,49 +28,81 @@
 
 ---
 
-## Execution Protocol
+## Parallel Research Protocol (MAX_PARALLEL_AGENTS)
 
-### Step 1: Define Research Query
-- What question needs answering?
-- What will you do with this information?
-- What's the deadline/urgency?
+**Use all available agents for deep research.** Each agent researches a different aspect simultaneously.
 
-### Step 2: Web Search
-Use `mcp__MiniMax__web_search` with specific query:
+### Step 1: Decompose Research Query
+
+Break the research into parallel tracks:
+- Track 1: Official documentation
+- Track 2: Recent blog posts/articles (2025-2026)
+- Track 3: GitHub issues/discussions
+- Track 4: Alternative approaches/competitors
+- Track N: [other aspects]
+
+Target: Fill all `MAX_PARALLEL_AGENTS` slots with research tracks.
+
+### Step 2: Parallel Web Searches
+
+Spawn parallel searches for each track:
+
+```bash
+# Agent 1: Official docs
+mcp__MiniMax__web_search "official docs [topic] 2026"
+
+# Agent 2: Recent articles
+mcp__MiniMax__web_search "[topic] best practices 2025 2026"
+
+# Agent 3: GitHub/discussions
+mcp__MiniMax__web_search "[topic] GitHub issues limitations 2026"
+
+# ... up to MAX_PARALLEL_AGENTS
 ```
-[practical query about current state]
-```
-Not: "tell me about X"
-Yes: "X API pricing 2026", "X library breaking changes 2026"
 
-### Step 3: Fetch Key Sources
-Use `WebFetch` on most relevant results:
-- Official docs (API, library)
-- Recent blog posts (last 6 months)
-- GitHub issues/discussions
+### Step 3: Parallel Source Fetching
+
+While searches run, fetch key sources in parallel:
+- Official docs
+- Recent blog posts
+- GitHub discussions
 
 ### Step 4: Synthesize
 
 ```markdown
-## Research: [Topic]
+## Research: [Topic] — [N] Agents Deployed
 
-### Question
-[What we needed to know]
+### Research Tracks
+| Track | Query | Sources |
+|-------|-------|---------|
+| 1 | [Official docs] | [URLs] |
+| 2 | [Best practices] | [URLs] |
+| ... | ... | ... |
 
 ### Current State (2026)
 | Source | Finding |
 |--------|---------|
 | [URL] | [Key fact] |
-| [URL] | [Key fact] |
 
 ### Confirmed/Contradicted
-- AI said: [what model claimed in conversation]
+- AI said: [what model claimed]
 - Reality: [what web search shows]
-- Impact: [how this changes our approach]
+- Impact: [how this changes approach]
 
 ### Action Items
 - [What to do based on research]
 ```
+
+---
+
+## Deep Research Mode
+
+For complex topics, use all agents for deep coverage:
+
+1. **Decompose** topic into 10 aspects
+2. **Spawn** MAX_PARALLEL_AGENTS searches simultaneously
+3. **Fetch** top sources for each aspect in parallel
+4. **Synthesize** findings into comprehensive report
 
 ---
 
@@ -80,6 +112,7 @@ Use `WebFetch` on most relevant results:
 - **Date check** — prioritize 2025-2026 sources
 - **Contradict AI** — if web search contradicts AI claim, flag it
 - **No assumptions** — if you can't verify, say "unverified"
+- **Fill agent pool** — don't use 1 agent when 10 could research faster
 
 ---
 
@@ -89,3 +122,4 @@ Use `WebFetch` on most relevant results:
 - Using old sources (pre-2024) without noting age → WARN
 - Not citing sources → BLOCK
 - Research without synthesizing into action → WARN
+- Sequential research when parallel possible → BLOCK

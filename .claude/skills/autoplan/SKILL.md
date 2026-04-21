@@ -4,7 +4,7 @@ SPEC-first planning that generates SPEC.md before any implementation. Uses plan 
 
 **This IS plan mode.** `/autoplan` invokes plan mode to draft SPEC.md. You review and approve. The approved plan becomes the source of truth.
 
-**10-Agent Parallel Mindset is DEFAULT.** Every plan assumes max parallel execution (10 agents by default). Effectiveness over efficiency — parallel agents done right = guaranteed results.
+**10-Agent Parallel Mindset is DEFAULT.** Every plan assumes max parallel execution (10 agents by default). Research uses parallel agents for deep research.
 
 **Use when:** User says "plan this", "how do I build", "spec out", "create a plan", or when a new feature/project is described.
 
@@ -20,18 +20,31 @@ SPEC-first planning that generates SPEC.md before any implementation. Uses plan 
 - Identify what success looks like (verifiable, not vague)
 - If vague → Invoke /office-hours first
 
-### Step 2: Scope Challenge
+### Step 2: Parallel Research (use MAX_PARALLEL_AGENTS)
+
+**Research FIRST using all available agents.** Deep research produces better specs.
+
+Decompose research into parallel tracks:
+- Track 1: Current best practices / state of art
+- Track 2: API/SDK documentation
+- Track 3: Libraries and tools
+- Track 4: Similar implementations / patterns
+- Track N: [domain-specific aspects]
+
+Spawn MAX_PARALLEL_AGENTS searches simultaneously, then synthesize findings.
+
+### Step 3: Scope Challenge
 
 Before writing spec, challenge the scope:
 
 - **Is this scope creep?** Flag if > 3 major components
 - **What's the narrowest wedge?** Can we ship less?
-- **What's the 20% that gives 80% of value?**
+- **What's the 20% that gives 80% of value?
 - **What's the smallest shippable thing?**
 
 Ask: "What if we only built X? Would that be enough?"
 
-### Step 3: Generate SPEC.md
+### Step 4: Generate SPEC.md
 
 Write SPEC.md with these sections:
 
@@ -83,7 +96,7 @@ How do we undo if this breaks production?
 2. Step 2: [database rollback if needed]
 ```
 
-### Step 4: Break Down Tasks (10-Agent Mindset)
+### Step 5: Break Down Tasks (10-Agent Mindset)
 
 **Always plan for parallel execution.** The supervisor pattern decomposes work into tasks that can run simultaneously.
 
@@ -99,7 +112,7 @@ For each task in SPEC.md:
 
 **Target: Maximize PARALLEL tasks.** With 10 agents, aim for 6-8 parallel tasks per phase.
 
-### Step 5: Output Format
+### Step 6: Output Format
 
 ```
 SPEC.md created: /path/to/SPEC.md
