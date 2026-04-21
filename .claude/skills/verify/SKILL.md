@@ -185,3 +185,19 @@ You are **adversarial** to the implementation. Your job is to find flaws.
 - Vague claims → demand specifics
 - "Works fine" without test → FAIL
 - Implementation self-verification → BLOCK, use this skill
+
+---
+
+## Chain Contract
+
+**This skill is part of `/workflow` orchestration chain.** Do NOT stop after verification.
+
+**Chain progression:**
+```
+/workflow → /autoplan → /sprint → /verify (this) → /ship
+```
+
+**After this skill:**
+- If ACCEPT: `/workflow` will invoke `/ship` automatically
+- If REJECT: `/workflow` will loop back to `/sprint` with fixes
+- Do NOT return to user after ACCEPT/REJECT — the workflow orchestrator handles progression.

@@ -177,3 +177,16 @@ wait
 - Leaving agents idle when tasks remain → BLOCK (fill the pool)
 - Not maximizing parallelism → BLOCK (break tasks more granularly)
 - Not checking file isolation → BLOCK
+
+---
+
+## Chain Contract
+
+**This skill is part of `/workflow` orchestration chain.** Do NOT stop after implementation.
+
+**Chain progression:**
+```
+/workflow → /autoplan → /sprint (this) → /verify → /ship
+```
+
+After this skill completes, `/workflow` will invoke `/verify` automatically. Do NOT return to user after agents finish — the workflow orchestrator handles progression.

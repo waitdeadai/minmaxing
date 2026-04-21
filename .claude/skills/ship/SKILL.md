@@ -202,3 +202,16 @@ bash scripts/memory.sh add episodic "Shipped: [feature description] — all gate
 - Missing documentation updates → BLOCK (if user-facing)
 - "Good enough to ship" → BLOCK
 - Skipping /verify before shipping → BLOCK
+
+---
+
+## Chain Contract
+
+**This skill is the FINAL step in `/workflow` orchestration chain.** Chain terminates here.
+
+**Chain progression:**
+```
+/workflow → /autoplan → /sprint → /verify → /ship (this) ✓ COMPLETE
+```
+
+After this skill completes, the workflow chain is done. Return to user with summary.

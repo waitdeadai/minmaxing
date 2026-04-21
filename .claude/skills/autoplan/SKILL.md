@@ -147,6 +147,19 @@ With 10-agent pool:
 3. Execute via /sprint (parallel by default)
 
 Ready for /sprint when approved.
+
+---
+
+## Chain Contract
+
+**This skill is part of `/workflow` orchestration chain.** Do NOT stop after creating SPEC.md.
+
+**Chain progression:**
+```
+/workflow → /autoplan (this) → /sprint → /verify → /ship
+```
+
+After this skill completes, `/workflow` will invoke `/sprint` automatically. Do NOT return to user after SPEC.md — the workflow orchestrator handles progression.
 ```
 
 ---
