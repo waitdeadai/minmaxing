@@ -1,10 +1,10 @@
 ---
-description: Parallel agent supervisor - spawns workers for parallel execution
+description: Central execution engine - orchestrates all skills with taste awareness
 ---
 
 # /workflow
 
-**SUPERVISOR MODE** — AI acts as supervisor, spawning parallel worker agents for speed while ensuring production readiness.
+**CENTRAL EXECUTION ENGINE** — The main skill for complex/power user tasks. Reads taste.md + taste.vision first. Orchestrates all other skills. Taste is the OS, skills are system calls.
 
 **MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents for autonomous full-implementation loop.
 
@@ -14,114 +14,237 @@ description: Parallel agent supervisor - spawns workers for parallel execution
 
 ---
 
-## Research Findings (2026)
+## Taste OS Architecture
 
-- **Hierarchical Pattern**: Supervisor decomposes → dispatches to workers → reviews results
-- **Restricted Comms**: Workers only report to supervisor, not each other
-- **Task Gating**: No task is "done" until tests pass
-- **Isolated Execution**: Each worker has clean context, no pollution
+/workflow is the shell. Taste/vision is the kernel. Skills are system calls.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                      /workflow                          │
+│                   (Central Execution Engine)             │
+├─────────────────────────────────────────────────────────┤
+│  PHASE 0: TASTE CHECK [GATE]                           │
+│  PHASE 1: ROUTE (skill_router)                          │
+│  PHASE 2: EXECUTE (skill_execute)                       │
+│  PHASE 3: VERIFY (taste_verify + SPEC_verify)          │
+│  PHASE 4: ROUTE OUTPUT                                 │
+├─────────────────────────────────────────────────────────┤
+│              taste.md + taste.vision                    │
+│                  (Kernel / OS)                         │
+├─────────────────────────────────────────────────────────┤
+│     /autoplan  /sprint  /verify  /ship  /investigate   │
+│     /audit     /council /qa     /review  /browse       │
+│     /codex     /overnight  /office-hours  /align       │
+│              (System Calls)                             │
+└─────────────────────────────────────────────────────────┘
+```
+
+### PHASE 0: TASTE CHECK [GATE]
+
+**MANDATORY GATE — Blocks all execution until passed.**
+
+1. Read `/home/fer/Music/ultimateminimax/taste.md`
+2. Read `/home/fer/Music/ultimateminimax/taste.vision`
+3. Score task alignment against taste:
+   - 0-4: Critical mismatch → invoke `/align`, wait for approval before proceeding
+   - 5-6: Minor friction → note deviations, proceed with caution
+   - 7-10: Aligned → proceed to PHASE 1
+
+**Taste Alignment Scoring Rubric:**
+
+| Score | Alignment Level | Action |
+|-------|-----------------|--------|
+| 0-2 | Direct conflict with taste.md principles | BLOCK — invoke /align |
+| 3-4 | Significant deviation from taste | BLOCK — invoke /align |
+| 5-6 | Some friction, core alignment exists | Proceed, document deviations |
+| 7-8 | Well-aligned, minor tradeoffs | Proceed |
+| 9-10 | Perfect alignment with taste/vision | Proceed |
+
+**Taste Check Questions:**
+- Does this match the design principles in taste.md?
+- Does this serve the intent in taste.vision?
+- Would this pass the "Taste Test" — does it feel right?
+- Are there价值观 conflicts with established patterns?
+
+### PHASE 1: ROUTE
+
+**skill_router(task) analyzes task pattern and selects skills.**
+
+| Task Pattern | Skills to Invoke |
+|--------------|-----------------|
+| "build X" / "implement Y" | /autoplan → /sprint → /verify → /ship |
+| "fix Z" / "debug this" | /investigate → /verify |
+| "analyze decision" | /council → /align if needed |
+| "audit this" | /audit |
+| "test this" / "QA" | /qa |
+| "review code" | /review |
+| "plan this" | /autoplan |
+| "search code" | /codex |
+| "research X" | /browse |
+| "run overnight" | /overnight |
+| "align values" / "价值观" | /align |
+| "office hours" / "clarify" | /office-hours |
+
+### PHASE 2: EXECUTE
+
+**skill_execute() runs selected skills in sequence/parallel.**
+
+1. Execute skills in routing order
+2. Each skill respects taste.md + taste.vision constraints
+3. Use `/sprint` for parallel execution when multiple workers needed
+4. Aggregate results from parallel agents
+5. Pass unified context to next phase
+
+### PHASE 3: VERIFY
+
+**Dual verification: Taste alignment + SPEC compliance.**
+
+```
+taste_verify(output):
+  - Does output match taste.md principles?
+  - Does output serve taste.vision intent?
+  - Would output pass the Taste Test?
+
+SPEC_verify(output):
+  - Does output meet all SPEC.md success criteria?
+  - Are all verification methods complete?
+  - Is rollback plan still valid?
+```
+
+**Verification Loop:**
+- If taste_verify FAILS → loop back to fix taste violations
+- If SPEC_verify FAILS → loop back to fix spec violations
+- If both PASS → proceed to PHASE 4
+- 3 failed loops → escalate, require human decision
+
+### PHASE 4: ROUTE OUTPUT
+
+| Condition | Route To |
+|-----------|----------|
+| Production-ready, all gates passed | /ship |
+| Needs human review / sign-off | /review |
+| Partial completion, continue later | /overnight or save state |
+|价值观 alignment question | /align |
+| Done, no further action | Return to user |
 
 ---
 
-## Supervisor Loop
+## Taste Check Protocol
 
-### Phase 0: Memory Check
-- Query `forgegod memory` for similar past tasks
-- Apply what worked, avoid what failed
+### Step 1: Load Taste Files
+```
+Read: /home/fer/Music/ultimateminimax/taste.md
+Read: /home/fer/Music/ultimateminimax/taste.vision
+```
 
-### Phase 0.5: Research First (MANDATORY)
+### Step 2: Score Alignment
+Score task against each taste dimension:
+- **Design principles** (from taste.md): 0-10
+- **Intent alignment** (from taste.vision): 0-10
+- **价值观 consistency**: 0-10
+
+**Composite Score = weighted average (design 40%, intent 40%,价值观 20%)**
+
+### Step 3: Gate Decision
+| Composite Score | Decision |
+|-----------------|----------|
+| 0-4 | BLOCK → invoke /align |
+| 5-6 | CAUTION → note deviations, proceed |
+| 7-10 | PROCEED |
+
+### Step 4: Document Taste Status
+```
+## Taste Check Results
+
+### Alignment Scores
+- Design Principles: [score]/10
+- Intent Alignment: [score]/10
+- 价值观 Consistency: [score]/10
+- **Composite: [score]/10**
+
+### Gate Status: [PROCEED/CAUTION/BLOCK]
+### Deviations (if any): [list]
+```
+
+---
+
+## Skill Router Protocol
+
+### Step 1: Parse Task Intent
+Extract the core verb and object:
+- "build X" → implementation intent
+- "fix Z" → debugging intent
+- "analyze Y" → analysis intent
+
+### Step 2: Match Pattern
+Match against routing table:
+```
+implementation_patterns = ["build", "implement", "create", "add", "make"]
+debugging_patterns = ["fix", "debug", "repair", "resolve"]
+analysis_patterns = ["analyze", "review", "audit", "examine"]
+research_patterns = ["research", "browse", "search", "find"]
+```
+
+### Step 3: Select Skill Chain
+Based on pattern match, select skill chain:
+- Implementation → `/autoplan` → `/sprint` → `/verify` → `/ship`
+- Debugging → `/investigate` → `/verify`
+- Analysis → `/council` → `/align` if needed
+- Research → `/browse`
+- etc.
+
+### Step 4: Validate Chain
+Ensure skill chain:
+- Has no circular dependencies
+- Respects taste constraints
+- Has clear termination (all lead to /ship or /review)
+
+---
+
+## Execution Protocol
+
+### Full Step-by-Step for /workflow
+
+```
+STEP 0: TASTE CHECK [GATE]
+├── Read taste.md
+├── Read taste.vision
+├── Score task alignment
+├── If score < 5 → invoke /align, wait for approval
+└── If score >= 5 → proceed
+
+STEP 1: ROUTE
+├── Parse task intent
+├── Match pattern against routing table
+├── Select skill chain
+└── Validate chain
+
+STEP 2: EXECUTE
+├── For each skill in chain (in order):
+│   ├── Invoke skill with task context
+│   ├── Pass taste constraints to skill
+│   ├── Collect output
+│   └── Pass output to next skill
+└── If /sprint invoked: spawn up to MAX_PARALLEL_AGENTS workers
+
+STEP 3: VERIFY
+├── taste_verify(output) → does it match taste?
+├── SPEC_verify(output) → does it meet SPEC criteria?
+├── If either fails → loop back to STEP 2 with fixes
+└── If 3 failures → escalate to human
+
+STEP 4: ROUTE OUTPUT
+├── If production-ready → /ship
+├── If needs review → /review
+├── If价值观 question → /align
+└── Otherwise → return to user
+```
+
+### Research-First Mandate
+Before executing any skill chain:
 - Verify AI claims with web search (training data is stale)
-- Research APIs, libraries, error codes when task involves external dependencies
-
-### Phase 1: Analyze & Decompose
-**Supervisor analyzes SPEC.md and decomposes into parallelizable tasks targeting 10-agent pool:**
-
-```markdown
-## Task Decomposition: [Project Name]
-
-### Agent Pool: 10 (configurable via MAX_PARALLEL_AGENTS env)
-### Supervisor Analysis
-- Total tasks: [N]
-- Parallelizable: [M] (different files) → targets Worker Pool
-- Sequential: [K] (dependencies)
-
-### Worker Pool (up to 10 agents)
-- Worker 1: [Task 1] → Files: [list]
-- Worker 2: [Task 2] → Files: [list]
-...
-- Worker M: [Task M] → Files: [list]
-
-### Sequential Gate
-- [Task K1] must complete before [Worker 2] starts
-```
-
-### Phase 2: Spawn Parallel Workers
-
-**For each parallel task, spawn a worker:**
-
-```bash
-# Worker execution (isolated context)
-claude -p "Execute Task [N]: [description]
-Files to modify: [file list]
-Success criteria: [from SPEC.md]
-Return results when complete." \
-  --context-task task-[n].json > worker-[n].out 2>&1 &
-```
-
-**FILE ISOLATION RULE**: Workers can ONLY modify their assigned files. If two tasks touch the same file, they cannot run in parallel — sequential required.
-
-### Phase 3: Aggregate & Verify
-
-**Supervisor waits for all workers, then:**
-
-1. Check each worker's output
-2. Verify all modified files against SPEC.md criteria
-3. Run test suite (if exists)
-4. Any failure → invoke /investigate (3-fix limit)
-
-### Phase 4: Production Gate
-
-**Before marking complete, supervisor verifies:**
-
-- [ ] All SPEC.md criteria met
-- [ ] Tests pass (or written if none existed)
-- [ ] No lint errors
-- [ ] No file conflicts between workers
-- [ ] Production-ready output
-
-### Phase 5: Route to User
-
-```
-## Implementation Complete
-
-### Workers Completed: [M/M]
-### Production Gate: PASS/FAIL
-### Files Modified: [list]
-
-[If FAIL: specific blockers listed]
-[If PASS: ready for /review]
-```
-
----
-
-## Standard Mode (without /workflow)
-
-When coding without explicit /workflow:
-
-1. **Supervisor always active** — You are the supervisor
-2. **Spawn workers for parallel tasks** — Use `/sprint` when ≥3 independent tasks
-3. **Worker rule**: Each worker = 1 file or 1 feature, never shared files
-4. **Tests gate completion** — Worker must verify tests pass before reporting done
-
----
-
-## Anti-Patterns (BLOCK)
-
-- Workers modifying shared files → BLOCK (conflicts)
-- Skipping research on external deps → BLOCK
-- Marking done without tests passing → BLOCK
-- Workers communicating directly → BLOCK (supervisor only)
-- Ignoring file conflicts → BLOCK
+- Research APIs, libraries, error codes for external dependencies
+- Document findings in execution context
 
 ---
 
@@ -145,3 +268,27 @@ To configure for your hardware, add to `~/.claude/settings.json`:
 | 16GB RAM, 4+ cores | 6 |
 | 8GB RAM, 2+ cores | 3 |
 | Low-end | 2 |
+
+---
+
+## Anti-Patterns (BLOCK)
+
+### Taste Violations
+- Proceeding with score < 5 without /align approval → BLOCK
+- Ignoring taste.md principles in execution → BLOCK
+- Violating taste.vision intent → BLOCK
+-价值观 mismatch without acknowledgment → BLOCK
+
+### Execution Violations
+- Workers modifying shared files → BLOCK (conflicts)
+- Skipping research on external deps → BLOCK
+- Marking done without tests passing → BLOCK
+- Workers communicating directly → BLOCK (supervisor only)
+- Ignoring file conflicts → BLOCK
+- Skipping taste check → BLOCK
+
+### Verification Violations
+- Skipping SPEC_verify → BLOCK
+- Accepting "looks good" as evidence → BLOCK
+- No taste verification documented → BLOCK
+- Silent acceptance of output → BLOCK

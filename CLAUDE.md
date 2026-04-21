@@ -28,9 +28,9 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 ## Skills (invoke with /<skill>)
 | Skill | Purpose |
 |-------|---------|
-| /workflow | Autonomous full-implementation loop (10 agents) |
+| /workflow | Central execution engine — taste-first, orchestrates all skills |
 | /audit | Deep codebase audit with 10-agent parallelism |
-| /office-hours | Clarify vague ideas |
+| /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
 | /autoplan | Create SPEC.md with 10-agent parallel mindset |
 | /verify | Check output against SPEC |
 | /review | AI review + human sign-off |

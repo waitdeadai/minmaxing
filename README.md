@@ -109,13 +109,13 @@ AI training data is stale. Every external claim gets verified with live web sear
 
 | Skill | What It Does |
 |-------|-------------|
-| `/workflow` | **Full loop** — plan → research → implement → verify → review → ship |
+| `/workflow` | **Central execution engine** — drives plan → research → implement → verify → review → ship (supervises 10 agents) |
+| `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with 10-agent parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
 | `/sprint` | Run up to 10 agents in parallel |
 | `/verify` | Check output against SPEC (separate verifier) |
 | `/review` | AI review + you decide |
-| `/office-hours` | 6 questions to clarify vague ideas |
 | `/qa` | Playwright E2E testing — Pass/Fail only |
 | `/ship` | Pre-ship checklist + rollback plan |
 | `/investigate` | Debug with 3-fix limit |

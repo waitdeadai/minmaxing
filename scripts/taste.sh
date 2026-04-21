@@ -1,7 +1,7 @@
 #!/bin/bash
 # minmaxing taste system CLI
 # Manages taste.md, taste.vision, and taste.memory (JSONL log)
-# Usage: taste.sh init|log|review|digest
+# Usage: taste.sh init|log|review|digest|score
 
 set -e
 
@@ -138,6 +138,45 @@ EOF
     tail -10 "$TASTE_MEMORY" 2>/dev/null || echo "(empty)"
     ;;
 
+  score)
+    if ! command -v claude &> /dev/null; then
+      echo "claude not found. Install Claude Code first."
+      exit 1
+    fi
+
+    if [ ! -f "$TASTE_MD" ] || [ ! -f "$TASTE_VISION" ]; then
+      echo "taste.md and taste.vision must exist. Run 'taste.sh init' first."
+      exit 1
+    fi
+
+    # Collect remaining args as task description
+    task_desc="$*"
+
+    if [ -z "$task_desc" ]; then
+      echo "Usage: taste.sh score \"<task description>\""
+      echo ""
+      echo "Scores task alignment against taste.md and taste.vision (0-10)"
+      exit 1
+    fi
+
+    echo "Scoring alignment..."
+
+    # Build prompt with task embedded
+    # Note: claude will read taste.md and taste.vision relative to cwd
+    prompt="Read $(pwd)/taste.md and $(pwd)/taste.vision, then score this task for alignment with them.
+
+Return ONLY a single line in this exact format:
+SCORE: <number 0-10> | <one sentence explanation>
+
+Be strict. 0 = completely against taste, 10 = perfect alignment.
+
+TASK: $task_desc"
+
+    result=$(claude --print "$prompt" 2>/dev/null)
+
+    echo "$result"
+    ;;
+
   *)
     echo "minmaxing taste CLI"
     echo ""
@@ -148,5 +187,6 @@ EOF
     echo "  log      Log a verdict to taste.memory"
     echo "  review   Show recent taste.memory entries"
     echo "  digest   Extract principles from taste.memory → taste.md"
+    echo "  score    Score task alignment against taste (0-10)"
     ;;
 esac
