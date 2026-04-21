@@ -38,10 +38,12 @@ That's it. The setup script installs ForgeGod, uvx, configures your API key, and
 
 ## ⚠️ Important Defaults
 
-### bypassPermissions Mode
-**This harness enables `bypassPermissions` by default** — all file writes and commands auto-approve without prompts. Required for parallel agent spawning.
+### Permission Mode: acceptEdits (Recommended) or bypassPermissions (YOLO)
+The harness enables `acceptEdits` by default — file writes and common filesystem commands (`mkdir`, `touch`, `mv`, `cp`) auto-approve without prompts. This is sufficient for parallel agent spawning.
 
-Protected dirs still prompt: `.git`, `.claude`, `.vscode`, `.idea`, `.husky`
+**For YOLO mode** (zero safety checks): set `bypassPermissions` instead.
+
+Both modes still protect: `.git`, `.claude`, `.vscode`, `.idea`, `.husky`
 
 ### 10-Agent Parallelism (Standard)
 **Default: 10 parallel agents** for maximum throughput. Harness auto-detects hardware.

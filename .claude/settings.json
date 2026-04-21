@@ -23,6 +23,6 @@
       "mcp__MiniMax__web_search",
       "Bash(bash *.sh)"
     ],
-    "defaultMode": "bypassPermissions"
+    "defaultMode": "acceptEdits"
   }
 }
