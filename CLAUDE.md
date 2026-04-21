@@ -29,6 +29,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 | Skill | Purpose |
 |-------|---------|
 | /workflow | Autonomous full-implementation loop (10 agents) |
+| /audit | Deep codebase audit with 10-agent parallelism |
 | /office-hours | Clarify vague ideas |
 | /autoplan | Create SPEC.md with 10-agent parallel mindset |
 | /verify | Check output against SPEC |

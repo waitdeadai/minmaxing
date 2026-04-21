@@ -103,11 +103,12 @@ AI training data is stale. Every external claim gets verified with live web sear
 
 ---
 
-## The 13 Skills
+## The 14 Skills
 
 | Skill | What It Does |
 |-------|-------------|
 | `/workflow` | **Full loop** — plan → research → implement → verify → review → ship |
+| `/audit` | Deep codebase audit with 10-agent parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
 | `/sprint` | Run up to 10 agents in parallel |
 | `/verify` | Check output against SPEC (separate verifier) |
