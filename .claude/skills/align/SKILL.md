@@ -4,7 +4,7 @@
 
 **Use when:** User says "align this", "does this fit our taste", "check this idea", or when /workflow triggers a taste gate. Or "/align --bootstrap" to define taste for new projects.
 
-**Swarm:** /workflow blocks if REJECTED, /workflow pauses if REVISION_NEEDED
+**Swarm:** "swarm align" → /align (blocks /workflow on REJECTED, pauses on REVISION_NEEDED)
 
 ---
 

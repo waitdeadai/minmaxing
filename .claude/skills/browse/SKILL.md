@@ -8,6 +8,8 @@ Parallel web research with live data — not stale training data.
 
 **Research-First:** Integrated into `/workflow` automatically. Use `/browse` directly when researching something specific.
 
+**Swarm:** "swarm browse" → `/browse` with 10 parallel research agents.
+
 ---
 
 ## When to Research

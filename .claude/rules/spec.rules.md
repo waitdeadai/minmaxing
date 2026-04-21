@@ -6,7 +6,7 @@ Every meaningful task requires SPEC.md BEFORE any implementation.
 
 **Protocol:**
 1. User describes goal (vague or specific)
-2. If vague → Invoke /office-hours first
+2. If vague → Invoke /align first
 3. Invoke /autoplan to generate SPEC.md
 4. SPEC.md is written and approved
 5. Implementation follows

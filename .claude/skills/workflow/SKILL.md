@@ -36,7 +36,7 @@ description: Central execution engine - orchestrates all skills with taste aware
 ├─────────────────────────────────────────────────────────┤
 │     /autoplan  /sprint  /verify  /ship  /investigate   │
 │     /audit     /council /qa     /review  /browse       │
-│     /codex     /overnight  /office-hours  /align       │
+│     /codex     /overnight  /align                       │
 │              (System Calls)                             │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -89,17 +89,82 @@ description: Central execution engine - orchestrates all skills with taste aware
 | "research X" | /browse |
 | "run overnight" | /overnight |
 | "align values" / "价值观" | /align |
-| "office hours" / "clarify" | /office-hours |
+| "office hours" / "clarify" | /align |
 
-### PHASE 2: EXECUTE
+### PHASE 2: EXECUTE — ACTIVE ORCHESTRATION
 
-**skill_execute() runs selected skills in sequence/parallel.**
+**/workflow is the orchestrator. It does NOT just describe the chain — it executes it.**
 
-1. Execute skills in routing order
-2. Each skill respects taste.md + taste.vision constraints
-3. Use `/sprint` for parallel execution when multiple workers needed
-4. Aggregate results from parallel agents
-5. Pass unified context to next phase
+**CRITICAL:** After each skill completes, /workflow MUST invoke the next skill in the chain. Skills are dead ends without the orchestrator.
+
+#### Chain Execution Pattern
+
+For each skill in the chain, /workflow MUST:
+
+1. **INVOKE** the skill with `Skill("[skill-name]")`
+2. **PASS** current context + taste constraints
+3. **WAIT** for skill completion
+4. **COLLECT** output
+5. **PASS** output as input to NEXT skill in chain
+6. **REPEAT** until chain terminates at /ship or /review
+
+#### Example: "build a REST API"
+
+```
+/workflow "build a REST API"
+    │
+    ├─ PHASE 0: TASTE CHECK → PASS
+    ├─ PHASE 1: ROUTE → /autoplan → /sprint → /verify → /ship
+    │
+    ├─ PHASE 2: EXECUTE CHAIN
+    │   │
+    │   ├─ SKILL 1: /autoplan
+    │   │       invoke /autoplan "build REST API"
+    │   │       wait for SPEC.md creation
+    │   │       collect SPEC.md path + context
+    │   │       PASS to next skill ↓
+    │   │
+    │   ├─ SKILL 2: /sprint
+    │   │       invoke /sprint with SPEC.md context
+    │   │       spawn parallel agents
+    │   │       wait for completion
+    │   │       collect modified files + test results
+    │   │       PASS to next skill ↓
+    │   │
+    │   ├─ SKILL 3: /verify
+    │   │       invoke /verify against SPEC.md
+    │   │       wait for ACCEPT/REJECT
+    │   │       if REJECT → loop back to /sprint with fixes
+    │   │       if ACCEPT → PASS to next skill ↓
+    │   │
+    │   └─ SKILL 4: /ship
+    │           invoke /ship
+    │           wait for ship confirmation
+    │           chain complete
+    │
+    └─ PHASE 3: VERIFY (embedded in /verify)
+    └─ PHASE 4: OUTPUT (ship complete)
+```
+
+#### Single-Skill Chains (no chain)
+
+Some tasks are single-skill:
+- `/audit` → terminates with findings
+- `/council` → terminates with decision
+- `/qa` → terminates with PASS/FAIL
+
+For these, /workflow still invokes the skill and returns the output to user.
+
+#### Anti-Pattern: Chain Breaking
+
+```
+BLOCK: Invoking /autoplan and stopping
+BLOCK: Invoking /sprint and stopping
+BLOCK: Invoking /verify and stopping
+BLOCK: Assuming skills auto-chain without /workflow orchestration
+```
+
+**Every chain MUST terminate at /ship or /review unless the task is single-skill.**
 
 ### PHASE 3: VERIFY
 

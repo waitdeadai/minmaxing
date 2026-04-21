@@ -8,6 +8,8 @@ Extended 8-hour session with 30-minute checkpoints. Results consolidated at end.
 
 **Checkpoints every 30 minutes.** No more than 30 minutes of work at risk.
 
+**Swarm:** "swarm overnight" → `/overnight` with 10 parallel agents for long-running tasks.
+
 ---
 
 ## Purpose
