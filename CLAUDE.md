@@ -76,10 +76,20 @@ minmaxing maintains a 5-tier memory architecture backed by SQLite + FTS5:
 - **Semantic/Procedural/Error-Solution/Graph**: SQLite database with FTS5 full-text search in `.minimaxing/memory.db`
 - **Causal graph tracking**: Records success factors and outcome chains for learned patterns
 
+**Obsidian layer (output-only):**
+`obsidian/Memory/` is the human-readable face of the 5-tier system. **Agents do not read these files** — they query SQLite via `memory recall`. Obsidian is AI output, not human-editable storage.
+
+- **Agents use**: SQLite + FTS5 (`.minimaxing/memory.db`) for retrieval
+- **Humans use**: obsidian/Memory/*.md for browsing and auditing
+- **Humans add memory**: via `bash scripts/memory.sh add <tier> <content>` — which writes to both SQLite and obsidian
+
+**Do NOT edit obsidian files directly.** Human edits to obsidian will NOT sync back to SQLite. To add memory, always use `memory.sh add`.
+
 **Key files:**
 - `taste.md` — Design spec (what's acceptable)
 - `taste.vision` — Intent document (the "why")
 - `.taste/taste.memory` — Append-only decision log (JSONL)
+- `obsidian/Memory/` — Human-readable audit layer (AI output only)
 
 **Commands:**
 - `memory recall` — Inject relevant context from SQLite memory into current session
