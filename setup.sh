@@ -101,6 +101,7 @@ mkdir -p obsidian/Memory/Errors
 mkdir -p obsidian/Memory/Stories/commits
 mkdir -p obsidian/Memory/Dashboard
 mkdir -p .taste/sessions
+mkdir -p .taste/workflow-runs
 echo "  [PASS] Memory directories created"
 
 # Initialize taste system (NOTE: taste files created on-demand by /workflow via /align --bootstrap)

@@ -102,6 +102,32 @@ git commit -m "Ship: [feature description]"
 git push origin HEAD
 ```
 
+### Step 6: Write Workflow Completion Artifact
+
+After successful ship, write a completion record:
+
+```bash
+# Write workflow completion artifact
+WORKFLOW_DIR="${TASTE_DIR:-$(pwd)/.taste}/workflow-runs"
+mkdir -p "$WORKFLOW_DIR"
+
+TIMESTAMP=$(date +%Y-%m-%dT%H:%M:%S)
+HASH=$(git rev-parse HEAD 2>/dev/null)
+
+cat > "${WORKFLOW_DIR}/${TIMESTAMP}.json" <<EOF
+{
+  "timestamp": "${TIMESTAMP}",
+  "task": "[user task description]",
+  "commit": "${HASH}",
+  "chain": ["autoplan", "sprint", "verify", "ship"],
+  "status": "COMPLETE",
+  "verification": "ACCEPT"
+}
+EOF
+
+echo "[Workflow] Completion artifact written to ${WORKFLOW_DIR}/"
+```
+
 ### Step 5: Rollback Plan Documentation
 
 ```markdown
