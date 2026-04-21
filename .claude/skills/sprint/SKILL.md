@@ -12,7 +12,7 @@ Parallel execution with up to 10 agents and FILE ISOLATION. Each agent works on 
 
 ## Purpose
 
-Achieve parallel speedup without merge conflicts. Realistic speedup ~1/(N × 0.7), not theoretical 1/N.
+Achieve parallel speedup without merge conflicts. **Always use the full agent pool.** Break tasks into MORE granular pieces to fill all 10 agents. The supervisor's job is to maximize parallelism, not just use "what fits naturally."
 
 ---
 
@@ -43,25 +43,34 @@ To configure: add to `settings.json`:
 }
 ```
 
-### Step 1: Task Analysis
+### Step 1: Task Analysis — MAXIMIZE PARALLELISM
+
+**Rule: Break tasks into MORE granular pieces to fill all 10 agents.**
+
+For example, a "calculator module" is NOT 2 tasks:
+- It could be 10 tasks: add, subtract, multiply, divide, error handling, tests for each, etc.
 
 ```markdown
 ## Sprint Plan: [Feature Name]
 
-### Can Parallelize?
-- Total tasks: [N]
-- Parallelizable tasks: [M]
-- Sequential tasks: [K]
+### Agent Pool: [N] agents (fill all slots)
+
+### Task Breakdown (targeting full agent pool)
+- Task 1: [granular task] → Files: [list]
+- Task 2: [granular task] → Files: [list]
+- Task 3: [granular task] → Files: [list]
+... (fill all [N] agents)
 
 ### File Isolation Check
-For each parallel task:
+For each task:
 - Task 1: Files [list] → ISOLATED / CONFLICT
 - Task 2: Files [list] → ISOLATED / CONFLICT
 ...
 
-### If Conflicts Exist
-- Rearrange tasks to avoid file overlap
-- OR run conflicting tasks sequentially
+### If < [N] Tasks
+- Break existing tasks into smaller units
+- Split by: function, test suite, error case, edge case, documentation
+- NEVER leave agents idle when tasks remain
 ```
 
 **FILE ISOLATION is mandatory.** If two tasks touch the same file, they cannot run in parallel.
@@ -69,7 +78,7 @@ For each parallel task:
 ### Step 2: Task Distribution
 
 ```markdown
-## Sprint Distribution
+## Sprint Distribution (using all [N] agents)
 
 ### Agent 1: [Task 1]
 - Files: [file list]
@@ -77,10 +86,8 @@ For each parallel task:
 - Goal: [specific deliverable]
 
 ### Agent 2: [Task 2]
-- Files: [file list]
-- Context: [clean context for this task]
-- Goal: [specific deliverable]
 ...
+### Agent [N]: [Task N]
 
 ### Aggregator
 - Waits for all agents
@@ -153,6 +160,6 @@ wait
 - Parallel on same files → BLOCK (conflicts guaranteed)
 - Shared context between agents → BLOCK (pollution)
 - Ignoring failed agents → BLOCK
-- Forcing parallel when sequential makes sense → WARN
-- Over-parallelizing (10 agents for simple tasks) → WARN
+- Leaving agents idle when tasks remain → BLOCK (fill the pool)
+- Not maximizing parallelism → BLOCK (break tasks more granularly)
 - Not checking file isolation → BLOCK
