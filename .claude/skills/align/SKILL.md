@@ -2,7 +2,7 @@
 
 **MAX_PARALLEL_AGENTS** — 1 (single-threaded taste alignment check)
 
-**Use when:** User says "align this", "does this fit our taste", "check this idea", or when /workflow triggers a taste gate.
+**Use when:** User says "align this", "does this fit our taste", "check this idea", or when /workflow triggers a taste gate. Or "/align --bootstrap" to define taste for new projects.
 
 **Swarm:** /workflow blocks if REJECTED, /workflow pauses if REVISION_NEEDED
 
@@ -122,6 +122,30 @@ This question forces explicit acknowledgment of trade-offs. Speed vs correctness
 
 ---
 
+## Bootstrap Mode: /align --bootstrap
+
+For new projects where taste.md + taste.vision don't exist.
+
+### Phase 1: Define taste.md (5 questions)
+1. Design Principles — "What are the non-negotiable design principles?"
+2. Aesthetic Rules — "What aesthetic guidelines should we follow?"
+3. Code Style — "What code patterns are acceptable/unacceptable?"
+4. Architecture — "What architectural patterns do we prefer?"
+5. Naming — "What naming conventions do we use?"
+
+### Phase 2: Define taste.vision (5 questions)
+1. Intent — "Why does this project exist?"
+2. Success — "What does success look like?"
+3. Non-Goals — "What is explicitly out of scope?"
+4. Feel — "How should decisions feel? Fast? Careful? Both?"
+5. Values — "What do we optimize for above all else?"
+
+### Output
+- Writes taste.md and taste.vision to project root
+- Output: TASTE_DEFINED
+
+---
+
 ## Output Format
 
 After all 5 questions are answered:
@@ -158,6 +182,8 @@ If ALIGNED: invoke /workflow
 If REVISION_NEEDED: revise and re-run /align
 If REJECTED: abandon or fundamentally redesign this proposal
 ```
+
+**Note:** Use `/align --bootstrap` for new projects without taste.md/taste.vision to define taste from scratch.
 
 ---
 

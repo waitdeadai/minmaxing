@@ -8,6 +8,8 @@ description: Central execution engine - orchestrates all skills with taste aware
 
 **MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents for autonomous full-implementation loop.
 
+**MEMORY INTEGRATED** — Taste Check calls `memory recall` to get relevant past decisions.
+
 **Use when:** User says "build X", "implement Y", "fix Z", "swarm workflow", or any substantial task.
 
 **Swarm:** "swarm" or "swarm workflow" → `/workflow` (10 parallel agents with supervisor pattern).
@@ -43,12 +45,16 @@ description: Central execution engine - orchestrates all skills with taste aware
 
 **MANDATORY GATE — Blocks all execution until passed.**
 
-1. Read `/home/fer/Music/ultimateminimax/taste.md`
-2. Read `/home/fer/Music/ultimateminimax/taste.vision`
-3. Score task alignment against taste:
-   - 0-4: Critical mismatch → invoke `/align`, wait for approval before proceeding
-   - 5-6: Minor friction → note deviations, proceed with caution
-   - 7-10: Aligned → proceed to PHASE 1
+1. Check: taste.md + taste.vision exist?
+   - If NO → invoke /align --bootstrap → wait → retry
+2. Read taste.md + taste.vision
+3. Call memory recall with task:
+   - `bash scripts/memory.sh recall "<task>" --depth medium`
+   - Inject results into context
+4. Score alignment: task vs taste + memory recall
+   - Score 0-10
+   - If <5 → invoke /align → wait for approval
+   - If >=5 → proceed to PHASE 1
 
 **Taste Alignment Scoring Rubric:**
 
@@ -137,22 +143,29 @@ Read: /home/fer/Music/ultimateminimax/taste.md
 Read: /home/fer/Music/ultimateminimax/taste.vision
 ```
 
-### Step 2: Score Alignment
+### Step 2: Recall Memory
+```
+bash scripts/memory.sh recall "<task>" --depth medium
+```
+Inject memory recall results into context for informed alignment scoring.
+
+### Step 3: Score Alignment
 Score task against each taste dimension:
 - **Design principles** (from taste.md): 0-10
 - **Intent alignment** (from taste.vision): 0-10
 - **价值观 consistency**: 0-10
+- **Memory alignment** (from recall): 0-10
 
-**Composite Score = weighted average (design 40%, intent 40%,价值观 20%)**
+**Composite Score = weighted average (design 35%, intent 35%,价值观 15%, memory 15%)**
 
-### Step 3: Gate Decision
+### Step 4: Gate Decision
 | Composite Score | Decision |
 |-----------------|----------|
 | 0-4 | BLOCK → invoke /align |
 | 5-6 | CAUTION → note deviations, proceed |
 | 7-10 | PROCEED |
 
-### Step 4: Document Taste Status
+### Step 5: Document Taste Status
 ```
 ## Taste Check Results
 
@@ -160,10 +173,12 @@ Score task against each taste dimension:
 - Design Principles: [score]/10
 - Intent Alignment: [score]/10
 - 价值观 Consistency: [score]/10
+- Memory Alignment: [score]/10
 - **Composite: [score]/10**
 
 ### Gate Status: [PROCEED/CAUTION/BLOCK]
 ### Deviations (if any): [list]
+### Memory Recall Insights: [relevant past decisions]
 ```
 
 ---
@@ -209,6 +224,7 @@ Ensure skill chain:
 STEP 0: TASTE CHECK [GATE]
 ├── Read taste.md
 ├── Read taste.vision
+├── Call memory recall with task
 ├── Score task alignment
 ├── If score < 5 → invoke /align, wait for approval
 └── If score >= 5 → proceed

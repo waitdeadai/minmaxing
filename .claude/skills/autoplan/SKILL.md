@@ -4,6 +4,8 @@ SPEC-first planning that generates SPEC.md before any implementation. Uses plan 
 
 **This IS plan mode.** `/autoplan` invokes plan mode to draft SPEC.md. You review and approve. The approved plan becomes the source of truth.
 
+**TASTE-FIRST** — If taste.md/vision undefined, bootstraps via /align before planning.
+
 **MAX_PARALLEL_AGENTS** — spawns up to 10 parallel research agents for deep research during planning.
 
 **Use when:** User says "plan this", "how do I build", "spec out", "create a plan", "swarm", or when a new feature/project is described.
@@ -16,11 +18,13 @@ SPEC-first planning that generates SPEC.md before any implementation. Uses plan 
 
 ## Execution Protocol
 
-### Step 1: Understand the Goal
+### Step 1: Understand the Goal + Taste Bootstrap
 
 - Read user's description carefully
 - Identify what success looks like (verifiable, not vague)
-- If vague → Invoke /office-hours first
+- Check: taste.md + taste.vision exist?
+  - If NO → invoke /align --bootstrap first, then continue
+  - If YES → proceed to Step 2
 
 ### Step 2: Parallel Research (use MAX_PARALLEL_AGENTS)
 

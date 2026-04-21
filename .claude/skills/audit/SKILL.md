@@ -2,6 +2,8 @@
 
 Deep codebase analysis with parallel agents. Audit any repo to understand its structure, identify issues, and plan improvements.
 
+**TASTE-FIRST** — Reads taste.md + vision before audit research. Gates on misalignment.
+
 **MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents across all audit tracks simultaneously (security, quality, dependencies, docs, etc.).
 
 **Use when:** User says "audit this", "analyze codebase", "understand this repo", "due diligence on this code", "swarm audit".
@@ -10,7 +12,17 @@ Deep codebase analysis with parallel agents. Audit any repo to understand its st
 
 ---
 
-## Parallel Audit Protocol
+## Execution Protocol
+
+### Phase 0: Taste Check [GATE]
+1. Check: taste.md + taste.vision exist?
+   - If NO → invoke /align --bootstrap → wait → proceed
+2. Read taste.md + taste.vision
+3. Call memory recall:
+   - `bash scripts/memory.sh recall "<audit target>" --depth simple`
+4. Score: does the audit target align with taste?
+   - If misaligned → /align before proceeding
+   - If aligned → proceed to Phase 1
 
 ### Phase 1: Decompose Audit (use MAX_PARALLEL_AGENTS)
 
@@ -37,7 +49,7 @@ Spawn agents for each track simultaneously:
 # Agent 1: Structure
 claude -p "Analyze project structure. File tree, tech stack, framework. Output: structured summary" > audit-structure.out 2>&1 &
 
-# Agent 2: Security  
+# Agent 2: Security
 claude -p "Audit for security issues: SQL injection, XSS, secrets in code, auth flaws. Output: vulnerability list" > audit-security.out 2>&1 &
 
 # ... up to MAX_PARALLEL_AGENTS
