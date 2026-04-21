@@ -66,11 +66,18 @@ With SPEC-first:
 
 | This harness | Other harnesses |
 |-------------|----------------|
+| Taste-first: taste.md + vision gate every decision | No values, no taste — just "build X" |
+| 5-tier memory: remembers decisions, patterns, errors across sessions | Tabula rasa every session |
+| Central orchestrator: /workflow chains skills automatically | Skills are isolated, no chaining |
+| Auto-capture: outcomes logged to memory automatically | Manual documentation |
 | SPEC-first: write spec before code | Vague prompts, rebuild loops |
 | 10 agents in parallel | Sequential one-at-a-time |
 | Separate verifier agent | Same AI checks its own work |
-| Research-first: verify AI claims | AI hallucinates best practices |
-| YOLO mode available | Locked down by default |
+| Research-first: verify AI claims with live web search | AI hallucinates best practices |
+
+**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, it asks you to define it — before anything is built.
+
+**Memory is persistent.** Every decision, every fix, every shipped feature is remembered. The second session knows what the first session learned.
 
 **Same model. Better results.** The LangChain team moved from Top 30 to Top 5 on Terminal Bench 2.0 with better harness design.
 
