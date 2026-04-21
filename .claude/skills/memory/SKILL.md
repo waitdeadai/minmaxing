@@ -1,22 +1,24 @@
 ---
 name: memory
-description: ForgeGod 5-tier memory system management
+description: minmaxing 5-tier memory system management
 ---
 
-Manage the 5-tier memory system.
+Manage the 5-tier memory system and taste system.
 
-**Use when:** User says "show memory", "forgegod memory", "check memory status", "memory health", "how's memory".
+**Use when:** User says "show memory", "check memory", "memory stats", "log decision", "how's memory".
 
 **Commands:**
-- `forgegod memory` — Query memory system state and 5-tier health
-- `forgegod status` — Overall ForgeGod status
-- `forgegod doctor` — Check system installation health
+- `bash scripts/memory.sh stats` — Show memory counts per tier
+- `bash scripts/memory.sh list` — List recent memories
+- `bash scripts/memory.sh add episodic "what happened"` — Log episodic
+- `bash scripts/taste.sh review` — Show taste.memory recent entries
+- `bash scripts/taste.sh log APPROVE "task" "reasoning"` — Log a verdict
 
 **The 5 tiers:**
-| Tier | Content | Retention |
+| Tier | Storage | Retention |
 |------|---------|-----------|
-| Episodic | Task outcomes | 90 days |
-| Semantic | Principles | Indefinite (decay) |
-| Procedural | Code patterns | Indefinite |
-| Graph | Entity relationships | Indefinite |
-| Error-Solution | Error → fix | Indefinite |
+| Episodic | `.taste/sessions/*.jsonl` | 90 days |
+| Semantic | `taste.md` + Decisions/ | Indefinite |
+| Procedural | `Patterns/` | Indefinite |
+| Error-Solution | `Errors/` | Indefinite |
+| Graph | `Stories/` | Indefinite |

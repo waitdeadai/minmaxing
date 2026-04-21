@@ -1,0 +1,24 @@
+---
+taste: vision
+created: 2026-04-20
+---
+
+# Vision
+
+Right results, not fast results.
+
+## Intent
+
+minmaxing is a Claude Code harness that gets better outcomes by forcing explicit specification before implementation. Where other harnesses optimize for speed, we optimize for correctness.
+
+## Success Criteria
+
+- Every task starts with SPEC.md
+- AI implements to spec, not to vague prompt
+- Separate verifier checks output before human review
+- Power users can enable bypassPermissions for zero-friction flow
+
+## Non-Goals
+
+- Not a code generator — it's a thinking system
+- Not for一次性 scripts — for projects that need to be right

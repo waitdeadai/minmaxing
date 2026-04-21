@@ -48,7 +48,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 - **10-Agent Default**: Plan with 10 agents always (configurable via MAX_PARALLEL_AGENTS)
 - **Keep**: Architecture, security, verification decisions
 - **Delegate**: Single-file changes, tests, mechanical refactoring
-- **Memory**: Run `forgegod memory` to check learned patterns
+- **Memory**: Run `/memory` or `bash scripts/memory.sh stats`
 
 ## Agent Pool (10 default)
 | Hardware | MAX_PARALLEL_AGENTS |
@@ -59,19 +59,23 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 
 Hardware auto-detection runs via `scripts/detect-hardware.sh` on every shell start (added to `~/.bashrc` by setup).
 
-## 5-Tier Memory System (ForgeGod)
+## 5-Tier Memory System
 
-ForgeGod maintains a 5-tier memory architecture:
+minmaxing maintains a 5-tier memory architecture:
 
-| Tier | Content | Method |
-|------|---------|--------|
-| Episodic | Task outcomes | Full records, 90-day retention |
-| Semantic | Extracted principles | Confidence + decay, indefinite |
-| Procedural | Code patterns & fixes | Success tracking, indefinite |
-| Graph | Entity relationships | Auto-extraction, indefinite |
-| Error-Solution | Error → fix mappings | Fuzzy lookup, indefinite |
+| Tier | Content | Storage |
+|------|---------|---------|
+| Episodic | Task outcomes | `.taste/sessions/*.jsonl` |
+| Semantic | Principles | `taste.md` + `obsidian/Memory/Decisions/` |
+| Procedural | Code patterns | `obsidian/Memory/Patterns/` |
+| Error-Solution | Error → fix | `obsidian/Memory/Errors/` |
+| Graph | Entity relationships | `obsidian/Memory/Stories/` |
 
-Memory is stored in SQLite (runtime) and projected to `obsidian/ForgeGod/` for human-readable access via `forgegod obsidian export-memory`. Run `/memory` skill to manage.
+- `taste.md` — Design spec (what's acceptable)
+- `taste.vision` — Intent document (the "why")
+- `.taste/taste.memory` — Append-only decision log (JSONL)
+
+Run `/memory` or `bash scripts/memory.sh stats` to query.
 
 ## Quick Start
 ```bash

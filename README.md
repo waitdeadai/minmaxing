@@ -105,7 +105,7 @@ AI training data is stale. Every external claim gets verified with live web sear
 
 ---
 
-## The 14 Skills
+## The 15 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -124,6 +124,7 @@ AI training data is stale. Every external claim gets verified with live web sear
 | `/codex` | Search code by pattern |
 | `/browse` | Web research with citations |
 | `/loop` | Schedule recurring tasks (cron-style, up to 3 days) |
+| `/memory` | 5-tier memory system — log decisions, search patterns |
 
 **Swarm mode:** Add "swarm" or "swarm this" to any skill trigger to run with 10-agent parallelism. E.g. "swarm audit", "swarm this", "swarm verify".
 
@@ -190,7 +191,7 @@ minmaxing/
 ├── setup.sh                     # One-command installer
 ├── .claude/
 │   ├── settings.json           # MiniMax config
-│   ├── skills/                 # 14 skills
+│   ├── skills/                 # 15 skills
 │   │   ├── workflow/
 │   │   ├── sprint/
 │   │   ├── verify/

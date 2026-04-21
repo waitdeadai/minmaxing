@@ -24,3 +24,6 @@ __pycache__/
 
 # ForgeGod
 .forgegod/
+
+# Taste System (session logs + memory)
+.taste/

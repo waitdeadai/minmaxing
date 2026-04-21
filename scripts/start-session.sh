@@ -10,18 +10,14 @@ echo "  $(date)"
 echo "=========================================="
 echo ""
 
-# Step 1: ForgeGod Status
-echo "[1/4] ForgeGod status..."
-forgegod status 2>/dev/null || echo "ForgeGod available"
-echo ""
-
-# Step 2: Memory Check
-echo "[2/4] Checking memory system..."
-if command -v forgegod &> /dev/null; then
-    MEMORY_STATUS=$(forgegod memory 2>/dev/null | head -20)
-    echo "$MEMORY_STATUS"
-else
-    echo "ForgeGod not available - continuing"
+# Step 1: Memory System
+echo "[1/4] Memory system..."
+SCRIPT_DIR="$(dirname "$0")"
+if [ -f "$SCRIPT_DIR/memory-auto.sh" ]; then
+    bash "$SCRIPT_DIR/memory-auto.sh" start 2>/dev/null || true
+fi
+if [ -f "$SCRIPT_DIR/memory.sh" ]; then
+    bash "$SCRIPT_DIR/memory.sh" stats 2>/dev/null | head -10
 fi
 echo ""
 
