@@ -1,18 +1,120 @@
 ---
+name: workflow
 description: Central execution engine - orchestrates all skills with taste awareness
+context: fork
+agent: general-purpose
 ---
 
-# /workflow
+# /workflow — Central Execution Engine
 
-**CENTRAL EXECUTION ENGINE** — The main skill for complex/power user tasks. Reads taste.md + taste.vision first. Orchestrates all other skills. Taste is the OS, skills are system calls.
+You are the orchestrator for minmaxing. Execute the workflow chain for the user's task.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents for autonomous full-implementation loop.
+## Your Mission
 
-**MEMORY INTEGRATED** — Taste Check calls `memory recall` to get relevant past decisions.
+Given a task from the user, execute this workflow chain:
+1. Taste Check (gate)
+2. Route to appropriate skills
+3. Execute skills in chain until /ship or /review
+4. Return results
 
-**Use when:** User says "build X", "implement Y", "fix Z", "swarm workflow", or any substantial task.
+## Taste OS Architecture
 
-**Swarm:** "swarm" or "swarm workflow" → `/workflow` (10 parallel agents with supervisor pattern).
+```
+/workflow (this subagent)
+  │
+  ├─ PHASE 0: TASTE CHECK [GATE]
+  ├─ PHASE 1: ROUTE
+  ├─ PHASE 2: EXECUTE CHAIN
+  │     /autoplan → /sprint → /verify → /ship
+  └─ PHASE 3: OUTPUT
+```
+
+## Available Skills (use Skill() to invoke)
+
+| Skill | Purpose |
+|-------|---------|
+| /autoplan | Create SPEC.md before code |
+| /sprint | Run up to 10 agents in parallel |
+| /verify | Check output against SPEC.md |
+| /ship | Pre-ship checklist + push |
+| /investigate | Debug with 3-fix limit |
+| /audit | Deep codebase audit |
+| /council | Multi-perspective analysis |
+| /align | Validate against taste |
+| /qa | Playwright E2E testing |
+| /review | AI review + human sign-off |
+| /codex | Search code by pattern |
+| /browse | Web research |
+
+## Step 1: Taste Check
+
+Read taste.md and taste.vision from the project root. If they don't exist, invoke `/align --bootstrap` first.
+
+Call memory recall:
+```
+bash scripts/memory.sh recall "<task>" --depth medium
+```
+
+Score alignment (0-10):
+- Design principles (35%)
+- Intent alignment (35%)
+- 价值观 consistency (15%)
+- Memory alignment (15%)
+
+If score < 5: invoke /align and wait for approval.
+
+## Step 2: Route
+
+Match task pattern to skill chain:
+
+| Pattern | Chain |
+|---------|-------|
+| "build X" / "implement Y" | /autoplan → /sprint → /verify → /ship |
+| "fix Z" / "debug this" | /investigate → /verify |
+| "audit this" | /audit |
+| "explain" / "what is" | /council |
+
+## Step 3: Execute Chain
+
+**CRITICAL: Use `Skill("[skill-name]")` tool to invoke skills. After each skill completes, invoke the next skill in the chain. Do NOT stop after one skill.**
+
+### For "build X" tasks:
+```
+1. Skill("autoplan") — create SPEC.md
+2. Skill("sprint") — implement based on SPEC.md
+3. Skill("verify") — verify against SPEC.md
+   - If REJECT: loop back to sprint with fixes
+   - If ACCEPT: continue
+4. Skill("ship") — ship checklist + push
+5. Return summary to user
+```
+
+### For "fix Z" tasks:
+```
+1. Skill("investigate") — root-cause analysis
+2. Skill("verify") — verify fix against SPEC.md
+3. Return summary to user
+```
+
+## Anti-Patterns (BLOCK)
+
+- Stopping after single skill without calling next skill → BLOCK
+- Skipping taste check → BLOCK
+- Skipping /verify before /ship → BLOCK
+- Proceeding with score < 5 without /align approval → BLOCK
+
+## Output
+
+When chain completes at /ship, return a summary:
+```
+## Workflow Complete
+
+- Task: [what was built/fixed]
+- SPEC.md: [passed/failed]
+- Implementation: [N] files changed
+- Verification: ACCEPT/REJECT
+- Shipped: [yes/no]
+```
 
 ---
 
