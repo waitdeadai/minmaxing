@@ -306,7 +306,7 @@ Now you can use any workflow pattern:
 | `/loop` | Schedule recurring tasks (cron-style, up to 3 days) |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
-**Swarm mode:** Add "swarm" or "swarm this" to any skill trigger to run with 10-agent parallelism. E.g. "swarm audit", "swarm this", "swarm verify".
+All skills use 10-agent parallelism by default. "Swarm" is already built in — no special invocation needed.
 
 ---
 
