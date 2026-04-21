@@ -14,24 +14,24 @@ echo ""
 
 # Step 0: Clone repository to temp, then move to current directory
 if [ ! -d ".git" ]; then
-    echo "[0/5] Cloning minmaxing repository..."
+    echo "[0/6] Cloning minmaxing repository..."
     TEMP_DIR=$(mktemp -d)
     git clone https://github.com/waitdeadai/minmaxing.git "$TEMP_DIR"
     cp -r "$TEMP_DIR"/* .
     cp -r "$TEMP_DIR"/.[!.]* . 2>/dev/null || true
     rm -rf "$TEMP_DIR"
 else
-    echo "[0/5] Using existing minmaxing directory"
+    echo "[0/6] Using existing minmaxing directory"
 fi
 echo ""
 
 # Step 1: Install ForgeGod
-echo "[1/5] Installing ForgeGod memory system..."
+echo "[1/6] Installing ForgeGod memory system..."
 pip install forgegod --break-system-packages 2>/dev/null || pip3 install forgegod --break-system-packages 2>/dev/null || echo "ForgeGod install failed (will retry later)"
 echo ""
 
 # Step 2: Install uvx
-echo "[2/5] Checking uvx..."
+echo "[2/6] Checking uvx..."
 if ! command -v uvx &> /dev/null; then
     echo "Installing uvx..."
     curl -LsSf https://astral.sh/uv/install.sh | sh 2>/dev/null || echo "uvx install skipped"
@@ -40,7 +40,7 @@ fi
 echo ""
 
 # Step 3: Verify installation
-echo "[3/5] Verifying installation..."
+echo "[3/6] Verifying installation..."
 PASS=0
 if command -v forgegod &> /dev/null; then
     echo "  [PASS] ForgeGod installed"
@@ -65,7 +65,7 @@ fi
 echo ""
 
 # Step 4: Configure API Key in settings.json
-echo "[4/5] Configuring MiniMax API key..."
+echo "[4/6] Configuring MiniMax API key..."
 echo ""
 
 if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
@@ -99,8 +99,20 @@ else
 fi
 echo ""
 
-# Step 5: Run tests
-echo "[5/5] Running harness tests..."
+# Step 5: Add hardware detection to bashrc
+echo "[5/6] Adding hardware auto-detection to ~/.bashrc..."
+# Use $(pwd) since setup.sh can run from any directory after clone
+DETECT_SOURCE="[ -f \"\$(pwd)/scripts/detect-hardware.sh\" ] && source \"\$(pwd)/scripts/detect-hardware.sh\""
+if ! grep -q "detect-hardware.sh" ~/.bashrc 2>/dev/null; then
+    echo "$DETECT_SOURCE" >> ~/.bashrc
+    echo "  [PASS] Hardware auto-detection added to ~/.bashrc"
+else
+    echo "  [PASS] Hardware auto-detection already in ~/.bashrc"
+fi
+echo ""
+
+# Step 6: Run tests
+echo "[6/6] Running harness tests..."
 echo ""
 if [ -f "./scripts/test-harness.sh" ]; then
     ./scripts/test-harness.sh

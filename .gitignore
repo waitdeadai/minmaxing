@@ -21,3 +21,6 @@ __pycache__/
 
 # Claude Code
 .claude/scheduled_tasks.lock
+
+# ForgeGod
+.forgegod/

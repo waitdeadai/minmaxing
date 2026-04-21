@@ -57,6 +57,22 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 | 16GB RAM, 4+ cores | 6 |
 | 8GB RAM, 2+ cores | 3 |
 
+Hardware auto-detection runs via `scripts/detect-hardware.sh` on every shell start (added to `~/.bashrc` by setup).
+
+## 5-Tier Memory System (ForgeGod)
+
+ForgeGod maintains a 5-tier memory architecture:
+
+| Tier | Content | Method |
+|------|---------|--------|
+| Episodic | Task outcomes | Full records, 90-day retention |
+| Semantic | Extracted principles | Confidence + decay, indefinite |
+| Procedural | Code patterns & fixes | Success tracking, indefinite |
+| Graph | Entity relationships | Auto-extraction, indefinite |
+| Error-Solution | Error → fix mappings | Fuzzy lookup, indefinite |
+
+Memory is stored in SQLite (runtime) and projected to `obsidian/ForgeGod/` for human-readable access via `forgegod obsidian export-memory`. Run `/memory` skill to manage.
+
 ## Quick Start
 ```bash
 ./scripts/start-session.sh

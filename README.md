@@ -28,7 +28,9 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. ForgeGod, uvx, MiniMax MCP, and 13 skills — all configured.
+That's it. ForgeGod, uvx, MiniMax MCP, and 14 skills — all configured.
+
+> **Note:** Setup adds hardware auto-detection to `~/.bashrc` — `MAX_PARALLEL_AGENTS` is set automatically on every shell start.
 
 ---
 
@@ -188,7 +190,7 @@ minmaxing/
 ├── setup.sh                     # One-command installer
 ├── .claude/
 │   ├── settings.json           # MiniMax config
-│   ├── skills/                 # 13 skills
+│   ├── skills/                 # 14 skills
 │   │   ├── workflow/
 │   │   ├── sprint/
 │   │   ├── verify/

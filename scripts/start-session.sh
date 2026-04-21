@@ -18,7 +18,7 @@ echo ""
 # Step 2: Memory Check
 echo "[2/4] Checking memory system..."
 if command -v forgegod &> /dev/null; then
-    MEMORY_STATUS=$(forgegod memory 2>/dev/null | head -5)
+    MEMORY_STATUS=$(forgegod memory 2>/dev/null | head -20)
     echo "$MEMORY_STATUS"
 else
     echo "ForgeGod not available - continuing"
@@ -38,11 +38,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 13 ]; then
+if [ "$SKILL_COUNT" -ge 15 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 13 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 15 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
