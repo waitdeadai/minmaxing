@@ -168,10 +168,10 @@ print('SUCCESS FACTORS:', success_factors)
 " 2>/dev/null
 
 # Query recent error patterns
-bash scripts/memory.sh search "error" --depth high 2>/dev/null | head -20
+bash scripts/memory.sh search "error" --tier error-solutions --limit 20 2>/dev/null | head -20
 
 # Query recent semantic memories for alignment patterns
-bash scripts/memory.sh search "taste" --depth medium 2>/dev/null | head -10
+bash scripts/memory.sh search "taste" --tier semantic --limit 10 2>/dev/null | head -10
 ```
 
 ### Phase 2: Present Review
@@ -230,7 +230,7 @@ python3 -c "
 from memory.sqlite_db import MemoryDB
 db = MemoryDB()
 # Query for repeated principles
-results = db.search('taste principle pattern', depth='high')
+results = db.search(query='taste principle pattern', tier=2, limit=50)
 # Count occurrences of each principle
 from collections import Counter
 principles = [r['text'] for r in results]

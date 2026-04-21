@@ -318,6 +318,12 @@ def cmd_add(args: argparse.Namespace) -> int:
                 confidence=0.5,
             )
             print(f"Added procedural memory: {memory_id}")
+        elif args.tier == "graph":
+            from memory.causal import record_outcome
+            outcome = args.solution if args.solution else "unknown"
+            record_outcome([args.content], outcome)
+            memory_id = f"graph-{args.content[:20]}"
+            print(f"Added graph memory: {memory_id}")
         else:
             print(f"Unknown tier: {args.tier}")
             return 1
@@ -412,7 +418,7 @@ def main() -> int:
     )
     add_parser.add_argument(
         "tier",
-        choices=["semantic", "procedural", "error-solutions"],
+        choices=["semantic", "procedural", "error-solutions", "graph"],
         help="Memory tier",
     )
     add_parser.add_argument(

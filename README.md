@@ -308,7 +308,6 @@ Now you can use any workflow pattern:
 | `/council` | Multi-perspective analysis |
 | `/codex` | Search code by pattern |
 | `/browse` | Web research with citations |
-| `/loop` | Schedule recurring tasks (cron-style, up to 3 days) |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
 **Parallelism:** All skills that support parallelism use 10 agents by default (except `/align` which is single-threaded by design — taste alignment is sequential judgment).
