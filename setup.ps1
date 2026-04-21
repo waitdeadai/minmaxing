@@ -69,7 +69,7 @@ if ($ApiKey -and $ApiKey -ne "YOUR_TOKEN_PLAN_KEY") {
     $settingsPath = ".claude\settings.json"
     if (Test-Path $settingsPath) {
         $content = Get-Content $settingsPath -Raw
-        $content = $content -replace "YOUR_TOKEN_PLAN_KEY", $ApiKey
+        $content = $content -replace "YOUR_MINIMAX_API_KEY", $ApiKey
         Set-Content -Path $settingsPath -Value $content
         Write-Host "  [PASS] API key configured in .claude\settings.json" -ForegroundColor Green
     } else {
