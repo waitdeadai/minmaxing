@@ -98,7 +98,7 @@ echo "[5/7] Initializing memory system..."
 mkdir -p obsidian/Memory/Decisions
 mkdir -p obsidian/Memory/Patterns
 mkdir -p obsidian/Memory/Errors
-mkdir -p obsidian/Memory/Stories
+mkdir -p obsidian/Memory/Stories/commits
 mkdir -p obsidian/Memory/Dashboard
 mkdir -p .taste/sessions
 echo "  [PASS] Memory directories created"
@@ -107,6 +107,27 @@ echo "  [PASS] Memory directories created"
 # Only create directories, not the taste files themselves
 if [ -f "./scripts/taste.sh" ]; then
     echo "  [INFO] Taste files will be created by /align --bootstrap when you first run /workflow"
+fi
+echo ""
+
+# Step 5.5: Install git post-commit hook for auto-summarize
+echo "[5.5/7] Installing git post-commit hook..."
+if [ -d ".git" ]; then
+    HOOK_DIR="$(pwd)/.git/hooks"
+    mkdir -p "$HOOK_DIR"
+    # Create post-commit hook that calls commit-summarize.sh
+    cat > "${HOOK_DIR}/post-commit" <<'HOOK'
+#!/bin/bash
+COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null)
+SCRIPT_DIR="$(dirname "$0")/../../scripts"
+if [ -f "${SCRIPT_DIR}/commit-summarize.sh" ]; then
+    bash "${SCRIPT_DIR}/commit-summarize.sh" "$COMMIT_HASH" 2>/dev/null || true
+fi
+HOOK
+    chmod +x "${HOOK_DIR}/post-commit"
+    echo "  [PASS] Git post-commit hook installed"
+else
+    echo "  [SKIP] Not a git repository"
 fi
 echo ""
 

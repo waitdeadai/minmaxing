@@ -170,7 +170,7 @@ Think of minmaxing as an operating system:
 
 ### 5-Tier Memory System
 
-Every skill interaction is remembered:
+Every action is remembered:
 
 | Tier | What | When |
 |------|------|------|
@@ -179,8 +179,11 @@ Every skill interaction is remembered:
 | Procedural | Code patterns | `/codex` findings, `/sprint` outcomes |
 | Error-Solution | Bugs & fixes | `/investigate` fixes, `/verify` failures |
 | Graph | Causal chains | What caused success/failure |
+| Commit Log | Git commit summaries | Every `git commit` (auto-summarized) |
 
 Memory is SQLite-backed with FTS5 search. Type `bash scripts/memory.sh stats` to see it.
+
+**Commit auto-summarize:** Every `git commit` triggers `commit-summarize.sh` via a git post-commit hook, generating `obsidian/Memory/Stories/commits/{date}-{hash}.md` with structured frontmatter and a brief summary. Also written to SQLite for agent retrieval.
 
 ---
 
@@ -405,7 +408,8 @@ minmaxing/
 │   ├── Decisions/               # Semantic tier
 │   ├── Patterns/                # Procedural tier
 │   ├── Errors/                  # Error-solution tier
-│   └── Stories/                 # Graph tier
+│   ├── Stories/                 # Graph tier
+│   │   └── commits/            # Commit summaries (auto-generated)
 └── .taste/
     ├── sessions/                # Episodic tier (daily JSONL)
     └── taste.memory             # Append-only decision log
