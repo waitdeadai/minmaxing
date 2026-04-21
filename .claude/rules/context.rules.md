@@ -27,9 +27,7 @@ Context degrades as conversation lengthens:
 
 ### When to Compact
 
-Use `/compact` when:
-- Context is 50+ turns long
-- You notice missed instructions
+When context is 50+ turns long, you notice missed instructions, or discussion has drifted from original topic.
 - Discussion has drifted from original topic
 - You need a fresh start on the same project
 

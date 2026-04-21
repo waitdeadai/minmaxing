@@ -121,6 +121,9 @@ AI training data is stale. Every external claim gets verified with live web sear
 | `/council` | Multi-perspective analysis |
 | `/codex` | Search code by pattern |
 | `/browse` | Web research with citations |
+| `/loop` | Schedule recurring tasks (cron-style, up to 3 days) |
+
+**Swarm mode:** Add "swarm" or "swarm this" to any skill trigger to run with 10-agent parallelism. E.g. "swarm audit", "swarm this", "swarm verify".
 
 ---
 

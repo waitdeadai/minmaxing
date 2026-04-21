@@ -39,6 +39,9 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 | /investigate | Debug with 3-fix limit |
 | /sprint | Manual 10 parallel agents |
 | /council | Multi-perspective synthesis |
+| /browse | Web research with citations |
+| /codex | Search code by pattern |
+| /overnight | 8hr session with 30-min checkpoints |
 
 ## Rules
 - **SPEC-First**: No code without SPEC.md
