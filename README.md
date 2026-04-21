@@ -112,7 +112,17 @@ AI training data is stale. Every external claim gets verified with live web sear
 - **acceptEdits** (default): File writes auto-approve, safe for parallel agents
 - **bypassPermissions** (YOLO): Zero safety checks, true one-command flow
 
----
+### Taste-First (Kernel)
+Every `/workflow` invocation checks `taste.md` + `taste.vision` before doing anything. If they don't exist, it runs `/align --bootstrap` to define them with you — first.
+
+### 5-Tier Memory (Persistent)
+SQLite-backed memory that remembers across sessions:
+- Every session start/end logged (episodic)
+- Decisions, patterns, errors all stored (semantic, procedural, error-solution)
+- Causal graph tracks what caused success/failure
+
+### Central Orchestrator
+`/workflow` chains skills together — it doesn't just invoke them, it passes context between them and gates progression. Skills are system calls; `/workflow` is the shell.
 
 ---
 
@@ -302,22 +312,22 @@ Now you can use any workflow pattern:
 
 ## Usage
 
-**The full workflow:**
+**The full workflow — one command:**
 ```bash
 claude
 /workflow "build a REST API for users"
 ```
 
-AI drives: SPEC → parallel research → implement (10 agents) → verify → review → ship
+`/workflow` chains: taste check → `/autoplan` → `/sprint` (10 agents) → `/verify` → `/ship`
 
-**Or step-by-step:**
+**Direct skill invocation (advanced):**
 ```bash
-/claude
 /autoplan "build a login system"   # Generate SPEC.md
 /sprint                            # Execute with 10 agents
 /verify                           # Check against spec
 /ship                             # Ship checklist
 ```
+Direct invocation skips the orchestrator — use when you know exactly what you need.
 
 ---
 
@@ -359,16 +369,46 @@ minmaxing/
 ├── CLAUDE.md                    # Core instructions (for AI)
 ├── README.md                    # This file (for you)
 ├── setup.sh                     # One-command installer
+├── taste.md                     # Design spec (what's acceptable) — created by /align
+├── taste.vision                 # Intent document (the why) — created by /align
 ├── .claude/
-│   ├── settings.json           # MiniMax config
-│   ├── skills/                 # 15 skills
-│   │   ├── workflow/
-│   │   ├── sprint/
-│   │   ├── verify/
-│   │   └── ...
-│   └── rules/                  # Modular rules
-└── scripts/
-    └── test-harness.sh        # Verify setup
+│   ├── settings.json           # MiniMax API config
+│   ├── skills/                 # 15 skills (system calls)
+│   │   ├── workflow/           # Central execution engine
+│   │   ├── align/              # Taste gate
+│   │   ├── audit/              # Deep codebase analysis
+│   │   ├── autoplan/            # SPEC.md generator
+│   │   ├── sprint/              # 10-agent parallel executor
+│   │   ├── verify/              # SPEC compliance checker
+│   │   ├── ship/                # Pre-ship checklist
+│   │   ├── investigate/         # Root-cause debugging
+│   │   ├── council/             # Multi-perspective synthesis
+│   │   ├── qa/                  # E2E testing
+│   │   ├── review/              # AI review + human sign-off
+│   │   ├── codex/               # Code search
+│   │   ├── browse/              # Web research
+│   │   ├── overnight/           # 8hr session with checkpoints
+│   │   └── loop/                # Cron-style recurring tasks
+│   └── rules/                  # Modular rules (spec, pev, quality, etc.)
+├── scripts/
+│   ├── memory.sh               # 5-tier memory CLI
+│   ├── memory-auto.sh           # Session start/end hooks
+│   ├── taste.sh                 # Taste system CLI
+│   ├── start-session.sh         # Session initializer
+│   └── detect-hardware.sh       # Auto-detect agent pool
+├── memory/                      # Python memory package (SQLite + FTS5)
+│   ├── sqlite_db.py
+│   ├── causal.py                # Causal graph tracking
+│   ├── consolidation.py          # Memory consolidation
+│   └── cli.py                   # Memory CLI entry point
+├── obsidian/Memory/             # Flat-file memory (git-tracked)
+│   ├── Decisions/               # Semantic tier
+│   ├── Patterns/                # Procedural tier
+│   ├── Errors/                  # Error-solution tier
+│   └── Stories/                 # Graph tier
+└── .taste/
+    ├── sessions/                # Episodic tier (daily JSONL)
+    └── taste.memory             # Append-only decision log
 ```
 
 ---
