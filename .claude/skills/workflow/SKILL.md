@@ -48,7 +48,17 @@ Given a task from the user, execute this workflow chain:
 
 ## Step 1: Taste Check
 
-Read taste.md and taste.vision from the project root. If they don't exist, invoke `/align --bootstrap` first.
+Read taste.md and taste.vision from the project root.
+
+**IMPORTANT**: If taste files don't exist, do NOT invoke /align --bootstrap from this subagent (interactive Q&A doesn't work in forked context). Instead, report to the user:
+
+```
+Taste files are missing. Please run:
+/align --bootstrap
+
+This will ask you 10 questions to define your project taste.
+After completing, re-run this workflow.
+```
 
 Call memory recall:
 ```
