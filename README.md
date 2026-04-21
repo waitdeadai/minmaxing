@@ -306,7 +306,7 @@ Now you can use any workflow pattern:
 | `/loop` | Schedule recurring tasks (cron-style, up to 3 days) |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
-All skills use 10-agent parallelism by default. "Swarm" is already built in — no special invocation needed.
+**Parallelism:** All skills that support parallelism use 10 agents by default (except `/align` which is single-threaded by design — taste alignment is sequential judgment).
 
 ---
 
