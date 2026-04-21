@@ -4,6 +4,8 @@
 #        memory list [--tier TIERS]
 #        memory search <query>
 #        memory stats
+#        memory recall <task> [--depth simple|medium|complex]
+#        memory causal-factors [--outcome success|failure] [--limit N]
 
 set -e
 
@@ -19,6 +21,12 @@ mkdir -p "${MEMORY_DIR}/Decisions"
 mkdir -p "${MEMORY_DIR}/Patterns"
 mkdir -p "${MEMORY_DIR}/Errors"
 mkdir -p "${MEMORY_DIR}/Stories"
+
+# Python call helper — runs memory Python package for SQLite FTS5 search
+# Falls back gracefully if Python fails
+python_call() {
+  python3 -m memory.cli "$@" 2>/dev/null || true
+}
 
 # Parse arguments
 CMD="${1:-}"
@@ -44,7 +52,7 @@ case "$CMD" in
 
     case "$tier" in
       episodic)
-        # Append to session log
+        # Append to session log (episodic is session-only, no Python sync)
         mkdir -p "${TASTE_DIR}/sessions"
         echo "{\"timestamp\":\"${DATE_TIME}\",\"type\":\"episodic\",\"content\":\"$(echo "$content" | sed 's/"/\\"/g')\"}" >> "$SESSION_FILE"
         echo "Added episodic: $content"
@@ -61,6 +69,8 @@ tags: [${tags:-untagged}]
 $(echo "$content" | sed 's/"/\\"/g')
 EOF
         echo "Added semantic: $content → $file"
+        # Dual-write to SQLite (best-effort)
+        python_call add semantic "$content" --tags "${tags:-untagged}" || true
         ;;
       procedural)
         file="${MEMORY_DIR}/Patterns/$(date +%s).md"
@@ -74,6 +84,8 @@ tags: [${tags:-untagged}]
 $(echo "$content" | sed 's/"/\\"/g')
 EOF
         echo "Added procedural: $content → $file"
+        # Dual-write to SQLite (best-effort)
+        python_call add procedural "$content" --tags "${tags:-untagged}" || true
         ;;
       error-solution)
         # content format: "error" "solution"
@@ -94,6 +106,8 @@ $(echo "$error" | sed 's/"/\\"/g')
 $(echo "$solution" | sed 's/"/\\"/g')
 EOF
         echo "Added error-solution pair → $file"
+        # Dual-write to SQLite (best-effort)
+        python_call add error-solution "$error" "$solution" || true
         ;;
       graph)
         file="${MEMORY_DIR}/Stories/$(date +%s).md"
@@ -107,6 +121,8 @@ tags: [${tags:-untagged}]
 $(echo "$content" | sed 's/"/\\"/g')
 EOF
         echo "Added graph: $content → $file"
+        # Dual-write to SQLite (best-effort)
+        python_call add graph "$content" --tags "${tags:-untagged}" || true
         ;;
       *)
         echo "Unknown tier: $tier"
@@ -155,14 +171,22 @@ EOF
       echo "Usage: memory search <query>"
       exit 1
     fi
+    # Delegate to Python FTS5 search if available, fall back to grep
     echo "=== Searching for: $query ==="
-    grep -r --include="*.md" "$query" "${MEMORY_DIR}/" 2>/dev/null | head -20
-    grep -r "$query" "${TASTE_DIR}/sessions/"*.jsonl 2>/dev/null | head -10
+    if python_call search "$query" 2>/dev/null; then
+      # Python search succeeded
+      :
+    else
+      # Fallback to grep
+      grep -r --include="*.md" "$query" "${MEMORY_DIR}/" 2>/dev/null | head -20
+      grep -r "$query" "${TASTE_DIR}/sessions/"*.jsonl 2>/dev/null | head -10
+    fi
     ;;
 
   stats)
     echo "=== Memory Stats ==="
     echo ""
+    echo "--- Flat Files ---"
     echo "Episodic (sessions today):"
     [ -f "$SESSION_FILE" ] && wc -l < "$SESSION_FILE" || echo "  0 entries"
     echo ""
@@ -170,6 +194,42 @@ EOF
     echo "Patterns: $(ls "${MEMORY_DIR}/Patterns/" 2>/dev/null | wc -l) notes"
     echo "Errors: $(ls "${MEMORY_DIR}/Errors/" 2>/dev/null | wc -l) notes"
     echo "Stories: $(ls "${MEMORY_DIR}/Stories/" 2>/dev/null | wc -l) notes"
+
+    # SQLite counts (best-effort)
+    echo ""
+    echo "--- SQLite (FTS5) ---"
+    if ! python_call stats 2>/dev/null; then
+      echo "SQLite not available (python memory.cli not installed)"
+    fi
+    ;;
+
+  recall)
+    task="${1:-}"
+    if [ -z "$task" ]; then
+      echo "Usage: memory recall <task_description> [--depth simple|medium|complex]"
+      exit 1
+    fi
+    depth="${2:-medium}"
+    # Strip --depth if passed as flag
+    if [ "$depth" = "--depth" ]; then
+      depth="${3:-medium}"
+    fi
+    python_call recall "$task" --depth "$depth" || echo "Recall failed: python memory.cli not available"
+    ;;
+
+  causal-factors)
+    outcome="${1:-success}"
+    limit="${2:-5}"
+    # Handle --outcome and --limit flags
+    if [ "$outcome" = "--outcome" ]; then
+      outcome="${2:-success}"
+      limit="${4:-5}"
+    fi
+    if [ "$outcome" != "success" ] && [ "$outcome" != "failure" ]; then
+      limit="${outcome}"
+      outcome="success"
+    fi
+    python_call causal-factors --outcome "$outcome" --limit "$limit" || echo "Causal-factors failed: python memory.cli not available"
     ;;
 
   *)
@@ -180,8 +240,10 @@ EOF
     echo "Commands:"
     echo "  add <tier> <content> [--tags TAG1,TAG2]  Add memory"
     echo "  list [--tier TIERS]                      List memories"
-    echo "  search <query>                           Search memories"
-    echo "  stats                                    Show stats"
+    echo "  search <query>                           Search memories (FTS5)"
+    echo "  stats                                    Show stats (flat + SQLite)"
+    echo "  recall <task> [--depth simple|medium|complex]  Recall task context"
+    echo "  causal-factors [--outcome success|failure] [--limit N]  Analyze causal factors"
     echo ""
     echo "Tiers: episodic, semantic, procedural, error-solution, graph"
     ;;

@@ -61,21 +61,31 @@ Hardware auto-detection runs via `scripts/detect-hardware.sh` on every shell sta
 
 ## 5-Tier Memory System
 
-minmaxing maintains a 5-tier memory architecture:
+minmaxing maintains a 5-tier memory architecture backed by SQLite + FTS5:
 
 | Tier | Content | Storage |
 |------|---------|---------|
 | Episodic | Task outcomes | `.taste/sessions/*.jsonl` |
-| Semantic | Principles | `taste.md` + `obsidian/Memory/Decisions/` |
-| Procedural | Code patterns | `obsidian/Memory/Patterns/` |
-| Error-Solution | Error → fix | `obsidian/Memory/Errors/` |
-| Graph | Entity relationships | `obsidian/Memory/Stories/` |
+| Semantic | Principles | SQLite + FTS5 (`.minimaxing/memory.db`) |
+| Procedural | Code patterns | SQLite + FTS5 (`.minimaxing/memory.db`) |
+| Error-Solution | Error → fix | SQLite + FTS5 (`.minimaxing/memory.db`) |
+| Graph | Entity relationships (success factors) | SQLite + FTS5 (`.minimaxing/memory.db`) |
 
+**Storage details:**
+- **Episodic**: Raw JSONL session logs in `.taste/sessions/`
+- **Semantic/Procedural/Error-Solution/Graph**: SQLite database with FTS5 full-text search in `.minimaxing/memory.db`
+- **Causal graph tracking**: Records success factors and outcome chains for learned patterns
+
+**Key files:**
 - `taste.md` — Design spec (what's acceptable)
 - `taste.vision` — Intent document (the "why")
 - `.taste/taste.memory` — Append-only decision log (JSONL)
 
-Run `/memory` or `bash scripts/memory.sh stats` to query.
+**Commands:**
+- `memory recall` — Inject relevant context from SQLite memory into current session
+- `/memory` or `bash scripts/memory.sh stats` — Query memory stats
+
+**Causal graph**: Tracks what caused success/failure, enabling learned patterns across sessions.
 
 ## Quick Start
 ```bash

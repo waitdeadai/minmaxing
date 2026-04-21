@@ -14,58 +14,52 @@ echo ""
 
 # Step 0: Clone repository to temp, then move to current directory
 if [ ! -d ".git" ]; then
-    echo "[0/6] Cloning minmaxing repository..."
+    echo "[0/7] Cloning minmaxing repository..."
     TEMP_DIR=$(mktemp -d)
     git clone https://github.com/waitdeadai/minmaxing.git "$TEMP_DIR"
     cp -r "$TEMP_DIR"/* .
     cp -r "$TEMP_DIR"/.[!.]* . 2>/dev/null || true
     rm -rf "$TEMP_DIR"
 else
-    echo "[0/6] Using existing minmaxing directory"
+    echo "[0/7] Using existing minmaxing directory"
 fi
 echo ""
 
-# Step 1: Install ForgeGod
-echo "[1/6] Installing ForgeGod memory system..."
-pip install forgegod --break-system-packages 2>/dev/null || pip3 install forgegod --break-system-packages 2>/dev/null || echo "ForgeGod install failed (will retry later)"
+# Step 1: Check Python 3
+echo "[1/7] Checking Python 3..."
+if command -v python3 &> /dev/null; then
+    PYTHON_VERSION=$(python3 --version 2>&1 | cut -d' ' -f2)
+    echo "  [PASS] Python 3 found: $PYTHON_VERSION"
+else
+    echo "  [FAIL] Python 3 not found. Install from https://python.org"
+    exit 1
+fi
 echo ""
 
-# Step 2: Install uvx
-echo "[2/6] Checking uvx..."
+# Step 2: Check uvx
+echo "[2/7] Checking uvx..."
 if ! command -v uvx &> /dev/null; then
     echo "Installing uvx..."
     curl -LsSf https://astral.sh/uv/install.sh | sh 2>/dev/null || echo "uvx install skipped"
     source ~/.bashrc 2>/dev/null || true
 fi
-echo ""
-
-# Step 3: Verify installation
-echo "[3/6] Verifying installation..."
-PASS=0
-if command -v forgegod &> /dev/null; then
-    echo "  [PASS] ForgeGod installed"
-    PASS=$((PASS+1))
-else
-    echo "  [WARN] ForgeGod not installed - run: pip install forgegod --break-system-packages"
-fi
-
-if command -v claude &> /dev/null; then
-    echo "  [PASS] Claude Code installed"
-    PASS=$((PASS+1))
-else
-    echo "  [WARN] Claude Code not installed - npm install -g @anthropic-ai/claude-code"
-fi
-
 if command -v uvx &> /dev/null; then
     echo "  [PASS] uvx installed"
-    PASS=$((PASS+1))
 else
     echo "  [WARN] uvx not installed - curl -LsSf https://astral.sh/uv/install.sh | sh"
 fi
 echo ""
 
+# Step 3: Verify Python dependencies (sqlite3 is stdlib, no install needed)
+echo "[3/7] Verifying Python dependencies..."
+python3 -c "import sqlite3; print('  [PASS] sqlite3 available')" 2>/dev/null || {
+    echo "  [FAIL] sqlite3 not available"
+    exit 1
+}
+echo ""
+
 # Step 4: Configure API Key in settings.json
-echo "[4/6] Configuring MiniMax API key..."
+echo "[4/7] Configuring MiniMax API key..."
 echo ""
 
 if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
@@ -99,9 +93,24 @@ else
 fi
 echo ""
 
-# Step 5: Add hardware detection to bashrc
-echo "[5/6] Adding hardware auto-detection to ~/.bashrc..."
-# Use $(pwd) since setup.sh can run from any directory after clone
+# Step 5: Initialize memory system directories
+echo "[5/7] Initializing memory system..."
+mkdir -p obsidian/Memory/Decisions
+mkdir -p obsidian/Memory/Patterns
+mkdir -p obsidian/Memory/Errors
+mkdir -p obsidian/Memory/Stories
+mkdir -p obsidian/Memory/Dashboard
+mkdir -p .taste/sessions
+echo "  [PASS] Memory directories created"
+
+# Initialize taste system
+if [ -f "./scripts/taste.sh" ]; then
+    bash ./scripts/taste.sh init 2>/dev/null || echo "  [WARN] taste.sh init failed"
+fi
+echo ""
+
+# Step 6: Add hardware detection to bashrc
+echo "[6/7] Adding hardware auto-detection to ~/.bashrc..."
 DETECT_SOURCE="[ -f \"\$(pwd)/scripts/detect-hardware.sh\" ] && source \"\$(pwd)/scripts/detect-hardware.sh\""
 if ! grep -q "detect-hardware.sh" ~/.bashrc 2>/dev/null; then
     echo "$DETECT_SOURCE" >> ~/.bashrc
@@ -111,13 +120,29 @@ else
 fi
 echo ""
 
-# Step 6: Run tests
-echo "[6/6] Running harness tests..."
-echo ""
-if [ -f "./scripts/test-harness.sh" ]; then
-    ./scripts/test-harness.sh
+# Step 7: Verify installation
+echo "[7/7] Verifying harness..."
+PASS=0
+
+if command -v claude &> /dev/null; then
+    echo "  [PASS] Claude Code installed"
+    PASS=$((PASS+1))
 else
-    echo "  [WARN] test-harness.sh not found"
+    echo "  [WARN] Claude Code not installed - npm install -g @anthropic-ai/claude-code"
+fi
+
+if [ -d "memory" ] && [ -f "memory/sqlite_db.py" ]; then
+    echo "  [PASS] Memory system installed"
+    PASS=$((PASS+1))
+else
+    echo "  [WARN] Memory system not found"
+fi
+
+if [ -f "scripts/memory.sh" ]; then
+    echo "  [PASS] Memory CLI available"
+    PASS=$((PASS+1))
+else
+    echo "  [WARN] Memory CLI not found"
 fi
 echo ""
 
@@ -129,4 +154,5 @@ echo ""
 echo "Next steps:"
 echo "  1. Run: claude"
 echo "  2. Try: /workflow 'build a REST API'"
+echo "  3. Check memory: bash scripts/memory.sh stats"
 echo ""

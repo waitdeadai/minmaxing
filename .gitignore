@@ -22,8 +22,10 @@ __pycache__/
 # Claude Code
 .claude/scheduled_tasks.lock
 
-# ForgeGod
-.forgegod/
+# MiniMaxing Memory (SQLite DB)
+.minimaxing/
+memory/memory.db
+memory/memory.db-*
 
 # Taste System (session logs + memory)
 .taste/

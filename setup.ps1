@@ -14,55 +14,60 @@ Write-Host "  minmaxing Setup (Windows)" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Step 1: Install ForgeGod
-Write-Host "[1/4] Installing ForgeGod memory system..." -ForegroundColor Yellow
-pip install forgegod --break-system-packages 2>$null
-if ($LASTEXITCODE -ne 0) {
-    pip3 install forgegod --break-system-packages 2>$null
+# Step 1: Check Python 3
+Write-Host "[1/6] Checking Python 3..." -ForegroundColor Yellow
+if (Get-Command python3 -ErrorAction SilentlyContinue) {
+    $pythonVersion = python3 --version 2>&1
+    Write-Host "  [PASS] Python 3 found: $pythonVersion" -ForegroundColor Green
+} elseif (Get-Command python -ErrorAction SilentlyContinue) {
+    $pythonVersion = python --version 2>&1
+    Write-Host "  [PASS] Python found: $pythonVersion" -ForegroundColor Green
+} else {
+    Write-Host "  [FAIL] Python not found. Install from https://python.org" -ForegroundColor Red
+    exit 1
 }
 Write-Host ""
 
 # Step 2: Install uvx
-Write-Host "[2/4] Checking uvx..." -ForegroundColor Yellow
+Write-Host "[2/6] Checking uvx..." -ForegroundColor Yellow
 if (-not (Get-Command uvx -ErrorAction SilentlyContinue)) {
     Write-Host "Installing uvx..." -ForegroundColor Gray
-    # PowerShell-native uv installation
     $uvInstallScript = "$env:TEMP\install-uv.ps1"
     Invoke-WebRequest -Uri "https://astral.sh/uv/install.ps" -OutFile $uvInstallScript
     powershell -ExecutionPolicy Bypass -File $uvInstallScript
     Remove-Item $uvInstallScript -Force -ErrorAction SilentlyContinue
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "User") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine")
 }
-Write-Host ""
-
-# Step 3: Verify installation
-Write-Host "[3/4] Verifying installation..." -ForegroundColor Yellow
-$pass = 0
-
-if (Get-Command forgegod -ErrorAction SilentlyContinue) {
-    Write-Host "  [PASS] ForgeGod installed" -ForegroundColor Green
-    $pass++
-} else {
-    Write-Host "  [WARN] ForgeGod not installed - run: pip install forgegod --break-system-packages" -ForegroundColor Red
-}
-
-if (Get-Command claude -ErrorAction SilentlyContinue) {
-    Write-Host "  [PASS] Claude Code installed" -ForegroundColor Green
-    $pass++
-} else {
-    Write-Host "  [WARN] Claude Code not installed - npm install -g @anthropic-ai/claude-code" -ForegroundColor Red
-}
-
 if (Get-Command uvx -ErrorAction SilentlyContinue) {
     Write-Host "  [PASS] uvx installed" -ForegroundColor Green
-    $pass++
 } else {
     Write-Host "  [WARN] uvx not installed - see https://astral.sh/uv/install" -ForegroundColor Red
 }
 Write-Host ""
 
+# Step 3: Verify Python dependencies
+Write-Host "[3/6] Verifying Python dependencies..." -ForegroundColor Yellow
+try {
+    python3 -c "import sqlite3; print('sqlite3 available')" 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "  [PASS] sqlite3 available" -ForegroundColor Green
+    } else {
+        python -c "import sqlite3; print('sqlite3 available')" 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "  [PASS] sqlite3 available" -ForegroundColor Green
+        } else {
+            Write-Host "  [FAIL] sqlite3 not available" -ForegroundColor Red
+            exit 1
+        }
+    }
+} catch {
+    Write-Host "  [FAIL] sqlite3 not available" -ForegroundColor Red
+    exit 1
+}
+Write-Host ""
+
 # Step 4: Configure API Key
-Write-Host "[4/4] Configuring MiniMax API key..." -ForegroundColor Yellow
+Write-Host "[4/6] Configuring MiniMax API key..." -ForegroundColor Yellow
 Write-Host ""
 
 if ($ApiKey -and $ApiKey -ne "YOUR_TOKEN_PLAN_KEY") {
@@ -98,12 +103,57 @@ if ($ApiKey -and $ApiKey -ne "YOUR_TOKEN_PLAN_KEY") {
 }
 Write-Host ""
 
+# Step 5: Initialize memory system directories
+Write-Host "[5/6] Initializing memory system..." -ForegroundColor Yellow
+New-Item -ItemType Directory -Force -Path "obsidian\Memory\Decisions" | Out-Null
+New-Item -ItemType Directory -Force -Path "obsidian\Memory\Patterns" | Out-Null
+New-Item -ItemType Directory -Force -Path "obsidian\Memory\Errors" | Out-Null
+New-Item -ItemType Directory -Force -Path "obsidian\Memory\Stories" | Out-Null
+New-Item -ItemType Directory -Force -Path "obsidian\Memory\Dashboard" | Out-Null
+New-Item -ItemType Directory -Force -Path ".taste\sessions" | Out-Null
+Write-Host "  [PASS] Memory directories created" -ForegroundColor Green
+
+if (Test-Path "scripts\taste.sh") {
+    bash scripts\taste.sh init 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "  [PASS] Taste system initialized" -ForegroundColor Green
+    }
+}
+Write-Host ""
+
+# Step 6: Verify harness
+Write-Host "[6/6] Verifying harness..." -ForegroundColor Yellow
+$pass = 0
+
+if (Get-Command claude -ErrorAction SilentlyContinue) {
+    Write-Host "  [PASS] Claude Code installed" -ForegroundColor Green
+    $pass++
+} else {
+    Write-Host "  [WARN] Claude Code not installed - npm install -g @anthropic-ai/claude-code" -ForegroundColor Red
+}
+
+if (Test-Path "memory\sqlite_db.py") {
+    Write-Host "  [PASS] Memory system installed" -ForegroundColor Green
+    $pass++
+} else {
+    Write-Host "  [WARN] Memory system not found" -ForegroundColor Red
+}
+
+if (Test-Path "scripts\memory.sh") {
+    Write-Host "  [PASS] Memory CLI available" -ForegroundColor Green
+    $pass++
+} else {
+    Write-Host "  [WARN] Memory CLI not found" -ForegroundColor Red
+}
+Write-Host ""
+
 # Final status
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "  Setup Complete" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor White
-Write-Host "  1. Run: .\scripts\test-harness.sh (or test-harness.ps1 if exists)" -ForegroundColor Gray
-Write-Host "  2. Start coding with: claude" -ForegroundColor Gray
+Write-Host "  1. Run: claude" -ForegroundColor Gray
+Write-Host "  2. Try: /workflow 'build a REST API'" -ForegroundColor Gray
+Write-Host "  3. Check memory: bash scripts/memory.sh stats" -ForegroundColor Gray
 Write-Host ""
