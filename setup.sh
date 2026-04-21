@@ -73,21 +73,45 @@ if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
 
     # Configure MCP server
     echo "Configuring MiniMax MCP server..."
-    claude mcp add -s user MiniMax \
-      --env MINIMAX_API_KEY="$API_KEY" \
-      --env MINIMAX_API_HOST=https://api.minimax.io \
-      -- uvx minimax-coding-plan-mcp -y 2>/dev/null || echo "MCP setup skipped (may already exist)"
-    echo "  [PASS] MiniMax MCP configured"
+
+    # Check if uvx exists
+    UVX_PATH=""
+    if command -v uvx &> /dev/null; then
+        UVX_PATH="uvx"
+    elif [ -f "$HOME/.local/bin/uvx" ]; then
+        UVX_PATH="$HOME/.local/bin/uvx"
+    elif [ -f "/usr/local/bin/uvx" ]; then
+        UVX_PATH="/usr/local/bin/uvx"
+    fi
+
+    if [ -z "$UVX_PATH" ]; then
+        echo "  [WARN] uvx not found. Installing..."
+        curl -LsSf https://astral.sh/uv/install.sh | sh 2>/dev/null || true
+        if [ -f "$HOME/.local/bin/uvx" ]; then
+            UVX_PATH="$HOME/.local/bin/uvx"
+        fi
+    fi
+
+    if [ -n "$UVX_PATH" ]; then
+        echo "  [INFO] Using uvx at: $UVX_PATH"
+        # Remove existing MiniMax MCP if present
+        claude mcp remove -s user MiniMax 2>/dev/null || true
+        # Add with explicit path and verify
+        claude mcp add -s user MiniMax \
+          --env MINIMAX_API_KEY="$API_KEY" \
+          --env MINIMAX_API_HOST=https://api.minimax.io \
+          -- "$UVX_PATH" minimax-coding-plan-mcp -y
+        echo "  [PASS] MiniMax MCP configured with $UVX_PATH"
+    else
+        echo "  [FAIL] Could not find or install uvx"
+        echo "  Manual setup:"
+        echo "    1. Install uvx: curl -LsSf https://astral.sh/uv/install.sh | sh"
+        echo "    2. Then run: claude mcp add -s user MiniMax --env MINIMAX_API_KEY=$API_KEY -- uvx minimax-coding-plan-mcp -y"
+    fi
 else
     echo "To complete setup, run with your API key:"
     echo ""
     echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY"
-    echo ""
-    echo "Or manually configure with:"
-    echo "  claude mcp add -s user MiniMax \\"
-    echo "    --env MINIMAX_API_KEY=YOUR_TOKEN_PLAN_KEY \\"
-    echo "    --env MINIMAX_API_HOST=https://api.minimax.io \\"
-    echo "    -- uvx minimax-coding-plan-mcp -y"
     echo ""
     echo "Get your key from: platform.minimax.io"
 fi
