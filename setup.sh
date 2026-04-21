@@ -103,9 +103,10 @@ mkdir -p obsidian/Memory/Dashboard
 mkdir -p .taste/sessions
 echo "  [PASS] Memory directories created"
 
-# Initialize taste system
+# Initialize taste system (NOTE: taste files created on-demand by /workflow via /align --bootstrap)
+# Only create directories, not the taste files themselves
 if [ -f "./scripts/taste.sh" ]; then
-    bash ./scripts/taste.sh init 2>/dev/null || echo "  [WARN] taste.sh init failed"
+    echo "  [INFO] Taste files will be created by /align --bootstrap when you first run /workflow"
 fi
 echo ""
 

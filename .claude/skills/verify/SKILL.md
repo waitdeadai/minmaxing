@@ -120,6 +120,22 @@ List specific failures and recommend fixes:
 2. [specific fix for failure 2]
 ```
 
+### Step 5.5: Log Failures to Memory
+
+On REJECT, log each failed criterion to error-solution tier:
+
+```bash
+# Log each failure as error-solution pair
+bash scripts/memory.sh add error-solution "\"Failed criterion: [criterion]\"" "\"Fix: [recommended fix]\""
+
+# Record failure in causal graph
+python3 -c "
+from memory.causal import record_outcome
+factors = ['spec_drift', 'verify_failed', '[specific_failed_criterion]']
+record_outcome(factors, 'failure')
+" 2>/dev/null || echo "record_outcome: skipped"
+```
+
 ---
 
 ## Evidence Requirements

@@ -28,7 +28,9 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. ForgeGod, uvx, MiniMax MCP, and 14 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 15 skills — all configured.
+
+**Taste files are created on-demand.** The first time you run `/workflow`, it detects missing taste.md + taste.vision and triggers `/align --bootstrap` to define them. No empty templates, no guessing.
 
 > **Note:** Setup adds hardware auto-detection to `~/.bashrc` — `MAX_PARALLEL_AGENTS` is set automatically on every shell start.
 
@@ -102,6 +104,167 @@ AI training data is stale. Every external claim gets verified with live web sear
 ### Permission Mode
 - **acceptEdits** (default): File writes auto-approve, safe for parallel agents
 - **bypassPermissions** (YOLO): Zero safety checks, true one-command flow
+
+---
+
+---
+
+## How the Workflow System Works
+
+### Taste as OS, Skills as System Calls
+
+Think of minmaxing as an operating system:
+
+```
+┌─────────────────────────────────────────────────────┐
+│                      /workflow                      │
+│                  (Central Execution Engine)          │
+├─────────────────────────────────────────────────────┤
+│  PHASE 0: TASTE CHECK [GATE]  ← taste.md + vision │
+│  PHASE 1: ROUTE (skill_router)                      │
+│  PHASE 2: EXECUTE (skill chains)                   │
+│  PHASE 3: VERIFY (taste + SPEC compliance)          │
+│  PHASE 4: ROUTE OUTPUT                             │
+├─────────────────────────────────────────────────────┤
+│            taste.md + taste.vision                  │
+│                  (Kernel / OS)                     │
+├─────────────────────────────────────────────────────┤
+│  /autoplan /sprint /verify /ship /investigate     │
+│  /audit   /council /qa   /review  /browse         │
+│  /codex   /overnight /align                          │
+│              (System Calls)                          │
+└─────────────────────────────────────────────────────┘
+```
+
+**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, `/workflow` triggers `/align --bootstrap` to define it.
+
+**Skills are system calls.** Each skill does one thing well. `/workflow` chains them together into execution paths.
+
+**/workflow is the shell.** It orchestrates everything. Routes tasks to skills, passes context between them, verifies output, and gates progression.
+
+### The 4 Execution Paths
+
+| When you say... | /workflow routes to... |
+|-----------------|----------------------|
+| "build X", "implement Y" | /autoplan → /sprint → /verify → /ship |
+| "fix Z", "debug this" | /investigate → /verify |
+| "explain", "refactor", "optimize" | /autoplan → /sprint → /verify → /ship |
+| "audit this", "analyze" | /audit or /council |
+
+### 5-Tier Memory System
+
+Every skill interaction is remembered:
+
+| Tier | What | When |
+|------|------|------|
+| Episodic | Session start/end | Every shell start/exit |
+| Semantic | Decisions & principles | `/council` decisions, `/align` verdicts |
+| Procedural | Code patterns | `/codex` findings, `/sprint` outcomes |
+| Error-Solution | Bugs & fixes | `/investigate` fixes, `/verify` failures |
+| Graph | Causal chains | What caused success/failure |
+
+Memory is SQLite-backed with FTS5 search. Type `bash scripts/memory.sh stats` to see it.
+
+---
+
+## From 0 to 100: Fresh Folder
+
+### Step 1: Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+```
+
+### Step 2: Define Your Taste
+
+```bash
+claude
+```
+
+Then tell it what you want to build:
+
+```
+/workflow "build a REST API for a todo app"
+```
+
+**What happens:**
+1. `/workflow` checks taste.md + taste.vision → **don't exist**
+2. Triggers `/align --bootstrap` → asks you 10 questions about your design principles, aesthetic, intent, non-goals
+3. You answer → taste.md + taste.vision are created
+4. `/workflow` continues: `/autoplan` creates SPEC.md → `/sprint` implements (10 agents) → `/verify` checks → `/ship` ships
+
+### What You Get
+
+- **SPEC.md** — exact specification you approved
+- **Implementation** — parallel agents building simultaneously
+- **Verification** — separate agent adversarial-checking against spec
+- **Ship** — checklist, tests, rollback plan, commit, push
+- **Memory** — everything logged to 5-tier memory for next session
+
+### After First Build
+
+Your taste is saved. Next time:
+
+```
+/workflow "add user authentication"
+```
+
+No taste questions. `/workflow` knows your principles, plans, builds, verifies, ships.
+
+---
+
+## Integrate Into Existing Project
+
+Drop minmaxing into any codebase:
+
+### Step 1: Install Into Existing Folder
+
+```bash
+cd your-existing-project
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+```
+
+This copies minmaxing files without touching your existing code.
+
+### Step 2: Define Taste for This Project
+
+```bash
+claude
+```
+
+```
+/align --bootstrap
+```
+
+Answer the 10 taste questions about your existing project:
+- What are your design principles?
+- What's your intent?
+- What's in/out of scope?
+- What aesthetic rules?
+
+### Step 3: Use /workflow on Your Codebase
+
+Now you can use any workflow pattern:
+
+| Command | What it does |
+|---------|--------------|
+| `/workflow "explain this codebase"` | Understand what you have |
+| `/workflow "audit this for security issues"` | Deep security + quality audit (10 agents) |
+| `/workflow "refactor the auth module"` | Spec → implement → verify → ship |
+| `/workflow "optimize database queries"` | Spec → implement → verify → ship |
+| `/workflow "investigate why X is slow"` | Root-cause debugging with hypothesis testing |
+| `/workflow "add REST API to existing endpoints"` | Spec-first build respecting existing architecture |
+
+### Key Difference: Existing vs New
+
+| Aspect | Fresh Project | Existing Project |
+|--------|--------------|------------------|
+| SPEC.md | Greenfield spec | May not apply — use `/verify` for bug fixes |
+| Taste | Bootstrap fresh | Define from existing code |
+| `/workflow "build"` | Full spec-first flow | Add features, respect existing patterns |
+| `/workflow "explain"` | N/A | Understand existing codebase |
+| `/workflow "audit"` | N/A | Find issues in existing code |
+| `/workflow "refactor"` | N/A | Improve existing implementation |
 
 ---
 

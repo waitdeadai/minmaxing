@@ -36,7 +36,19 @@ Parallel web research with live data — not stale training data.
 
 **Use all available agents for deep research.** Each agent researches a different aspect simultaneously.
 
-### Step 1: Decompose Research Query
+### Step 1: Memory Recall (Before Research)
+
+Check if we've already researched this topic recently:
+
+```bash
+# Check for existing research
+bash scripts/memory.sh recall "[research topic]" --depth simple 2>/dev/null || echo "Memory recall: skipped"
+
+# Search for related findings
+bash scripts/memory.sh search "[topic]" 2>/dev/null || true
+```
+
+### Step 2: Decompose Research Query
 
 Break the research into parallel tracks:
 - Track 1: Official documentation
@@ -47,7 +59,7 @@ Break the research into parallel tracks:
 
 Target: Fill all `MAX_PARALLEL_AGENTS` slots with research tracks.
 
-### Step 2: Parallel Web Searches
+### Step 3: Parallel Web Searches
 
 Spawn parallel searches for each track:
 
@@ -64,14 +76,14 @@ mcp__MiniMax__web_search "[topic] GitHub issues limitations 2026"
 # ... up to MAX_PARALLEL_AGENTS
 ```
 
-### Step 3: Parallel Source Fetching
+### Step 4: Parallel Source Fetching
 
 While searches run, fetch key sources in parallel:
 - Official docs
 - Recent blog posts
 - GitHub discussions
 
-### Step 4: Synthesize
+### Step 5: Synthesize
 
 ```markdown
 ## Research: [Topic] — [N] Agents Deployed
@@ -95,6 +107,23 @@ While searches run, fetch key sources in parallel:
 
 ### Action Items
 - [What to do based on research]
+```
+
+### Step 6: Store Research Findings
+
+Store key findings for future recall:
+
+```bash
+# Store findings as semantic memory with sources
+bash scripts/memory.sh add semantic "Research [topic]: [key finding 1]. Source: [URL]" --tags "research,[topic],[year]"
+bash scripts/memory.sh add semantic "Research [topic]: [key finding 2]. Source: [URL]" --tags "research,[topic],[year]"
+
+# Record research success
+python3 -c "
+from memory.causal import record_outcome
+factors = ['web_research', 'cited_sources', 'parallel_agents']
+record_outcome(factors, 'success')
+" 2>/dev/null || echo "record_outcome: skipped"
 ```
 
 ---

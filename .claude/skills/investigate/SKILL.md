@@ -20,6 +20,18 @@ Find root cause of bugs/issues systematically. Hypothesis testing prevents guess
 
 ## Execution Protocol
 
+### Step 0: Memory Recall (Before Starting)
+
+Recall similar past issues before investigating:
+
+```bash
+# Recall similar error-solution pairs
+bash scripts/memory.sh recall "[issue keywords]" --depth simple 2>/dev/null || echo "Memory recall: skipped"
+
+# Check for known errors
+bash scripts/memory.sh search "[error message]" 2>/dev/null || true
+```
+
 ### Step 1: Gather Evidence
 
 ```markdown
@@ -108,6 +120,15 @@ Result: PASS/FAIL
 - Document the fix
 - Verify no regression
 - Stop (don't over-engineer)
+- Log error-solution pair:
+```bash
+bash scripts/memory.sh add error-solution "\"[exact error message]\"" "\"Root cause: [cause], Fix: [change made]\""
+python3 -c "
+from memory.causal import record_outcome
+factors = ['hypothesis_testing', 'root_cause_found', 'fix_verified']
+record_outcome(factors, 'success')
+" 2>/dev/null || echo "record_outcome: skipped"
+```
 
 ### Step 5: 3-Fix Limit Protocol
 
@@ -132,6 +153,15 @@ After 3 fixes without resolution:
 - Who/where to escalate to
 - What information to provide
 - What to ask for
+```
+
+Log escalation to memory:
+```bash
+python3 -c "
+from memory.causal import record_outcome
+factors = ['3_fix_limit', 'escalated', 'root_cause_unresolved']
+record_outcome(factors, 'failure')
+" 2>/dev/null || echo "record_outcome: skipped"
 ```
 
 ### Step 6: Final Output

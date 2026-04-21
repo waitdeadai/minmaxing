@@ -18,13 +18,18 @@ SPEC-first planning that generates SPEC.md before any implementation. Uses plan 
 
 ## Execution Protocol
 
-### Step 1: Understand the Goal + Taste Bootstrap
+### Step 1: Understand the Goal + Taste Bootstrap + Memory Recall
 
 - Read user's description carefully
 - Identify what success looks like (verifiable, not vague)
 - Check: taste.md + taste.vision exist?
   - If NO → invoke /align --bootstrap first, then continue
   - If YES → proceed to Step 2
+- Recall similar past plans to inform scope and approach:
+```bash
+bash scripts/memory.sh recall "[planning topic]" --depth medium 2>/dev/null || echo "Memory recall: skipped"
+bash scripts/memory.sh search "spec" 2>/dev/null || true
+```
 
 ### Step 2: Parallel Research (use MAX_PARALLEL_AGENTS)
 

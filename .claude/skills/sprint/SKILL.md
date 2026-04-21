@@ -45,6 +45,18 @@ To configure: add to `settings.json`:
 }
 ```
 
+### Step 0.5: Memory Recall (Before Planning)
+
+Recall similar past sprints to inform task breakdown:
+
+```bash
+# Recall similar past sprint patterns
+bash scripts/memory.sh recall "[sprint feature type]" --depth simple 2>/dev/null || echo "Memory recall: skipped"
+
+# Check for procedural patterns
+bash scripts/memory.sh search "sprint" 2>/dev/null || true
+```
+
 ### Step 1: Task Analysis — MAXIMIZE PARALLELISM
 
 **Rule: Break tasks into MORE granular pieces to fill all 10 agents.**

@@ -20,6 +20,27 @@ Execute long-running tasks that exceed normal session time. Checkpoints prevent 
 
 ## Execution Protocol
 
+### PHASE 0: Taste & Memory Check
+
+**MANDATORY GATE — Read taste files and recall memory before starting.**
+
+```bash
+# Check taste files exist
+if [ ! -f "taste.md" ] || [ ! -f "taste.vision" ]; then
+  echo "WARNING: taste.md or taste.vision missing — invoke /align --bootstrap first"
+fi
+
+# Read taste files
+cat taste.md 2>/dev/null || echo "taste.md: not found"
+cat taste.vision 2>/dev/null || echo "taste.vision: not found"
+
+# Recall past overnight sessions
+bash scripts/memory.sh recall "overnight session" --depth simple 2>/dev/null || echo "Memory recall: skipped"
+
+# Log session start
+bash scripts/memory.sh add episodic "Overnight session started: [project/feature description]"
+```
+
 ### Step 1: Define Work Items
 
 ```markdown
@@ -112,6 +133,16 @@ At completion or session end:
 - Commit: [hash]
 - State: [what was in progress]
 - How to resume: [command/instructions]
+```
+
+Log session end to memory:
+```bash
+bash scripts/memory.sh add episodic "Overnight session completed: [project] — [N] tasks done, [M] checkpoints"
+python3 -c "
+from memory.causal import record_outcome
+factors = ['overnight_session', 'checkpoint_discipline', '8_hour_session']
+record_outcome(factors, 'success')
+" 2>/dev/null || echo "record_outcome: skipped"
 ```
 
 ---

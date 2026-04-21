@@ -69,8 +69,8 @@ tags: [${tags:-untagged}]
 $(echo "$content" | sed 's/"/\\"/g')
 EOF
         echo "Added semantic: $content → $file"
-        # Dual-write to SQLite (best-effort)
-        python_call add semantic "$content" --tags "${tags:-untagged}" || true
+        # Dual-write to SQLite (best-effort, warn on failure)
+        python3 -m memory.cli add semantic "$content" --tags "${tags:-untagged}" 2>/dev/null || echo "  [WARN] SQLite sync failed for semantic"
         ;;
       procedural)
         file="${MEMORY_DIR}/Patterns/$(date +%s).md"
@@ -84,8 +84,8 @@ tags: [${tags:-untagged}]
 $(echo "$content" | sed 's/"/\\"/g')
 EOF
         echo "Added procedural: $content → $file"
-        # Dual-write to SQLite (best-effort)
-        python_call add procedural "$content" --tags "${tags:-untagged}" || true
+        # Dual-write to SQLite (best-effort, warn on failure)
+        python3 -m memory.cli add procedural "$content" --tags "${tags:-untagged}" 2>/dev/null || echo "  [WARN] SQLite sync failed for procedural"
         ;;
       error-solution)
         # content format: "error" "solution"
@@ -106,8 +106,8 @@ $(echo "$error" | sed 's/"/\\"/g')
 $(echo "$solution" | sed 's/"/\\"/g')
 EOF
         echo "Added error-solution pair → $file"
-        # Dual-write to SQLite (best-effort)
-        python_call add error-solution "$error" "$solution" || true
+        # Dual-write to SQLite (best-effort, warn on failure)
+        python3 -m memory.cli add error-solution "$error" "$solution" 2>/dev/null || echo "  [WARN] SQLite sync failed for error-solution"
         ;;
       graph)
         file="${MEMORY_DIR}/Stories/$(date +%s).md"
@@ -121,8 +121,8 @@ tags: [${tags:-untagged}]
 $(echo "$content" | sed 's/"/\\"/g')
 EOF
         echo "Added graph: $content → $file"
-        # Dual-write to SQLite (best-effort)
-        python_call add graph "$content" --tags "${tags:-untagged}" || true
+        # Dual-write to SQLite (best-effort, warn on failure)
+        python3 -m memory.cli add graph "$content" --tags "${tags:-untagged}" 2>/dev/null || echo "  [WARN] SQLite sync failed for graph"
         ;;
       *)
         echo "Unknown tier: $tier"

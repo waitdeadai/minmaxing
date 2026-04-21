@@ -138,6 +138,22 @@ curl -f https://production/api/health || exit 1
 echo "SHIP COMPLETE"
 ```
 
+### Step 6.5: Record Outcome to Memory
+
+After successful ship, record the causal factors:
+
+```bash
+# Record success with contributing factors
+python3 -c "
+from memory.causal import record_outcome
+factors = ['spec_first', 'verify_passed', 'review_approved', 'tests_passed', 'coverage_adequate']
+record_outcome(factors, 'success')
+" 2>/dev/null || echo "record_outcome: skipped (memory not available)"
+
+# Also log to episodic memory
+bash scripts/memory.sh add episodic "Shipped: [feature description] — all gates passed"
+```
+
 ### Step 7: Final Output
 
 ```markdown

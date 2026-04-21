@@ -20,6 +20,18 @@ Synthesize multiple viewpoints into informed recommendations. Different perspect
 
 ## Execution Protocol
 
+### Step 0: Memory Recall (Before Decision)
+
+Recall similar past decisions to inform current debate:
+
+```bash
+# Recall similar past decisions
+bash scripts/memory.sh recall "[decision topic]" --depth medium 2>/dev/null || echo "Memory recall: skipped"
+
+# Search for related decisions
+bash scripts/memory.sh search "[decision keywords]" 2>/dev/null || true
+```
+
 ### Step 1: Define the Decision
 
 ```markdown
@@ -151,6 +163,22 @@ If not following Option X:
 
 ### Rationale
 [2-3 sentence explanation of final decision]
+```
+
+### Step 5: Store Decision to Memory
+
+After decision is made, store for future recall:
+
+```bash
+# Store decision as semantic memory
+bash scripts/memory.sh add semantic "Council decision: [question] → Option [X] decided ([unanimous/majority/split]). Rationale: [brief rationale]" --tags "council,decision,[topic]"
+
+# Record causal factors
+python3 -c "
+from memory.causal import record_outcome
+factors = ['multi_perspective_analysis', 'tradeoff_explicit', 'criteria_based_scoring']
+record_outcome(factors, 'success')
+" 2>/dev/null || echo "record_outcome: skipped"
 ```
 
 ---

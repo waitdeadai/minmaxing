@@ -90,6 +90,13 @@ description: Central execution engine - orchestrates all skills with taste aware
 | "run overnight" | /overnight |
 | "align values" / "价值观" | /align |
 | "office hours" / "clarify" | /align |
+| "explain X" / "what is X" | /council |
+| "refactor X" | /autoplan → /sprint → /verify → /ship |
+| "optimize X" | /autoplan → /sprint → /verify → /ship |
+| "document X" | /review |
+| "migrate X" | /autoplan → /sprint → /verify → /ship |
+| "generate tests" | /qa |
+| "check security" / "security audit" | /audit |
 
 ### PHASE 2: EXECUTE — ACTIVE ORCHESTRATION
 
