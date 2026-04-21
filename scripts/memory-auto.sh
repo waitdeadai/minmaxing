@@ -11,6 +11,34 @@ episodic_start() {
     echo "{\"timestamp\":\"${DATE_TIME}\",\"type\":\"session_start\",\"model\":\"MiniMax-M2.7-highspeed\",\"agents\":\"${MAX_PARALLEL_AGENTS:-10}\"}" >> "$SESSION_FILE"
     echo "[Memory] Session started at ${DATE_TIME}"
 
+    # Session counter — tracks total sessions for periodic taste review
+    SESSION_COUNT_FILE="${TASTE_DIR}/session_count"
+    mkdir -p "${TASTE_DIR}"
+    COUNT=$(cat "$SESSION_COUNT_FILE" 2>/dev/null || echo 0)
+    NEXT=$((COUNT + 1))
+    echo "$NEXT" > "$SESSION_COUNT_FILE"
+    echo "[Memory] Session #${NEXT}"
+
+    # Check if periodic taste review is due (every 30 sessions)
+    if [ $((NEXT % 30)) -eq 0 ]; then
+        echo "[Memory] Taste review due — run /align --review"
+    fi
+
+    # Check causal graph for high failure factors (>70% correlation)
+    python3 -c "
+import sys
+sys.path.insert(0, '$(pwd)')
+try:
+    from memory.causal import get_failure_factors
+    factors = get_failure_factors(limit=3)
+    for f in factors:
+        if f['weight'] < 0.3:
+            print(f'[Memory] WARNING: Causal factor \"{f[\"factor\"]}\" has {int((1-f[\"weight\"])*100)}% failure correlation — consider /align --review')
+            break
+except Exception as e:
+    pass
+" 2>/dev/null || true
+
     # Trigger auto-capture: increment episode count and check consolidation
     python3 -c "
 import sys

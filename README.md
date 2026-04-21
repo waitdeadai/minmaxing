@@ -66,7 +66,7 @@ With SPEC-first:
 
 | This harness | Other harnesses |
 |-------------|----------------|
-| Taste-first: taste.md + vision gate every decision | No values, no taste — just "build X" |
+| Taste-first: taste.md + vision gate every decision | No taste — just "build X" |
 | 5-tier memory: remembers decisions, patterns, errors across sessions | Tabula rasa every session |
 | Central orchestrator: /workflow chains skills automatically | Skills are isolated, no chaining |
 | Auto-capture: outcomes logged to memory automatically | Manual documentation |
@@ -76,6 +76,8 @@ With SPEC-first:
 | Research-first: verify AI claims with live web search | AI hallucinates best practices |
 
 **Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, it asks you to define it — before anything is built.
+
+**Taste is NOT just frontend/aesthetic.** It's the entire project philosophy — design principles, architecture constraints, code style rules, intent, non-goals, and values. When `/align --bootstrap` asks about your taste, it covers all of these dimensions, not just how things look.
 
 **Memory is persistent.** Every decision, every fix, every shipped feature is remembered. The second session knows what the first session learned.
 
@@ -153,7 +155,7 @@ Think of minmaxing as an operating system:
 └─────────────────────────────────────────────────────┘
 ```
 
-**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, `/workflow` triggers `/align --bootstrap` to define it.
+**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, `/workflow` triggers `/align --bootstrap` to define it. Taste covers the full project philosophy — design principles, architecture, code style, intent, non-goals, and values.
 
 **Skills are system calls.** Each skill does one thing well. `/workflow` chains them together into execution paths.
 

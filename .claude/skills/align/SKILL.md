@@ -146,6 +146,168 @@ For new projects where taste.md + taste.vision don't exist.
 
 ---
 
+## Review Mode: /align --review
+
+Periodic taste review triggered every 30 sessions (or on demand).
+
+### Phase 1: Surface Evidence
+
+Query memory for:
+1. **Top causal factors** — success and failure patterns from causal graph
+2. **Recent error-solution pairs** — recurring bugs and fixes
+3. **Taste alignment scores** — last 10 /workflow runs and their alignment scores
+
+```bash
+# Query causal graph for top factors
+python3 -c "
+from memory.causal import get_failure_factors, get_success_factors
+failure_factors = get_failure_factors(limit=5)
+success_factors = get_success_factors(limit=5)
+print('FAILURE FACTORS:', failure_factors)
+print('SUCCESS FACTORS:', success_factors)
+" 2>/dev/null
+
+# Query recent error patterns
+bash scripts/memory.sh search "error" --depth high 2>/dev/null | head -20
+
+# Query recent semantic memories for alignment patterns
+bash scripts/memory.sh search "taste" --depth medium 2>/dev/null | head -10
+```
+
+### Phase 2: Present Review
+
+```markdown
+## Taste Review — Session #[N]
+
+### Causal Graph: Top Success Factors
+- [Factor 1]: [weight] success correlation
+- [Factor 2]: [weight] success correlation
+
+### Causal Graph: Top Failure Factors
+- [Factor 1]: [weight] failure correlation ⚠️ if >70%
+- [Factor 2]: [weight] failure correlation
+
+### Recent Error-Solution Patterns
+- [Error pattern 1]: [times seen]
+- [Error pattern 2]: [times seen]
+
+### Recent Taste Alignments
+- Session [N-9]: [score] — [task brief]
+- Session [N-8]: [score] — [task brief]
+- ...
+
+### Taste Health Check
+Does your taste.md still reflect your intent?
+Does taste.vision still describe why this project exists?
+
+**[ ] YES — taste is healthy
+**[ ] REVIEW NEEDED — some aspects need updating
+**[ ] EVOLVE NEEDED — significant changes proposed via --evolve
+```
+
+### Phase 3: Human Decision
+
+- If healthy → continue
+- If review needed → human edits taste.md/taste.vision directly
+- If evolve needed → run `/align --evolve`
+
+---
+
+## Evolve Mode: /align --evolve
+
+Memory-informed taste change proposals. Proposes changes when evidence strongly supports it.
+
+### Trigger Conditions (agent proposes when ANY met):
+- ≥5 semantic memories cite the same principle or pattern
+- ≥3 error-solution pairs cite the same failure mode
+- Causal graph shows a factor with >70% failure correlation not in taste
+
+### Phase 1: Analyze Memory Evidence
+
+```bash
+# Check semantic memory frequency
+python3 -c "
+from memory.sqlite_db import MemoryDB
+db = MemoryDB()
+# Query for repeated principles
+results = db.search('taste principle pattern', depth='high')
+# Count occurrences of each principle
+from collections import Counter
+principles = [r['text'] for r in results]
+counter = Counter(principles)
+for principle, count in counter.most_common(5):
+    if count >= 5:
+        print(f'PROPOSE: {principle} (seen {count} times)')
+db.close()
+" 2>/dev/null
+
+# Check causal graph for high-failure factors
+python3 -c "
+from memory.causal import get_failure_factors
+factors = get_failure_factors(limit=10)
+for f in factors:
+    if f['weight'] < 0.3:  # >70% failure correlation
+        print(f'HIGH_FAILURE: {f[\"factor\"]} — {int((1-f[\"weight\"])*100)}% failure correlation')
+        print(f'  Suggest adding to taste as constraint')
+" 2>/dev/null
+```
+
+### Phase 2: Generate Proposal
+
+If threshold met, generate structured proposal:
+
+```markdown
+## Taste Evolution Proposal
+
+### Evidence (from memory)
+- [N] semantic memories cite: [pattern]
+- [N] error-solution pairs cite: [failure mode]
+- Causal factor: [X] has [Y]% failure correlation
+
+### Proposed Change to taste.md
+```diff
++ ## New/Updated Principle
++ [Exact principle text to add]
+```
+
+### Proposed Change to taste.vision (if applicable)
+```diff
++ ## New/Updated Intent
++ [Exact vision text to add]
+```
+
+### Rationale
+[How this change serves your taste.vision intent]
+
+### Decision
+[ ] APPROVE — make the change
+[ ] REJECT — keep current taste
+[ ] REVISE — modify the proposal
+```
+
+### Phase 3: Human Approval
+
+Human reviews evidence and proposal, then decides:
+- **APPROVE** → agent edits taste.md and/or taste.vision
+- **REJECT** → no changes, log rejection to memory
+- **REVISE** → human provides feedback, agent refines proposal
+
+### Phase 4: Apply Change
+
+If APPROVED:
+```bash
+# Edit taste.md
+edit taste.md with approved changes
+
+# Edit taste.vision if applicable
+edit taste.vision with approved changes
+
+# Log decision to memory
+bash scripts/memory.sh add semantic "Taste evolved: [summary of change]. Rationale: [why approved]. Human approved." --tags "taste-evolution,council-decision"
+```
+
+---
+
 ## Output Format
 
 After all 5 questions are answered:
