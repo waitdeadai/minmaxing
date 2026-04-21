@@ -2,7 +2,7 @@
 
 Pre-ship checklist that ensures everything is ready before production deployment. Includes sync, test, coverage audit, push, and rollback plan.
 
-**Use when:** User says "ship this", "ready to ship", "deploy this", "ship it".
+**Use when:** User says "ship this", "ready to ship", "deploy this", "ship it", "swarm ship", "swarm this".
 
 **ALL gates must pass.** No exceptions, no shortcuts.
 

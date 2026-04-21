@@ -2,7 +2,7 @@
 
 Multi-perspective synthesis for complex decisions. Different viewpoints debate, synthesize into recommendation.
 
-**Use when:** User says "council this", "multiple perspectives", "architectural decision", "what do you think", "weigh the options".
+**Use when:** User says "council this", "multiple perspectives", "architectural decision", "what do you think", "weigh the options", "swarm council", "swarm this".
 
 **For complex decisions only.** Not for simple questions.
 

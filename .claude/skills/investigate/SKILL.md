@@ -2,7 +2,7 @@
 
 Systematic root-cause debugging with hypothesis testing. 3-fix limit prevents rabbit holes. Root cause or escalate.
 
-**Use when:** User says "investigate this", "debug this", "what's causing this", "root cause", "why is this broken".
+**Use when:** User says "investigate this", "debug this", "what's causing this", "root cause", "why is this broken", "swarm investigate", "swarm this".
 
 **Hypothesis first, then fix.** Never guess.
 

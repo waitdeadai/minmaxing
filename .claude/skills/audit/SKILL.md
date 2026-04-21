@@ -2,7 +2,7 @@
 
 **Deep codebase analysis with 10-agent parallelism.** Audit any repo to understand its structure, identify issues, and plan improvements.
 
-**Use when:** User says "audit this", "analyze codebase", "understand this repo", "due diligence on this code".
+**Use when:** User says "audit this", "analyze codebase", "understand this repo", "due diligence on this code", "swarm audit", "swarm this".
 
 ---
 

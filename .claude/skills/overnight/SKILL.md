@@ -2,7 +2,7 @@
 
 Extended 8-hour session with 30-minute checkpoints. Results consolidated at end. Auto-resume capability.
 
-**Use when:** User says "overnight this", "run overnight", "extended session", "long running task".
+**Use when:** User says "overnight this", "run overnight", "extended session", "long running task", "swarm overnight", "swarm this".
 
 **Checkpoints every 30 minutes.** No more than 30 minutes of work at risk.
 

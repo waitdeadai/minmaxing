@@ -4,7 +4,7 @@
 
 **This is NOT the same AI that wrote the code.** It verifies independently, adversarially, against the spec.
 
-**Use when:** After every implementation task, code changes, documentation changes, config changes, before shipping, or whenever you need to validate output.
+**Use when:** After every implementation task, code changes, documentation changes, config changes, before shipping, "swarm verify", "swarm this", or whenever you need to validate output.
 
 **Never skip verification.** If you can't prove it passes, it fails.
 

@@ -2,7 +2,7 @@
 
 YC-style startup diagnostic that reframes vague ideas into buildable specs. Uses 6 forcing questions to expose demand reality, status quo, desperate specificity, narrowest wedge, observation, and future-fit.
 
-**Use when:** User says "I have an idea", "brainstorm this", "is this worth building", "help me think through", or when a prompt is too vague to spec.
+**Use when:** User says "I have an idea", "brainstorm this", "is this worth building", "help me think through", "swarm", "swarm this", or when a prompt is too vague to spec.
 
 **Proactively invoke when:** Vague goals are described — never skip to implementation.
 

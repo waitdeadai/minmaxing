@@ -2,7 +2,7 @@
 
 **Parallel web research with live data — not stale training data.**
 
-**Use when:** You need current information about APIs, libraries, errors, best practices, or any domain where AI training data might be outdated.
+**Use when:** You need current information about APIs, libraries, errors, best practices, "swarm research", "swarm this", or any domain where AI training data might be outdated.
 
 **Research-First:** This is integrated into `/workflow` automatically. Use `/browse` directly when you want to research something specific outside the workflow.
 

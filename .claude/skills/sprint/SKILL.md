@@ -4,7 +4,7 @@ Parallel execution with up to 10 agents and FILE ISOLATION. Each agent works on 
 
 **Default: 10 agents** (configurable via `MAX_PARALLEL_AGENTS` env var)
 
-**Use when:** User says "sprint this", "parallel this", "run in parallel", "split this up".
+**Use when:** User says "sprint this", "parallel this", "run in parallel", "split this up", "swarm this", "swarm".
 
 **FILE ISOLATION is mandatory.** Parallel only when agents touch different files.
 

@@ -2,7 +2,7 @@
 
 Browser-based E2E QA with Playwright. Pass/Fail only — no "mostly works", no "looks okay".
 
-**Use when:** User says "QA this", "test this feature", "browser test", "E2E test", "verify this works".
+**Use when:** User says "QA this", "test this feature", "browser test", "E2E test", "verify this works", "swarm QA", "swarm this".
 
 **Prerequisites:** `npx playwright test` must work in the project.
 

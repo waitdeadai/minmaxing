@@ -2,7 +2,7 @@
 
 Two-stage code review: AI review followed by human sign-off. AI catches logic errors, security issues, style violations. Human confirms business logic, UX, edge cases.
 
-**Use when:** User says "review this", "review code", "look at these changes", "PR review".
+**Use when:** User says "review this", "review code", "look at these changes", "PR review", "swarm review", "swarm this".
 
 **Must cite specific issues.** "This looks fine" without analysis is not a review.
 

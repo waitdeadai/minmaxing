@@ -8,7 +8,7 @@ description: Parallel agent supervisor - spawns workers for parallel execution
 
 **Default: 10 parallel agents** (configurable via `MAX_PARALLEL_AGENTS` env var)
 
-**Use when:** User says "build X", "implement Y", "fix Z", or any substantial task.
+**Use when:** User says "build X", "implement Y", "fix Z", "swarm this", "swarm", or any substantial task.
 
 ---
 

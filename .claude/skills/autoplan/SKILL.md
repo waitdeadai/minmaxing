@@ -6,7 +6,7 @@ SPEC-first planning that generates SPEC.md before any implementation. Uses plan 
 
 **10-Agent Parallel Mindset is DEFAULT.** Every plan assumes max parallel execution (10 agents by default). Research uses parallel agents for deep research.
 
-**Use when:** User says "plan this", "how do I build", "spec out", "create a plan", or when a new feature/project is described.
+**Use when:** User says "plan this", "how do I build", "spec out", "create a plan", "swarm", "swarm this", or when a new feature/project is described.
 
 **NEVER skip to implementation.** SPEC.md is mandatory before any code.
 
