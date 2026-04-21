@@ -36,6 +36,27 @@ That's it. The setup script installs ForgeGod, uvx, configures your API key, and
 
 ---
 
+## ⚠️ Important Defaults
+
+### bypassPermissions Mode
+**This harness enables `bypassPermissions` by default** — all file writes and commands auto-approve without prompts. Required for parallel agent spawning.
+
+Protected dirs still prompt: `.git`, `.claude`, `.vscode`, `.idea`, `.husky`
+
+### 10-Agent Parallelism (Standard)
+**Default: 10 parallel agents** for maximum throughput. Harness auto-detects hardware.
+
+| Hardware | Agents |
+|----------|--------|
+| 32GB+ RAM, 8+ cores | 10 (default) |
+| 16GB RAM, 4+ cores | 6 |
+| 8GB RAM, 2+ cores | 3 |
+| Low-end | 2 |
+
+Override: Set `MAX_PARALLEL_AGENTS` in `settings.json` env.
+
+---
+
 ## What This Solves
 
 | Problem | How minmaxing Fixes It |
