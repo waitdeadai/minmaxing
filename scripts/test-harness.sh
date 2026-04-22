@@ -68,7 +68,7 @@ fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in office-hours verify autoplan review qa ship investigate; do
+for skill in workflow align audit autoplan verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -185,7 +185,7 @@ fi
 
 # Test 13: Socratic Documentation
 echo "[13] Socratic Questioning Documentation"
-if grep -q "office-hours\|Socratic" CLAUDE.md 2>/dev/null; then
+if grep -q "Socratic\|taste alignment" CLAUDE.md 2>/dev/null; then
     test_pass "Socratic questioning documented"
 else
     test_fail "Socratic questioning not documented"
@@ -221,6 +221,18 @@ if [ -f ".gitignore" ] && grep -q "settings.local.json" .gitignore; then
     test_pass "API keys gitignored"
 else
     test_fail ".gitignore missing or incomplete"
+fi
+
+# Optional integration smoke test
+echo "[16] Workflow Smoke Test"
+if [ "${RUN_CLAUDE_INTEGRATION:-0}" = "1" ]; then
+    if bash scripts/workflow-smoke.sh; then
+        test_pass "/workflow runtime smoke test"
+    else
+        test_fail "/workflow runtime smoke test failed"
+    fi
+else
+    test_warn "Workflow smoke test skipped (set RUN_CLAUDE_INTEGRATION=1)"
 fi
 
 # ========================================

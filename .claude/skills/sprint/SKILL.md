@@ -115,10 +115,10 @@ For each task:
 ```bash
 # Launch agents in parallel (example structure)
 # Agent 1
-claude -p "Execute Task 1: [details]" --context context1.json > agent1.out 2>&1 &
+claude -p "Execute Task 1: [details]. Files you own: [list]. Return only a concise result summary." > agent1.out 2>&1 &
 
 # Agent 2
-claude -p "Execute Task 2: [details]" --context context2.json > agent2.out 2>&1 &
+claude -p "Execute Task 2: [details]. Files you own: [list]. Return only a concise result summary." > agent2.out 2>&1 &
 
 # ... up to 10 agents
 

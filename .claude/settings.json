@@ -25,6 +25,12 @@
       "mcp__MiniMax__web_search",
       "Bash(bash *.sh)"
     ],
-    "defaultMode": "bypassPermissions"
+    "deny": [
+      "Read(./.claude/settings.local.json)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
+    ],
+    "defaultMode": "acceptEdits"
   }
 }

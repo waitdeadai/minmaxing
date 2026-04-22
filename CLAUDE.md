@@ -13,22 +13,25 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 1. **SPEC-First**: Every task starts with SPEC.md via /autoplan
 2. **10-Agent Parallelism**: Always plan with max parallel agents (10 default)
 3. **Supervisor Pattern**: AI supervises workers, not the other way around
-4. **Research-First**: Verify AI claims with web search (training data is stale)
-5. **Quality Gates**: /verify must pass; tests must pass; no silent failures
+4. **PEV Loop**: Plan → Execute → Verify. The verifier is separate from the implementer.
+5. **Research-First**: Verify AI claims with web search (training data is stale)
+6. **Quality Gates**: /verify must pass; tests must pass; no silent failures
 
 ## Default Behavior
 
 **When you say "plan this" or "build this":**
 1. Supervisor decomposes into 10-agent parallel tasks
 2. Workers execute in parallel (up to 10)
-3. Supervisor aggregates, verifies, and gates production
+3. Supervisor aggregates, verifies, and gates production through the PEV loop
 
-**Supervisor's job:** Ensure every task passes verification before declaring done.
+**Supervisor's job:** Ensure every task passes verification before declaring done, without handing the next phase back to the user.
+
+**Taste alignment uses Socratic questions.** When taste is unclear or a proposal conflicts with `taste.md` or `taste.vision`, `/align` asks focused questions before `/workflow` proceeds.
 
 ## Skills (invoke with /<skill>)
 | Skill | Purpose |
 |-------|---------|
-| /workflow | Central execution engine — taste-first, orchestrates all skills |
+| /workflow | Central execution engine — taste-first, runs the full phases inline |
 | /audit | Deep codebase audit with 10-agent parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
 | /autoplan | Create SPEC.md with 10-agent parallel mindset |

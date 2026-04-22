@@ -30,7 +30,9 @@ Get your key from [platform.minimax.io](https://platform.minimax.io)
 
 That's it. Memory system, MiniMax MCP, and 15 skills — all configured.
 
-**Taste files are created on-demand.** The first time you run `/workflow`, it detects missing taste.md + taste.vision and triggers `/align --bootstrap` to define them. No empty templates, no guessing.
+**Secrets stay local.** Setup writes your real API key to `.claude/settings.local.json` and leaves the shared `.claude/settings.json` safe to commit.
+
+**Taste files are created on-demand.** The first time you run `/workflow`, it detects missing taste.md + taste.vision and bootstraps them before execution continues. No empty templates, no guessing.
 
 > **Note:** Setup adds hardware auto-detection to `~/.bashrc` — `MAX_PARALLEL_AGENTS` is set automatically on every shell start.
 
@@ -68,7 +70,7 @@ With SPEC-first:
 |-------------|----------------|
 | Taste-first: taste.md + vision gate every decision | No taste — just "build X" |
 | 5-tier memory: remembers decisions, patterns, errors across sessions | Tabula rasa every session |
-| Central orchestrator: /workflow chains skills automatically | Skills are isolated, no chaining |
+| Central orchestrator: /workflow runs the whole spec → execute → verify flow automatically | Skills are isolated, no chaining |
 | Auto-capture: outcomes logged to memory automatically | Manual documentation |
 | SPEC-first: write spec before code | Vague prompts, rebuild loops |
 | 10 agents in parallel | Sequential one-at-a-time |
@@ -111,11 +113,11 @@ Not the same AI that wrote the code. A different agent checks output against you
 AI training data is stale. Every external claim gets verified with live web search.
 
 ### Permission Mode
-- **acceptEdits** (default): File writes auto-approve, safe for parallel agents
-- **bypassPermissions** (YOLO): Zero safety checks, true one-command flow
+- **acceptEdits** (shared-project default): Safe default for a repo you plan to commit and share
+- **bypassPermissions** (personal local override): Zero safety checks, only for trusted personal setups
 
 ### Taste-First (Kernel)
-Every `/workflow` invocation checks `taste.md` + `taste.vision` before doing anything. If they don't exist, it runs `/align --bootstrap` to define them with you — first.
+Every `/workflow` invocation checks `taste.md` + `taste.vision` before doing anything. If they don't exist, `/workflow` bootstraps taste inline by asking the same questions first.
 
 ### 5-Tier Memory (Persistent)
 SQLite-backed memory that remembers across sessions:
@@ -124,7 +126,7 @@ SQLite-backed memory that remembers across sessions:
 - Causal graph tracks what caused success/failure
 
 ### Central Orchestrator
-`/workflow` chains skills together — it doesn't just invoke them, it passes context between them and gates progression. Skills are system calls; `/workflow` is the shell.
+`/workflow` owns the full lifecycle inline: taste gate, spec, implementation, verification, and closeout. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
 
 ---
 
@@ -155,11 +157,11 @@ Think of minmaxing as an operating system:
 └─────────────────────────────────────────────────────┘
 ```
 
-**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, `/workflow` triggers `/align --bootstrap` to define it. Taste covers the full project philosophy — design principles, architecture, code style, intent, non-goals, and values.
+**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, `/workflow` bootstraps it inline. Taste covers the full project philosophy — design principles, architecture, code style, intent, non-goals, and values.
 
-**Skills are system calls.** Each skill does one thing well. `/workflow` chains them together into execution paths.
+**Skills are system calls.** Each skill does one thing well. They are still useful directly, but `/workflow` is responsible for finishing the main end-to-end path itself.
 
-**/workflow is the shell.** It orchestrates everything. Routes tasks to skills, passes context between them, verifies output, and gates progression.
+**/workflow is the shell.** It orchestrates everything. Routes tasks to the right phase, executes the work, verifies output, and gates progression.
 
 ### The 4 Execution Paths
 
@@ -211,16 +213,16 @@ Then tell it what you want to build:
 
 **What happens:**
 1. `/workflow` checks taste.md + taste.vision → **don't exist**
-2. Triggers `/align --bootstrap` → asks you 10 questions about your design principles, aesthetic, intent, non-goals
+2. `/workflow` asks the 10 taste bootstrap questions inline
 3. You answer → taste.md + taste.vision are created
-4. `/workflow` continues: `/autoplan` creates SPEC.md → `/sprint` implements (10 agents) → `/verify` checks → `/ship` ships
+4. `/workflow` continues automatically through spec → implementation → verification → closeout
 
 ### What You Get
 
-- **SPEC.md** — exact specification you approved
+- **SPEC.md** — exact specification created for the task
 - **Implementation** — parallel agents building simultaneously
 - **Verification** — separate agent adversarial-checking against spec
-- **Ship** — checklist, tests, rollback plan, commit, push
+- **Closeout** — local completion by default, remote push only when you explicitly ask for it
 - **Memory** — everything logged to 5-tier memory for next session
 
 ### After First Build
@@ -231,7 +233,7 @@ Your taste is saved. Next time:
 /workflow "add user authentication"
 ```
 
-No taste questions. `/workflow` knows your principles, plans, builds, verifies, ships.
+No taste questions. `/workflow` knows your principles, plans, builds, verifies, and finishes the task.
 
 ---
 

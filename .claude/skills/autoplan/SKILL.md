@@ -1,8 +1,8 @@
 # /autoplan
 
-SPEC-first planning that generates SPEC.md before any implementation. Uses plan mode to create the spec — you approve the plan, and it becomes the contract.
+SPEC-first planning that generates or updates `SPEC.md` before implementation.
 
-**This IS plan mode.** `/autoplan` invokes plan mode to draft SPEC.md. You review and approve. The approved plan becomes the source of truth.
+**This command writes the spec directly.** It does not switch Claude Code into built-in plan mode for you. If you want Claude Code's read-only planning mode, use the platform's native `/plan` flow or start Claude with `--permission-mode plan`.
 
 **TASTE-FIRST** — If taste.md/vision undefined, bootstraps via /align before planning.
 
@@ -143,10 +143,8 @@ With 10-agent pool:
 
 ## Next Steps
 1. Review SPEC.md
-2. Approve or revise
-3. Execute via /sprint (parallel by default)
-
-Ready for /sprint when approved.
+2. Revise if needed
+3. Execute the implementation yourself or via `/workflow`
 
 ---
 
@@ -159,7 +157,7 @@ Ready for /sprint when approved.
 /workflow → /autoplan (this) → /sprint → /verify → /ship
 ```
 
-After this skill completes, `/workflow` will invoke `/sprint` automatically. Do NOT return to user after SPEC.md — the workflow orchestrator handles progression.
+If `/workflow` called this as reference material, the workflow may continue inline. When invoked directly by the user, stop after the spec is ready.
 ```
 
 ---

@@ -1,494 +1,162 @@
 ---
 name: workflow
-description: Central execution engine - orchestrates all skills with taste awareness
-context: fork
-agent: general-purpose
+description: Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.
+argument-hint: [task]
+disable-model-invocation: true
 ---
 
-# /workflow — Central Execution Engine
+# /workflow
 
-You are the orchestrator for minmaxing. Execute the workflow chain for the user's task.
+Run the full workflow for:
 
-## Your Mission
+$ARGUMENTS
 
-Given a task from the user, execute this workflow chain:
-1. Taste Check (gate)
-2. Route to appropriate skills
-3. Execute skills in chain until /ship or /review
-4. Return results
+This command is the end-to-end executor.
 
-## Taste OS Architecture
+## Non-Negotiable Contract
 
-```
-/workflow (this subagent)
-  │
-  ├─ PHASE 0: TASTE CHECK [GATE]
-  ├─ PHASE 1: ROUTE
-  ├─ PHASE 2: EXECUTE CHAIN
-  │     /autoplan → /sprint → /verify → /ship
-  └─ PHASE 3: OUTPUT
-```
+- Finish the task in this command whenever it is feasible.
+- Do not stop after planning.
+- Do not tell the user to manually run `/autoplan`, `/sprint`, `/verify`, or `/ship`.
+- Do not rely on nested custom-skill chaining as the primary execution path.
 
-## Available Skills (use Skill() to invoke)
+Reason:
+In real Claude Code sessions, nested custom skills may complete their own turn and return control to the user before the rest of the chain runs. For `/workflow`, execute the phases inline with Claude Code tools so the full flow actually completes.
 
-| Skill | Purpose |
-|-------|---------|
-| /autoplan | Create SPEC.md before code |
-| /sprint | Run up to 10 agents in parallel |
-| /verify | Check output against SPEC.md |
-| /ship | Pre-ship checklist + push |
-| /investigate | Debug with 3-fix limit |
-| /audit | Deep codebase audit |
-| /council | Multi-perspective analysis |
-| /align | Validate against taste |
-| /qa | Playwright E2E testing |
-| /review | AI review + human sign-off |
-| /codex | Search code by pattern |
-| /browse | Web research |
+You may still use built-in Claude Code tools, shell commands, subagents, and optional specialist skills as reference material when useful, but `/workflow` itself owns the whole lifecycle.
 
-## Step 1: Taste Check
+## Phase 0: Taste Gate
 
-Read taste.md and taste.vision from the project root.
+1. Check whether `taste.md` and `taste.vision` exist in the project root.
+2. If they do not exist, bootstrap taste inline instead of bouncing the user elsewhere:
+   - ask the 10 bootstrap questions directly
+   - write `taste.md` and `taste.vision`
+   - then continue automatically
+3. Read `taste.md` and `taste.vision`.
+4. Recall memory for the task:
 
-**IMPORTANT**: If taste files don't exist, do NOT invoke /align --bootstrap from this subagent (interactive Q&A doesn't work in forked context). Instead, report to the user:
-
-```
-Taste files are missing. Please run:
-/align --bootstrap
-
-This will ask you 10 questions to define your project taste.
-After completing, re-run this workflow.
+```bash
+bash scripts/memory.sh recall "$ARGUMENTS" --depth medium 2>/dev/null || echo "Memory recall skipped"
 ```
 
-Call memory recall:
-```
-bash scripts/memory.sh recall "<task>" --depth medium
-```
+5. Summarize:
+   - relevant taste principles
+   - relevant recalled memories
+   - an alignment score from 0 to 10
+6. If the task clearly conflicts with taste, pause only to get an explicit alignment decision from the user.
 
-Score alignment (0-10):
-- Design principles (35%)
-- Intent alignment (35%)
-- 价值观 consistency (15%)
-- Memory alignment (15%)
+## Phase 1: Route
 
-If score < 5: invoke /align and wait for approval.
+Choose the route from user intent:
 
-## Step 2: Route
+| Intent | Workflow Behavior |
+|--------|-------------------|
+| build, implement, create, add, refactor, optimize, migrate | run full spec → execute → verify → closeout flow |
+| fix, debug, investigate | reproduce if needed, fix, verify, closeout |
+| audit, analyze, understand | inspect deeply, report findings, make fixes only if the user asked for them |
+| explain | inspect and explain directly |
+| review | review directly |
+| qa | run focused validation directly |
 
-Match task pattern to skill chain:
+Default to the full build flow when the task changes files.
 
-| Pattern | Chain |
-|---------|-------|
-| "build X" / "implement Y" | /autoplan → /sprint → /verify → /ship |
-| "fix Z" / "debug this" | /investigate → /verify |
-| "audit this" | /audit |
-| "explain" / "what is" | /council |
+## Phase 2: Spec
 
-## Step 3: Execute Chain
+For file-changing work:
 
-**CRITICAL: Use `Skill("[skill-name]")` tool to invoke skills. After each skill completes, invoke the next skill in the chain. Do NOT stop after one skill.**
+1. Create or update `SPEC.md` directly in this workflow.
+2. Keep the spec concrete and short enough to execute now.
+3. Include:
+   - problem statement
+   - success criteria
+   - scope
+   - implementation plan
+   - verification
+   - rollback plan when relevant
+4. If a suitable `SPEC.md` already exists and matches the task, reuse it instead of rewriting it.
+5. For tiny local tasks, keep the spec intentionally small rather than inflating it.
 
-### For "build X" tasks:
-```
-1. Skill("autoplan") — create SPEC.md
-2. Skill("sprint") — implement based on SPEC.md
-3. Skill("verify") — verify against SPEC.md
-   - If REJECT: loop back to sprint with fixes
-   - If ACCEPT: continue
-4. Skill("ship") — ship checklist + push
-5. Return summary to user
-```
+Do not stop after `SPEC.md` is written.
 
-### For "fix Z" tasks:
-```
-1. Skill("investigate") — root-cause analysis
-2. Skill("verify") — verify fix against SPEC.md
-3. Return summary to user
-```
+## Phase 3: Execute
 
-## Anti-Patterns (BLOCK)
+Implement directly with Claude Code tools.
 
-- Stopping after single skill without calling next skill → BLOCK
-- Skipping taste check → BLOCK
-- Skipping /verify before /ship → BLOCK
-- Proceeding with score < 5 without /align approval → BLOCK
+- Make the necessary file changes.
+- Use subagents or parallel work only when it materially helps and file ownership is clear.
+- Prefer direct execution over theatrical parallelism for tiny tasks.
+- Keep changes aligned with the spec and taste constraints.
+
+If the task is non-code analysis, do the work directly and skip implementation.
+
+## Phase 4: Verify
+
+Verify against `SPEC.md` inside this same workflow.
+
+Required verification behavior:
+- read the relevant files
+- run the relevant commands or tests
+- gather concrete evidence
+- compare actual behavior against every success criterion
+
+If verification fails:
+1. fix the issue
+2. verify again
+3. repeat until the result is accepted or a real blocker remains
+
+Never declare success without evidence.
+
+## Phase 5: Closeout
+
+Close out based on what the user actually asked for.
+
+### For local implementation tasks
+
+If the user did not explicitly ask to commit, push, deploy, or publish:
+- stop after verified local completion
+- write a workflow artifact under `.taste/workflow-runs/` when appropriate
+- summarize what changed and how it was verified
+
+### For explicit ship or push requests
+
+Only perform remote-facing actions when the user clearly asked for them.
+
+If the user explicitly wants a push or ship:
+1. confirm the repo is in a sane git state
+2. commit intentionally
+3. push only if a remote exists and the request includes pushing
+4. never invent deployment steps that are not present in the repo
+
+## Specialist Skills
+
+The project still provides specialist commands like `/autoplan`, `/sprint`, `/verify`, `/audit`, and `/ship`.
+
+Use them like this:
+- as direct user-invoked helpers
+- as reference playbooks when useful
+- not as required nested links in the core `/workflow` execution path
 
 ## Output
 
-When chain completes at /ship, return a summary:
-```
+When complete, return:
+
+```markdown
 ## Workflow Complete
 
-- Task: [what was built/fixed]
-- SPEC.md: [passed/failed]
-- Implementation: [N] files changed
-- Verification: ACCEPT/REJECT
-- Shipped: [yes/no]
+- Task: [task]
+- Taste Gate: PASS / BOOTSTRAPPED / REALIGNED
+- SPEC.md: [created, updated, reused, or not needed]
+- Implementation: [done / not needed]
+- Verification: ACCEPT / REJECT / BLOCKED
+- Remote Actions: none / committed / pushed / deployed
+- Key Files: [important files]
+- Open Blockers: [none or list]
 ```
 
----
-
-## Taste OS Architecture
-
-/workflow is the shell. Taste/vision is the kernel. Skills are system calls.
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                      /workflow                          │
-│                   (Central Execution Engine)             │
-├─────────────────────────────────────────────────────────┤
-│  PHASE 0: TASTE CHECK [GATE]                           │
-│  PHASE 1: ROUTE (skill_router)                          │
-│  PHASE 2: EXECUTE (skill_execute)                       │
-│  PHASE 3: VERIFY (taste_verify + SPEC_verify)          │
-│  PHASE 4: ROUTE OUTPUT                                 │
-├─────────────────────────────────────────────────────────┤
-│              taste.md + taste.vision                    │
-│                  (Kernel / OS)                         │
-├─────────────────────────────────────────────────────────┤
-│     /autoplan  /sprint  /verify  /ship  /investigate   │
-│     /audit     /council /qa     /review  /browse       │
-│     /codex     /overnight  /align                       │
-│              (System Calls)                             │
-└─────────────────────────────────────────────────────────┘
-```
-
-### PHASE 0: TASTE CHECK [GATE]
-
-**MANDATORY GATE — Blocks all execution until passed.**
-
-1. Check: taste.md + taste.vision exist?
-   - If NO → invoke /align --bootstrap → wait → retry
-2. Read taste.md + taste.vision
-3. Call memory recall with task:
-   - `bash scripts/memory.sh recall "<task>" --depth medium`
-   - Inject results into context
-4. Score alignment: task vs taste + memory recall
-   - Score 0-10
-   - If <5 → invoke /align → wait for approval
-   - If >=5 → proceed to PHASE 1
-
-**Taste Alignment Scoring Rubric:**
-
-| Score | Alignment Level | Action |
-|-------|-----------------|--------|
-| 0-2 | Direct conflict with taste.md principles | BLOCK — invoke /align |
-| 3-4 | Significant deviation from taste | BLOCK — invoke /align |
-| 5-6 | Some friction, core alignment exists | Proceed, document deviations |
-| 7-8 | Well-aligned, minor tradeoffs | Proceed |
-| 9-10 | Perfect alignment with taste/vision | Proceed |
-
-**Taste Check Questions:**
-- Does this match the design principles in taste.md?
-- Does this serve the intent in taste.vision?
-- Would this pass the "Taste Test" — does it feel right?
-- Are there价值观 conflicts with established patterns?
-
-### PHASE 1: ROUTE
-
-**skill_router(task) analyzes task pattern and selects skills.**
-
-| Task Pattern | Skills to Invoke |
-|--------------|-----------------|
-| "build X" / "implement Y" | /autoplan → /sprint → /verify → /ship |
-| "fix Z" / "debug this" | /investigate → /verify |
-| "analyze decision" | /council → /align if needed |
-| "audit this" | /audit |
-| "test this" / "QA" | /qa |
-| "review code" | /review |
-| "plan this" | /autoplan |
-| "search code" | /codex |
-| "research X" | /browse |
-| "run overnight" | /overnight |
-| "align values" / "价值观" | /align |
-| "office hours" / "clarify" | /align |
-| "explain X" / "what is X" | /council |
-| "refactor X" | /autoplan → /sprint → /verify → /ship |
-| "optimize X" | /autoplan → /sprint → /verify → /ship |
-| "document X" | /review |
-| "migrate X" | /autoplan → /sprint → /verify → /ship |
-| "generate tests" | /qa |
-| "check security" / "security audit" | /audit |
-
-### PHASE 2: EXECUTE — ACTIVE ORCHESTRATION
-
-**/workflow is the orchestrator. It does NOT just describe the chain — it executes it.**
-
-**CRITICAL:** After each skill completes, /workflow MUST invoke the next skill in the chain. Skills are dead ends without the orchestrator.
-
-#### Chain Execution Pattern
-
-For each skill in the chain, /workflow MUST:
-
-1. **INVOKE** the skill with `Skill("[skill-name]")`
-2. **PASS** current context + taste constraints
-3. **WAIT** for skill completion
-4. **COLLECT** output
-5. **PASS** output as input to NEXT skill in chain
-6. **REPEAT** until chain terminates at /ship or /review
-
-#### Example: "build a REST API"
-
-```
-/workflow "build a REST API"
-    │
-    ├─ PHASE 0: TASTE CHECK → PASS
-    ├─ PHASE 1: ROUTE → /autoplan → /sprint → /verify → /ship
-    │
-    ├─ PHASE 2: EXECUTE CHAIN
-    │   │
-    │   ├─ SKILL 1: /autoplan
-    │   │       invoke /autoplan "build REST API"
-    │   │       wait for SPEC.md creation
-    │   │       collect SPEC.md path + context
-    │   │       PASS to next skill ↓
-    │   │
-    │   ├─ SKILL 2: /sprint
-    │   │       invoke /sprint with SPEC.md context
-    │   │       spawn parallel agents
-    │   │       wait for completion
-    │   │       collect modified files + test results
-    │   │       PASS to next skill ↓
-    │   │
-    │   ├─ SKILL 3: /verify
-    │   │       invoke /verify against SPEC.md
-    │   │       wait for ACCEPT/REJECT
-    │   │       if REJECT → loop back to /sprint with fixes
-    │   │       if ACCEPT → PASS to next skill ↓
-    │   │
-    │   └─ SKILL 4: /ship
-    │           invoke /ship
-    │           wait for ship confirmation
-    │           chain complete
-    │
-    └─ PHASE 3: VERIFY (embedded in /verify)
-    └─ PHASE 4: OUTPUT (ship complete)
-```
-
-#### Single-Skill Chains (no chain)
-
-Some tasks are single-skill:
-- `/audit` → terminates with findings
-- `/council` → terminates with decision
-- `/qa` → terminates with PASS/FAIL
-
-For these, /workflow still invokes the skill and returns the output to user.
-
-#### Anti-Pattern: Chain Breaking
-
-```
-BLOCK: Invoking /autoplan and stopping
-BLOCK: Invoking /sprint and stopping
-BLOCK: Invoking /verify and stopping
-BLOCK: Assuming skills auto-chain without /workflow orchestration
-```
-
-**Every chain MUST terminate at /ship or /review unless the task is single-skill.**
-
-### PHASE 3: VERIFY
-
-**Dual verification: Taste alignment + SPEC compliance.**
-
-```
-taste_verify(output):
-  - Does output match taste.md principles?
-  - Does output serve taste.vision intent?
-  - Would output pass the Taste Test?
-
-SPEC_verify(output):
-  - Does output meet all SPEC.md success criteria?
-  - Are all verification methods complete?
-  - Is rollback plan still valid?
-```
-
-**Verification Loop:**
-- If taste_verify FAILS → loop back to fix taste violations
-- If SPEC_verify FAILS → loop back to fix spec violations
-- If both PASS → proceed to PHASE 4
-- 3 failed loops → escalate, require human decision
-
-### PHASE 4: ROUTE OUTPUT
-
-| Condition | Route To |
-|-----------|----------|
-| Production-ready, all gates passed | /ship |
-| Needs human review / sign-off | /review |
-| Partial completion, continue later | /overnight or save state |
-|价值观 alignment question | /align |
-| Done, no further action | Return to user |
-
----
-
-## Taste Check Protocol
-
-### Step 1: Load Taste Files
-```
-Read: /home/fer/Music/ultimateminimax/taste.md
-Read: /home/fer/Music/ultimateminimax/taste.vision
-```
-
-### Step 2: Recall Memory
-```
-bash scripts/memory.sh recall "<task>" --depth medium
-```
-Inject memory recall results into context for informed alignment scoring.
-
-### Step 3: Score Alignment
-Score task against each taste dimension:
-- **Design principles** (from taste.md): 0-10
-- **Intent alignment** (from taste.vision): 0-10
-- **价值观 consistency**: 0-10
-- **Memory alignment** (from recall): 0-10
-
-**Composite Score = weighted average (design 35%, intent 35%,价值观 15%, memory 15%)**
-
-### Step 4: Gate Decision
-| Composite Score | Decision |
-|-----------------|----------|
-| 0-4 | BLOCK → invoke /align |
-| 5-6 | CAUTION → note deviations, proceed |
-| 7-10 | PROCEED |
-
-### Step 5: Document Taste Status
-```
-## Taste Check Results
-
-### Alignment Scores
-- Design Principles: [score]/10
-- Intent Alignment: [score]/10
-- 价值观 Consistency: [score]/10
-- Memory Alignment: [score]/10
-- **Composite: [score]/10**
-
-### Gate Status: [PROCEED/CAUTION/BLOCK]
-### Deviations (if any): [list]
-### Memory Recall Insights: [relevant past decisions]
-```
-
----
-
-## Skill Router Protocol
-
-### Step 1: Parse Task Intent
-Extract the core verb and object:
-- "build X" → implementation intent
-- "fix Z" → debugging intent
-- "analyze Y" → analysis intent
-
-### Step 2: Match Pattern
-Match against routing table:
-```
-implementation_patterns = ["build", "implement", "create", "add", "make"]
-debugging_patterns = ["fix", "debug", "repair", "resolve"]
-analysis_patterns = ["analyze", "review", "audit", "examine"]
-research_patterns = ["research", "browse", "search", "find"]
-```
-
-### Step 3: Select Skill Chain
-Based on pattern match, select skill chain:
-- Implementation → `/autoplan` → `/sprint` → `/verify` → `/ship`
-- Debugging → `/investigate` → `/verify`
-- Analysis → `/council` → `/align` if needed
-- Research → `/browse`
-- etc.
-
-### Step 4: Validate Chain
-Ensure skill chain:
-- Has no circular dependencies
-- Respects taste constraints
-- Has clear termination (all lead to /ship or /review)
-
----
-
-## Execution Protocol
-
-### Full Step-by-Step for /workflow
-
-```
-STEP 0: TASTE CHECK [GATE]
-├── Read taste.md
-├── Read taste.vision
-├── Call memory recall with task
-├── Score task alignment
-├── If score < 5 → invoke /align, wait for approval
-└── If score >= 5 → proceed
-
-STEP 1: ROUTE
-├── Parse task intent
-├── Match pattern against routing table
-├── Select skill chain
-└── Validate chain
-
-STEP 2: EXECUTE
-├── For each skill in chain (in order):
-│   ├── Invoke skill with task context
-│   ├── Pass taste constraints to skill
-│   ├── Collect output
-│   └── Pass output to next skill
-└── If /sprint invoked: spawn up to MAX_PARALLEL_AGENTS workers
-
-STEP 3: VERIFY
-├── taste_verify(output) → does it match taste?
-├── SPEC_verify(output) → does it meet SPEC criteria?
-├── If either fails → loop back to STEP 2 with fixes
-└── If 3 failures → escalate to human
-
-STEP 4: ROUTE OUTPUT
-├── If production-ready → /ship
-├── If needs review → /review
-├── If价值观 question → /align
-└── Otherwise → return to user
-```
-
-### Research-First Mandate
-Before executing any skill chain:
-- Verify AI claims with web search (training data is stale)
-- Research APIs, libraries, error codes for external dependencies
-- Document findings in execution context
-
----
-
-## Agent Pool Configuration
-
-**Default: 10 agents** (for 32GB+ RAM, 8+ cores)
-
-To configure for your hardware, add to `~/.claude/settings.json`:
-
-```json
-{
-  "env": {
-    "MAX_PARALLEL_AGENTS": "6"
-  }
-}
-```
-
-| Hardware | MAX_PARALLEL_AGENTS |
-|----------|---------------------|
-| 32GB+ RAM, 8+ cores | 10 |
-| 16GB RAM, 4+ cores | 6 |
-| 8GB RAM, 2+ cores | 3 |
-| Low-end | 2 |
-
----
-
-## Anti-Patterns (BLOCK)
-
-### Taste Violations
-- Proceeding with score < 5 without /align approval → BLOCK
-- Ignoring taste.md principles in execution → BLOCK
-- Violating taste.vision intent → BLOCK
--价值观 mismatch without acknowledgment → BLOCK
-
-### Execution Violations
-- Workers modifying shared files → BLOCK (conflicts)
-- Skipping research on external deps → BLOCK
-- Marking done without tests passing → BLOCK
-- Workers communicating directly → BLOCK (supervisor only)
-- Ignoring file conflicts → BLOCK
-- Skipping taste check → BLOCK
-
-### Verification Violations
-- Skipping SPEC_verify → BLOCK
-- Accepting "looks good" as evidence → BLOCK
-- No taste verification documented → BLOCK
-- Silent acceptance of output → BLOCK
+## Anti-Patterns
+
+- stopping after writing `SPEC.md`
+- telling the user to manually invoke the next phase
+- claiming verification without commands or evidence
+- pushing or deploying when the user only asked for a local result
+- using nested custom-skill chaining as if it were guaranteed orchestration

@@ -21,5 +21,8 @@ detect_agents() {
 }
 
 export MAX_PARALLEL_AGENTS=$(detect_agents)
-echo "Detected hardware: $(nproc 2>/dev/null || echo '?') cores, $(free -h 2>/dev/null | grep Mem | awk '{print $2}' || echo '?') RAM"
-echo "MAX_PARALLEL_AGENTS=$MAX_PARALLEL_AGENTS"
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+    echo "Detected hardware: $(nproc 2>/dev/null || echo '?') cores, $(free -h 2>/dev/null | grep Mem | awk '{print $2}' || echo '?') RAM"
+    echo "MAX_PARALLEL_AGENTS=$MAX_PARALLEL_AGENTS"
+fi

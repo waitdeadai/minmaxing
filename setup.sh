@@ -58,18 +58,71 @@ python3 -c "import sqlite3; print('  [PASS] sqlite3 available')" 2>/dev/null || 
 }
 echo ""
 
-# Step 4: Configure API Key in settings.json
+# Step 4: Configure API Key in local settings
 echo "[4/7] Configuring MiniMax API key..."
 echo ""
 
 if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
-    # Update settings.json with the actual API key
-    if [ -f ".claude/settings.json" ]; then
-        sed -i "s/YOUR_MINIMAX_API_KEY/$API_KEY/g" .claude/settings.json
-        echo "  [PASS] API key configured in .claude/settings.json"
-    else
-        echo "  [WARN] .claude/settings.json not found"
+    mkdir -p .claude
+
+    if [ ! -f ".claude/settings.local.json" ]; then
+        if [ -f ".claude/settings.json" ]; then
+            cp .claude/settings.json .claude/settings.local.json
+        else
+            cat > .claude/settings.local.json <<'EOF'
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "YOUR_MINIMAX_API_KEY",
+    "MINIMAX_API_KEY": "YOUR_MINIMAX_API_KEY",
+    "MINIMAX_API_HOST": "https://api.minimax.io",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "ANTHROPIC_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_SMALL_FAST_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M2.7-highspeed",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M2.7-highspeed",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "MiniMax-M2.7-highspeed",
+    "CLAUDE_CODE_EFFORT_LEVEL": "high",
+    "DISABLE_AUTO_COMPACT": "0",
+    "MAX_THINKING_TOKENS": "1000",
+    "CLAUDE_CODE_NO_FLICKER": "1"
+  },
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(forgegod *)",
+      "WebSearch",
+      "mcp__MiniMax__web_search",
+      "Bash(bash *.sh)"
+    ],
+    "defaultMode": "acceptEdits"
+  }
+}
+EOF
+        fi
     fi
+
+    python3 - "$API_KEY" <<'PY'
+import json
+import pathlib
+import sys
+
+path = pathlib.Path(".claude/settings.local.json")
+data = json.loads(path.read_text())
+env = data.setdefault("env", {})
+key = sys.argv[1]
+
+env["ANTHROPIC_BASE_URL"] = "https://api.minimax.io/anthropic"
+env["ANTHROPIC_AUTH_TOKEN"] = key
+env["MINIMAX_API_KEY"] = key
+env["MINIMAX_API_HOST"] = "https://api.minimax.io"
+
+path.write_text(json.dumps(data, indent=2) + "\n")
+PY
+
+    echo "  [PASS] API key configured in .claude/settings.local.json"
 
     # Configure MCP server
     echo "Configuring MiniMax MCP server..."
@@ -128,10 +181,10 @@ mkdir -p .taste/sessions
 mkdir -p .taste/workflow-runs
 echo "  [PASS] Memory directories created"
 
-# Initialize taste system (NOTE: taste files created on-demand by /workflow via /align --bootstrap)
+# Initialize taste system (NOTE: taste files are created on-demand by /workflow)
 # Only create directories, not the taste files themselves
 if [ -f "./scripts/taste.sh" ]; then
-    echo "  [INFO] Taste files will be created by /align --bootstrap when you first run /workflow"
+    echo "  [INFO] Taste files will be created by /workflow when you first need them"
 fi
 echo ""
 
@@ -158,7 +211,8 @@ echo ""
 
 # Step 6: Add hardware detection to bashrc
 echo "[6/7] Adding hardware auto-detection to ~/.bashrc..."
-DETECT_SOURCE="[ -f \"\$(pwd)/scripts/detect-hardware.sh\" ] && source \"\$(pwd)/scripts/detect-hardware.sh\""
+REPO_ROOT="$(pwd)"
+DETECT_SOURCE="[ -f \"$REPO_ROOT/scripts/detect-hardware.sh\" ] && source \"$REPO_ROOT/scripts/detect-hardware.sh\" >/dev/null 2>&1"
 if ! grep -q "detect-hardware.sh" ~/.bashrc 2>/dev/null; then
     echo "$DETECT_SOURCE" >> ~/.bashrc
     echo "  [PASS] Hardware auto-detection added to ~/.bashrc"

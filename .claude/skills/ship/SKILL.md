@@ -1,6 +1,6 @@
 # /ship
 
-Pre-ship checklist that ensures everything is ready before production deployment. Includes sync, test, coverage audit, push, and rollback plan.
+Pre-ship checklist that ensures everything is ready before a requested release action. Includes verification, test selection, rollback planning, and only performs remote actions when the user explicitly wants them.
 
 **MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents running pre-ship checks simultaneously (tests, lint, security scan, coverage).
 
@@ -57,49 +57,27 @@ Ensure all quality gates pass before production deployment. This is the last lin
 - [ ] Monitoring alerts configured
 ```
 
-### Step 2: Run All Tests
+### Step 2: Run The Right Tests
 
 ```bash
-# Run full test suite
-npm test 2>&1 | tee test-output.txt
-
-# Check exit code
-if [ $? -ne 0 ]; then
-  echo "TESTS FAILED — Cannot ship"
-  exit 1
-fi
+# Detect the project's real test command instead of assuming npm
+# Examples: npm test, pnpm test, pytest, cargo test, go test ./...
+# If no automated tests exist, say so explicitly and treat that as risk.
 ```
 
 ### Step 3: Coverage Audit
 
 ```bash
-# Run coverage report
-npm run coverage 2>&1 | tee coverage.txt
-
-# Check coverage meets threshold (e.g., 80%)
-COVERAGE=$(grep "Coverage" coverage.txt | awk '{print $2}' | tr -d '%')
-if [ "$COVERAGE" -lt 80 ]; then
-  echo "COVERAGE TOO LOW: $COVERAGE% — Cannot ship"
-  exit 1
-fi
+# Use a coverage command only if the repo actually has one.
+# Do not fabricate an 80% threshold for repos that do not define coverage tooling.
 ```
 
 ### Step 4: Sync and Push
 
 ```bash
-# Sync with remote
-git fetch origin
-git pull origin main
-
-# Run tests one more time
-npm test
-
-# Commit if clean
-git add -A
-git commit -m "Ship: [feature description]"
-
-# Push
-git push origin HEAD
+# Remote actions are conditional.
+# Only fetch, commit, push, tag, or deploy when the user explicitly asked for that outcome.
+# For local-only completion, stop after verified local readiness and report that no remote action was taken.
 ```
 
 ### Step 6: Write Workflow Completion Artifact
