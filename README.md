@@ -30,7 +30,7 @@ Get your key from [platform.minimax.io](https://platform.minimax.io)
 
 That's it. Memory system, MiniMax MCP, and 15 skills — all configured.
 
-**Secrets stay local.** Setup writes your real API key to `.claude/settings.local.json` and leaves the shared `.claude/settings.json` safe to commit.
+**Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
 **Taste files are created on-demand.** The first time you run `/workflow`, it detects missing taste.md + taste.vision and bootstraps them before execution continues. No empty templates, no guessing.
 
@@ -115,8 +115,26 @@ AI training data is stale. Every external claim gets verified with live web sear
 `/workflow` now treats live research as mandatory for all tasks, with the MiniMax MCP as the preferred source. It fills the full `MAX_PARALLEL_AGENTS` pool with parallel search tracks before it plans or edits anything.
 
 ### Permission Mode
-- **acceptEdits** (shared-project default): Safe default for a repo you plan to commit and share
-- **bypassPermissions** (personal local override): Zero safety checks, only for trusted personal setups
+- **bypassPermissions** (shared-project default by design): Zero safety checks for trusted personal setups
+- If you want more guardrails, switch your local Claude session to `acceptEdits` or `plan`
+
+### OpenAI Codex Plugin
+This repo now ships a project-scoped Codex config under [`.codex/config.toml`](/home/fer/Music/ultimateminimax/.codex/config.toml) plus focused Codex agents in [`.codex/agents/`](/home/fer/Music/ultimateminimax/.codex/agents) so the official OpenAI Claude Code plugin can inherit sane defaults when you use Codex from inside Claude Code.
+
+Research-backed take:
+- The best plugin for using Codex inside Claude Code is the official OpenAI [`openai/codex-plugin-cc`](https://github.com/openai/codex-plugin-cc).
+- It is explicitly built for Claude Code users, uses your local `codex` CLI plus Codex app server, and picks up user-level or project-level `.codex/config.toml`.
+- It does not force parallelism by itself. OpenAI’s Codex docs say subagents are only spawned when you explicitly ask for them, so max-agent behavior comes from your prompt plus the project `max_threads` setting.
+- I found no official source saying this official plugin violates OpenAI terms. This is not legal advice, but the repo itself documents Claude Code installation and current OpenAI Terms/Usage Policies do not appear to prohibit this official integration when used compliantly.
+
+What this repo config gives Codex:
+- Main Codex default: `gpt-5.4` with `xhigh` reasoning and detailed reasoning summaries
+- Subagent ceiling: `10` via `[agents].max_threads`
+- OpenAI docs MCP: `https://developers.openai.com/mcp`
+- Focused helper agents:
+  - `repo_explorer`
+  - `reviewer`
+  - `docs_researcher`
 
 ### Taste-First (Kernel)
 Every `/workflow` invocation checks `taste.md` + `taste.vision` before doing anything. If they don't exist, `/workflow` bootstraps taste inline by asking the same questions first.
@@ -338,6 +356,62 @@ claude
 ```
 Direct invocation skips the orchestrator — use when you know exactly what you need.
 
+## Codex in Claude Code
+
+### Install the official plugin
+
+You can install it from the shell without opening a manual slash-command flow:
+
+```bash
+claude plugin marketplace add openai/codex-plugin-cc
+claude plugin install codex@openai-codex
+claude plugins list
+```
+
+Then open Claude Code and run:
+
+```text
+/codex:setup
+```
+
+If Codex is not logged in yet:
+
+```bash
+codex login
+```
+
+### What this repo configures for Codex
+
+Once the repo is trusted, Codex loads [`.codex/config.toml`](/home/fer/Music/ultimateminimax/.codex/config.toml):
+
+- `model = "gpt-5.4"`
+- `model_reasoning_effort = "xhigh"`
+- `model_reasoning_summary = "detailed"`
+- `[agents].max_threads = 10`
+- `openaiDeveloperDocs` MCP for official OpenAI/Codex docs
+
+### Deep-Research examples
+
+The Codex plugin exposes reviews plus long-running rescue tasks. For comprehensive research-backed planning, `/codex:rescue` is the better fit because it is steerable.
+
+```text
+/codex:rescue --background
+Use subagents up to max_threads for a research-backed plan.
+Have repo_explorer map the code paths, docs_researcher verify external APIs and current docs, and reviewer challenge risks and rollback gaps before proposing the plan.
+Task: refactor the auth subsystem without user-visible behavior changes.
+```
+
+```text
+/codex:adversarial-review --background
+Challenge whether this implementation plan is the right one, question hidden assumptions, and look for rollback, race-condition, and test-coverage risks.
+```
+
+Notes:
+- `/codex:review` and `/codex:adversarial-review` are read-only.
+- `/codex:rescue` is the command to use when you want Codex to investigate, plan, and potentially fix.
+- Codex only fans out subagents when you explicitly ask it to.
+- For the absolute heaviest pass, try `--model gpt-5.4-pro --effort xhigh`, but expect materially higher cost and slower background jobs.
+
 ---
 
 ## Requirements
@@ -347,6 +421,8 @@ Direct invocation skips the orchestrator — use when you know exactly what you 
 | Claude Code | 2.1+ (`npm install -g @anthropic-ai/claude-code`) |
 | Python | 3.11+ |
 | MiniMax API Key | [platform.minimax.io](https://platform.minimax.io) |
+| Node.js | 18.18+ if you want the optional OpenAI Codex plugin |
+| Codex Auth | ChatGPT sign-in or OpenAI API key if you want the optional OpenAI Codex plugin |
 
 ---
 
@@ -380,6 +456,10 @@ minmaxing/
 ├── setup.sh                     # One-command installer
 ├── taste.md                     # Design spec (what's acceptable) — created by /align
 ├── taste.vision                 # Intent document (the why) — created by /align
+├── AGENTS.md                    # Project instructions for Codex
+├── .codex/
+│   ├── config.toml             # Project-scoped Codex defaults
+│   └── agents/                 # Codex custom agents for research/review
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── skills/                 # 15 skills (system calls)

@@ -1,0 +1,14 @@
+# Project-scoped Codex defaults for use with the official OpenAI Claude Code plugin.
+# Codex only loads this file when the project is trusted.
+
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+model_reasoning_summary = "detailed"
+model_verbosity = "high"
+
+[agents]
+max_threads = 10
+max_depth = 1
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"

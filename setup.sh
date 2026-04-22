@@ -97,7 +97,7 @@ if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
       "mcp__MiniMax__web_search",
       "Bash(bash *.sh)"
     ],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "bypassPermissions"
   }
 }
 EOF

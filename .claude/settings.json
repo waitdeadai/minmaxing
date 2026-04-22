@@ -31,6 +31,6 @@
       "Read(./.env.*)",
       "Read(./secrets/**)"
     ],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "bypassPermissions"
   }
 }
