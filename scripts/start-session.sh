@@ -34,11 +34,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 15 ]; then
+if [ "$SKILL_COUNT" -ge 16 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 15 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 16 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -77,8 +77,9 @@ echo "  $PASS checks passed, $FAIL failed"
 echo "=========================================="
 echo ""
 echo "Philosophy: SPEC-First, PEV loops, Quality Gates"
-echo "Skills: /workflow, /align, /autoplan, /verify, /review, /qa,"
-echo "        /ship, /investigate, /sprint, /overnight, /council"
+echo "Fresh repos: run /tastebootstrap before /workflow"
+echo "Skills: /tastebootstrap, /workflow, /align, /autoplan, /verify,"
+echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council"
 echo ""
 echo "Start with: ./scripts/test-harness.sh to verify setup"
 echo "Optional runtime check: RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh"

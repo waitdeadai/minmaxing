@@ -16,7 +16,7 @@ Deep codebase analysis with parallel agents. Audit any repo to understand its st
 
 ### Phase 0: Taste Check [GATE]
 1. Check: taste.md + taste.vision exist?
-   - If NO → invoke /align --bootstrap → wait → proceed
+   - If NO → invoke `/tastebootstrap` → wait → proceed
 2. Read taste.md + taste.vision
 3. Call memory recall:
    - `bash scripts/memory.sh recall "<audit target>" --depth simple`

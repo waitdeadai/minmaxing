@@ -2,24 +2,26 @@
 
 ## Problem Statement
 
-`/workflow` doesn't integrate with the memory system during Taste Check. Also, if `taste.md` / `taste.vision` don't exist, `/workflow` and `/align` fail instead of bootstrapping taste definition first.
+`/workflow` needs memory-aware taste checking, but it also needs a coherent kernel lifecycle. Fresh repos should define the kernel explicitly with `/tastebootstrap` before execution, and the kernel itself should describe project vision and operating guardrails rather than forcing a frontend/backend questionnaire.
 
 ## Success Criteria
 
 - [ ] `/workflow` Taste Check calls `memory recall` to get relevant past decisions
 - [ ] `/workflow` Taste Check reads taste.md + taste.vision first
-- [ ] If taste.md or taste.vision missing → prompts to bootstrap via `/align`
-- [ ] `/align` can bootstrap taste definition for new projects
+- [ ] If taste.md or taste.vision missing → `/workflow` stops and redirects to `/tastebootstrap`
+- [ ] `/tastebootstrap` defines taste for new projects before `/workflow` proceeds
 - [ ] `/audit` asks taste questions before researching (taste-first audit)
+- [ ] taste.md uses an operating-kernel structure that is broader than frontend/backend
 - [ ] Memory recall results injected into Taste Check context
 
 ## Scope
 
 ### In Scope
 - Update `/workflow` Taste Check to call `memory recall`
-- Update `/align` to support taste bootstrap mode
+- Add an explicit `/tastebootstrap` entrypoint for fresh repos
+- Update taste kernel templates to center vision, experience, interfaces, and system behavior
 - Update `/audit` skill to ask taste questions before research
-- Update `/autoplan` to redirect to `/align` if taste undefined
+- Update `/autoplan` to redirect to `/tastebootstrap` if taste undefined
 
 ### Out of Scope
 - Changes to memory Python code (already complete)
@@ -31,11 +33,9 @@
 ```
 /workflow [task]
     → taste.md exists? → YES → proceed
-    → NO → "Taste not defined. Let's define it."
-    → invoke /align --bootstrap
-    → /align --bootstrap:
-        - 5 questions to define taste.md
-        - 5 questions to define taste.vision
+    → NO → "Kernel not defined. Run /tastebootstrap first."
+    → /tastebootstrap:
+        - 10 questions for project principles, experience, interfaces, system behavior, and vision
         - Writes taste.md + taste.vision
         - Output: TASTE_DEFINED
     → Once TASTE_DEFINED → proceed to Taste Check
@@ -45,7 +45,7 @@
 ```
 PHASE 0: TASTE CHECK
 1. Check: taste.md + taste.vision exist?
-   - If NO → invoke /align --bootstrap → wait → retry
+   - If NO → stop and redirect to /tastebootstrap
 2. Read taste.md + taste.vision
 3. Call memory recall with task description
    - memory recall → relevant semantic + procedural + error-solutions
@@ -55,11 +55,10 @@ PHASE 0: TASTE CHECK
    - If >=5 → proceed to PHASE 1
 ```
 
-### /align Bootstrap Mode
+### /tastebootstrap
 ```
-/align --bootstrap
-    → 5 questions for taste.md (design principles, aesthetic rules, code style, architecture, naming)
-    → 5 questions for taste.vision (intent, success criteria, non-goals, taste feel)
+/tastebootstrap
+    → 10 questions for principles, intent, experience, interfaces, operations, code, architecture, and non-goals
     → Write taste.md + taste.vision
     → Output: TASTE_DEFINED
 ```
@@ -82,13 +81,14 @@ PHASE 0: TASTE CHECK
 - [ ] Task 1: Update `.claude/skills/workflow/SKILL.md` [PARALLEL]
   - Taste Check calls `memory recall <task> --depth medium`
   - Injects memory recall results into context
-  - Definition of Done: Taste Check protocol shows memory recall call
+  - Stops and redirects to `/tastebootstrap` if kernel files are missing
+  - Definition of Done: Taste Check protocol shows memory recall call and bootstrap redirect
 
-- [ ] Task 2: Update `.claude/skills/align/SKILL.md` [PARALLEL]
-  - Add `--bootstrap` flag for taste creation
-  - 5 questions for taste.md, 5 for taste.vision
+- [ ] Task 2: Add `.claude/skills/tastebootstrap/SKILL.md` [PARALLEL]
+  - Dedicated bootstrap contract for fresh repos
+  - 10 questions for the operating kernel and vision
   - Writes taste.md + taste.vision to project root
-  - Definition of Done: /align --bootstrap creates taste files
+  - Definition of Done: /tastebootstrap creates taste files before /workflow runs
 
 ### Phase 2: Update /audit + /autoplan [PARALLEL: 2 agents]
 
@@ -99,7 +99,7 @@ PHASE 0: TASTE CHECK
 
 - [ ] Task 4: Update `.claude/skills/autoplan/SKILL.md` [PARALLEL]
   - Step 1: Check taste.md + taste.vision exist
-  - If NO → invoke /align --bootstrap first
+  - If NO → invoke /tastebootstrap first
   - Then proceed with planning
   - Definition of Done: /autoplan bootstraps taste if undefined
 
@@ -108,7 +108,7 @@ PHASE 0: TASTE CHECK
 | Criterion | Method |
 |-----------|--------|
 | /workflow calls memory recall | Manual: invoke /workflow, observe memory recall output |
-| Taste bootstrap creates files | Manual: `rm taste.md taste.vision; /align --bootstrap; ls taste.*` |
+| Taste bootstrap creates files | Manual: `rm taste.md taste.vision; /tastebootstrap; ls taste.*` |
 | /audit taste-first | Manual: invoke /audit, observe Taste Check before research |
 | /autoplan taste bootstrap | Manual: remove taste files, invoke /autoplan, observe bootstrap |
 | Memory injected into context | Manual: check /workflow output includes recall results |

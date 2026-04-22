@@ -1,6 +1,6 @@
 ---
 taste: vision
-version: "2.0"
+version: "2.1"
 created: 2026-04-20
 ---
 
@@ -12,7 +12,7 @@ Right results, not fast results.
 
 minmaxing exists to turn AI coding into a disciplined system rather than a prompt roulette machine. It should help humans and agents do careful, research-backed, spec-backed work that survives contact with real projects.
 
-The kernel is not just there to make outputs look polished. It is there to make the entire system behave coherently, from frontend decisions to backend contracts to verification discipline.
+The kernel is not there just to make outputs look polished. It is there to make the entire system behave coherently, from product experience to contracts, operations, and verification discipline.
 
 ## Audience
 
@@ -23,10 +23,10 @@ The kernel is not just there to make outputs look polished. It is there to make 
 ## Success Criteria
 
 - Every file-changing task starts from research, audit, plan, and `SPEC.md`.
-- Frontend output is consistent, accessible, and clearly built from reusable system primitives.
-- Backend output is contract-first, observable, safe to evolve, and explicit about failure handling.
+- Interfaces, docs, and human touchpoints are consistent, accessible, and explicit.
+- System behavior is contract-first, observable, safe to evolve, and explicit about failure handling.
 - Verification is separate from implementation and produces concrete evidence.
-- The kernel remains clear enough that new projects can bootstrap into it without guesswork.
+- The kernel remains clear enough that new projects can define it with `/tastebootstrap` before execution begins.
 
 ## Non-Goals
 
@@ -49,7 +49,7 @@ When tradeoffs are unavoidable, prefer the option that is easier to inspect, ver
 
 Working inside this kernel should feel calm, deliberate, and trustworthy.
 
-- Frontends should feel structured, legible, and intentional.
-- Backends should feel dependable, observable, and unsurprising.
+- Human-facing touchpoints should feel structured, legible, and intentional.
+- System behavior should feel dependable, observable, and unsurprising.
 - Specs should make the work feel premeditated instead of improvised.
 - Verification should reduce anxiety, not create another guessing game.

@@ -181,10 +181,10 @@ mkdir -p .taste/sessions
 mkdir -p .taste/workflow-runs
 echo "  [PASS] Memory directories created"
 
-# Initialize taste system (NOTE: taste files are created on-demand by /workflow)
+# Initialize taste system (taste files are defined later via /tastebootstrap)
 # Only create directories, not the taste files themselves
 if [ -f "./scripts/taste.sh" ]; then
-    echo "  [INFO] Taste files will be created by /workflow when you first need them"
+    echo "  [INFO] In a fresh repo, run /tastebootstrap to define taste.md and taste.vision"
 fi
 echo ""
 
@@ -254,6 +254,7 @@ echo "=========================================="
 echo ""
 echo "Next steps:"
 echo "  1. Run: claude"
-echo "  2. Try: /workflow 'build a REST API'"
-echo "  3. Check memory: bash scripts/memory.sh stats"
+echo "  2. If this is a fresh repo, run: /tastebootstrap"
+echo "  3. Then try: /workflow 'build a REST API'"
+echo "  4. Check memory: bash scripts/memory.sh stats"
 echo ""

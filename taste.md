@@ -1,273 +1,172 @@
 ---
 taste: spec
-version: "2.0"
+version: "2.1"
 created: 2026-04-20
-frontend:
-  colors:
-    canvas: "#F7F5F2"
-    surface: "#FFFFFF"
-    ink: "#1A1C1E"
-    muted: "#6C7278"
-    accent: "#B8422E"
-    success: "#1F6F4A"
-    warning: "#A66200"
-    danger: "#B42318"
-  typography:
-    display:
-      fontFamily: Public Sans
-      fontSize: 3rem
-      fontWeight: 700
-      lineHeight: 1.1
-      letterSpacing: -0.03em
-    heading:
-      fontFamily: Public Sans
-      fontSize: 2rem
-      fontWeight: 600
-      lineHeight: 1.2
-      letterSpacing: -0.02em
-    body:
-      fontFamily: Public Sans
-      fontSize: 1rem
-      fontWeight: 400
-      lineHeight: 1.6
-    label:
-      fontFamily: Space Grotesk
-      fontSize: 0.75rem
-      fontWeight: 600
-      lineHeight: 1
-      letterSpacing: 0.08em
-  spacing:
-    xs: 4px
-    sm: 8px
-    md: 16px
-    lg: 24px
-    xl: 32px
-    section: 48px
-  rounded:
-    sm: 4px
-    md: 8px
-    lg: 12px
-    xl: 20px
-    full: 9999px
-  components:
-    button-primary:
-      backgroundColor: "{frontend.colors.accent}"
-      textColor: "{frontend.colors.surface}"
-      typography: "{frontend.typography.label}"
-      rounded: "{frontend.rounded.md}"
-      height: 44px
-      padding: 0 16px
-    button-secondary:
-      backgroundColor: "{frontend.colors.surface}"
-      textColor: "{frontend.colors.ink}"
-      typography: "{frontend.typography.label}"
-      rounded: "{frontend.rounded.md}"
-      height: 44px
-      padding: 0 16px
-    input-field:
-      backgroundColor: "{frontend.colors.surface}"
-      textColor: "{frontend.colors.ink}"
-      typography: "{frontend.typography.body}"
-      rounded: "{frontend.rounded.md}"
-      height: 44px
-      padding: 0 12px
-    surface-card:
-      backgroundColor: "{frontend.colors.surface}"
-      textColor: "{frontend.colors.ink}"
-      rounded: "{frontend.rounded.lg}"
-      padding: "{frontend.spacing.lg}"
-    list-item-interactive:
-      backgroundColor: "{frontend.colors.surface}"
-      textColor: "{frontend.colors.ink}"
-      rounded: "{frontend.rounded.md}"
-      padding: "{frontend.spacing.md}"
-    status-badge:
-      backgroundColor: "{frontend.colors.canvas}"
-      textColor: "{frontend.colors.muted}"
-      typography: "{frontend.typography.label}"
-      rounded: "{frontend.rounded.full}"
-      padding: 4px 10px
-backend:
-  contractStyle: contract-first
-  errorModel: structured-and-stable
+principles:
+  - spec-first
+  - research-first
+  - evidence-backed-verification
+experience:
+  posture: calm-deliberate-trustworthy
+  accessibility: inclusive-by-default
+interfaces:
+  contractStyle: explicit-and-stable
+  stateBoundaries: single-owner-and-validated-at-the-edge
+system:
+  errorModel: structured-and-explainable
   observability: logs-metrics-traces-with-correlation-id
   security: least-privilege-and-explicit-boundaries
   rollback: reversible-and-evidence-backed
+delivery:
+  verification: separate-verifier-with-concrete-evidence
 ---
 
 # Taste Spec
 
-Define what is acceptable in this project. AI agents consult this before accepting output.
+Define the operating kernel for this project. AI agents consult this before accepting output.
+
+This kernel is not limited to frontend or backend work. It covers the principles, experience, contracts, system behavior, and delivery discipline that keep the whole project coherent.
 
 ## Overview
 
-This kernel defines a correctness-first product system for both interface work and system behavior. Frontends should feel clear, calm, and intentional rather than flashy, while backends should feel explicit, inspectable, and safe to evolve.
+This kernel defines a correctness-first working system for minmaxing. The goal is not to force every repo into a frontend/backend mold. The goal is to make agents act with the same intent, discipline, and tradeoff posture whether they are touching docs, workflows, APIs, CLIs, automation, or user-facing surfaces.
 
-The goal is not to impose one brand aesthetic on every project. The goal is to give agents a reusable structure for making coherent frontend decisions and equally coherent backend decisions without drifting into novelty, hidden coupling, or "good enough" shortcuts.
+The project should feel deliberate rather than improvised, explicit rather than magical, and inspectable rather than trust-me. We optimize for work that can be understood, verified, rolled back, and extended without guesswork.
 
 ## Design Principles
 
-- SPEC-first: write spec before code.
+- SPEC-first: write the contract before code.
 - Research-first: verify external claims with current sources before committing to a plan.
 - Separate verifier from implementer: the PEV loop is mandatory for file-changing work.
 - Correctness over speed: throughput matters only after the task is well understood.
-- Reusable systems over one-off flourishes: design and architecture should compound across tasks.
-- Contract-first backend thinking: behavior, failure modes, and rollback paths should be explicit before implementation.
-- Accessible by default: clarity, contrast, keyboard reachability, and readable copy are not optional polish.
+- Explicit over implicit: interfaces, assumptions, and failure modes should be named clearly.
+- Reusable systems over one-off cleverness: favor primitives and patterns that compound across sessions.
+- Accessibility and clarity are not optional polish: humans should be able to understand what the system is doing.
 
-## Frontend System
+## Experience & Interaction
 
-### Colors
+### Voice & UX
 
-Use a restrained, editorial palette. Most surfaces should be quiet neutrals so the accent color carries the visual intent instead of the whole interface shouting at once.
+The human experience should feel calm, direct, and trustworthy.
 
-- `canvas` is the page foundation. Prefer warm off-white or soft neutral backgrounds over pure white.
-- `surface` is for cards, inputs, tables, and raised containers.
-- `ink` is the default text and high-emphasis border color.
-- `muted` is for metadata, helper copy, dividers, and low-emphasis controls.
-- `accent` is the primary action color. Use it deliberately, not everywhere.
-- `success`, `warning`, and `danger` are semantic states only. Never use them as decorative brand color.
+- Prefer concise, specific language over hype or vagueness.
+- Make the system feel premeditated, not improvised in public.
+- Show evidence, constraints, and decisions instead of hand-wavy reassurance.
+- When the project has a UI, prefer structured, legible surfaces over decorative novelty.
+- When the project is mostly CLI, workflow, or docs, the same standard applies: clarity first, friction only when it buys safety.
 
-### Typography
+### Interaction Patterns
 
-Typography should feel structured and confident, not generic.
+Default interaction behavior should reduce ambiguity.
 
-- Public Sans is the default narrative voice for display, headings, and body copy.
-- Space Grotesk is reserved for labels, metadata, badges, counters, and system-like UI fragments.
-- Display and heading styles should create hierarchy through size and weight, not through random color changes.
-- Body text should optimize for long reading and predictable rhythm.
-- Labels should be compact, legible, and slightly tracked for scanability.
+- State transitions should be visible and named.
+- Empty, loading, success, warning, and failure states should be explicit.
+- Important flows should be decomposed into understandable phases.
+- Prefer stable commands, predictable output shapes, and obvious next steps.
+- Do not surprise users with hidden side effects, silent destructive behavior, or unexplained automation.
 
-### Layout & Spacing
+### Accessibility & Inclusion
 
-Use a disciplined spacing rhythm.
+Accessibility is part of correctness.
 
-- The base spacing system is 4px / 8px aligned.
-- Prefer generous grouping and containment over overly dense control clusters.
-- Default container padding should feel deliberate and breathable.
-- Use one clear primary column or grid before introducing nested layout complexity.
-- Keep interactive areas comfortably targetable on both desktop and mobile.
+- Write copy that is scannable, plain-language, and calm under stress.
+- Never rely on color alone to communicate status or required action.
+- Keyboard reachability and visible focus remain mandatory for any interactive UI.
+- Prefer naming and structure that welcome new contributors instead of insider shorthand.
+- Optimize for users who are tired, context-switching, or debugging under pressure.
 
-### Elevation & Shapes
+## Interfaces & Contracts
 
-Hierarchy should come from containment, contrast, and spacing before heavy effects.
+### Public Surfaces
 
-- Use soft radii by default: small for controls, medium for inputs, larger for cards and modal surfaces.
-- Prefer borders and tonal contrast over deep shadow stacks.
-- If depth is needed, it should clarify hierarchy, not create visual noise.
-- Rounded full-pill treatments are for badges, chips, and compact status elements only.
+Anything another human, process, or system depends on is a contract.
 
-### Components
-
-Agents should treat these as the default reusable primitives:
-
-- `button-primary`: one clear call to action, accent-backed, high-contrast label.
-- `button-secondary`: neutral surface action, lower emphasis than primary.
-- `input-field`: calm, readable form control with obvious focus state and enough padding to scan comfortably.
-- `surface-card`: grouped content container for specs, summaries, settings, or workflow output.
-- `list-item-interactive`: interactive row pattern for menus, search results, run history, or audit findings.
-- `status-badge`: compact semantic state label for workflow status, severity, or environment markers.
-
-Variants are acceptable, but they should feel like descendants of these components rather than brand-new inventions every time.
-
-### Interaction & Accessibility
-
-Accessibility is a hard requirement, not a best-effort aspiration.
-
-- Meet WCAG AA contrast for normal text and controls.
-- Visible focus states are mandatory for every interactive element.
-- Support keyboard-first navigation for all major actions and flows.
-- Never rely on color alone to communicate status, severity, or required action.
-- Use explicit loading, empty, success, and error states instead of silent transitions.
-- Copy should be concise, specific, and calm under stress.
-
-## Backend System
-
-### API & Contract Design
-
-Backend changes should start from the consumer contract, not from internal convenience.
-
-- Prefer stable, explicit request and response shapes.
+- APIs, CLIs, workflow commands, file formats, and generated artifacts should have stable, explicit shapes.
 - Break behavior intentionally, never accidentally.
-- Additive changes are preferred over silently changing meaning.
-- Use consistent naming, predictable resource boundaries, and obvious action semantics.
-- If an operation is important enough to expose, it is important enough to document and verify.
+- Additive evolution is preferred over silent semantic drift.
+- If a surface matters enough to expose, it matters enough to document and verify.
+- Keep input/output conventions consistent across commands, scripts, and workflow artifacts.
 
-### Data Boundaries & State
+### Data & State Boundaries
 
-Make state ownership obvious.
+Ownership should be obvious.
 
 - One subsystem should own one source of truth.
-- Avoid hidden bidirectional coupling between UI state, transport state, and persistence state.
-- Validation should happen at the boundary, not only deep inside the implementation.
-- Migrations, derived data, and background jobs should preserve recoverability and traceability.
+- Validate at boundaries, not only deep inside the implementation.
+- Avoid hidden coupling between memory, workflow state, runtime output, and persistent artifacts.
+- Preserve traceability when information crosses files, commands, or agents.
+- Prefer reversible migrations and obvious state transitions over clever compactness.
 
-### Errors, Resilience & Idempotency
+## System Behavior
+
+### Errors & Resilience
 
 Failure should be modeled, not hand-waved.
 
-- Prefer structured errors with stable machine-readable codes and concise human-readable summaries.
-- Mutating operations should consider idempotency and retry safety where duplication is possible.
-- Timeouts, fallback behavior, and partial-failure handling should be explicit in the plan.
-- Do not leak internal implementation details or secrets through error messages.
+- Prefer structured errors with concise human meaning and stable machine meaning.
+- Timeouts, retries, and fallback behavior should be explicit in the plan.
+- Mutating operations should consider idempotency and duplication risk where relevant.
+- Do not leak implementation details or secrets through error output.
+- When safety and convenience conflict, default to the safer behavior and explain the tradeoff.
 
 ### Observability & Operations
 
-If a system matters, it must be debuggable in production-like conditions.
+If the system matters, it must be debuggable.
 
-- Emit structured logs for meaningful state transitions and failure events.
-- Preserve correlation or request identifiers across boundaries when possible.
-- Prefer metrics and traces for recurring operational questions, not ad hoc detective work.
-- Destructive or high-risk operations should leave an audit trail.
-- Rollback steps should be concrete enough to execute under pressure.
+- Emit evidence for meaningful state transitions and failures.
+- Preserve correlation or run identifiers across workflow artifacts when possible.
+- Prefer inspectable artifacts over ephemeral reasoning.
+- Recurring operational questions should be answerable from logs, metrics, traces, or durable records.
+- Debugging paths should be obvious enough that another engineer can reproduce the reasoning trail.
 
 ### Security & Privacy
 
-Security is a product constraint, not a cleanup task.
+Security should be boring, explicit, and preventative.
 
-- Assume all external input is untrusted until validated.
-- Prefer explicit authentication and authorization checks over ambient trust.
-- Apply least-privilege defaults for credentials, services, and operators.
-- Never log secrets, tokens, raw credentials, or sensitive personal data casually.
-- Collect and retain only the data required to deliver the feature or audit the action.
+- Use least privilege and clear boundary ownership.
+- Keep secrets out of committed config and out of human-readable error output.
+- Make risky actions visible and intentional.
+- Treat rollbackability as part of safety, not an afterthought.
+- Avoid designs that depend on humans remembering invisible constraints.
 
 ## Code Style
 
-- Small functions, single responsibility, clear call sites.
-- Explicit over implicit, especially around side effects and state mutation.
-- Prefer names that reveal intent over abbreviations that save keystrokes.
-- Keep formatting boring and readable.
-- Comments should explain why a choice exists, not restate the code mechanically.
-- Avoid premature optimization, but do not ignore obvious complexity cliffs.
+- Prefer small, explicit units over sprawling abstractions.
+- Name code for behavior and responsibility, not cleverness.
+- Comments should explain why a decision matters, not restate syntax.
+- Keep formatting and structure predictable enough that diffs are easy to scan.
+- Favor maintainability and explanation quality over terseness.
 
 ## Architecture
 
-- Supervisor/worker patterns are acceptable when ownership is clear and verification is explicit.
-- File isolation between parallel agents is preferred whenever work can be decomposed safely.
-- Thin orchestration layers, explicit domain boundaries, and clear integration seams beat magical shared state.
-- Quality gates belong before progression, not after damage.
-- Design the rollback path while the change is still cheap to reason about.
+- Separate orchestration from execution.
+- Keep critical-path responsibilities owned by the command that promises them.
+- Use specialist helpers when useful, but do not let the main workflow silently delegate away its contract.
+- Prefer boundaries that reduce rollback risk and make testing surfaces clear.
+- The architecture should make the correct path the easiest path for both humans and agents.
 
 ## Naming Conventions
 
-- Prefer semantic token names over aesthetic nicknames in machine-readable config.
-- Use consistent nouns for resources and clear verbs for actions or jobs.
-- UI component names should describe purpose, not implementation detail.
-- Status, severity, and workflow states should be named consistently across UI, logs, and APIs.
-- Avoid ambiguous suffixes like `new`, `final`, `temp`, or `misc`.
+- Use names that reveal intent and scope.
+- Prefer stable verbs for commands and stable nouns for durable artifacts.
+- Name workflow phases consistently across docs, logs, specs, and output.
+- Avoid overloaded terms that mean different things in different files.
+- If a name needs a paragraph to defend it, it is probably not the right name.
 
 ## Do's and Don'ts
 
 ### Do's
 
-- Do preserve a small set of reusable UI primitives and extend them consistently.
-- Do write backend behavior from a stable contract outward.
-- Do make success, failure, loading, and rollback states explicit.
-- Do keep the system inspectable through logs, metrics, traces, and readable specs.
+- Do force clarity before execution.
+- Do preserve inspectable artifacts for meaningful work.
+- Do make contracts, constraints, and success criteria explicit.
+- Do bias toward reversible, evidence-backed changes.
+- Do keep the kernel broad enough to fit many project shapes.
 
 ### Don'ts
 
-- Don't invent a new visual language for every screen or feature.
-- Don't couple product behavior to incidental transport quirks or fragile UI state.
-- Don't hide failure behind silent retries or vague messages.
-- Don't trade recoverability and clarity for short-term implementation speed.
+- Don't treat taste as a frontend/backend questionnaire by default.
+- Don't hide critical decisions inside implicit behavior.
+- Don't optimize for shortest-path generation at the expense of recoverability.
+- Don't collapse distinct system roles into one vague blob.
+- Don't let the docs promise a flow the runtime contract does not enforce.

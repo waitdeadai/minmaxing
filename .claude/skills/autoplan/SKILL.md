@@ -4,7 +4,7 @@ SPEC-first planning that generates or updates `SPEC.md` before implementation.
 
 **This command writes the spec directly.** It does not switch Claude Code into built-in plan mode for you. If you want Claude Code's read-only planning mode, use the platform's native `/plan` flow or start Claude with `--permission-mode plan`.
 
-**TASTE-FIRST** — If taste.md/vision undefined, bootstraps via /align before planning.
+**TASTE-FIRST** — If taste.md/vision undefined, bootstrap taste before planning, preferably via `/tastebootstrap`.
 
 **MAX_PARALLEL_AGENTS** — spawns up to 10 parallel research agents for deep research during planning.
 
@@ -23,7 +23,7 @@ SPEC-first planning that generates or updates `SPEC.md` before implementation.
 - Read user's description carefully
 - Identify what success looks like (verifiable, not vague)
 - Check: taste.md + taste.vision exist?
-  - If NO → invoke /align --bootstrap first, then continue
+  - If NO → invoke `/tastebootstrap` first, then continue
   - If YES → proceed to Step 2
 - Recall similar past plans to inform scope and approach:
 ```bash

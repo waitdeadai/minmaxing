@@ -27,7 +27,7 @@ Execute long-running tasks that exceed normal session time. Checkpoints prevent 
 ```bash
 # Check taste files exist
 if [ ! -f "taste.md" ] || [ ! -f "taste.vision" ]; then
-  echo "WARNING: taste.md or taste.vision missing — invoke /align --bootstrap first"
+  echo "WARNING: taste.md or taste.vision missing — invoke /tastebootstrap first"
 fi
 
 # Read taste files

@@ -54,7 +54,7 @@ fi
 # Test 3a: Taste Kernel Structure
 echo "[3a] Taste Kernel Structure"
 KERNEL_OK=true
-for section in "^version:" "^frontend:" "^backend:" "^## Frontend System$" "^### Interaction & Accessibility$" "^## Backend System$" "^### API & Contract Design$" "^## Do's and Don'ts$"; do
+for section in "^version:" "^principles:" "^experience:" "^interfaces:" "^system:" "^delivery:" "^## Experience & Interaction$" "^### Accessibility & Inclusion$" "^## Interfaces & Contracts$" "^## System Behavior$" "^### Security & Privacy$" "^## Do's and Don'ts$"; do
     if ! grep -Eq "$section" taste.md 2>/dev/null; then
         KERNEL_OK=false
     fi
@@ -65,9 +65,9 @@ for section in "^version:" "^## Audience$" "^## Values & Tradeoffs$" "^## Experi
     fi
 done
 if [ "$KERNEL_OK" = true ]; then
-    test_pass "taste.md + taste.vision use the hybrid kernel structure"
+    test_pass "taste.md + taste.vision use the operating kernel structure"
 else
-    test_fail "taste kernel files are missing required hybrid sections"
+    test_fail "taste kernel files are missing required operating-kernel sections"
 fi
 
 # Test 3b: Taste Template Generation
@@ -76,15 +76,15 @@ TMP_TASTE_DIR="$(mktemp -d)"
 if (
     cd "$TMP_TASTE_DIR" &&
     bash "$ROOT_DIR/scripts/taste.sh" init >/dev/null &&
-    grep -q "^frontend:" taste.md &&
-    grep -q "^backend:" taste.md &&
-    grep -q "^## Frontend System$" taste.md &&
+    grep -q "^principles:" taste.md &&
+    grep -q "^interfaces:" taste.md &&
+    grep -q "^## Experience & Interaction$" taste.md &&
     grep -q "^### Security & Privacy$" taste.md &&
     grep -q "^## Experience Promise$" taste.vision
 ); then
-    test_pass "taste.sh init generates the richer hybrid template"
+    test_pass "taste.sh init generates the operating-kernel template"
 else
-    test_fail "taste.sh init did not generate the expected hybrid template"
+    test_fail "taste.sh init did not generate the expected operating-kernel template"
 fi
 rm -rf "$TMP_TASTE_DIR"
 
@@ -97,39 +97,63 @@ while IFS= read -r pattern; do
     fi
 done <<'EOF'
 Bootstrap Interview (10 questions)
-What visual personality should the UI have, and what should it avoid?
+What kind of experience should this project create, and what should it avoid?
+What public interfaces or contracts must stay explicit and stable?
 What error-handling, observability, rollback, and security rules are required?
 What code style, architecture, and naming rules are preferred?
-## Frontend System
-## Backend System
+## Experience & Interaction
+## Interfaces & Contracts
+## System Behavior
 ## Experience Promise
 EOF
 if [ "$ALIGN_OK" = true ]; then
-    test_pass "/align --bootstrap documents the richer kernel interview"
+    test_pass "/align --bootstrap documents the operating-kernel interview"
 else
-    test_fail "/align --bootstrap is missing required hybrid kernel prompts"
+    test_fail "/align --bootstrap is missing required operating-kernel prompts"
+fi
+
+# Test 3d: Taste Bootstrap Skill
+echo "[3d] Taste Bootstrap Skill"
+TASTEBOOTSTRAP_OK=true
+while IFS= read -r pattern; do
+    if [ -n "$pattern" ] && ! grep -Fq "$pattern" .claude/skills/tastebootstrap/SKILL.md 2>/dev/null; then
+        TASTEBOOTSTRAP_OK=false
+    fi
+done <<'EOF'
+# /tastebootstrap
+Bootstrap Interview (10 questions)
+What kind of experience should this project create, and what should it avoid?
+What public interfaces or contracts must stay explicit and stable?
+What error-handling, observability, rollback, and security rules are required?
+What code style, architecture, and naming rules are preferred?
+TASTE_DEFINED
+EOF
+if [ "$TASTEBOOTSTRAP_OK" = true ]; then
+    test_pass "/tastebootstrap documents the fresh-repo kernel interview"
+else
+    test_fail "/tastebootstrap is missing required bootstrap prompts"
 fi
 
 # ========================================
-# Skills (12 Required)
+# Skills (16 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 12 Required]"
+echo "[Skills - 16 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 10 ]; then
+if [ "$SKILL_COUNT" -ge 16 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 10+ skills, found $SKILL_COUNT"
+    test_fail "Expected 16+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in workflow align audit autoplan verify review qa ship investigate; do
+for skill in tastebootstrap workflow align audit autoplan verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then

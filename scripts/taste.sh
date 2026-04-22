@@ -1,6 +1,6 @@
 #!/bin/bash
 # minmaxing taste system CLI
-# Manages taste.md, taste.vision, and taste.memory (JSONL log)
+# Manages the project kernel (taste.md), vision (taste.vision), and taste.memory (JSONL log)
 # Usage: taste.sh init|log|review|digest|score
 
 set -e
@@ -24,164 +24,82 @@ case "$CMD" in
       cat > "$TASTE_MD" <<'EOF'
 ---
 taste: spec
-version: "2.0"
+version: "2.1"
 created: PLACEHOLDER_DATE
-frontend:
-  colors:
-    canvas: "#F7F5F2"
-    surface: "#FFFFFF"
-    ink: "#1A1C1E"
-    muted: "#6C7278"
-    accent: "#B8422E"
-    success: "#1F6F4A"
-    warning: "#A66200"
-    danger: "#B42318"
-  typography:
-    display:
-      fontFamily: Public Sans
-      fontSize: 3rem
-      fontWeight: 700
-      lineHeight: 1.1
-      letterSpacing: -0.03em
-    heading:
-      fontFamily: Public Sans
-      fontSize: 2rem
-      fontWeight: 600
-      lineHeight: 1.2
-      letterSpacing: -0.02em
-    body:
-      fontFamily: Public Sans
-      fontSize: 1rem
-      fontWeight: 400
-      lineHeight: 1.6
-    label:
-      fontFamily: Space Grotesk
-      fontSize: 0.75rem
-      fontWeight: 600
-      lineHeight: 1
-      letterSpacing: 0.08em
-  spacing:
-    xs: 4px
-    sm: 8px
-    md: 16px
-    lg: 24px
-    xl: 32px
-    section: 48px
-  rounded:
-    sm: 4px
-    md: 8px
-    lg: 12px
-    xl: 20px
-    full: 9999px
-  components:
-    button-primary:
-      backgroundColor: "{frontend.colors.accent}"
-      textColor: "{frontend.colors.surface}"
-      typography: "{frontend.typography.label}"
-      rounded: "{frontend.rounded.md}"
-      height: 44px
-      padding: 0 16px
-    button-secondary:
-      backgroundColor: "{frontend.colors.surface}"
-      textColor: "{frontend.colors.ink}"
-      typography: "{frontend.typography.label}"
-      rounded: "{frontend.rounded.md}"
-      height: 44px
-      padding: 0 16px
-    input-field:
-      backgroundColor: "{frontend.colors.surface}"
-      textColor: "{frontend.colors.ink}"
-      typography: "{frontend.typography.body}"
-      rounded: "{frontend.rounded.md}"
-      height: 44px
-      padding: 0 12px
-    surface-card:
-      backgroundColor: "{frontend.colors.surface}"
-      textColor: "{frontend.colors.ink}"
-      rounded: "{frontend.rounded.lg}"
-      padding: "{frontend.spacing.lg}"
-    list-item-interactive:
-      backgroundColor: "{frontend.colors.surface}"
-      textColor: "{frontend.colors.ink}"
-      rounded: "{frontend.rounded.md}"
-      padding: "{frontend.spacing.md}"
-    status-badge:
-      backgroundColor: "{frontend.colors.canvas}"
-      textColor: "{frontend.colors.muted}"
-      typography: "{frontend.typography.label}"
-      rounded: "{frontend.rounded.full}"
-      padding: 4px 10px
-backend:
-  contractStyle: contract-first
-  errorModel: structured-and-stable
+principles:
+  - spec-first
+  - research-first
+  - evidence-backed-verification
+experience:
+  posture: calm-deliberate-trustworthy
+  accessibility: inclusive-by-default
+interfaces:
+  contractStyle: explicit-and-stable
+  stateBoundaries: single-owner-and-validated-at-the-edge
+system:
+  errorModel: structured-and-explainable
   observability: logs-metrics-traces-with-correlation-id
   security: least-privilege-and-explicit-boundaries
   rollback: reversible-and-evidence-backed
+delivery:
+  verification: separate-verifier-with-concrete-evidence
 ---
 
 # Taste Spec
 
-Define what is acceptable in this project. AI agents consult this before accepting output.
+Define the operating kernel for this project. AI agents consult this before accepting output.
+
+This kernel can describe product feel, system behavior, contracts, workflow discipline, or anything else that keeps the project coherent. It is not limited to frontend or backend work.
 
 ## Overview
 
-Describe the overall system feel.
+Describe the overall operating posture of the project.
 
-- What should the frontend feel like?
-- What should the backend optimize for?
+- What should this project feel like to use, run, or maintain?
+- What should it optimize for?
 - What should never happen by accident?
 
 ## Design Principles
 
 - <!-- Non-negotiable rules such as SPEC-first, research-first, or correctness over speed -->
 
-## Frontend System
+## Experience & Interaction
 
-### Colors
+### Voice & UX
 
-- <!-- How should color be used semantically? -->
+- <!-- How should the product, CLI, docs, or workflows feel to a human? -->
 
-### Typography
+### Interaction Patterns
 
-- <!-- Which fonts, hierarchy, and label treatments are acceptable? -->
+- <!-- Which interaction defaults, states, and behavior patterns should agents preserve? -->
 
-### Layout & Spacing
+### Accessibility & Inclusion
 
-- <!-- What spacing rhythm, density, and layout model should agents preserve? -->
+- <!-- Accessibility, clarity, inclusion, and readability rules that are never optional -->
 
-### Elevation & Shapes
+## Interfaces & Contracts
 
-- <!-- How should depth, borders, radius, and containment work? -->
+### Public Surfaces
 
-### Components
+- <!-- What APIs, CLIs, files, schemas, docs, or workflow interfaces must remain explicit and stable? -->
 
-- <!-- How should the default primitives behave and when should variants appear? -->
+### Data & State Boundaries
 
-### Interaction & Accessibility
+- <!-- What owns state, where does validation happen, and which boundaries must stay clean? -->
 
-- <!-- Contrast, focus states, keyboard rules, loading and error states -->
+## System Behavior
 
-## Backend System
+### Errors & Resilience
 
-### API & Contract Design
-
-- <!-- What request/response and versioning style should backend work follow? -->
-
-### Data Boundaries & State
-
-- <!-- What owns state and where should validation happen? -->
-
-### Errors, Resilience & Idempotency
-
-- <!-- How should failure be modeled and what retry/rollback rules apply? -->
+- <!-- How should failure be modeled, communicated, retried, and recovered from? -->
 
 ### Observability & Operations
 
-- <!-- What logs, metrics, traces, and audit trails are expected? -->
+- <!-- What logs, metrics, traces, audit trails, and operational hooks are expected? -->
 
 ### Security & Privacy
 
-- <!-- What auth, secret handling, privacy, and least-privilege rules apply? -->
+- <!-- What auth, secrets, privacy, and least-privilege rules apply? -->
 
 ## Code Style
 
@@ -214,7 +132,7 @@ EOF
       cat > "$TASTE_VISION" <<'EOF'
 ---
 taste: vision
-version: "2.0"
+version: "2.1"
 created: PLACEHOLDER_DATE
 ---
 
@@ -232,7 +150,7 @@ Why does this project exist? What kind of experience and system behavior should 
 
 ## Success Criteria
 
-- <!-- Frontend, backend, and workflow success conditions -->
+- <!-- Product, system, and workflow success conditions -->
 
 ## Non-Goals
 
@@ -244,7 +162,7 @@ Why does this project exist? What kind of experience and system behavior should 
 
 ## Experience Promise
 
-- <!-- How should the product feel to use and how should the system feel to operate? -->
+- <!-- How should the product, system, or workflow feel to use and operate? -->
 EOF
       echo "Created taste.vision"
     fi

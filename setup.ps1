@@ -154,6 +154,7 @@ Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor White
 Write-Host "  1. Run: claude" -ForegroundColor Gray
-Write-Host "  2. Try: /workflow 'build a REST API'" -ForegroundColor Gray
-Write-Host "  3. Check memory: bash scripts/memory.sh stats" -ForegroundColor Gray
+Write-Host "  2. If this is a fresh repo, run: /tastebootstrap" -ForegroundColor Gray
+Write-Host "  3. Then try: /workflow 'build a REST API'" -ForegroundColor Gray
+Write-Host "  4. Check memory: bash scripts/memory.sh stats" -ForegroundColor Gray
 Write-Host ""

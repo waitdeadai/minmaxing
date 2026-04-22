@@ -28,11 +28,11 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 15 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 16 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
-**Taste files are created on-demand.** The first time you run `/workflow`, it detects missing taste.md + taste.vision and bootstraps them before execution continues. No empty templates, no guessing.
+**Fresh repos should start with `/tastebootstrap`.** It asks the 10 kernel questions, writes `taste.md` + `taste.vision`, and gives `/workflow` explicit taste to follow before anything is built.
 
 > **Note:** Setup adds hardware auto-detection to `~/.bashrc` — `MAX_PARALLEL_AGENTS` is set automatically on every shell start.
 
@@ -162,9 +162,9 @@ With SPEC-first:
 | Separate verifier agent | Same AI checks its own work |
 | Research-first: `/workflow` fans out MiniMax MCP-backed searches across the full agent pool before planning or edits | AI hallucinates best practices |
 
-**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, it asks you to define it — before anything is built.
+**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. In a fresh repo, define them with `/tastebootstrap` before anything is built.
 
-**Taste is NOT just frontend/aesthetic.** It's the entire project philosophy — design principles, visual system, component rules, accessibility guardrails, API contracts, observability rules, architecture constraints, code style, intent, non-goals, and values. When `/align --bootstrap` asks its 10 kernel questions, it covers all of these dimensions, not just how things look.
+**Taste is NOT just frontend/aesthetic, and it is not a frontend/backend checklist.** It's the project's operating kernel — design principles, experience direction, interface contracts, observability rules, architecture constraints, code style, intent, non-goals, and values. When `/tastebootstrap` asks its 10 kernel questions, it captures the vision and guardrails that make the whole system coherent.
 
 **Memory is persistent.** Every decision, every fix, every shipped feature is remembered. The second session knows what the first session learned.
 
@@ -222,7 +222,7 @@ What this repo config gives Codex:
   - `docs_researcher`
 
 ### Taste-First (Kernel)
-Every `/workflow` invocation checks `taste.md` + `taste.vision` before doing anything. If they don't exist, `/workflow` bootstraps taste inline by asking the same questions first.
+Every `/workflow` invocation checks `taste.md` + `taste.vision` before doing anything. In a fresh repo, run `/tastebootstrap` first. `/workflow` is the executor, not the bootstrap interview.
 
 ### 5-Tier Memory (Persistent)
 SQLite-backed memory that remembers across sessions:
@@ -266,7 +266,7 @@ Think of minmaxing as an operating system:
 └─────────────────────────────────────────────────────┘
 ```
 
-**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, `/workflow` bootstraps it inline. Taste covers the full project philosophy — design principles, architecture, code style, intent, non-goals, and values.
+**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If the kernel is missing, stop and define it with `/tastebootstrap` before execution. Taste covers the full project philosophy — design principles, architecture, code style, intent, non-goals, and values.
 
 **Skills are system calls.** Each skill does one thing well. They are still useful directly, but `/workflow` is responsible for finishing the main end-to-end path itself.
 
@@ -315,17 +315,23 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 claude
 ```
 
-Then tell it what you want to build:
+Then bootstrap the repo kernel:
+
+```
+/tastebootstrap
+```
+
+**What happens:**
+1. `/tastebootstrap` checks taste.md + taste.vision → **don't exist**
+2. `/tastebootstrap` asks the 10 kernel questions
+3. You answer → taste.md + taste.vision are created
+4. The repo is now ready for `/workflow`
+
+Then run:
 
 ```
 /workflow "build a REST API for a todo app"
 ```
-
-**What happens:**
-1. `/workflow` checks taste.md + taste.vision → **don't exist**
-2. `/workflow` asks the 10 taste bootstrap questions inline
-3. You answer → taste.md + taste.vision are created
-4. `/workflow` continues automatically through research → code audit → plan → `SPEC.md` → implementation → verification → closeout
 
 ### What You Get
 
@@ -336,9 +342,9 @@ Then tell it what you want to build:
 - **Closeout** — local completion by default, remote push only when you explicitly ask for it
 - **Memory** — everything logged to 5-tier memory for next session
 
-### After First Build
+### After Bootstrap
 
-Your taste is saved. Next time:
+Your taste is saved. From then on:
 
 ```
 /workflow "add user authentication"
@@ -346,9 +352,7 @@ Your taste is saved. Next time:
 
 No taste questions. `/workflow` knows your principles, plans, builds, verifies, and finishes the task.
 
----
-
-## Integrate Into Existing Project
+### Integrate Into Existing Project
 
 Drop minmaxing into any codebase:
 
@@ -368,14 +372,14 @@ claude
 ```
 
 ```
-/align --bootstrap
+/tastebootstrap
 ```
 
 Answer the 10 taste questions about your existing project:
 - What are your design principles?
 - What's your intent?
 - What's in/out of scope?
-- What aesthetic rules?
+- What experience, interface, and system rules matter?
 
 ### Step 3: Use /workflow on Your Codebase
 
@@ -403,10 +407,11 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 15 Skills
+## The 16 Skills
 
 | Skill | What It Does |
 |-------|-------------|
+| `/tastebootstrap` | **Fresh-repo bootstrap** — asks the 10 kernel questions and writes `taste.md` + `taste.vision` |
 | `/workflow` | **Central execution engine** — drives research → code audit → plan → `SPEC.md` → implement → verify → closeout (supervises 10 agents) |
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with 10-agent parallelism |
@@ -546,16 +551,17 @@ minmaxing/
 ├── CLAUDE.md                    # Core instructions (for AI)
 ├── README.md                    # This file (for you)
 ├── setup.sh                     # One-command installer
-├── taste.md                     # Hybrid frontend/backend kernel — created by /align
-├── taste.vision                 # Product intent + tradeoff contract — created by /align
+├── taste.md                     # Project operating kernel — created by /tastebootstrap
+├── taste.vision                 # Product intent + tradeoff contract — created by /tastebootstrap
 ├── AGENTS.md                    # Project instructions for Codex
 ├── .codex/
 │   ├── config.toml             # Project-scoped Codex defaults
 │   └── agents/                 # Codex custom agents for research/review
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
-│   ├── skills/                 # 15 skills (system calls)
+│   ├── skills/                 # 16 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
+│   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap
 │   │   ├── align/              # Taste gate
 │   │   ├── audit/              # Deep codebase analysis
 │   │   ├── autoplan/            # SPEC.md generator

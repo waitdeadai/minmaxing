@@ -49,10 +49,12 @@ Research is mandatory:
 ## Phase 0: Taste Gate
 
 1. Check whether `taste.md` and `taste.vision` exist in the project root.
-2. If they do not exist, bootstrap taste inline instead of bouncing the user elsewhere:
-   - ask the 10 bootstrap questions directly
-   - write `taste.md` and `taste.vision`
-   - then continue automatically
+2. If they do not exist:
+   - stop before research, audit, planning, or edits
+   - tell the user that fresh repos must start with `/tastebootstrap`
+   - do not ask the bootstrap questions here
+   - do not write `taste.md` or `taste.vision` from inside `/workflow`
+   - resume `/workflow` only after the kernel is defined
 3. Read `taste.md` and `taste.vision`.
 4. Recall memory for the task:
 

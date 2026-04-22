@@ -21,17 +21,19 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 ## Default Behavior
 
 **When you say "plan this" or "build this":**
-1. `/workflow` researches with the full agent pool
-2. `/workflow` audits the current codebase and writes the plan
-3. `/workflow` creates `SPEC.md`, executes, verifies, and only then closes out
+1. In a fresh repo, run `/tastebootstrap` once to define the kernel
+2. `/workflow` researches with the full agent pool
+3. `/workflow` audits the current codebase and writes the plan
+4. `/workflow` creates `SPEC.md`, executes, verifies, and only then closes out
 
 **Supervisor's job:** Ensure every task is research-backed, audit-backed, spec-backed, and verified before declaring done, without handing the next phase back to the user.
 
-**Taste alignment uses Socratic questions.** When taste is unclear or a proposal conflicts with `taste.md` or `taste.vision`, `/align` asks focused questions before `/workflow` proceeds.
+**Taste alignment uses Socratic questions.** When taste is unclear or a proposal conflicts with the project kernel in `taste.md` and `taste.vision`, `/align` asks focused questions before `/workflow` proceeds.
 
 ## Skills (invoke with /<skill>)
 | Skill | Purpose |
 |-------|---------|
+| /tastebootstrap | Fresh-repo kernel interview that writes taste.md + taste.vision |
 | /workflow | Central execution engine — taste-first, runs the full phases inline |
 | /audit | Deep codebase audit with 10-agent parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
@@ -91,7 +93,7 @@ minmaxing maintains a 5-tier memory architecture backed by SQLite + FTS5:
 **Do NOT edit obsidian files directly.** Human edits to obsidian will NOT sync back to SQLite. To add memory, always use `memory.sh add`.
 
 **Key files:**
-- `taste.md` — Hybrid frontend/backend kernel (what's acceptable)
+- `taste.md` — Project operating kernel (principles, constraints, and guardrails)
 - `taste.vision` — Intent + tradeoff contract (the "why")
 - `.taste/taste.memory` — Append-only decision log (JSONL)
 - `obsidian/Memory/` — Human-readable audit layer (AI output only)
