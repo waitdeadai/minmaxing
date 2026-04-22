@@ -11,20 +11,21 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 ## Core Workflow
 
 1. **SPEC-First**: File-changing tasks get a concrete `SPEC.md` before edits
-2. **10-Agent Parallelism**: Always plan with max parallel agents (10 default)
-3. **Supervisor Pattern**: AI supervises workers, not the other way around
-4. **PEV Loop**: Plan → Execute → Verify. The verifier is separate from the implementer.
-5. **Research-First**: `/workflow` must saturate the full `MAX_PARALLEL_AGENTS` pool with live MiniMax MCP-backed research before planning or edits
-6. **Quality Gates**: /verify must pass; tests must pass; no silent failures
+2. **Research-First**: `/workflow` must saturate the full `MAX_PARALLEL_AGENTS` pool with live MiniMax MCP-backed research before planning or edits
+3. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
+4. **Plan Before Spec**: `/workflow` synthesizes research + audit into a concrete plan before edits
+5. **Supervisor Pattern**: AI supervises workers, not the other way around
+6. **PEV Loop**: Plan → Execute → Verify. The verifier is separate from the implementer.
+7. **Quality Gates**: /verify must pass; tests must pass; no silent failures
 
 ## Default Behavior
 
 **When you say "plan this" or "build this":**
-1. Supervisor decomposes into 10-agent parallel tasks
-2. Workers execute in parallel (up to 10)
-3. Supervisor aggregates, verifies, and gates production through the PEV loop
+1. `/workflow` researches with the full agent pool
+2. `/workflow` audits the current codebase and writes the plan
+3. `/workflow` creates `SPEC.md`, executes, verifies, and only then closes out
 
-**Supervisor's job:** Ensure every task is research-backed and verified before declaring done, without handing the next phase back to the user.
+**Supervisor's job:** Ensure every task is research-backed, audit-backed, spec-backed, and verified before declaring done, without handing the next phase back to the user.
 
 **Taste alignment uses Socratic questions.** When taste is unclear or a proposal conflicts with `taste.md` or `taste.vision`, `/align` asks focused questions before `/workflow` proceeds.
 

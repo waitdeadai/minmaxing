@@ -23,7 +23,11 @@ fi
 SETTINGS_PATH="$(cd "$(dirname "$SETTINGS_PATH")" && pwd)/$(basename "$SETTINGS_PATH")"
 
 TMPDIR="$(mktemp -d /tmp/minmaxing-workflow-smoke-XXXXXX)"
-trap 'rm -rf "$TMPDIR"' EXIT
+if [ "${KEEP_WORKFLOW_SMOKE_DIR:-0}" = "1" ]; then
+    echo "[workflow-smoke] keeping tmpdir: $TMPDIR"
+else
+    trap 'rm -rf "$TMPDIR"' EXIT
+fi
 
 mkdir -p "$TMPDIR/.claude"
 cp -r "$ROOT_DIR/.claude/skills" "$TMPDIR/.claude/"
@@ -61,11 +65,31 @@ EOF
     echo "$OUTPUT"
 
     echo "$OUTPUT" | grep -Eq "Research[^[:cntrl:]]*completed with MiniMax MCP"
-    echo "$OUTPUT" | grep -Eq "Research Tracks Used[^[:cntrl:]]*10 / 10"
+    echo "$OUTPUT" | grep -Eq "Research Tracks Used[^[:cntrl:]]*10 ?/ ?10"
     echo "$OUTPUT" | grep -Eq "MiniMax MCP Searches[^[:cntrl:]]*10"
+    echo "$OUTPUT" | grep -Eq "Code Audit[^[:cntrl:]]*completed"
+    echo "$OUTPUT" | grep -Eq "Plan[^[:cntrl:]]*completed"
+    echo "$OUTPUT" | grep -Eq "Workflow Artifact[^[:cntrl:]]*\\.taste/workflow-runs/"
     test -f "$TMPDIR/SPEC.md"
     test -f "$TMPDIR/note.txt"
     test "$(cat "$TMPDIR/note.txt")" = "ok"
+    grep -q "^## Codebase Anchors$" "$TMPDIR/SPEC.md"
+
+    ARTIFACT="$(find "$TMPDIR/.taste/workflow-runs" -maxdepth 1 -type f | head -n 1)"
+    test -n "$ARTIFACT"
+
+    awk '
+        /^## Research Brief$/ { research = NR }
+        /^## Code Audit$/ { audit = NR }
+        /^## Plan$/ { plan = NR }
+        /^## SPEC Decision$/ { spec = NR }
+        END {
+            if (research && audit && plan && spec && research < audit && audit < plan && plan < spec) {
+                exit 0
+            }
+            exit 1
+        }
+    ' "$ARTIFACT"
 )
 
 echo "[workflow-smoke] PASS"

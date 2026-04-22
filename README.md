@@ -9,7 +9,7 @@
 
 **Right results, not fast results.**
 
-One command sets up a Claude Code harness where AI plans with 10 agents, implements in parallel, and verifies everything against your spec before you accept it.
+One command sets up a Claude Code harness where AI researches with 10 agents, audits the codebase, writes a concrete plan and `SPEC.md`, implements, and verifies everything before you accept it.
 
 <p align="center">
   <a href="https://github.com/waitdeadai/minmaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Stars"></a>
@@ -155,7 +155,7 @@ With SPEC-first:
 |-------------|----------------|
 | Taste-first: taste.md + vision gate every decision | No taste — just "build X" |
 | 5-tier memory: remembers decisions, patterns, errors across sessions | Tabula rasa every session |
-| Central orchestrator: /workflow runs the whole spec → execute → verify flow automatically | Skills are isolated, no chaining |
+| Central orchestrator: /workflow runs research → audit → plan → spec → execute → verify automatically | Skills are isolated, no chaining |
 | Auto-capture: outcomes logged to memory automatically | Manual documentation |
 | SPEC-first: write spec before code | Vague prompts, rebuild loops |
 | 10 agents in parallel | Sequential one-at-a-time |
@@ -189,7 +189,7 @@ Supervisor (you/AI)
 Auto-detects your hardware: 32GB+ → 10 agents, 16GB → 6 agents, 8GB → 3 agents.
 
 ### SPEC-First
-Every task starts with SPEC.md. Define success in plain English. AI implements to spec.
+File-changing tasks start with research, code audit, and a concrete plan. `SPEC.md` is the formal contract that comes out of that work, and AI implements to spec.
 
 ### Separate Verifier
 Not the same AI that wrote the code. A different agent checks output against your spec.
@@ -231,7 +231,7 @@ SQLite-backed memory that remembers across sessions:
 - Causal graph tracks what caused success/failure
 
 ### Central Orchestrator
-`/workflow` owns the full lifecycle inline: taste gate, max-agent deep research, spec, implementation, verification, and closeout. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
+`/workflow` owns the full lifecycle inline: taste gate, max-agent deep research, code audit, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` so the research/audit/plan trail is inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
 
 ---
 
@@ -249,8 +249,12 @@ Think of minmaxing as an operating system:
 │  PHASE 0: TASTE CHECK [GATE]  ← taste.md + vision │
 │  PHASE 1: ROUTE                                     │
 │  PHASE 2: DEEP RESEARCH (MiniMax MCP × MAX AGENTS) │
-│  PHASE 3: SPEC + EXECUTE                           │
-│  PHASE 4: VERIFY + CLOSEOUT                        │
+│  PHASE 3: CODE AUDIT                               │
+│  PHASE 4: PLAN                                     │
+│  PHASE 5: SPEC.md                                  │
+│  PHASE 6: EXECUTE                                  │
+│  PHASE 7: VERIFY                                   │
+│  PHASE 8: CLOSEOUT                                 │
 ├─────────────────────────────────────────────────────┤
 │            taste.md + taste.vision                  │
 │                  (Kernel / OS)                     │
@@ -266,16 +270,16 @@ Think of minmaxing as an operating system:
 
 **Skills are system calls.** Each skill does one thing well. They are still useful directly, but `/workflow` is responsible for finishing the main end-to-end path itself.
 
-**/workflow is the shell.** It orchestrates everything. Routes tasks to the right phase, performs live research, executes the work, verifies output, and gates progression.
+**/workflow is the shell.** It orchestrates everything. Routes tasks to the right phase, performs live research, audits the repo, synthesizes the plan, writes `SPEC.md`, executes the work, verifies output, and gates progression.
 
 ### The 4 Execution Paths
 
 | When you say... | /workflow routes to... |
 |-----------------|----------------------|
-| "build X", "implement Y" | deep research → `SPEC.md` → implement → verify → closeout |
-| "fix Z", "debug this" | deep research → reproduce/fix → verify → closeout |
+| "build X", "implement Y" | deep research → code audit → plan → `SPEC.md` → implement → verify → closeout |
+| "fix Z", "debug this" | deep research → code audit → plan → `SPEC.md` when files change → reproduce/fix → verify → closeout |
 | "explain" | deep research → inspect → explain |
-| "refactor", "optimize" | deep research → `SPEC.md` → implement → verify → closeout |
+| "refactor", "optimize" | deep research → code audit → plan → `SPEC.md` → implement → verify → closeout |
 | "audit this", "analyze" | deep research → inspect → findings |
 
 ### 5-Tier Memory System
@@ -321,11 +325,12 @@ Then tell it what you want to build:
 1. `/workflow` checks taste.md + taste.vision → **don't exist**
 2. `/workflow` asks the 10 taste bootstrap questions inline
 3. You answer → taste.md + taste.vision are created
-4. `/workflow` continues automatically through spec → implementation → verification → closeout
+4. `/workflow` continues automatically through research → code audit → plan → `SPEC.md` → implementation → verification → closeout
 
 ### What You Get
 
-- **SPEC.md** — exact specification created for the task
+- **Workflow Artifact** — `.taste/workflow-runs/...` with research brief, code audit, plan, and verification trail
+- **SPEC.md** — exact specification created from the researched plan
 - **Implementation** — parallel agents building simultaneously
 - **Verification** — separate agent adversarial-checking against spec
 - **Closeout** — local completion by default, remote push only when you explicitly ask for it
@@ -380,18 +385,18 @@ Now you can use any workflow pattern:
 |---------|--------------|
 | `/workflow "explain this codebase"` | Understand what you have |
 | `/workflow "audit this for security issues"` | Deep security + quality audit (10 agents) |
-| `/workflow "refactor the auth module"` | Spec → implement → verify → ship |
-| `/workflow "optimize database queries"` | Spec → implement → verify → ship |
+| `/workflow "refactor the auth module"` | Research → audit → plan → spec → implement → verify |
+| `/workflow "optimize database queries"` | Research → audit → plan → spec → implement → verify |
 | `/workflow "investigate why X is slow"` | Root-cause debugging with hypothesis testing |
-| `/workflow "add REST API to existing endpoints"` | Spec-first build respecting existing architecture |
+| `/workflow "add REST API to existing endpoints"` | Research-backed spec-first build respecting existing architecture |
 
 ### Key Difference: Existing vs New
 
 | Aspect | Fresh Project | Existing Project |
 |--------|--------------|------------------|
-| SPEC.md | Greenfield spec | May not apply — use `/verify` for bug fixes |
+| SPEC.md | Greenfield spec | Required for file-changing work; pure analysis can skip |
 | Taste | Bootstrap fresh | Define from existing code |
-| `/workflow "build"` | Full spec-first flow | Add features, respect existing patterns |
+| `/workflow "build"` | Full research-backed spec-first flow | Add features, respect existing patterns |
 | `/workflow "explain"` | N/A | Understand existing codebase |
 | `/workflow "audit"` | N/A | Find issues in existing code |
 | `/workflow "refactor"` | N/A | Improve existing implementation |
@@ -402,7 +407,7 @@ Now you can use any workflow pattern:
 
 | Skill | What It Does |
 |-------|-------------|
-| `/workflow` | **Central execution engine** — drives plan → research → implement → verify → review → ship (supervises 10 agents) |
+| `/workflow` | **Central execution engine** — drives research → code audit → plan → `SPEC.md` → implement → verify → closeout (supervises 10 agents) |
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with 10-agent parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
@@ -430,7 +435,7 @@ claude
 /workflow "build a REST API for users"
 ```
 
-`/workflow` now owns the whole lifecycle inline: taste check → max-agent MiniMax research → `SPEC.md` → implementation → verification → closeout.
+`/workflow` now owns the whole lifecycle inline: taste check → max-agent MiniMax research → code audit → plan → `SPEC.md` → implementation → verification → closeout.
 
 **Direct skill invocation (advanced):**
 ```bash

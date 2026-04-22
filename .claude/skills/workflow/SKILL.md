@@ -16,7 +16,10 @@ This command is the end-to-end executor.
 ## Non-Negotiable Contract
 
 - Finish the task in this command whenever it is feasible.
+- For file-changing work, follow this order: deep research -> code audit -> plan -> `SPEC.md` -> execute -> verify.
 - Do max-agent deep research for every task before planning or execution.
+- Audit the current codebase before planning or writing `SPEC.md`.
+- Synthesize a concrete plan before writing `SPEC.md`.
 - Do not stop after planning.
 - Do not tell the user to manually run `/autoplan`, `/sprint`, `/verify`, or `/ship`.
 - Do not rely on nested custom-skill chaining as the primary execution path.
@@ -26,13 +29,21 @@ In real Claude Code sessions, nested custom skills may complete their own turn a
 
 You may still use built-in Claude Code tools, shell commands, subagents, and optional specialist skills as reference material when useful, but `/workflow` itself owns the whole lifecycle.
 
+No shortcut exceptions for file-changing tasks:
+- Do not say `Research: skipped`.
+- Do not say `Code Audit: skipped`.
+- Do not say `SPEC.md: not needed`.
+- Do not treat "trivial", "tiny", "single-file", or "local-only" as exceptions.
+- If you are about to skip one of these phases, stop and complete the missing phase instead.
+
 Research is mandatory:
 - If `mcp__MiniMax__web_search` is available in the tool list, you MUST use it before planning, explaining, auditing, or editing.
 - Use `mcp__MiniMax__web_search` as the primary external research tool when it is available.
 - Fall back to Claude Code `WebSearch` only if the MiniMax MCP is unavailable.
 - Always use the full `MAX_PARALLEL_AGENTS` pool for research fan-out.
 - The target research count is exactly `MAX_PARALLEL_AGENTS` live search tracks on every run when MiniMax MCP is available.
-- Build a research brief before spec creation or code changes.
+- Build a research brief before any code audit synthesis, spec creation, or code changes.
+- Write a workflow artifact for file-changing tasks so the reasoning trail is inspectable.
 - Re-check any concrete library, framework, API, or error details again right before editing if the plan depends on them.
 
 ## Phase 0: Taste Gate
@@ -61,14 +72,44 @@ Choose the route from user intent:
 
 | Intent | Workflow Behavior |
 |--------|-------------------|
-| build, implement, create, add, refactor, optimize, migrate | run full spec → execute → verify → closeout flow |
-| fix, debug, investigate | reproduce if needed, fix, verify, closeout |
+| build, implement, create, add, refactor, optimize, migrate | run full research → audit → plan → spec → execute → verify → closeout flow |
+| fix, debug, investigate | research first, audit the relevant code path, then reproduce/fix/verify; create `SPEC.md` if files change |
 | audit, analyze, understand | inspect deeply, report findings, make fixes only if the user asked for them |
 | explain | inspect and explain directly |
 | review | review directly |
 | qa | run focused validation directly |
 
 Default to the full build flow when the task changes files.
+
+## Workflow Artifact
+
+For file-changing tasks, create a durable workflow record before writing `SPEC.md`:
+
+```bash
+mkdir -p .taste/workflow-runs
+STAMP="$(date +%Y%m%d-%H%M%S)"
+WORKFLOW_ARTIFACT=".taste/workflow-runs/${STAMP}-workflow.md"
+```
+
+This artifact is the inspectable audit trail for the run. It must be created before `SPEC.md` and updated as phases complete.
+
+Required section order:
+
+```markdown
+# Workflow Run: [task]
+
+## Task
+## Taste Gate
+## Research Brief
+## Code Audit
+## Plan
+## SPEC Decision
+## Execution Notes
+## Verification Evidence
+## Outcome
+```
+
+Keep it concise, but do not skip sections. For non-file-changing analysis tasks, this artifact is optional.
 
 ## Phase 2: Deep Research
 
@@ -118,6 +159,8 @@ echo "$MAX_AGENTS"
 9. For security-sensitive or architecture tasks, widen the search and cite multiple sources.
 10. If fewer than `MAX_AGENTS` live searches complete because of a tool or network failure, retry first and then explicitly report the shortfall and reason.
 
+For file-changing tasks, `Research Tracks Used` must not be `0 / ...` when the MiniMax MCP is available.
+
 ### Research Queries
 
 Create exactly `MAX_PARALLEL_AGENTS` focused tracks every time. Expand or narrow them based on complexity, but fill the pool.
@@ -162,27 +205,129 @@ Store important research findings in memory when they would be useful again:
 bash scripts/memory.sh add semantic "Research [topic]: [key finding]. Source: [URL]" --tags "research,[topic],current"
 ```
 
+For file-changing tasks, record the research brief in `WORKFLOW_ARTIFACT` before continuing.
+
 Do not create or update `SPEC.md` until this brief exists.
 
-## Phase 3: Spec
+## Phase 3: Code Audit
+
+After research, audit the current codebase before planning.
+
+For file-changing work, this phase is mandatory even when the audit is tiny. A minimal audit is still an audit:
+- "single new file in project root"
+- "no existing module dependency"
+- "no pre-existing tests in scope"
+
+If files will change, report `Code Audit: completed`, not skipped.
+
+For the relevant files, commands, and subsystems:
+
+1. Identify the exact change surface:
+   - files likely to change
+   - tests that already cover the area
+   - configs, scripts, commands, or docs that constrain the change
+2. Capture current implementation reality:
+   - architecture or module boundaries
+   - existing patterns and naming conventions
+   - framework/runtime versions that matter
+   - dependencies or coupling that change the plan
+3. Identify risk:
+   - migration risk
+   - backwards-compatibility risk
+   - missing tests
+   - rollout or rollback risk
+4. For bug/fix work, document:
+   - current failure mode
+   - suspected root cause
+   - evidence gathered so far
+
+Write a concise `## Code Audit` section into `WORKFLOW_ARTIFACT` with:
+- current state
+- key files
+- constraints
+- risks
+- verification surface
+
+Do not write `SPEC.md` until this code audit is captured.
+
+## Phase 4: Plan
+
+Synthesize the research brief and code audit into an execution plan before writing `SPEC.md`.
+
+The plan must answer:
+- what exactly will change
+- what will explicitly not change
+- why this approach is the best fit for this repo
+- what risks or unknowns remain
+- how the work will be verified
+- what the rollback path is when relevant
+
+For file-changing tasks:
+1. Write a concise `## Plan` section into `WORKFLOW_ARTIFACT`.
+2. Keep the plan concrete enough that `SPEC.md` can be derived directly from it.
+3. If the best answer is "do not change code yet", say so explicitly and stop before execution.
+
+Do not create or update `SPEC.md` until this plan exists.
+
+## Phase 5: Spec
 
 For file-changing work:
 
-1. Create or update `SPEC.md` directly in this workflow.
+1. Create or update `SPEC.md` directly in this workflow after research, audit, and planning are complete.
+   - `SPEC.md` must be a real file in the working directory.
+   - Do not satisfy this phase only inside `WORKFLOW_ARTIFACT`.
 2. Keep the spec concrete and short enough to execute now.
-3. Include:
+3. Derive it from the approved plan rather than improvising new scope.
+4. Include:
    - problem statement
+   - repo constraints / codebase anchors
    - success criteria
    - scope
    - implementation plan
    - verification
    - rollback plan when relevant
-4. If a suitable `SPEC.md` already exists and matches the task, reuse it instead of rewriting it.
-5. For tiny local tasks, keep the spec intentionally small rather than inflating it.
+5. Use this structure unless a stronger existing project format already covers the same information:
+
+```markdown
+# SPEC: [task name]
+
+## Problem Statement
+[1-2 sentence statement of the change]
+
+## Codebase Anchors
+- Relevant existing files, modules, or configs
+- Constraints or patterns that must be preserved
+
+## Success Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Scope
+### In Scope
+- ...
+
+### Out of Scope
+- ...
+
+## Implementation Plan
+1. ...
+2. ...
+
+## Verification
+- Criterion 1 -> [command, test, or inspection]
+- Criterion 2 -> [command, test, or inspection]
+
+## Rollback Plan
+- [how to undo safely]
+```
+
+6. If a suitable `SPEC.md` already exists and matches the task, reuse it instead of rewriting it.
+7. For tiny local tasks, keep the spec intentionally small rather than inflating it, but do not omit `## Codebase Anchors`.
+8. Update the `## SPEC Decision` section in `WORKFLOW_ARTIFACT` with whether `SPEC.md` was created, updated, or reused, and record the file path.
 
 Do not stop after `SPEC.md` is written.
 
-## Phase 4: Execute
+## Phase 6: Execute
 
 Implement directly with Claude Code tools.
 
@@ -191,10 +336,11 @@ Implement directly with Claude Code tools.
 - Use subagents or parallel work only when it materially helps and file ownership is clear.
 - Prefer direct execution over theatrical parallelism for tiny tasks.
 - Keep changes aligned with the spec and taste constraints.
+- Update `## Execution Notes` in `WORKFLOW_ARTIFACT` with the files changed and any notable deviations from the plan.
 
 If the task is non-code analysis, do the work directly and skip implementation.
 
-## Phase 5: Verify
+## Phase 7: Verify
 
 Verify against `SPEC.md` inside this same workflow.
 
@@ -211,7 +357,27 @@ If verification fails:
 
 Never declare success without evidence.
 
-## Phase 6: Closeout
+For file-changing tasks, update `## Verification Evidence` in `WORKFLOW_ARTIFACT` with:
+- commands run
+- files inspected
+- which success criteria passed
+- any residual risk
+
+## Pre-Closeout Gate
+
+Before you emit `## Workflow Complete` for a file-changing task, confirm all of these are true:
+
+- `Research Tracks Used` shows the full pool or an explicitly justified shortfall.
+- `Code Audit` is completed.
+- `Plan` is completed.
+- `SPEC.md` exists on disk as a real file.
+- `WORKFLOW_ARTIFACT` exists and its phase sections are filled in.
+- Implementation is done or explicitly not required.
+- Verification includes concrete evidence.
+
+If any item above is false, continue the workflow instead of closing out.
+
+## Phase 8: Closeout
 
 Close out based on what the user actually asked for.
 
@@ -219,7 +385,7 @@ Close out based on what the user actually asked for.
 
 If the user did not explicitly ask to commit, push, deploy, or publish:
 - stop after verified local completion
-- write a workflow artifact under `.taste/workflow-runs/` when appropriate
+- keep the workflow artifact under `.taste/workflow-runs/`
 - summarize what changed and how it was verified
 
 ### For explicit ship or push requests
@@ -253,10 +419,13 @@ When complete, return:
 - Research: [completed with MiniMax MCP / fallback used / blocked]
 - Research Tracks Used: [completed] / [MAX_PARALLEL_AGENTS]
 - MiniMax MCP Searches: [count]
+- Code Audit: [completed / skipped only for non-file-changing analysis / blocked]
+- Plan: [completed / skipped / blocked]
 - SPEC.md: [created, updated, reused, or not needed]
 - Implementation: [done / not needed]
 - Verification: ACCEPT / REJECT / BLOCKED
 - Remote Actions: none / committed / pushed / deployed
+- Workflow Artifact: [path or not created]
 - Key Files: [important files]
 - Open Blockers: [none or list]
 ```
@@ -269,8 +438,12 @@ When complete, return:
 - running fewer than `MAX_PARALLEL_AGENTS` live search tracks when MiniMax MCP is available and healthy
 - leaving research slots idle when `MAX_PARALLEL_AGENTS` could cover more angles
 - broad `Glob("*")` exploration before the first research wave
+- skipping a code audit before planning for file-changing work
+- creating `SPEC.md` before the plan exists
+- claiming `SPEC.md` was created when the only copy lives inside `WORKFLOW_ARTIFACT`
 - editing code before the research brief exists
 - telling the user to manually invoke the next phase
 - claiming verification without commands or evidence
 - pushing or deploying when the user only asked for a local result
 - using nested custom-skill chaining as if it were guaranteed orchestration
+- treating trivial file changes as exempt from research, code audit, or `SPEC.md`
