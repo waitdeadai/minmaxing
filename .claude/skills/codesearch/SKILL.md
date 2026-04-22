@@ -1,12 +1,17 @@
-# /codex
+---
+name: codesearch
+description: Search the local codebase for patterns, symbols, implementations, and references. Use when the user wants to find where code lives or understand how a pattern is implemented without invoking the OpenAI Codex plugin namespace.
+---
+
+# /codesearch
 
 Code search and pattern understanding across the codebase.
 
 **MAX_PARALLEL_AGENTS** — spawns up to 10 parallel search agents across different directories simultaneously.
 
-**Use when:** User says "codex this", "find code", "search code", "swarm codex", or needs to find patterns across the codebase.
+**Use when:** User says "find code", "search code", "where is this implemented", "grep this", "swarm codesearch", or needs to find patterns across the codebase.
 
-**Swarm:** "swarm codex" → `/codex` with 10 parallel agents.
+**Swarm:** "swarm codesearch" → `/codesearch` with 10 parallel agents.
 
 ---
 
@@ -33,11 +38,11 @@ bash scripts/memory.sh search "[code pattern or function name]" 2>/dev/null || t
 ### Step 2: Execute Code Search
 
 ```bash
-# Use grep or search tools
-grep -r --include="*.py" --include="*.js" --include="*.ts" "[pattern]" .
+# Use fast local search tools
+rg -n "[pattern]" .
 
 # For complex searches, spawn parallel agents
-claude -p "Search for [pattern] in codebase. Report file paths and line numbers." > codex-results.out 2>&1 &
+claude -p "Search for [pattern] in codebase. Report file paths and line numbers." > codesearch-results.out 2>&1 &
 ```
 
 ### Step 3: Store Found Patterns
@@ -52,7 +57,7 @@ bash scripts/memory.sh add procedural "[file]: [found pattern description]" --ta
 ### Step 4: Final Output
 
 ```markdown
-## Codex Results: [Search Pattern]
+## Codesearch Results: [Search Pattern]
 
 ### Files Found
 - [file:line] — [brief description]

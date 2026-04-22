@@ -172,7 +172,7 @@ Think of minmaxing as an operating system:
 ├─────────────────────────────────────────────────────┤
 │  /autoplan /sprint /verify /ship /investigate     │
 │  /audit   /council /qa   /review  /browse         │
-│  /codex   /overnight /align                          │
+│  /codesearch /overnight /align                       │
 │              (System Calls)                          │
 └─────────────────────────────────────────────────────┘
 ```
@@ -201,7 +201,7 @@ Every action is remembered:
 |------|------|------|
 | Episodic | Session start/end | Every shell start/exit |
 | Semantic | Decisions & principles | `/council` decisions, `/align` verdicts |
-| Procedural | Code patterns | `/codex` findings, `/sprint` outcomes |
+| Procedural | Code patterns | `/codesearch` findings, `/sprint` outcomes |
 | Error-Solution | Bugs & fixes | `/investigate` fixes, `/verify` failures |
 | Graph | Causal chains | What caused success/failure |
 | Commit Log | Git commit summaries | Every `git commit` (auto-summarized) |
@@ -329,7 +329,7 @@ Now you can use any workflow pattern:
 | `/investigate` | Debug with 3-fix limit |
 | `/overnight` | 8hr session with 30-min checkpoints |
 | `/council` | Multi-perspective analysis |
-| `/codex` | Search code by pattern |
+| `/codesearch` | Search code by pattern |
 | `/browse` | Web research with citations |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
@@ -357,6 +357,8 @@ claude
 Direct invocation skips the orchestrator — use when you know exactly what you need.
 
 ## Codex in Claude Code
+
+`/codesearch` is the local repo skill for searching code. `/codex:*` is the official OpenAI plugin namespace.
 
 ### Install the official plugin
 
@@ -474,7 +476,7 @@ minmaxing/
 │   │   ├── council/             # Multi-perspective synthesis
 │   │   ├── qa/                  # E2E testing
 │   │   ├── review/              # AI review + human sign-off
-│   │   ├── codex/               # Code search
+│   │   ├── codesearch/          # Code search
 │   │   ├── browse/              # Web research
 │   │   ├── overnight/           # 8hr session with checkpoints
 │   │   └── loop/                # Cron-style recurring tasks
