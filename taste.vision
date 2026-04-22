@@ -1,5 +1,6 @@
 ---
 taste: vision
+version: "2.0"
 created: 2026-04-20
 ---
 
@@ -9,16 +10,46 @@ Right results, not fast results.
 
 ## Intent
 
-minmaxing is a Claude Code harness that gets better outcomes by forcing explicit specification before implementation. Where other harnesses optimize for speed, we optimize for correctness.
+minmaxing exists to turn AI coding into a disciplined system rather than a prompt roulette machine. It should help humans and agents do careful, research-backed, spec-backed work that survives contact with real projects.
+
+The kernel is not just there to make outputs look polished. It is there to make the entire system behave coherently, from frontend decisions to backend contracts to verification discipline.
+
+## Audience
+
+- Builders using Claude Code across real projects, not toy one-off scripts.
+- People who want AI to think, plan, verify, and leave an inspectable trail.
+- Teams or solo operators who value clarity, recoverability, and repeatable quality over sheer generation speed.
 
 ## Success Criteria
 
-- Every task starts with SPEC.md
-- AI implements to spec, not to vague prompt
-- Separate verifier checks output before human review
-- Power users can enable bypassPermissions for zero-friction flow
+- Every file-changing task starts from research, audit, plan, and `SPEC.md`.
+- Frontend output is consistent, accessible, and clearly built from reusable system primitives.
+- Backend output is contract-first, observable, safe to evolve, and explicit about failure handling.
+- Verification is separate from implementation and produces concrete evidence.
+- The kernel remains clear enough that new projects can bootstrap into it without guesswork.
 
 ## Non-Goals
 
-- Not a code generator — it's a thinking system
-- Not for一次性 scripts — for projects that need to be right
+- Not a generic code generator that optimizes for shortest path to output.
+- Not a brand-style engine that only cares about visual aesthetics.
+- Not for throwaway scripts where correctness, rollback, and maintenance do not matter.
+- Not a substitute for judgment; it is a structure for making judgment more reliable.
+
+## Values & Tradeoffs
+
+- Correctness over speed.
+- Explicit contracts over hidden convenience.
+- Reusable systems over one-off cleverness.
+- Accessibility and operational clarity over decorative novelty.
+- Reversible changes over heroic cleanup after the fact.
+
+When tradeoffs are unavoidable, prefer the option that is easier to inspect, verify, roll back, and explain to another engineer.
+
+## Experience Promise
+
+Working inside this kernel should feel calm, deliberate, and trustworthy.
+
+- Frontends should feel structured, legible, and intentional.
+- Backends should feel dependable, observable, and unsurprising.
+- Specs should make the work feel premeditated instead of improvised.
+- Verification should reduce anxiety, not create another guessing game.

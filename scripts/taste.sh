@@ -24,32 +24,186 @@ case "$CMD" in
       cat > "$TASTE_MD" <<'EOF'
 ---
 taste: spec
+version: "2.0"
 created: PLACEHOLDER_DATE
+frontend:
+  colors:
+    canvas: "#F7F5F2"
+    surface: "#FFFFFF"
+    ink: "#1A1C1E"
+    muted: "#6C7278"
+    accent: "#B8422E"
+    success: "#1F6F4A"
+    warning: "#A66200"
+    danger: "#B42318"
+  typography:
+    display:
+      fontFamily: Public Sans
+      fontSize: 3rem
+      fontWeight: 700
+      lineHeight: 1.1
+      letterSpacing: -0.03em
+    heading:
+      fontFamily: Public Sans
+      fontSize: 2rem
+      fontWeight: 600
+      lineHeight: 1.2
+      letterSpacing: -0.02em
+    body:
+      fontFamily: Public Sans
+      fontSize: 1rem
+      fontWeight: 400
+      lineHeight: 1.6
+    label:
+      fontFamily: Space Grotesk
+      fontSize: 0.75rem
+      fontWeight: 600
+      lineHeight: 1
+      letterSpacing: 0.08em
+  spacing:
+    xs: 4px
+    sm: 8px
+    md: 16px
+    lg: 24px
+    xl: 32px
+    section: 48px
+  rounded:
+    sm: 4px
+    md: 8px
+    lg: 12px
+    xl: 20px
+    full: 9999px
+  components:
+    button-primary:
+      backgroundColor: "{frontend.colors.accent}"
+      textColor: "{frontend.colors.surface}"
+      typography: "{frontend.typography.label}"
+      rounded: "{frontend.rounded.md}"
+      height: 44px
+      padding: 0 16px
+    button-secondary:
+      backgroundColor: "{frontend.colors.surface}"
+      textColor: "{frontend.colors.ink}"
+      typography: "{frontend.typography.label}"
+      rounded: "{frontend.rounded.md}"
+      height: 44px
+      padding: 0 16px
+    input-field:
+      backgroundColor: "{frontend.colors.surface}"
+      textColor: "{frontend.colors.ink}"
+      typography: "{frontend.typography.body}"
+      rounded: "{frontend.rounded.md}"
+      height: 44px
+      padding: 0 12px
+    surface-card:
+      backgroundColor: "{frontend.colors.surface}"
+      textColor: "{frontend.colors.ink}"
+      rounded: "{frontend.rounded.lg}"
+      padding: "{frontend.spacing.lg}"
+    list-item-interactive:
+      backgroundColor: "{frontend.colors.surface}"
+      textColor: "{frontend.colors.ink}"
+      rounded: "{frontend.rounded.md}"
+      padding: "{frontend.spacing.md}"
+    status-badge:
+      backgroundColor: "{frontend.colors.canvas}"
+      textColor: "{frontend.colors.muted}"
+      typography: "{frontend.typography.label}"
+      rounded: "{frontend.rounded.full}"
+      padding: 4px 10px
+backend:
+  contractStyle: contract-first
+  errorModel: structured-and-stable
+  observability: logs-metrics-traces-with-correlation-id
+  security: least-privilege-and-explicit-boundaries
+  rollback: reversible-and-evidence-backed
 ---
 
 # Taste Spec
 
 Define what is acceptable in this project. AI agents consult this before accepting output.
 
+## Overview
+
+Describe the overall system feel.
+
+- What should the frontend feel like?
+- What should the backend optimize for?
+- What should never happen by accident?
+
 ## Design Principles
 
-<!-- Add your principles here -->
+- <!-- Non-negotiable rules such as SPEC-first, research-first, or correctness over speed -->
 
-## Aesthetic Rules
+## Frontend System
 
-<!-- Color, typography, spacing rules -->
+### Colors
+
+- <!-- How should color be used semantically? -->
+
+### Typography
+
+- <!-- Which fonts, hierarchy, and label treatments are acceptable? -->
+
+### Layout & Spacing
+
+- <!-- What spacing rhythm, density, and layout model should agents preserve? -->
+
+### Elevation & Shapes
+
+- <!-- How should depth, borders, radius, and containment work? -->
+
+### Components
+
+- <!-- How should the default primitives behave and when should variants appear? -->
+
+### Interaction & Accessibility
+
+- <!-- Contrast, focus states, keyboard rules, loading and error states -->
+
+## Backend System
+
+### API & Contract Design
+
+- <!-- What request/response and versioning style should backend work follow? -->
+
+### Data Boundaries & State
+
+- <!-- What owns state and where should validation happen? -->
+
+### Errors, Resilience & Idempotency
+
+- <!-- How should failure be modeled and what retry/rollback rules apply? -->
+
+### Observability & Operations
+
+- <!-- What logs, metrics, traces, and audit trails are expected? -->
+
+### Security & Privacy
+
+- <!-- What auth, secret handling, privacy, and least-privilege rules apply? -->
 
 ## Code Style
 
-<!-- Naming, structure, patterns -->
+- <!-- Naming, structure, abstraction, and commenting preferences -->
 
 ## Architecture
 
-<!-- Component boundaries, data flow -->
+- <!-- Component boundaries, data flow, orchestration, and rollback rules -->
 
 ## Naming Conventions
 
-<!-- File, function, variable naming -->
+- <!-- File, function, component, API, and state naming conventions -->
+
+## Do's and Don'ts
+
+### Do's
+
+- <!-- Short, explicit guardrails agents can apply directly -->
+
+### Don'ts
+
+- <!-- Things agents should avoid even if they seem faster -->
 EOF
       echo "Created taste.md"
     fi
@@ -60,28 +214,37 @@ EOF
       cat > "$TASTE_VISION" <<'EOF'
 ---
 taste: vision
+version: "2.0"
 created: PLACEHOLDER_DATE
 ---
 
 # Vision
 
-Why does this project exist? What problem does it solve? What does success look like?
+Why does this project exist? What kind of experience and system behavior should it produce?
 
 ## Intent
 
-<!-- The "why" behind this project -->
+- <!-- The "why" behind this project -->
+
+## Audience
+
+- <!-- Who is this for and what context are they in? -->
 
 ## Success Criteria
 
-<!-- What does "done" look like? -->
+- <!-- Frontend, backend, and workflow success conditions -->
 
 ## Non-Goals
 
-<!-- What this project explicitly does NOT do -->
+- <!-- What this project explicitly does NOT do -->
 
-## Taste
+## Values & Tradeoffs
 
-<!-- What makes this project feel cohesive and well-crafted? -->
+- <!-- What do we optimize for when trade-offs are unavoidable? -->
+
+## Experience Promise
+
+- <!-- How should the product feel to use and how should the system feel to operate? -->
 EOF
       echo "Created taste.vision"
     fi

@@ -126,19 +126,81 @@ This question forces explicit acknowledgment of trade-offs. Speed vs correctness
 
 For new projects where taste.md + taste.vision don't exist.
 
-### Phase 1: Define taste.md (5 questions)
+### Bootstrap Interview (10 questions)
 1. Design Principles — "What are the non-negotiable design principles?"
-2. Aesthetic Rules — "What aesthetic guidelines should we follow?"
-3. Code Style — "What code patterns are acceptable/unacceptable?"
-4. Architecture — "What architectural patterns do we prefer?"
-5. Naming — "What naming conventions do we use?"
+2. Visual Personality — "What visual personality should the UI have, and what should it avoid?"
+3. Tokens & Rhythm — "What color, typography, spacing, radius, and density rules should be default?"
+4. Component Patterns — "Which component patterns and interaction states are preferred?"
+5. Accessibility — "What accessibility rules are non-negotiable?"
+6. API Contracts — "What API/contract style should backend work follow?"
+7. Data Boundaries — "What data, state, and boundary rules should backend work follow?"
+8. Operations & Safety — "What error-handling, observability, rollback, and security rules are required?"
+9. Code & Architecture — "What code style, architecture, and naming rules are preferred?"
+10. Vision — "Why does the project exist, who is it for, what does success look like, and what is out of scope?"
 
-### Phase 2: Define taste.vision (5 questions)
-1. Intent — "Why does this project exist?"
-2. Success — "What does success look like?"
-3. Non-Goals — "What is explicitly out of scope?"
-4. Feel — "How should decisions feel? Fast? Careful? Both?"
-5. Values — "What do we optimize for above all else?"
+### Bootstrap Output Requirements
+
+When the 10 answers are complete, write `taste.md` and `taste.vision` to project root using this structure.
+
+#### `taste.md`
+
+- YAML front matter must include:
+  - `taste`
+  - `version`
+  - `created`
+  - `frontend.colors`
+  - `frontend.typography`
+  - `frontend.spacing`
+  - `frontend.rounded`
+  - `frontend.components`
+  - `backend.contractStyle`
+  - `backend.errorModel`
+  - `backend.observability`
+  - `backend.security`
+  - `backend.rollback`
+- Body section order must be:
+  1. `## Overview`
+  2. `## Design Principles`
+  3. `## Frontend System`
+  4. `## Backend System`
+  5. `## Code Style`
+  6. `## Architecture`
+  7. `## Naming Conventions`
+  8. `## Do's and Don'ts`
+- `## Frontend System` must contain:
+  - `### Colors`
+  - `### Typography`
+  - `### Layout & Spacing`
+  - `### Elevation & Shapes`
+  - `### Components`
+  - `### Interaction & Accessibility`
+- `## Backend System` must contain:
+  - `### API & Contract Design`
+  - `### Data Boundaries & State`
+  - `### Errors, Resilience & Idempotency`
+  - `### Observability & Operations`
+  - `### Security & Privacy`
+
+#### `taste.vision`
+
+- YAML front matter must include:
+  - `taste`
+  - `version`
+  - `created`
+- Body section order must be:
+  1. `## Intent`
+  2. `## Audience`
+  3. `## Success Criteria`
+  4. `## Non-Goals`
+  5. `## Values & Tradeoffs`
+  6. `## Experience Promise`
+
+### Bootstrap Mapping
+
+- Questions 1-9 primarily shape `taste.md`.
+- Question 10 primarily shapes `taste.vision`, but should also sharpen `taste.md` where needed.
+- Keep frontend guidance reusable and structural, not locked to one hyper-specific aesthetic.
+- Keep backend guidance contract-first, explicit about failure handling, and observability-aware.
 
 ### Output
 - Writes taste.md and taste.vision to project root
@@ -310,7 +372,7 @@ bash scripts/memory.sh add semantic "Taste evolved: [summary of change]. Rationa
 
 ## Output Format
 
-After all 5 questions are answered:
+After all 5 alignment questions are answered:
 
 ```markdown
 ## Taste Alignment Check
@@ -351,7 +413,8 @@ If REJECTED: abandon or fundamentally redesign this proposal
 
 ## Quality Gates
 
-- All 5 questions must be answered (no skipping)
+- All 5 alignment questions must be answered in normal alignment mode.
+- All 10 bootstrap questions must be answered in bootstrap mode.
 - Answers must reference specific taste.md or taste.vision content
 - Verdict must match the evidence
 - REJECTED requires explicit explanation of taste violation

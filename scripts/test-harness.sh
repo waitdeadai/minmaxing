@@ -1,8 +1,10 @@
 #!/bin/bash
 # Ultimate MiniMax 2.7 Harness - Comprehensive Test Suite
-# 16+ verification tests
+# 19+ verification tests
 
 set -e
+
+ROOT_DIR="$(pwd)"
 
 echo "=========================================="
 echo "  minmaxing Test Suite"
@@ -47,6 +49,65 @@ if [ -f ".claude/settings.json" ]; then
     test_pass ".claude/settings.json exists"
 else
     test_fail ".claude/settings.json missing"
+fi
+
+# Test 3a: Taste Kernel Structure
+echo "[3a] Taste Kernel Structure"
+KERNEL_OK=true
+for section in "^version:" "^frontend:" "^backend:" "^## Frontend System$" "^### Interaction & Accessibility$" "^## Backend System$" "^### API & Contract Design$" "^## Do's and Don'ts$"; do
+    if ! grep -Eq "$section" taste.md 2>/dev/null; then
+        KERNEL_OK=false
+    fi
+done
+for section in "^version:" "^## Audience$" "^## Values & Tradeoffs$" "^## Experience Promise$"; do
+    if ! grep -Eq "$section" taste.vision 2>/dev/null; then
+        KERNEL_OK=false
+    fi
+done
+if [ "$KERNEL_OK" = true ]; then
+    test_pass "taste.md + taste.vision use the hybrid kernel structure"
+else
+    test_fail "taste kernel files are missing required hybrid sections"
+fi
+
+# Test 3b: Taste Template Generation
+echo "[3b] Taste Template Generation"
+TMP_TASTE_DIR="$(mktemp -d)"
+if (
+    cd "$TMP_TASTE_DIR" &&
+    bash "$ROOT_DIR/scripts/taste.sh" init >/dev/null &&
+    grep -q "^frontend:" taste.md &&
+    grep -q "^backend:" taste.md &&
+    grep -q "^## Frontend System$" taste.md &&
+    grep -q "^### Security & Privacy$" taste.md &&
+    grep -q "^## Experience Promise$" taste.vision
+); then
+    test_pass "taste.sh init generates the richer hybrid template"
+else
+    test_fail "taste.sh init did not generate the expected hybrid template"
+fi
+rm -rf "$TMP_TASTE_DIR"
+
+# Test 3c: Align Bootstrap Contract
+echo "[3c] Align Bootstrap Contract"
+ALIGN_OK=true
+while IFS= read -r pattern; do
+    if [ -n "$pattern" ] && ! grep -Fq "$pattern" .claude/skills/align/SKILL.md 2>/dev/null; then
+        ALIGN_OK=false
+    fi
+done <<'EOF'
+Bootstrap Interview (10 questions)
+What visual personality should the UI have, and what should it avoid?
+What error-handling, observability, rollback, and security rules are required?
+What code style, architecture, and naming rules are preferred?
+## Frontend System
+## Backend System
+## Experience Promise
+EOF
+if [ "$ALIGN_OK" = true ]; then
+    test_pass "/align --bootstrap documents the richer kernel interview"
+else
+    test_fail "/align --bootstrap is missing required hybrid kernel prompts"
 fi
 
 # ========================================

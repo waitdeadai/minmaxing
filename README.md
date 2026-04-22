@@ -164,7 +164,7 @@ With SPEC-first:
 
 **Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, it asks you to define it — before anything is built.
 
-**Taste is NOT just frontend/aesthetic.** It's the entire project philosophy — design principles, architecture constraints, code style rules, intent, non-goals, and values. When `/align --bootstrap` asks about your taste, it covers all of these dimensions, not just how things look.
+**Taste is NOT just frontend/aesthetic.** It's the entire project philosophy — design principles, visual system, component rules, accessibility guardrails, API contracts, observability rules, architecture constraints, code style, intent, non-goals, and values. When `/align --bootstrap` asks its 10 kernel questions, it covers all of these dimensions, not just how things look.
 
 **Memory is persistent.** Every decision, every fix, every shipped feature is remembered. The second session knows what the first session learned.
 
@@ -546,8 +546,8 @@ minmaxing/
 ├── CLAUDE.md                    # Core instructions (for AI)
 ├── README.md                    # This file (for you)
 ├── setup.sh                     # One-command installer
-├── taste.md                     # Design spec (what's acceptable) — created by /align
-├── taste.vision                 # Intent document (the why) — created by /align
+├── taste.md                     # Hybrid frontend/backend kernel — created by /align
+├── taste.vision                 # Product intent + tradeoff contract — created by /align
 ├── AGENTS.md                    # Project instructions for Codex
 ├── .codex/
 │   ├── config.toml             # Project-scoped Codex defaults

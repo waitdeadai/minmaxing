@@ -91,8 +91,8 @@ minmaxing maintains a 5-tier memory architecture backed by SQLite + FTS5:
 **Do NOT edit obsidian files directly.** Human edits to obsidian will NOT sync back to SQLite. To add memory, always use `memory.sh add`.
 
 **Key files:**
-- `taste.md` — Design spec (what's acceptable)
-- `taste.vision` — Intent document (the "why")
+- `taste.md` — Hybrid frontend/backend kernel (what's acceptable)
+- `taste.vision` — Intent + tradeoff contract (the "why")
 - `.taste/taste.memory` — Append-only decision log (JSONL)
 - `obsidian/Memory/` — Human-readable audit layer (AI output only)
 
