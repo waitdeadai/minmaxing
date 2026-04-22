@@ -36,6 +36,91 @@ That's it. Memory system, MiniMax MCP, and 15 skills — all configured.
 
 > **Note:** Setup adds hardware auto-detection to `~/.bashrc` — `MAX_PARALLEL_AGENTS` is set automatically on every shell start.
 
+### Windows Setup
+
+**Recommended:** use **WSL 2** for the smoothest experience.
+
+Claude Code officially supports both:
+- **Native Windows + Git Bash**
+- **WSL 2**
+
+minmaxing's installer is Bash-first and updates `~/.bashrc`, so:
+- **WSL 2** is the best fit if your project already lives in Linux tooling
+- **Git Bash** is the best fit if your project lives on native Windows
+
+### Option 1: WSL 2 (recommended)
+
+Install Claude Code inside WSL, then run minmaxing there too.
+
+1. Install WSL 2 and open your Linux distro.
+2. Install Claude Code inside WSL:
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+3. Move into your project directory inside WSL.
+4. Run minmaxing setup:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+```
+
+If you use the optional OpenAI Codex plugin in WSL, the same Linux flow applies there too.
+
+### Option 2: Native Windows + Git Bash
+
+Claude Code's official Windows docs say native Windows requires **Git for Windows**. Claude can be launched from PowerShell, CMD, or Git Bash, but this repo's setup script should be run from **Git Bash** because it is a Bash script and writes shell config to `~/.bashrc`.
+
+1. Install **Git for Windows**.
+2. Install Claude Code from **PowerShell**:
+
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+Or install it with **WinGet**:
+
+```powershell
+winget install Anthropic.ClaudeCode
+```
+
+3. Install **Python 3.11+** and **uv/uvx**:
+
+```powershell
+winget install Python.Python.3.11
+winget install --id=astral-sh.uv -e
+```
+
+4. Open **Git Bash** and run minmaxing setup there:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+```
+
+5. Verify Claude Code:
+
+```bash
+claude --version
+claude doctor
+```
+
+If Claude Code cannot find your Git Bash installation, Anthropic documents this setting:
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_GIT_BASH_PATH": "C:\\Program Files\\Git\\bin\\bash.exe"
+  }
+}
+```
+
+### Windows Notes
+
+- Native Windows does **not** support Claude Code sandboxing; WSL 2 does.
+- PowerShell support in Claude Code is rolling out progressively, but minmaxing setup is still Bash-based.
+- If `uvx` is already available, the installer will use it. If not, preinstalling `uv` on Windows avoids shell-specific installer edge cases.
+
 ---
 
 ## The Problem
