@@ -10,11 +10,11 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 
 ## Core Workflow
 
-1. **SPEC-First**: Every task starts with SPEC.md via /autoplan
+1. **SPEC-First**: File-changing tasks get a concrete `SPEC.md` before edits
 2. **10-Agent Parallelism**: Always plan with max parallel agents (10 default)
 3. **Supervisor Pattern**: AI supervises workers, not the other way around
 4. **PEV Loop**: Plan → Execute → Verify. The verifier is separate from the implementer.
-5. **Research-First**: Verify AI claims with web search (training data is stale)
+5. **Research-First**: `/workflow` must saturate the full `MAX_PARALLEL_AGENTS` pool with live MiniMax MCP-backed research before planning or edits
 6. **Quality Gates**: /verify must pass; tests must pass; no silent failures
 
 ## Default Behavior
@@ -24,7 +24,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 2. Workers execute in parallel (up to 10)
 3. Supervisor aggregates, verifies, and gates production through the PEV loop
 
-**Supervisor's job:** Ensure every task passes verification before declaring done, without handing the next phase back to the user.
+**Supervisor's job:** Ensure every task is research-backed and verified before declaring done, without handing the next phase back to the user.
 
 **Taste alignment uses Socratic questions.** When taste is unclear or a proposal conflicts with `taste.md` or `taste.vision`, `/align` asks focused questions before `/workflow` proceeds.
 

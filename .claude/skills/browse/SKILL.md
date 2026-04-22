@@ -2,6 +2,8 @@
 
 Parallel web research with live data — not stale training data.
 
+**MiniMax MCP is the primary research tool.** Prefer `mcp__MiniMax__web_search` for live research whenever it is available.
+
 **MAX_PARALLEL_AGENTS** — spawns up to 10 parallel web search agents researching different aspects simultaneously.
 
 **Use when:** You need current information about APIs, libraries, errors, best practices, or any domain where AI training data might be outdated.
@@ -34,7 +36,7 @@ Parallel web research with live data — not stale training data.
 
 ## Parallel Research Protocol (MAX_PARALLEL_AGENTS)
 
-**Use all available agents for deep research.** Each agent researches a different aspect simultaneously.
+**Use all available agents for deep research.** Each agent researches a different aspect simultaneously, and the target is a full `MAX_PARALLEL_AGENTS` search wave unless the tools fail.
 
 ### Step 1: Memory Recall (Before Research)
 
@@ -50,7 +52,7 @@ bash scripts/memory.sh search "[topic]" 2>/dev/null || true
 
 ### Step 2: Decompose Research Query
 
-Break the research into parallel tracks:
+Break the research into exactly `MAX_PARALLEL_AGENTS` parallel tracks:
 - Track 1: Official documentation
 - Track 2: Recent blog posts/articles (2025-2026)
 - Track 3: GitHub issues/discussions
@@ -61,7 +63,7 @@ Target: Fill all `MAX_PARALLEL_AGENTS` slots with research tracks.
 
 ### Step 3: Parallel Web Searches
 
-Spawn parallel searches for each track:
+Spawn parallel searches for each track. Prefer issuing the whole first wave in one response turn so the searches execute as a batch:
 
 ```bash
 # Agent 1: Official docs
@@ -107,6 +109,11 @@ While searches run, fetch key sources in parallel:
 
 ### Action Items
 - [What to do based on research]
+
+### Coverage
+- Research Tracks Used: [completed] / [MAX_PARALLEL_AGENTS]
+- MiniMax MCP Searches: [count]
+- Fallback Used: yes/no
 ```
 
 ### Step 6: Store Research Findings
@@ -146,6 +153,7 @@ For complex topics, use all agents for deep coverage:
 - **Contradict AI** — if web search contradicts AI claim, flag it
 - **No assumptions** — if you can't verify, say "unverified"
 - **Fill agent pool** — don't use 1 agent when 10 could research faster
+- **Full wave or explain why** — under-filling the search wave without a tool failure reason is a failure
 
 ---
 
@@ -156,3 +164,4 @@ For complex topics, use all agents for deep coverage:
 - Not citing sources → BLOCK
 - Research without synthesizing into action → WARN
 - Sequential research when parallel possible → BLOCK
+- Under-filling the search wave without a tool failure reason → BLOCK

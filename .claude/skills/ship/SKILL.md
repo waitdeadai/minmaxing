@@ -211,11 +211,8 @@ bash scripts/memory.sh add episodic "Shipped: [feature description] — all gate
 
 ## Chain Contract
 
-**This skill is the FINAL step in `/workflow` orchestration chain.** Chain terminates here.
+**This skill is a ship checklist playbook.** Use it when the user explicitly wants commit, push, or deploy behavior.
 
-**Chain progression:**
-```
-/workflow → /autoplan → /sprint → /verify → /ship (this) ✓ COMPLETE
-```
+`/workflow` may reference this guidance, but it should not assume `/ship` is always the final nested continuation step.
 
-After this skill completes, the workflow chain is done. Return to user with summary.
+When invoked directly by the user, finish with a clear summary of what remote-facing actions were or were not performed.

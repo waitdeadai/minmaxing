@@ -29,3 +29,6 @@ memory/memory.db-*
 
 # Taste System (session logs + memory)
 .taste/
+
+# Auto-generated commit story notes
+obsidian/Memory/Stories/commits/*.md

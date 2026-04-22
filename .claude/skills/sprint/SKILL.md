@@ -182,11 +182,8 @@ wait
 
 ## Chain Contract
 
-**This skill is part of `/workflow` orchestration chain.** Do NOT stop after implementation.
+**This skill is an execution playbook.** `/workflow` may reuse this guidance, but it should not depend on invoking `/sprint` as a guaranteed nested continuation step.
 
-**Chain progression:**
-```
-/workflow → /autoplan → /sprint (this) → /verify → /ship
-```
+When invoked directly by the user, stop after implementation is complete and summarize what changed.
 
-After this skill completes, `/workflow` will invoke `/verify` automatically. Do NOT return to user after agents finish — the workflow orchestrator handles progression.
+When `/workflow` references this skill, the parent workflow continues inline and decides the next phase.

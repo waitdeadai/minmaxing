@@ -75,7 +75,7 @@ With SPEC-first:
 | SPEC-first: write spec before code | Vague prompts, rebuild loops |
 | 10 agents in parallel | Sequential one-at-a-time |
 | Separate verifier agent | Same AI checks its own work |
-| Research-first: verify AI claims with live web search | AI hallucinates best practices |
+| Research-first: `/workflow` fans out MiniMax MCP-backed searches across the full agent pool before planning or edits | AI hallucinates best practices |
 
 **Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If taste doesn't exist, it asks you to define it — before anything is built.
 
@@ -112,6 +112,8 @@ Not the same AI that wrote the code. A different agent checks output against you
 ### Research-First
 AI training data is stale. Every external claim gets verified with live web search.
 
+`/workflow` now treats live research as mandatory for all tasks, with the MiniMax MCP as the preferred source. It fills the full `MAX_PARALLEL_AGENTS` pool with parallel search tracks before it plans or edits anything.
+
 ### Permission Mode
 - **acceptEdits** (shared-project default): Safe default for a repo you plan to commit and share
 - **bypassPermissions** (personal local override): Zero safety checks, only for trusted personal setups
@@ -126,7 +128,7 @@ SQLite-backed memory that remembers across sessions:
 - Causal graph tracks what caused success/failure
 
 ### Central Orchestrator
-`/workflow` owns the full lifecycle inline: taste gate, spec, implementation, verification, and closeout. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
+`/workflow` owns the full lifecycle inline: taste gate, max-agent deep research, spec, implementation, verification, and closeout. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
 
 ---
 
@@ -142,10 +144,10 @@ Think of minmaxing as an operating system:
 │                  (Central Execution Engine)          │
 ├─────────────────────────────────────────────────────┤
 │  PHASE 0: TASTE CHECK [GATE]  ← taste.md + vision │
-│  PHASE 1: ROUTE (skill_router)                      │
-│  PHASE 2: EXECUTE (skill chains)                   │
-│  PHASE 3: VERIFY (taste + SPEC compliance)          │
-│  PHASE 4: ROUTE OUTPUT                             │
+│  PHASE 1: ROUTE                                     │
+│  PHASE 2: DEEP RESEARCH (MiniMax MCP × MAX AGENTS) │
+│  PHASE 3: SPEC + EXECUTE                           │
+│  PHASE 4: VERIFY + CLOSEOUT                        │
 ├─────────────────────────────────────────────────────┤
 │            taste.md + taste.vision                  │
 │                  (Kernel / OS)                     │
@@ -161,16 +163,17 @@ Think of minmaxing as an operating system:
 
 **Skills are system calls.** Each skill does one thing well. They are still useful directly, but `/workflow` is responsible for finishing the main end-to-end path itself.
 
-**/workflow is the shell.** It orchestrates everything. Routes tasks to the right phase, executes the work, verifies output, and gates progression.
+**/workflow is the shell.** It orchestrates everything. Routes tasks to the right phase, performs live research, executes the work, verifies output, and gates progression.
 
 ### The 4 Execution Paths
 
 | When you say... | /workflow routes to... |
 |-----------------|----------------------|
-| "build X", "implement Y" | /autoplan → /sprint → /verify → /ship |
-| "fix Z", "debug this" | /investigate → /verify |
-| "explain", "refactor", "optimize" | /autoplan → /sprint → /verify → /ship |
-| "audit this", "analyze" | /audit or /council |
+| "build X", "implement Y" | deep research → `SPEC.md` → implement → verify → closeout |
+| "fix Z", "debug this" | deep research → reproduce/fix → verify → closeout |
+| "explain" | deep research → inspect → explain |
+| "refactor", "optimize" | deep research → `SPEC.md` → implement → verify → closeout |
+| "audit this", "analyze" | deep research → inspect → findings |
 
 ### 5-Tier Memory System
 
@@ -324,7 +327,7 @@ claude
 /workflow "build a REST API for users"
 ```
 
-`/workflow` chains: taste check → `/autoplan` → `/sprint` (10 agents) → `/verify` → `/ship`
+`/workflow` now owns the whole lifecycle inline: taste check → max-agent MiniMax research → `SPEC.md` → implementation → verification → closeout.
 
 **Direct skill invocation (advanced):**
 ```bash

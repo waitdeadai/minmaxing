@@ -54,12 +54,15 @@ EOF
     git config user.name smoke
 
     OUTPUT="$(
-        claude -p --settings "$SETTINGS_PATH" \
+        MAX_PARALLEL_AGENTS=10 claude -p --settings "$SETTINGS_PATH" \
         "/workflow build a tiny local smoke test by creating note.txt containing ok. Keep everything local and do not push or deploy anything external."
     )"
 
     echo "$OUTPUT"
 
+    echo "$OUTPUT" | grep -Eq "Research[^[:cntrl:]]*completed with MiniMax MCP"
+    echo "$OUTPUT" | grep -Eq "Research Tracks Used[^[:cntrl:]]*10 / 10"
+    echo "$OUTPUT" | grep -Eq "MiniMax MCP Searches[^[:cntrl:]]*10"
     test -f "$TMPDIR/SPEC.md"
     test -f "$TMPDIR/note.txt"
     test "$(cat "$TMPDIR/note.txt")" = "ok"

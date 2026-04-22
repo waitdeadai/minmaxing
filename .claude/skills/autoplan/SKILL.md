@@ -148,17 +148,13 @@ With 10-agent pool:
 
 ---
 
-## Chain Contract
+## Workflow Contract
 
-**This skill is part of `/workflow` orchestration chain.** Do NOT stop after creating SPEC.md.
+**This skill is a spec-generation playbook.** `/workflow` may reuse this guidance, but it should not rely on invoking `/autoplan` as a guaranteed nested continuation step.
 
-**Chain progression:**
-```
-/workflow → /autoplan (this) → /sprint → /verify → /ship
-```
+When invoked directly by the user, stop after the spec is ready.
 
-If `/workflow` called this as reference material, the workflow may continue inline. When invoked directly by the user, stop after the spec is ready.
-```
+When `/workflow` references this skill, the parent workflow continues inline and owns the remaining phases.
 
 ---
 

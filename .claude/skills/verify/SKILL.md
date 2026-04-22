@@ -190,14 +190,8 @@ You are **adversarial** to the implementation. Your job is to find flaws.
 
 ## Chain Contract
 
-**This skill is part of `/workflow` orchestration chain.** Do NOT stop after verification.
+**This skill is a verification playbook.** `/workflow` may reuse this guidance, but it should not depend on invoking `/verify` as a guaranteed nested continuation step.
 
-**Chain progression:**
-```
-/workflow → /autoplan → /sprint → /verify (this) → /ship
-```
+When invoked directly by the user, return ACCEPT or REJECT with evidence.
 
-**After this skill:**
-- If ACCEPT: `/workflow` will invoke `/ship` automatically
-- If REJECT: `/workflow` will loop back to `/sprint` with fixes
-- Do NOT return to user after ACCEPT/REJECT — the workflow orchestrator handles progression.
+When `/workflow` references this skill, the parent workflow decides whether to fix, re-verify, close out locally, or ship.
