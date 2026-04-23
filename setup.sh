@@ -6,6 +6,23 @@
 set -e
 
 API_KEY="${1:-}"
+PREEXISTING_TASTE_MD=0
+PREEXISTING_TASTE_VISION=0
+COPIED_TEMPLATE_REPO=0
+TASTE_MD_BACKUP=""
+TASTE_VISION_BACKUP=""
+
+if [ -f "taste.md" ]; then
+    PREEXISTING_TASTE_MD=1
+    TASTE_MD_BACKUP=$(mktemp)
+    cp "taste.md" "$TASTE_MD_BACKUP"
+fi
+
+if [ -f "taste.vision" ]; then
+    PREEXISTING_TASTE_VISION=1
+    TASTE_VISION_BACKUP=$(mktemp)
+    cp "taste.vision" "$TASTE_VISION_BACKUP"
+fi
 
 echo "=========================================="
 echo "  minmaxing Setup"
@@ -15,13 +32,41 @@ echo ""
 # Step 0: Clone repository to temp, then move to current directory
 if [ ! -d ".git" ]; then
     echo "[0/7] Cloning minmaxing repository..."
+    COPIED_TEMPLATE_REPO=1
     TEMP_DIR=$(mktemp -d)
     git clone https://github.com/waitdeadai/minmaxing.git "$TEMP_DIR"
     cp -r "$TEMP_DIR"/* .
     cp -r "$TEMP_DIR"/.[!.]* . 2>/dev/null || true
     rm -rf "$TEMP_DIR"
+
+    # Fresh installs should define their own kernel via /tastebootstrap.
+    # The template repo tracks its own taste files, so strip only the ones
+    # introduced by this copy step and leave any user-authored files alone.
+    if [ "$PREEXISTING_TASTE_MD" -eq 1 ] && [ -n "$TASTE_MD_BACKUP" ]; then
+        cp "$TASTE_MD_BACKUP" "taste.md"
+        rm -f "$TASTE_MD_BACKUP"
+    elif [ -f "taste.md" ]; then
+        rm -f "taste.md"
+        echo "  [INFO] Removed bundled taste.md so /tastebootstrap can define this repo's kernel"
+    fi
+
+    if [ "$PREEXISTING_TASTE_VISION" -eq 1 ] && [ -n "$TASTE_VISION_BACKUP" ]; then
+        cp "$TASTE_VISION_BACKUP" "taste.vision"
+        rm -f "$TASTE_VISION_BACKUP"
+    elif [ -f "taste.vision" ]; then
+        rm -f "taste.vision"
+        echo "  [INFO] Removed bundled taste.vision so /tastebootstrap can define this repo's kernel"
+    fi
 else
     echo "[0/7] Using existing minmaxing directory"
+fi
+
+if [ -n "$TASTE_MD_BACKUP" ] && [ -f "$TASTE_MD_BACKUP" ]; then
+    rm -f "$TASTE_MD_BACKUP"
+fi
+
+if [ -n "$TASTE_VISION_BACKUP" ] && [ -f "$TASTE_VISION_BACKUP" ]; then
+    rm -f "$TASTE_VISION_BACKUP"
 fi
 echo ""
 
@@ -184,6 +229,9 @@ echo "  [PASS] Memory directories created"
 # Initialize taste system (taste files are defined later via /tastebootstrap)
 # Only create directories, not the taste files themselves
 if [ -f "./scripts/taste.sh" ]; then
+    if [ "$COPIED_TEMPLATE_REPO" -eq 1 ] && [ ! -f "taste.md" ] && [ ! -f "taste.vision" ]; then
+        echo "  [PASS] Bundled taste files removed for fresh bootstrap"
+    fi
     echo "  [INFO] In a fresh repo, run /tastebootstrap to define taste.md and taste.vision"
 fi
 echo ""
