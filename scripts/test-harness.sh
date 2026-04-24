@@ -134,6 +134,33 @@ else
     test_fail "/tastebootstrap is missing required bootstrap prompts"
 fi
 
+# Test 3e: Efficacy-First Parallelism Contract
+echo "[3e] Efficacy-First Parallelism"
+PARALLEL_OK=true
+while IFS= read -r target; do
+    if [ -n "$target" ] && ! grep -Fq "$target" .claude/rules/parallelism.rules.md 2>/dev/null; then
+        PARALLEL_OK=false
+    fi
+done <<'EOF'
+ceilings, not quotas
+effective_agents
+Do not inflate the packet count just to hit the ceiling.
+EOF
+if [ "$PARALLEL_OK" = true ] && \
+   grep -Fq "ceiling, not a quota" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "Do not split work just to fill slots." .claude/skills/sprint/SKILL.md 2>/dev/null && \
+   grep -Fq "distinct tracks" .claude/skills/browse/SKILL.md 2>/dev/null && \
+   grep -Fq "not automatically a 10-agent sprint" .claude/skills/sprint/SKILL.md 2>/dev/null && \
+   grep -Fq "Effective Agent Budget" obsidian/Memory/Patterns/parallel-workers.md 2>/dev/null && \
+   grep -Fq "effective subagent budget" AGENTS.md 2>/dev/null && \
+   ! grep -Fq "always use the full agent pool" .claude/skills/sprint/SKILL.md 2>/dev/null && \
+   ! grep -Fq "6-8 parallel tasks per phase" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
+   ! grep -Fq "10-agent parallelism for max throughput" .claude/skills/align/SKILL.md 2>/dev/null; then
+    test_pass "parallelism guidance is efficacy-first across rules and core skills"
+else
+    test_fail "parallelism guidance still rewards slot-filling over efficacy"
+fi
+
 # ========================================
 # Skills (16 Expected)
 # ========================================
@@ -167,25 +194,25 @@ for skill in tastebootstrap workflow align audit autoplan verify review qa ship 
 done
 
 # ========================================
-# Rules (5+ Required)
+# Rules (6+ Required)
 # ========================================
 
 echo ""
-echo "[Rules - 5+ Required]"
+echo "[Rules - 6+ Required]"
 echo ""
 
 # Test 6: Rules Count
 echo "[6] Rules Directory"
 RULE_COUNT=$(find .claude/rules -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$RULE_COUNT" -ge 5 ]; then
+if [ "$RULE_COUNT" -ge 6 ]; then
     test_pass "$RULE_COUNT rules found"
 else
-    test_fail "Expected 5+ rules, found $RULE_COUNT"
+    test_fail "Expected 6+ rules, found $RULE_COUNT"
 fi
 
 # Test 7: Individual Rules
 echo "[7] Individual Rules"
-for rule in quality context delegation spec verify; do
+for rule in quality context delegation parallelism spec verify; do
     if [ -f ".claude/rules/$rule.rules.md" ]; then
         LINES=$(wc -l < ".claude/rules/$rule.rules.md" | tr -d ' ')
         if [ "$LINES" -gt 10 ]; then

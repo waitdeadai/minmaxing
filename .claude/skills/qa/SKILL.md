@@ -2,11 +2,11 @@
 
 Browser-based E2E QA with Playwright. Pass/Fail only — no "mostly works", no "looks okay".
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel browser test agents running tests simultaneously.
+**MAX_PARALLEL_AGENTS** — ceiling for browser test lanes. Split QA only across independent flows, browsers, or surfaces.
 
 **Use when:** User says "QA this", "test this feature", "browser test", "E2E test", "verify this works", "swarm QA".
 
-**Swarm:** "swarm QA" → `/qa` with 10 parallel agents.
+**Swarm:** "swarm QA" → `/qa` with an efficacy-first QA wave up to `MAX_PARALLEL_AGENTS`.
 
 ---
 

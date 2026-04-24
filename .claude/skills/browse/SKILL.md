@@ -4,13 +4,13 @@ Parallel web research with live data — not stale training data.
 
 **MiniMax MCP is the primary research tool.** Prefer `mcp__MiniMax__web_search` for live research whenever it is available.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel web search agents researching different aspects simultaneously.
+**MAX_PARALLEL_AGENTS** — ceiling for parallel web research. Use only the number of distinct tracks that materially change the answer.
 
 **Use when:** You need current information about APIs, libraries, errors, best practices, or any domain where AI training data might be outdated.
 
 **Research-First:** Integrated into `/workflow` automatically. Use `/browse` directly when researching something specific.
 
-**Swarm:** "swarm browse" → `/browse` with 10 parallel research agents.
+**Swarm:** "swarm browse" → `/browse` with an efficacy-first research wave up to `MAX_PARALLEL_AGENTS`.
 
 ---
 
@@ -36,7 +36,7 @@ Parallel web research with live data — not stale training data.
 
 ## Parallel Research Protocol (MAX_PARALLEL_AGENTS)
 
-**Use all available agents for deep research.** Each agent researches a different aspect simultaneously, and the target is a full `MAX_PARALLEL_AGENTS` search wave unless the tools fail.
+**Use only the needed agents for deep research.** Each agent should answer a distinct question or fetch a distinct source class. Redundant tracks reduce signal.
 
 ### Step 1: Memory Recall (Before Research)
 
@@ -52,14 +52,14 @@ bash scripts/memory.sh search "[topic]" 2>/dev/null || true
 
 ### Step 2: Decompose Research Query
 
-Break the research into exactly `MAX_PARALLEL_AGENTS` parallel tracks:
+Break the research into distinct parallel tracks:
 - Track 1: Official documentation
 - Track 2: Recent blog posts/articles (2025-2026)
 - Track 3: GitHub issues/discussions
 - Track 4: Alternative approaches/competitors
 - Track N: [other aspects]
 
-Target: Fill all `MAX_PARALLEL_AGENTS` slots with research tracks.
+Choose an effective budget up to `MAX_PARALLEL_AGENTS` and stop when additional tracks would be redundant.
 
 ### Step 3: Parallel Web Searches
 
@@ -75,7 +75,7 @@ mcp__MiniMax__web_search "[topic] best practices 2025 2026"
 # Agent 3: GitHub/discussions
 mcp__MiniMax__web_search "[topic] GitHub issues limitations 2026"
 
-# ... up to MAX_PARALLEL_AGENTS
+# ... up to the chosen research budget
 ```
 
 ### Step 4: Parallel Source Fetching
@@ -111,9 +111,10 @@ While searches run, fetch key sources in parallel:
 - [What to do based on research]
 
 ### Coverage
-- Research Tracks Used: [completed] / [MAX_PARALLEL_AGENTS]
+- Research Tracks Used: [completed] / [effective budget]
 - MiniMax MCP Searches: [count]
 - Fallback Used: yes/no
+- Budget Rationale: [why this many tracks were worth spawning]
 ```
 
 ### Step 6: Store Research Findings
@@ -137,10 +138,10 @@ record_outcome(factors, 'success')
 
 ## Deep Research Mode
 
-For complex topics, use all agents for deep coverage:
+For complex topics, widen coverage only when the branches are genuinely independent:
 
-1. **Decompose** topic into 10 aspects
-2. **Spawn** MAX_PARALLEL_AGENTS searches simultaneously
+1. **Decompose** topic into distinct aspects
+2. **Spawn** the effective research budget simultaneously
 3. **Fetch** top sources for each aspect in parallel
 4. **Synthesize** findings into comprehensive report
 
@@ -152,8 +153,8 @@ For complex topics, use all agents for deep coverage:
 - **Date check** — prioritize 2025-2026 sources
 - **Contradict AI** — if web search contradicts AI claim, flag it
 - **No assumptions** — if you can't verify, say "unverified"
-- **Fill agent pool** — don't use 1 agent when 10 could research faster
-- **Full wave or explain why** — under-filling the search wave without a tool failure reason is a failure
+- **Distinct tracks only** — redundant searches are wasted budget
+- **Explain the wave** — if you use fewer than the ceiling, say why; if you use more tracks, justify the added coverage
 
 ---
 
@@ -163,5 +164,5 @@ For complex topics, use all agents for deep coverage:
 - Using old sources (pre-2024) without noting age → WARN
 - Not citing sources → BLOCK
 - Research without synthesizing into action → WARN
-- Sequential research when parallel possible → BLOCK
-- Under-filling the search wave without a tool failure reason → BLOCK
+- Sequential research when distinct parallel tracks clearly exist → BLOCK
+- Inflating the search wave with redundant tracks → BLOCK

@@ -36,8 +36,8 @@ When context is 50+ turns long, you notice missed instructions, or discussion ha
 Each parallel agent gets its own clean context:
 
 - **No shared state** between agents
-- **No context inheritance** from parent
-- **Clean handoff** — only pass what's needed
+- **Fresh working context** seeded from a thin handoff, not the whole parent thread
+- **Clean handoff** — only pass what's needed right now
 - **Aggregator combines results**, not context
 
 **Why:** Context pollution causes file conflicts, missed requirements, and stale decisions.
@@ -61,6 +61,17 @@ Load context in layers, not all at once:
 - Keep current task context minimal
 - When in doubt, ask "is this still accurate?"
 
+## Freshness Checkpoints
+
+Before a parallel agent acts, confirm:
+
+- the spec or task brief is still current
+- its owned files or surfaces have not changed under it
+- its dependencies are satisfied
+- the evidence it relies on is still relevant
+
+If any checkpoint fails, stop, refresh the brief, and re-sync before continuing.
+
 ## Anti-Patterns
 
 - Carrying stale context across tasks → BLOCK
@@ -68,3 +79,5 @@ Load context in layers, not all at once:
 - Overloading context with irrelevant info → BLOCK
 - Not using SPEC.md as reset point → WARN
 - Sharing context between parallel agents → BLOCK
+- Passing the full parent conversation to every agent → BLOCK
+- Acting on a stale brief after dependencies changed → BLOCK

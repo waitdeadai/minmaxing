@@ -11,7 +11,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 ## Core Workflow
 
 1. **SPEC-First**: File-changing tasks get a concrete `SPEC.md` before edits
-2. **Research-First**: `/workflow` must saturate the full `MAX_PARALLEL_AGENTS` pool with live MiniMax MCP-backed research before planning or edits
+2. **Research-First**: `/workflow` must do live MiniMax MCP-backed research before planning or edits, using as many distinct tracks as materially help
 3. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
 4. **Plan Before Spec**: `/workflow` synthesizes research + audit into a concrete plan before edits
 5. **Supervisor Pattern**: AI supervises workers, not the other way around
@@ -22,7 +22,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 
 **When you say "plan this" or "build this":**
 1. In a fresh repo, run `/tastebootstrap` once to define the kernel
-2. `/workflow` researches with the full agent pool
+2. `/workflow` researches with an efficacy-first agent budget
 3. `/workflow` audits the current codebase and writes the plan
 4. `/workflow` creates `SPEC.md`, executes, verifies, and only then closes out
 
@@ -35,15 +35,15 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 |-------|---------|
 | /tastebootstrap | Fresh-repo kernel interview that writes taste.md + taste.vision |
 | /workflow | Central execution engine — taste-first, runs the full phases inline |
-| /audit | Deep codebase audit with 10-agent parallelism |
+| /audit | Deep codebase audit with efficacy-first parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
-| /autoplan | Create SPEC.md with 10-agent parallel mindset |
+| /autoplan | Create SPEC.md with efficacy-first parallel planning |
 | /verify | Check output against SPEC |
 | /review | AI review + human sign-off |
 | /qa | Playwright E2E testing |
 | /ship | Pre-ship checklist |
 | /investigate | Debug with 3-fix limit |
-| /sprint | Manual 10 parallel agents |
+| /sprint | Manual parallel execution with ownership discipline |
 | /council | Multi-perspective synthesis |
 | /browse | Web research with citations |
 | /codesearch | Search code by pattern |
@@ -51,7 +51,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 
 ## Rules
 - **SPEC-First**: No code without SPEC.md
-- **10-Agent Default**: Plan with 10 agents always (configurable via MAX_PARALLEL_AGENTS)
+- **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
 - **Optional Codex Plugin Support**: If `codex-plugin-cc` is installed in Claude Code, project `.codex/config.toml` gives Codex `gpt-5.4` + `xhigh` defaults with 10 subagent threads
 - **Keep**: Architecture, security, verification decisions
 - **Delegate**: Single-file changes, tests, mechanical refactoring

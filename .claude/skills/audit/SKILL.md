@@ -4,11 +4,11 @@ Deep codebase analysis with parallel agents. Audit any repo to understand its st
 
 **TASTE-FIRST** — Reads taste.md + vision before audit research. Gates on misalignment.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents across all audit tracks simultaneously (security, quality, dependencies, docs, etc.).
+**MAX_PARALLEL_AGENTS** — ceiling for parallel audit tracks. Choose a risk-based budget that covers the repo without redundant tracks.
 
 **Use when:** User says "audit this", "analyze codebase", "understand this repo", "due diligence on this code", "swarm audit".
 
-**Swarm:** "swarm audit" → `/audit` with 10 parallel agents.
+**Swarm:** "swarm audit" → `/audit` with a risk-based audit wave up to `MAX_PARALLEL_AGENTS`.
 
 ---
 
@@ -26,24 +26,24 @@ Deep codebase analysis with parallel agents. Audit any repo to understand its st
 
 ### Phase 1: Decompose Audit (use MAX_PARALLEL_AGENTS)
 
-**Break the audit into parallel tracks, filling all agent slots:**
+**Break the audit into parallel tracks that materially improve coverage:**
 
-| Agent | Focus | Output |
-|-------|-------|--------|
-| 1 | Project structure & architecture | File tree, tech stack |
-| 2 | Security audit | Vulnerabilities, secrets, auth |
-| 3 | Code quality | Patterns, debt, complexity |
-| 4 | Dependencies | Outdated, vulnerable packages |
-| 5 | Tests & coverage | Missing tests, coverage % |
-| 6 | Documentation | README, API docs, comments |
-| 7 | Business logic | Auth, payments, data handling |
-| 8 | Performance | N+1, inefficient code |
-| 9 | Git history | Authors, commit patterns |
-| 10 | Compliance | OWASP, security standards |
+| Track | Focus | Always? | Output |
+|-------|-------|---------|--------|
+| 1 | Project structure & architecture | Yes | File tree, tech stack |
+| 2 | Security audit | Yes | Vulnerabilities, secrets, auth |
+| 3 | Correctness & code quality | Yes | Patterns, debt, complexity |
+| 4 | Tests & verification surface | Yes | Missing tests, confidence gaps |
+| 5 | Dependencies | If relevant | Outdated or risky packages |
+| 6 | Documentation & contracts | If relevant | Drift, missing docs |
+| 7 | Business logic | If relevant | Domain-specific risks |
+| 8 | Performance | If relevant | Hot spots, inefficiencies |
+| 9 | Git history | If relevant | Churn, ownership, risky areas |
+| 10 | Compliance / policy | If relevant | Standards gaps |
 
 ### Phase 2: Parallel Execution
 
-Spawn agents for each track simultaneously:
+Spawn agents only for the tracks the repo actually needs. Give each track a clear surface and return format.
 
 ```bash
 # Agent 1: Structure
@@ -97,8 +97,8 @@ claude -p "Audit for security issues: SQL injection, XSS, secrets in code, auth 
 ### Standard Audit (6 agents)
 - Structure, Security, Quality, Dependencies, Tests, Docs
 
-### Deep Audit (10 agents)
-- All tracks including Performance, Business Logic, Git History, Compliance
+### Deep Audit (up to 10 agents)
+- Core tracks plus any optional tracks justified by repo risk or task scope
 
 ---
 
@@ -116,5 +116,6 @@ claude -p "Audit for security issues: SQL injection, XSS, secrets in code, auth 
 - Vague findings without file references → BLOCK
 - No severity ranking → BLOCK
 - No actionable next steps → BLOCK
-- Sequential execution when parallel possible → BLOCK
+- Sequential execution when distinct high-value tracks exist → BLOCK
+- Inflating the audit with low-value filler tracks → BLOCK
 - Skipping security for speed → BLOCK (always audit security)

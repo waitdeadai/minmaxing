@@ -6,11 +6,11 @@ SPEC-first planning that generates or updates `SPEC.md` before implementation.
 
 **TASTE-FIRST** — If taste.md/vision undefined, bootstrap taste before planning, preferably via `/tastebootstrap`.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel research agents for deep research during planning.
+**MAX_PARALLEL_AGENTS** — ceiling for parallel planning research. Use the smallest effective wave that covers the distinct questions.
 
 **Use when:** User says "plan this", "how do I build", "spec out", "create a plan", "swarm", or when a new feature/project is described.
 
-**Swarm:** "swarm" → `/autoplan` with 10 parallel research agents.
+**Swarm:** "swarm" → `/autoplan` with an efficacy-first research wave up to `MAX_PARALLEL_AGENTS`.
 
 **NEVER skip to implementation.** SPEC.md is mandatory before any code.
 
@@ -33,16 +33,16 @@ bash scripts/memory.sh search "spec" 2>/dev/null || true
 
 ### Step 2: Parallel Research (use MAX_PARALLEL_AGENTS)
 
-**Research FIRST using all available agents.** Deep research produces better specs.
+**Research FIRST using the right number of agents.** Deep research produces better specs when the tracks are distinct and high-value.
 
-Decompose research into parallel tracks:
+Decompose research into distinct tracks:
 - Track 1: Current best practices / state of art
 - Track 2: API/SDK documentation
 - Track 3: Libraries and tools
 - Track 4: Similar implementations / patterns
 - Track N: [domain-specific aspects]
 
-Spawn MAX_PARALLEL_AGENTS searches simultaneously, then synthesize findings.
+Choose an effective research budget up to `MAX_PARALLEL_AGENTS`, spawn only the non-redundant tracks, then synthesize findings.
 
 ### Step 3: Code Audit
 
@@ -115,7 +115,7 @@ What problem does this solve? (1-2 sentences)
 - [ ] Task 6 [PARALLEL]
 - [ ] Task 7 [PARALLEL]
 
-**Note:** Tasks tagged [PARALLEL] can run simultaneously with 10-agent pool. Group them to maximize throughput.
+**Note:** Tasks tagged [PARALLEL] can run simultaneously when ownership is clear, dependencies are satisfied, and the wave meaningfully shortens the critical path.
 
 ## Verification
 How will we verify each success criterion?
@@ -127,23 +127,33 @@ How will we verify each success criterion?
 How do we undo if this breaks production?
 1. Step 1: [git revert or rollback command]
 2. Step 2: [database rollback if needed]
+
+## Parallelization Notes
+- Effective Agent Budget: [B] of [MAX_PARALLEL_AGENTS]
+- Why this budget: [distinct independent packets only]
+- For every delegated task, record:
+  - Owned files/surfaces
+  - Dependencies / prerequisites
+  - Expected return artifact or evidence
+  - Freshness checkpoint / stop condition
 ```
 
-### Step 6: Break Down Tasks (10-Agent Mindset)
+### Step 6: Break Down Tasks (Efficacy-First Parallelization)
 
-**Always plan for parallel execution.** The supervisor pattern decomposes work into tasks that can run simultaneously.
+**Plan for parallel execution when it helps.** The supervisor pattern decomposes work into tasks that can run simultaneously without shared-file collisions or coordination thrash.
 
 For each task in SPEC.md:
 
 - Define clear "definition of done"
 - Identify dependencies (what must come first)
 - Estimate complexity (1=single file, 2=few files, 3=architectural)
+- Assign ownership (files or surfaces) for every delegated packet
 - **Tag each task for parallelization:**
   - `[PARALLEL]` = Can run with other parallel tasks (different files)
   - `[SEQUENTIAL]` = Must run after dependency completes
   - `[GATE]` = Must pass before next phase starts
 
-**Target: Maximize PARALLEL tasks.** With 10 agents, aim for 6-8 parallel tasks per phase.
+**Target: Maximize solved critical path, not slot usage.** Leave tasks sequential when they share context or ownership.
 
 ### Step 7: Output Format
 
@@ -153,12 +163,13 @@ SPEC.md created: /path/to/SPEC.md
 ## Summary
 - Scope: [in/out count] components
 - Tasks: [N] verifiable tasks
-- Parallel Tasks: [M] (ready for 10-agent pool)
+- Parallel Tasks: [M] (ownership-clear and ready for delegated execution)
 - Sequential Tasks: [K]
 - Verification: [N] criteria
+- Effective Agent Budget: [B] of [MAX_PARALLEL_AGENTS]
 
 ## Execution Plan
-With 10-agent pool:
+With the chosen agent budget:
 - Phase 1: [N] tasks in parallel
 - Phase 2: [M] tasks in parallel
 - Phase 3: [K] sequential gate

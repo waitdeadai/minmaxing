@@ -2,13 +2,13 @@
 
 Extended 8-hour session with 30-minute checkpoints. Results consolidated at end. Auto-resume capability.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents for long-running task decomposition.
+**MAX_PARALLEL_AGENTS** — ceiling for long-running task decomposition. Use only the number of concurrent streams you can checkpoint and review safely.
 
 **Use when:** User says "overnight this", "run overnight", "extended session", "long running task".
 
 **Checkpoints every 30 minutes.** No more than 30 minutes of work at risk.
 
-**Swarm:** "swarm overnight" → `/overnight` with 10 parallel agents for long-running tasks.
+**Swarm:** "swarm overnight" → `/overnight` with an efficacy-first wave up to `MAX_PARALLEL_AGENTS`.
 
 ---
 

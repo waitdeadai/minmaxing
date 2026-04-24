@@ -9,7 +9,7 @@
 
 **Right results, not fast results.**
 
-One command sets up a Claude Code harness where AI researches with 10 agents, audits the codebase, writes a concrete plan and `SPEC.md`, implements, and verifies everything before you accept it.
+One command sets up a Claude Code harness where AI researches with an efficacy-first agent budget, audits the codebase, writes a concrete plan and `SPEC.md`, implements, and verifies everything before you accept it.
 
 <p align="center">
   <a href="https://github.com/waitdeadai/minmaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Stars"></a>
@@ -158,9 +158,9 @@ With SPEC-first:
 | Central orchestrator: /workflow runs research → audit → plan → spec → execute → verify automatically | Skills are isolated, no chaining |
 | Auto-capture: outcomes logged to memory automatically | Manual documentation |
 | SPEC-first: write spec before code | Vague prompts, rebuild loops |
-| 10 agents in parallel | Sequential one-at-a-time |
+| Efficacy-first parallelism: use the right number of agents for the task | Sequential one-at-a-time |
 | Separate verifier agent | Same AI checks its own work |
-| Research-first: `/workflow` fans out MiniMax MCP-backed searches across the full agent pool before planning or edits | AI hallucinates best practices |
+| Research-first: `/workflow` fans out MiniMax MCP-backed searches across the distinct tracks that materially affect the plan | AI hallucinates best practices |
 
 **Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. In a fresh repo, define them with `/tastebootstrap` before anything is built.
 
@@ -174,8 +174,8 @@ With SPEC-first:
 
 ## Key Features
 
-### 10-Agent Parallelism
-Spawn up to 10 workers simultaneously. Supervisor decomposes tasks, workers execute in parallel, supervisor verifies.
+### Efficacy-First Parallelism
+Spawn up to 10 workers when the task genuinely has 10 bounded, independent packets. Supervisor decomposes tasks, workers execute in parallel, supervisor verifies.
 
 ```
 Supervisor (you/AI)
@@ -188,6 +188,8 @@ Supervisor (you/AI)
 
 Auto-detects your hardware: 32GB+ → 10 agents, 16GB → 6 agents, 8GB → 3 agents.
 
+The important part is not hitting the ceiling. The important part is using the smallest agent budget that preserves fresh context, clear ownership, and a shorter critical path.
+
 ### SPEC-First
 File-changing tasks start with research, code audit, and a concrete plan. `SPEC.md` is the formal contract that comes out of that work, and AI implements to spec.
 
@@ -197,7 +199,7 @@ Not the same AI that wrote the code. A different agent checks output against you
 ### Research-First
 AI training data is stale. Every external claim gets verified with live web search.
 
-`/workflow` now treats live research as mandatory for all tasks, with the MiniMax MCP as the preferred source. It fills the full `MAX_PARALLEL_AGENTS` pool with parallel search tracks before it plans or edits anything.
+`/workflow` now treats a research brief as mandatory for all tasks, with the MiniMax MCP as the preferred source whenever current external facts matter. It uses up to `MAX_PARALLEL_AGENTS` parallel search tracks, but only when the added tracks are distinct and plan-changing. For a purely local task, it can justify a local-only research brief instead of doing pointless external calls.
 
 ### Permission Mode
 - **bypassPermissions** (shared-project default by design): Zero safety checks for trusted personal setups
@@ -209,7 +211,7 @@ This repo now ships a project-scoped Codex config under [`.codex/config.toml`](/
 Research-backed take:
 - The best plugin for using Codex inside Claude Code is the official OpenAI [`openai/codex-plugin-cc`](https://github.com/openai/codex-plugin-cc).
 - It is explicitly built for Claude Code users, uses your local `codex` CLI plus Codex app server, and picks up user-level or project-level `.codex/config.toml`.
-- It does not force parallelism by itself. OpenAI’s Codex docs say subagents are only spawned when you explicitly ask for them, so max-agent behavior comes from your prompt plus the project `max_threads` setting.
+- It does not force parallelism by itself. OpenAI’s Codex docs say subagents are only spawned when you explicitly ask for them, so effective concurrency comes from your prompt plus the project `max_threads` ceiling.
 - I found no official source saying this official plugin violates OpenAI terms. This is not legal advice, but the repo itself documents Claude Code installation and current OpenAI Terms/Usage Policies do not appear to prohibit this official integration when used compliantly.
 
 What this repo config gives Codex:
@@ -231,7 +233,7 @@ SQLite-backed memory that remembers across sessions:
 - Causal graph tracks what caused success/failure
 
 ### Central Orchestrator
-`/workflow` owns the full lifecycle inline: taste gate, max-agent deep research, code audit, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` so the research/audit/plan trail is inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
+`/workflow` owns the full lifecycle inline: taste gate, deep research, code audit, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` so the research/audit/plan trail is inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
 
 ---
 
@@ -388,7 +390,7 @@ Now you can use any workflow pattern:
 | Command | What it does |
 |---------|--------------|
 | `/workflow "explain this codebase"` | Understand what you have |
-| `/workflow "audit this for security issues"` | Deep security + quality audit (10 agents) |
+| `/workflow "audit this for security issues"` | Deep security + quality audit with risk-based parallel coverage |
 | `/workflow "refactor the auth module"` | Research → audit → plan → spec → implement → verify |
 | `/workflow "optimize database queries"` | Research → audit → plan → spec → implement → verify |
 | `/workflow "investigate why X is slow"` | Root-cause debugging with hypothesis testing |
@@ -412,11 +414,11 @@ Now you can use any workflow pattern:
 | Skill | What It Does |
 |-------|-------------|
 | `/tastebootstrap` | **Fresh-repo bootstrap** — asks the 10 kernel questions and writes `taste.md` + `taste.vision` |
-| `/workflow` | **Central execution engine** — drives research → code audit → plan → `SPEC.md` → implement → verify → closeout (supervises 10 agents) |
+| `/workflow` | **Central execution engine** — drives research → code audit → plan → `SPEC.md` → implement → verify → closeout (supervises an efficacy-first agent budget) |
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
-| `/audit` | Deep codebase audit with 10-agent parallelism |
+| `/audit` | Deep codebase audit with risk-based parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
-| `/sprint` | Run up to 10 agents in parallel |
+| `/sprint` | Run an ownership-safe parallel execution wave |
 | `/verify` | Check output against SPEC (separate verifier) |
 | `/review` | AI review + you decide |
 | `/qa` | Playwright E2E testing — Pass/Fail only |
@@ -428,7 +430,7 @@ Now you can use any workflow pattern:
 | `/browse` | Web research with citations |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
-**Parallelism:** All skills that support parallelism use 10 agents by default (except `/align` which is single-threaded by design — taste alignment is sequential judgment).
+**Parallelism:** All skills that support parallelism treat `MAX_PARALLEL_AGENTS` as a ceiling, not a target. `/align` remains single-threaded by design because taste alignment is sequential judgment.
 
 ---
 
@@ -440,16 +442,34 @@ claude
 /workflow "build a REST API for users"
 ```
 
-`/workflow` now owns the whole lifecycle inline: taste check → max-agent MiniMax research → code audit → plan → `SPEC.md` → implementation → verification → closeout.
+`/workflow` now owns the whole lifecycle inline: taste check → MiniMax research → code audit → plan → `SPEC.md` → implementation → verification → closeout.
 
 **Direct skill invocation (advanced):**
 ```bash
 /autoplan "build a login system"   # Generate SPEC.md
-/sprint                            # Execute with 10 agents
+/sprint                            # Execute with ownership-safe parallelism
 /verify                           # Check against spec
 /ship                             # Ship checklist
 ```
 Direct invocation skips the orchestrator — use when you know exactly what you need.
+
+## Verification
+
+Before you trust a setup or a prompt-contract change, run the repo checks:
+
+```bash
+bash scripts/test-harness.sh
+```
+
+If Claude is authenticated locally, also run the runtime smoke flow:
+
+```bash
+bash scripts/workflow-smoke.sh
+```
+
+The smoke test validates the real `/workflow` path in a temporary repo and accepts either:
+- a justified local-only research brief for a purely local task
+- or positive MiniMax MCP research when the task depends on current external facts
 
 ## Codex in Claude Code
 
@@ -493,7 +513,7 @@ The Codex plugin exposes reviews plus long-running rescue tasks. For comprehensi
 
 ```text
 /codex:rescue --background
-Use subagents up to max_threads for a research-backed plan.
+Use subagents up to max_threads for a research-backed plan, but only for bounded independent packets.
 Have repo_explorer map the code paths, docs_researcher verify external APIs and current docs, and reviewer challenge risks and rollback gaps before proposing the plan.
 Task: refactor the auth subsystem without user-visible behavior changes.
 ```
@@ -565,7 +585,7 @@ minmaxing/
 │   │   ├── align/              # Taste gate
 │   │   ├── audit/              # Deep codebase analysis
 │   │   ├── autoplan/            # SPEC.md generator
-│   │   ├── sprint/              # 10-agent parallel executor
+│   │   ├── sprint/              # Ownership-safe parallel executor
 │   │   ├── verify/              # SPEC compliance checker
 │   │   ├── ship/                # Pre-ship checklist
 │   │   ├── investigate/         # Root-cause debugging

@@ -2,10 +2,10 @@
 
 ## The 80/20 Principle (Karpathy "Manifesting")
 
-- **80%** of time: delegating to subagents, macro review
-- **20%** of time: architecture decisions, security reviews, quality gating
+- **80%** of throughput can come from well-chosen delegated packets and strong macro review
+- **20%** still belongs to architecture decisions, security reviews, quality gating, and synthesis
 
-**Goal:** State intent → break into objectives → assign to agents → review at macro level
+**Goal:** State intent → break into bounded objectives → delegate only the truly independent ones → review at macro level
 
 ## What to Delegate
 
@@ -20,6 +20,13 @@ Safe to delegate — mechanical, bounded tasks:
 - Code formatting/linting
 - Data migration scripts
 - Boilerplate code generation
+
+Usually keep local instead of delegating:
+
+- Quick targeted edits where spawning would cost more than doing
+- Tightly coupled multi-file changes with one shared reasoning loop
+- Work that needs frequent back-and-forth with the parent thread
+- Anything without clear file or surface ownership
 
 ## What to KEEP (Never Delegate)
 
@@ -45,14 +52,19 @@ Requires human judgment — never delegate:
 - Only pass what's needed for this task
 - No stale context from other tasks
 - File boundaries are clear
+- Dependencies and stop conditions are explicit
+- If the packet does not have a clear owner, do not delegate it
 
 ### 3. Delegate with Instructions
 ```
 Task: [specific description]
-Files: [list]
-Context: [relevant context]
+Owned files/surfaces: [list]
+Do not touch: [list]
+Context: [thin, relevant context only]
+Dependencies: [what must already be true]
 Success: [definition of done]
 Verify: [how to verify completion]
+Stop if: [overlap, missing dependency, stale assumptions]
 ```
 
 ### 4. Verify Output (Mandatory)
@@ -70,9 +82,11 @@ Verify: [how to verify completion]
 |-----------|--------|
 | One task per agent | Yes |
 | Clear file boundaries | Yes |
+| Clear ownership | Yes |
 | Verifiable definition of done | Yes |
 | Isolated context | Yes |
 | Mandatory verification | Yes |
+| Independent from sibling packets | Yes |
 
 ## Anti-Patterns
 
@@ -82,3 +96,5 @@ Verify: [how to verify completion]
 - Delegating quality gate enforcement → BLOCK
 - Over-delegating (losing oversight) → WARN
 - Delegating vague tasks → BLOCK
+- Delegating the same file to multiple agents in one wave → BLOCK
+- Delegating when no bounded independent packet exists → BLOCK

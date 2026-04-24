@@ -5,7 +5,7 @@ This repo is optimized for Claude Code first, but it also ships project-scoped C
 ## Research-Backed Work
 
 - For planning, audits, debugging, refactors, and architecture work, start with a research brief before proposing edits.
-- When the task benefits from parallelism, explicitly use subagents up to the configured `max_threads`.
+- When the task benefits from parallelism, explicitly choose an effective subagent budget up to the configured `max_threads`.
 - Prefer this split for deep research:
   - `repo_explorer` to map the code paths and evidence inside the repo
   - `docs_researcher` to verify APIs, versions, and current behavior with citations

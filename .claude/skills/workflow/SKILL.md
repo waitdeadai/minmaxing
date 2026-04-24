@@ -17,7 +17,7 @@ This command is the end-to-end executor.
 
 - Finish the task in this command whenever it is feasible.
 - For file-changing work, follow this order: deep research -> code audit -> plan -> `SPEC.md` -> execute -> verify.
-- Do max-agent deep research for every task before planning or execution.
+- Do efficacy-first deep research for every task before planning or execution.
 - Audit the current codebase before planning or writing `SPEC.md`.
 - Synthesize a concrete plan before writing `SPEC.md`.
 - Do not stop after planning.
@@ -36,12 +36,13 @@ No shortcut exceptions for file-changing tasks:
 - Do not treat "trivial", "tiny", "single-file", or "local-only" as exceptions.
 - If you are about to skip one of these phases, stop and complete the missing phase instead.
 
-Research is mandatory:
+Research brief is mandatory:
 - If `mcp__MiniMax__web_search` is available in the tool list, you MUST use it before planning, explaining, auditing, or editing.
 - Use `mcp__MiniMax__web_search` as the primary external research tool when it is available.
 - Fall back to Claude Code `WebSearch` only if the MiniMax MCP is unavailable.
-- Always use the full `MAX_PARALLEL_AGENTS` pool for research fan-out.
-- The target research count is exactly `MAX_PARALLEL_AGENTS` live search tracks on every run when MiniMax MCP is available.
+- Treat `MAX_PARALLEL_AGENTS` as a ceiling, not a quota.
+- Choose an effective research budget based on the number of distinct questions that materially affect the plan.
+- If the task is purely local and does not depend on current external facts, a concise local-only research brief is acceptable, but you must say why no external search was needed.
 - Build a research brief before any code audit synthesis, spec creation, or code changes.
 - Write a workflow artifact for file-changing tasks so the reasoning trail is inspectable.
 - Re-check any concrete library, framework, API, or error details again right before editing if the plan depends on them.
@@ -113,6 +114,11 @@ Required section order:
 
 Keep it concise, but do not skip sections. For non-file-changing analysis tasks, this artifact is optional.
 
+Required content inside the sections:
+- `## Research Brief` must record the effective research budget, why it was chosen, and the distinct tracks used.
+- `## Plan` must record any delegated packets, their owners, and their dependencies when parallel execution is likely.
+- `## Execution Notes` must record any freshness re-checks and the final owned files touched by each delegated packet.
+
 ## Phase 2: Deep Research
 
 Every task gets a research-backed brief before planning or execution.
@@ -133,20 +139,23 @@ MAX_AGENTS="${MAX_PARALLEL_AGENTS:-10}"
 echo "$MAX_AGENTS"
 ```
 
-4. Decompose the work into exactly `MAX_AGENTS` research tracks.
+4. Determine an effective research budget:
+   - start at `MAX_AGENTS` as the ceiling
+   - reduce it to the number of distinct, non-redundant research questions the task actually needs
+   - allow `0` external tracks only when the task is purely local and no current external fact materially affects the plan
+   - prefer fewer high-signal tracks over synthetic filler
 5. Use the MiniMax MCP for live research:
    - official docs
    - recent best practices
    - release notes / version-specific behavior
    - GitHub issues or discussions for known pitfalls
    - alternatives or implementation patterns when architecture is involved
-6. Fill the entire research pool every time:
-   - launch `MAX_AGENTS` distinct search tracks
+6. Launch the research wave:
+   - launch only distinct search tracks
    - issue the first wave of MiniMax MCP searches before broad local inspection
    - prefer sending many MCP search calls in the same response turn so they execute as a batch
-   - do not leave slots idle
-   - split the task into narrower angles until all tracks are used
-7. For simple local tasks, still use all research slots by widening the lens:
+   - do not widen the task just to consume slots
+7. For simple local tasks, use a smaller wave and focus on the highest-value angles:
    - implementation pattern
    - verification pattern
    - file-format conventions
@@ -159,13 +168,13 @@ echo "$MAX_AGENTS"
    - maintenance implications
 8. For debugging tasks, research the exact error, framework version, and any known regressions.
 9. For security-sensitive or architecture tasks, widen the search and cite multiple sources.
-10. If fewer than `MAX_AGENTS` live searches complete because of a tool or network failure, retry first and then explicitly report the shortfall and reason.
+10. If fewer than the effective budget complete because of a tool failure, redundant tracks, or the task simply not needing more angles, report the shortfall and reason explicitly.
 
-For file-changing tasks, `Research Tracks Used` must not be `0 / ...` when the MiniMax MCP is available.
+For file-changing tasks that depend on current external facts, `Research Tracks Used` must not be `0 / ...` when the MiniMax MCP is available. For purely local tasks, `0` external tracks are allowed only with an explicit justification.
 
 ### Research Queries
 
-Create exactly `MAX_PARALLEL_AGENTS` focused tracks every time. Expand or narrow them based on complexity, but fill the pool.
+Create only the focused tracks that materially change the plan. Expand or narrow them based on complexity, and stop when additional tracks would be redundant.
 
 Core track ideas:
 - official documentation for the libraries or frameworks involved
@@ -197,9 +206,10 @@ Before moving on, produce a concise brief with:
 
 Also include:
 - number of MiniMax MCP searches performed
-- `MAX_PARALLEL_AGENTS` used for research
-- research tracks completed versus expected
+- effective research budget and why it was chosen
+- research tracks completed versus planned
 - whether any fallback WebSearch was used
+- whether the task used a justified local-only research path
 
 Store important research findings in memory when they would be useful again:
 
@@ -336,6 +346,7 @@ Implement directly with Claude Code tools.
 - Make the necessary file changes.
 - Re-check any version-sensitive or API-sensitive assumptions from the research brief immediately before editing when necessary.
 - Use subagents or parallel work only when it materially helps and file ownership is clear.
+- Give every delegated packet a thin brief with owned files, dependencies, stop conditions, and expected evidence.
 - Prefer direct execution over theatrical parallelism for tiny tasks.
 - Keep changes aligned with the spec and taste constraints.
 - Update `## Execution Notes` in `WORKFLOW_ARTIFACT` with the files changed and any notable deviations from the plan.
@@ -369,7 +380,7 @@ For file-changing tasks, update `## Verification Evidence` in `WORKFLOW_ARTIFACT
 
 Before you emit `## Workflow Complete` for a file-changing task, confirm all of these are true:
 
-- `Research Tracks Used` shows the full pool or an explicitly justified shortfall.
+- `Research Tracks Used` shows the effective budget met, a justified local-only path, or an explicitly justified shortfall.
 - `Code Audit` is completed.
 - `Plan` is completed.
 - `SPEC.md` exists on disk as a real file.
@@ -418,8 +429,8 @@ When complete, return:
 
 - Task: [task]
 - Taste Gate: PASS / BOOTSTRAPPED / REALIGNED
-- Research: [completed with MiniMax MCP / fallback used / blocked]
-- Research Tracks Used: [completed] / [MAX_PARALLEL_AGENTS]
+- Research: [completed with MiniMax MCP / local-only brief / fallback used / blocked]
+- Research Tracks Used: [completed] / [effective budget] (ceiling [MAX_PARALLEL_AGENTS])
 - MiniMax MCP Searches: [count]
 - Code Audit: [completed / skipped only for non-file-changing analysis / blocked]
 - Plan: [completed / skipped / blocked]
@@ -435,10 +446,10 @@ When complete, return:
 ## Anti-Patterns
 
 - stopping after writing `SPEC.md`
-- planning from memory alone without live research
-- skipping MiniMax MCP research when the tool is available
-- running fewer than `MAX_PARALLEL_AGENTS` live search tracks when MiniMax MCP is available and healthy
-- leaving research slots idle when `MAX_PARALLEL_AGENTS` could cover more angles
+- planning from memory alone without a research brief
+- skipping MiniMax MCP research when current external facts matter and the tool is available
+- running redundant search tracks just to hit the ceiling
+- delegating without owned files, dependencies, or a stop condition
 - broad `Glob("*")` exploration before the first research wave
 - skipping a code audit before planning for file-changing work
 - creating `SPEC.md` before the plan exists

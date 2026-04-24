@@ -56,7 +56,7 @@ Present questions one at a time. Wait for answer before proceeding.
 
 Principles to reference:
 - SPEC-first: write spec before code
-- 10-agent parallelism for max throughput
+- Efficacy-first parallelism: use only the number of bounded independent packets that materially help
 - Separate verifier from implementer (PEV loop)
 - Research-first: verify AI claims with web search
 

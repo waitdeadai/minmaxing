@@ -2,11 +2,11 @@
 
 Two-stage code review: AI review followed by human sign-off. AI catches logic errors, security issues, style violations. Human confirms business logic, UX, edge cases.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel review agents covering different aspects (logic, security, style, edge cases) simultaneously.
+**MAX_PARALLEL_AGENTS** — ceiling for review lanes. Split review only across distinct concerns or file groups that can be examined independently.
 
 **Use when:** User says "review this", "review code", "look at these changes", "PR review", "swarm review".
 
-**Swarm:** "swarm review" → `/review` with 10 parallel agents.
+**Swarm:** "swarm review" → `/review` with an efficacy-first review wave up to `MAX_PARALLEL_AGENTS`.
 
 ---
 

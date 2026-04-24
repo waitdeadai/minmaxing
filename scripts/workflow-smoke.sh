@@ -59,17 +59,35 @@ EOF
 
     OUTPUT="$(
         MAX_PARALLEL_AGENTS=10 claude -p --settings "$SETTINGS_PATH" \
-        "/workflow build a tiny local smoke test by creating note.txt containing ok. Keep everything local and do not push or deploy anything external."
+        "/workflow This is a harness contract smoke test. Even though the implementation is tiny, treat it as full file-changing work and follow the full research -> code audit -> plan -> SPEC.md -> execute -> verify flow. Create note.txt containing ok. Keep everything local and do not push or deploy anything external."
     )"
 
     echo "$OUTPUT"
 
-    echo "$OUTPUT" | grep -Eq "Research[^[:cntrl:]]*completed with MiniMax MCP"
-    echo "$OUTPUT" | grep -Eq "Research Tracks Used[^[:cntrl:]]*10 ?/ ?10"
-    echo "$OUTPUT" | grep -Eq "MiniMax MCP Searches[^[:cntrl:]]*10"
-    echo "$OUTPUT" | grep -Eq "Code Audit[^[:cntrl:]]*completed"
-    echo "$OUTPUT" | grep -Eq "Plan[^[:cntrl:]]*completed"
-    echo "$OUTPUT" | grep -Eq "Workflow Artifact[^[:cntrl:]]*\\.taste/workflow-runs/"
+    RESEARCH_LINE="$(echo "$OUTPUT" | grep -Eo "Research Tracks Used[^[:cntrl:]]*" | head -n 1)"
+    [ -n "$RESEARCH_LINE" ]
+    python3 - "$RESEARCH_LINE" <<'PY'
+import re
+import sys
+
+line = sys.argv[1]
+match = re.search(r'(\d+)\s*/\s*(\d+)', line)
+if not match:
+    raise SystemExit(1)
+
+completed, planned = map(int, match.groups())
+if not (0 <= completed <= planned <= 10):
+    raise SystemExit(1)
+PY
+    if echo "$OUTPUT" | grep -Eqi "Research[^[:cntrl:]]*completed with MiniMax MCP"; then
+        echo "$OUTPUT" | grep -Eqi "MiniMax MCP Searches[^[:cntrl:]]*[1-9][0-9]*"
+    else
+        echo "$OUTPUT" | grep -Eqi "Research[^[:cntrl:]]*(local-only brief|no external research needed|trivial task)"
+        echo "$OUTPUT" | grep -Eqi "MiniMax MCP Searches[^[:cntrl:]]*0"
+    fi
+    echo "$OUTPUT" | grep -Eqi "Code Audit[^[:cntrl:]]*completed"
+    echo "$OUTPUT" | grep -Eqi "Plan[^[:cntrl:]]*completed"
+    echo "$OUTPUT" | grep -Eqi "Workflow Artifact[^[:cntrl:]]*\\.taste/workflow-runs/"
     test -f "$TMPDIR/SPEC.md"
     test -f "$TMPDIR/note.txt"
     test "$(cat "$TMPDIR/note.txt")" = "ok"

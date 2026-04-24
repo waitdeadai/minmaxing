@@ -1,12 +1,12 @@
 # /sprint
 
-Parallel execution with up to 10 agents and FILE ISOLATION. Each agent works on different files to prevent merge conflicts. Context isolation per agent.
+Parallel execution with up to `MAX_PARALLEL_AGENTS` agents and strict FILE OWNERSHIP. Each agent works on different files or surfaces to prevent merge conflicts and context thrash.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents for parallel task execution with file isolation.
+**MAX_PARALLEL_AGENTS** — ceiling for parallel task execution. Use the smallest effective wave that fits independent work packets.
 
 **Use when:** User says "sprint this", "parallel this", "run in parallel", "split this up", "swarm sprint".
 
-**Swarm:** "swarm sprint" → `/sprint` (10 parallel agents with file isolation).
+**Swarm:** "swarm sprint" → `/sprint` with an efficacy-first execution wave up to `MAX_PARALLEL_AGENTS`.
 
 **FILE ISOLATION is mandatory.** Parallel only when agents touch different files.
 
@@ -14,7 +14,7 @@ Parallel execution with up to 10 agents and FILE ISOLATION. Each agent works on 
 
 ## Purpose
 
-Achieve parallel speedup without merge conflicts. **Always use the full agent pool.** Break tasks into MORE granular pieces to fill all 10 agents. The supervisor's job is to maximize parallelism, not just use "what fits naturally."
+Achieve parallel speedup without merge conflicts. Use as many agents as there are independent, ownership-clear work packets. The supervisor's job is to shorten the critical path, not to maximize slot utilization.
 
 ---
 
@@ -57,23 +57,26 @@ bash scripts/memory.sh recall "[sprint feature type]" --depth simple 2>/dev/null
 bash scripts/memory.sh search "sprint" 2>/dev/null || true
 ```
 
-### Step 1: Task Analysis — MAXIMIZE PARALLELISM
+### Step 1: Task Analysis — Choose the Effective Budget
 
-**Rule: Break tasks into MORE granular pieces to fill all 10 agents.**
+**Rule: Do not split work just to fill slots.**
 
-For example, a "calculator module" is NOT 2 tasks:
-- It could be 10 tasks: add, subtract, multiply, divide, error handling, tests for each, etc.
+For example, a "calculator module" is not automatically a 10-agent sprint:
+- If all operations live in one file or one reasoning loop, keep it local or use a tiny wave
+- Only split it if operations, tests, docs, or adapters truly have separate ownership and can return independently
 
 ```markdown
 ## Sprint Plan: [Feature Name]
 
-### Agent Pool: [N] agents (fill all slots)
+### Agent Pool
+- Ceiling: [MAX_PARALLEL_AGENTS]
+- Effective Budget: [N]
+- Why: [independent packets that justify N]
 
-### Task Breakdown (targeting full agent pool)
-- Task 1: [granular task] → Files: [list]
-- Task 2: [granular task] → Files: [list]
-- Task 3: [granular task] → Files: [list]
-... (fill all [N] agents)
+### Task Breakdown
+- Task 1: [granular task] → Owned Files: [list]
+- Task 2: [granular task] → Owned Files: [list]
+- Task 3: [granular task] → Owned Files: [list]
 
 ### File Isolation Check
 For each task:
@@ -82,9 +85,9 @@ For each task:
 ...
 
 ### If < [N] Tasks
-- Break existing tasks into smaller units
-- Split by: function, test suite, error case, edge case, documentation
-- NEVER leave agents idle when tasks remain
+- Lower the effective budget
+- Keep tightly coupled work in the parent thread
+- Only split further when ownership remains clean
 ```
 
 **FILE ISOLATION is mandatory.** If two tasks touch the same file, they cannot run in parallel.
@@ -92,11 +95,14 @@ For each task:
 ### Step 2: Task Distribution
 
 ```markdown
-## Sprint Distribution (using all [N] agents)
+## Sprint Distribution
 
 ### Agent 1: [Task 1]
-- Files: [file list]
-- Context: [clean context for this task]
+- Owned files: [file list]
+- Do not touch: [file list]
+- Context: [thin current context for this task]
+- Dependencies: [what must already be true]
+- Freshness checkpoint: [when to stop and re-sync]
 - Goal: [specific deliverable]
 
 ### Agent 2: [Task 2]
@@ -120,7 +126,7 @@ claude -p "Execute Task 1: [details]. Files you own: [list]. Return only a conci
 # Agent 2
 claude -p "Execute Task 2: [details]. Files you own: [list]. Return only a concise result summary." > agent2.out 2>&1 &
 
-# ... up to 10 agents
+# ... up to the effective budget
 
 # Wait for all
 wait
@@ -174,8 +180,7 @@ wait
 - Parallel on same files → BLOCK (conflicts guaranteed)
 - Shared context between agents → BLOCK (pollution)
 - Ignoring failed agents → BLOCK
-- Leaving agents idle when tasks remain → BLOCK (fill the pool)
-- Not maximizing parallelism → BLOCK (break tasks more granularly)
+- Inflating the wave with synthetic task splitting → BLOCK
 - Not checking file isolation → BLOCK
 
 ---

@@ -7,11 +7,11 @@ description: Search the local codebase for patterns, symbols, implementations, a
 
 Code search and pattern understanding across the codebase.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel search agents across different directories simultaneously.
+**MAX_PARALLEL_AGENTS** — ceiling for search lanes. Split search only across independent directories or patterns that meaningfully reduce search time.
 
 **Use when:** User says "find code", "search code", "where is this implemented", "grep this", "swarm codesearch", or needs to find patterns across the codebase.
 
-**Swarm:** "swarm codesearch" → `/codesearch` with 10 parallel agents.
+**Swarm:** "swarm codesearch" → `/codesearch` with an efficacy-first search wave up to `MAX_PARALLEL_AGENTS`.
 
 ---
 

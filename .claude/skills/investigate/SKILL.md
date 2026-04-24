@@ -2,11 +2,11 @@
 
 Systematic root-cause debugging with hypothesis testing. 3-fix limit prevents rabbit holes. Root cause or escalate.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel hypothesis-testing agents investigating different root causes simultaneously.
+**MAX_PARALLEL_AGENTS** — ceiling for parallel hypothesis work. Parallelize evidence gathering or independent hypotheses only when they are truly independent.
 
 **Use when:** User says "investigate this", "debug this", "what's causing this", "root cause", "why is this broken", "swarm investigate".
 
-**Swarm:** "swarm investigate" → `/investigate` with 10 parallel agents.
+**Swarm:** "swarm investigate" → `/investigate` with an efficacy-first debugging wave up to `MAX_PARALLEL_AGENTS`.
 
 **Hypothesis first, then fix.** Never guess.
 
@@ -14,7 +14,7 @@ Systematic root-cause debugging with hypothesis testing. 3-fix limit prevents ra
 
 ## Purpose
 
-Find root cause of bugs/issues systematically. Hypothesis testing prevents guessing. 3-fix limit prevents endless debugging.
+Find root cause of bugs/issues systematically. Hypothesis testing prevents guessing. 3-fix limit prevents endless debugging. Parallelize evidence, not random fix attempts.
 
 ---
 

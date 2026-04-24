@@ -2,11 +2,11 @@
 
 Pre-ship checklist that ensures everything is ready before a requested release action. Includes verification, test selection, rollback planning, and only performs remote actions when the user explicitly wants them.
 
-**MAX_PARALLEL_AGENTS** — spawns up to 10 parallel agents running pre-ship checks simultaneously (tests, lint, security scan, coverage).
+**MAX_PARALLEL_AGENTS** — ceiling for pre-ship lanes. Split checks only when they can run independently and still be reviewed coherently.
 
 **Use when:** User says "ship this", "ready to ship", "deploy this", "ship it", "swarm ship".
 
-**Swarm:** "swarm ship" → `/ship` with 10 parallel agents.
+**Swarm:** "swarm ship" → `/ship` with an efficacy-first pre-ship wave up to `MAX_PARALLEL_AGENTS`.
 
 ---
 
