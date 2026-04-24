@@ -82,6 +82,17 @@ The plan should state:
 
 ### Step 5: Generate SPEC.md
 
+Before writing, replacing, or reusing `SPEC.md`, run `/introspect pre-plan` inline as a hard gate.
+
+Check:
+- whether the research and code audit actually support the plan
+- whether the plan is too broad, too vague, or missing a rollback path
+- whether success criteria are objective enough to verify
+- whether the active spec should be reused or archived
+- whether hidden assumptions need user input before the spec is frozen
+
+If introspection returns `FIX_REQUIRED`, correct the plan first. If it returns `REPLAN_REQUIRED`, revise scope before writing `SPEC.md`. If it returns `BLOCKED`, stop and explain the blocker.
+
 If an active `SPEC.md` already exists and is not reusable for this exact task, archive it before replacing it:
 
 ```bash
@@ -214,6 +225,7 @@ When `/workflow` references this skill, the parent workflow continues inline and
 - **Success criteria must be objective** — not "looks good", "works well" → FAIL
 - **Out-of-scope items must be explicitly stated** → FAIL if missing
 - **Rollback plan must exist for production changes** → FAIL if missing
+- **Introspection must pass before SPEC.md is frozen** → FAIL if unresolved blockers remain
 
 ---
 
@@ -226,3 +238,4 @@ When `/workflow` references this skill, the parent workflow continues inline and
 - Scope not challenged (accepting first solution) → WARN and challenge
 - Skipping scope reduction → WARN
 - Missing verification method for criteria → BLOCK
+- Writing or replacing `SPEC.md` with unresolved `/introspect` blockers → BLOCK

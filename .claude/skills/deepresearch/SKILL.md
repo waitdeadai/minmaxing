@@ -120,6 +120,17 @@ This is required whenever external facts materially affect the conclusion.
 
 ## Step 7: Synthesis
 
+Before final synthesis, run `/introspect pre-plan` inline as a hard gate.
+
+Challenge:
+- weak sources or over-weighted secondary sources
+- unresolved contradictions
+- premature certainty after shallow evidence
+- missing source classes
+- conclusions that do not actually follow from the source ledger
+
+If the introspection pass finds unresolved blockers, do follow-up research before presenting the final result.
+
 ```markdown
 ## DeepResearch: [Topic]
 
@@ -166,6 +177,7 @@ This is required whenever external facts materially affect the conclusion.
 - show what changed between loops
 - surface conflicting evidence instead of smoothing it away
 - do follow-up research before finalizing when uncertainty still matters
+- run the introspection gate before final synthesis when the research will drive planning, implementation, or a high-stakes decision
 
 ## Anti-Patterns
 
@@ -174,3 +186,4 @@ This is required whenever external facts materially affect the conclusion.
 - no source ledger
 - no conflict handling
 - calling the result "deep research" when only one shallow wave ran
+- finalizing with unresolved `/introspect` blockers

@@ -59,7 +59,7 @@ EOF
 
     OUTPUT="$(
         MAX_PARALLEL_AGENTS=10 claude -p --settings "$SETTINGS_PATH" \
-        "/workflow This is a harness contract smoke test. Even though the implementation is tiny, treat it as full file-changing work and follow the full research -> code audit -> plan -> SPEC.md -> execute -> verify flow. SPEC.md must exist on disk before editing note.txt. Create note.txt containing ok. Keep everything local and do not push or deploy anything external."
+        "/workflow This is a harness contract smoke test. Even though the implementation is tiny, treat it as full file-changing work and follow the full research -> code audit -> introspection -> plan -> SPEC.md -> execute -> introspection -> verify flow. SPEC.md must exist on disk before editing note.txt. Create note.txt containing ok. Keep everything local and do not push or deploy anything external."
     )"
 
     echo "$OUTPUT"
@@ -95,10 +95,11 @@ PY
     awk '
         /^## Research Brief$/ { research = NR }
         /^## Code Audit$/ { audit = NR }
+        /^## Introspection$/ { introspection = NR }
         /^## Plan$/ { plan = NR }
         /^## SPEC Decision$/ { spec = NR }
         END {
-            if (research && audit && plan && spec && research < audit && audit < plan && plan < spec) {
+            if (research && audit && introspection && plan && spec && research < audit && audit < introspection && introspection < plan && plan < spec) {
                 exit 0
             }
             exit 1
@@ -106,6 +107,7 @@ PY
     ' "$ARTIFACT"
     grep -Eqi "Investigation Mode|Research Mode" "$ARTIFACT"
     grep -Eqi "Research Tracks Used|Research tracks" "$ARTIFACT"
+    grep -Eq "^## Introspection$" "$ARTIFACT"
     grep -Eqi "0 ?/ ?0|0 external|local-only|no external search needed|no external research needed|no external facts needed|local file creation|source ledger" "$ARTIFACT"
 )
 

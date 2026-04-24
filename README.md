@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 18 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 20 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -246,7 +246,7 @@ LLMs forget because live conversation context is lossy. minmaxing now keeps a co
 Claude Code hooks refresh it after each turn, snapshot it before `/compact` or auto-compact, record the compact summary, and rehydrate it on startup, resume, and post-compact. Durable lessons still go to SQLite memory; `CURRENT.md` is only for the active task: files in play, current phase, latest `SPEC.md`, workflow artifact, verification status, and next steps.
 
 ### Central Orchestrator
-`/workflow` owns the full lifecycle inline: taste gate, deep research, code audit, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` and archived specs under `.taste/specs/` so the research plan, loop log, source ledger, audit, plan, and spec trail stay inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
+`/workflow` owns the full lifecycle inline: taste gate, deep research, code audit, hard-gate introspection, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` and archived specs under `.taste/specs/` so the research plan, loop log, source ledger, audit, introspection, plan, and spec trail stay inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
 
 ---
 
@@ -265,9 +265,11 @@ Think of minmaxing as an operating system:
 │  PHASE 1: ROUTE                                     │
 │  PHASE 2: DEEP RESEARCH (plan -> search -> read -> refine) │
 │  PHASE 3: CODE AUDIT                               │
+│  PHASE 3.5: INTROSPECT [HARD GATE]                 │
 │  PHASE 4: PLAN                                     │
 │  PHASE 5: SPEC.md                                  │
 │  PHASE 6: EXECUTE                                  │
+│  PHASE 6.5: INTROSPECT [HARD GATE]                 │
 │  PHASE 7: VERIFY                                   │
 │  PHASE 8: CLOSEOUT                                 │
 ├─────────────────────────────────────────────────────┤
@@ -276,7 +278,8 @@ Think of minmaxing as an operating system:
 ├─────────────────────────────────────────────────────┤
 │  /autoplan /sprint /verify /ship /investigate     │
 │  /audit /council /qa /review /deepresearch        │
-│  /webresearch /browse /codesearch /overnight /align │
+│  /webresearch /browse /introspect /instrospect    │
+│  /codesearch /overnight /align                    │
 │              (System Calls)                          │
 └─────────────────────────────────────────────────────┘
 ```
@@ -288,6 +291,8 @@ Think of minmaxing as an operating system:
 **/workflow is the shell.** It orchestrates everything. Routes tasks to the right phase, performs live research, audits the repo, synthesizes the plan, writes `SPEC.md`, executes the work, verifies output, and gates progression.
 
 Inside Phase 2, `/workflow` now follows the repo’s effectiveness-first `deepresearch` protocol instead of a generic search fan-out: it drafts a collaborative research plan, launches only the discovery tracks that matter, reads and refines in loops, records a source ledger including reviewed but not cited sources, pressure-tests conflicting evidence, and runs follow-up research before locking the plan.
+
+Before confidence is allowed, `/workflow` runs the repo’s hard-gate `/introspect` protocol. It names likely mistakes, checks assumptions, looks for counterexamples, compares implementation against `SPEC.md`, identifies missing verification, downgrades confidence when evidence is weak, and blocks closeout or push when unresolved findings remain. `/instrospect` is kept as a compatibility alias.
 
 ### The 4 Execution Paths
 
@@ -431,7 +436,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 18 Skills
+## The 20 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -451,6 +456,8 @@ Now you can use any workflow pattern:
 | `/deepresearch` | Deep multi-pass investigation with source ledgers and follow-up loops |
 | `/webresearch` | Current web/docs/API verification using the same effectiveness-first method |
 | `/browse` | Backward-compatible alias to `/webresearch` or `/deepresearch` |
+| `/introspect` | Hard-gate self-audit for likely mistakes, assumptions, missing verification, and confidence downgrades |
+| `/instrospect` | Compatibility alias to `/introspect` |
 | `/codesearch` | Search code by pattern |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
@@ -604,7 +611,7 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 18 skills (system calls)
+│   ├── skills/                 # 20 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap
 │   │   ├── align/              # Taste gate
@@ -620,6 +627,8 @@ minmaxing/
 │   │   ├── deepresearch/        # Canonical deep investigation
 │   │   ├── webresearch/        # Focused current web research
 │   │   ├── browse/             # Backward-compatible research alias
+│   │   ├── introspect/         # Hard-gate self-audit
+│   │   ├── instrospect/        # Compatibility alias to introspect
 │   │   ├── codesearch/         # Code search
 │   │   ├── memory/             # 5-tier memory skill
 │   │   └── overnight/          # 8hr session with checkpoints

@@ -1,49 +1,49 @@
-# SPEC: Effectiveness-First DeepResearch Commands
+# SPEC: Hard-Gate Introspect Mode
 
 ## Problem Statement
-minmaxing now has a stronger research workflow, but it still exposes that method mainly through `/browse` and describes it as “Gemini-style” in multiple repo surfaces. The harness should own this capability as first-class `deepresearch` and `webresearch` commands while preserving effectiveness-first behavior, `MAX_PARALLEL_AGENTS` ceilings, and backward compatibility for `/browse`.
+minmaxing needs a first-class `/introspect` guardrail that forces the model to find likely mistakes in moments where premature confidence is most dangerous. The guardrail should be usable directly, triggered inside `/workflow`, and available through `/instrospect` as a compatibility alias for the requested spelling.
 
 ## Codebase Anchors
-- `.claude/skills/workflow/SKILL.md` is the primary end-to-end workflow contract.
-- `.claude/skills/deepresearch/SKILL.md` should become the canonical deep investigation playbook.
-- `.claude/skills/webresearch/SKILL.md` should become the direct current-facts/web verification playbook.
-- `.claude/skills/browse/SKILL.md` should remain as a compatibility alias.
-- `.claude/skills/autoplan/SKILL.md` must synthesize specs from the same investigation model.
-- `README.md`, `CLAUDE.md`, and `AGENTS.md` are the repo's public/operator-facing promise surfaces.
+- `.claude/skills/workflow/SKILL.md` owns the full research -> audit -> plan -> spec -> execute -> verify lifecycle.
+- `.claude/skills/audit/SKILL.md`, `.claude/skills/deepresearch/SKILL.md`, `.claude/skills/autoplan/SKILL.md`, and `.claude/skills/review/SKILL.md` are the main quality surfaces that must call out introspection.
+- `README.md`, `CLAUDE.md`, and `AGENTS.md` are the public and operator-facing promise surfaces.
 - `scripts/test-harness.sh` and `scripts/workflow-smoke.sh` are the regression gates for contract drift.
 
 ## Success Criteria
-- [ ] `workflow` requires a research plan, iterative search/read/refine loops, a source ledger, contradiction handling, and follow-up research before planning or edits when external facts matter.
-- [ ] Canonical `/deepresearch` and `/webresearch` skills exist and both honor `MAX_PARALLEL_AGENTS` as an effectiveness-first ceiling.
-- [ ] `/browse` remains usable as a compatibility alias while pointing to the same repo-owned research protocol.
-- [ ] `autoplan` and the user-facing docs describe the research behavior as repo-owned `deepresearch` / `webresearch`, not as “Gemini-style.”
-- [ ] Repo docs describe the upgraded research behavior clearly and consistently.
-- [ ] Harness checks cover the new research contract markers so future drift is caught.
+- [x] Canonical `/introspect` skill exists with hard-gate trigger modes: `pre-plan`, `post-implementation`, `after-test-failure`, `pre-push`, and `manual`.
+- [x] `/instrospect` exists as a compatibility alias that routes to `/introspect`.
+- [x] `/workflow` requires an `## Introspection` artifact section between `## Code Audit` and `## Plan`, with pre-plan and pre-closeout entries for file-changing work.
+- [x] `/workflow` requires introspection reruns after failed verification and before push or ship decisions.
+- [x] `/audit`, `/deepresearch`, `/autoplan`, and `/review` distinguish introspection from normal review and require it at the right decision points.
+- [x] README, CLAUDE, AGENTS, and harness tests describe 20 skills and the hard-gate behavior consistently.
+- [x] Static and live integration verification pass before commit and push.
 
 ## Scope
 ### In Scope
-- Adding canonical `deepresearch` and `webresearch` skill surfaces.
-- Converting `/browse` into a compatibility alias.
-- Updating research-facing skill instructions.
-- Updating repo instructions and public docs to match the new investigation contract.
-- Extending harness and smoke checks to validate the new contract.
+- Adding `/introspect` and `/instrospect` skill surfaces.
+- Updating workflow, audit, research, planning, review, and docs contracts.
+- Updating harness and smoke checks for the new skill count and introspection artifact.
+- Verifying with the static harness and live `/workflow` smoke path.
 
 ### Out of Scope
-- Integrating an external deep-research provider or cloning product-specific UI features.
-- Changing the effectiveness-first `MAX_PARALLEL_AGENTS` policy into quota-based slot filling.
-- Adding new runtime services, databases, or network dependencies.
+- Adding a runtime service, database, or external introspection provider.
+- Replacing `/review`, `/audit`, `/verify`, or `/deepresearch`; introspection complements them.
+- Making every tiny local task use a large parallel self-audit wave.
 
 ## Implementation Plan
-1. Add canonical `deepresearch` and `webresearch` skills built around the same effectiveness-first investigation protocol.
-2. Convert `browse` into a backward-compatible alias and update `workflow` / `autoplan` to reference the repo-owned naming.
-3. Update `AGENTS.md`, `CLAUDE.md`, and `README.md` to describe the new command surfaces and remove stale Gemini phrasing.
-4. Extend `scripts/test-harness.sh` and related docs to verify the new command surfaces and still-effectiveness-first parallelism contract.
+1. Add `/introspect` with trigger modes, required output, blocker behavior, and effectiveness-first parallelism.
+2. Add `/instrospect` as a compatibility alias that delegates to `/introspect`.
+3. Insert mandatory introspection language and artifact requirements into `/workflow`.
+4. Update `/audit`, `/deepresearch`, `/autoplan`, and `/review` with the required introspection checkpoints.
+5. Update docs and repo instructions from 18 to 20 skills.
+6. Extend harness and smoke tests to enforce the hard-gate contract.
 
 ## Verification
-- Skill/docs alignment -> targeted `rg` / manual inspection of updated files.
-- Harness contract -> `bash scripts/test-harness.sh`.
 - Script syntax -> `bash -n scripts/test-harness.sh` and `bash -n scripts/workflow-smoke.sh`.
+- Contract drift -> targeted `rg` for stale skill counts and introspection markers.
+- Static harness -> `bash scripts/test-harness.sh`.
+- Live workflow -> `RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh`.
 
 ## Rollback Plan
-- Revert the commit that updates the research workflow contract, docs, and harness checks.
-- Restore the previous active `SPEC.md` from `.taste/specs/` if needed.
+- Revert the implementation commit.
+- Restore the previous active `SPEC.md` from `.taste/specs/20260424-143839-effectiveness-first-deepresearch-commands-superseded-before-new-spec.md` if needed.

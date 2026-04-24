@@ -13,18 +13,19 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 1. **SPEC-First**: File-changing tasks get a concrete `SPEC.md` before edits
 2. **Research-First**: `/workflow` must do live MiniMax MCP-backed research before planning or edits, using as many distinct tracks as materially help and behaving like the repo’s effectiveness-first `deepresearch` protocol: collaborative research plan -> search -> read -> refine, with source ledger, contradiction handling, and follow-up passes
 3. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
-4. **Plan Before Spec**: `/workflow` synthesizes research + audit into a concrete plan before edits
-5. **Supervisor Pattern**: AI supervises workers, not the other way around
-6. **PEV Loop**: Plan → Execute → Verify. The verifier is separate from the implementer.
-7. **Quality Gates**: /verify must pass; tests must pass; no silent failures
+4. **Introspect Before Confidence**: `/workflow` runs hard-gate `/introspect` before plan freeze, after implementation, after failed verification, and before push/ship moments
+5. **Plan Before Spec**: `/workflow` synthesizes research + audit + introspection into a concrete plan before edits
+6. **Supervisor Pattern**: AI supervises workers, not the other way around
+7. **PEV Loop**: Plan → Execute → Verify. The verifier is separate from the implementer.
+8. **Quality Gates**: /verify must pass; tests must pass; unresolved introspection blockers stop closeout
 
 ## Default Behavior
 
 **When you say "plan this" or "build this":**
 1. In a fresh repo, run `/tastebootstrap` once to define the kernel
 2. `/workflow` researches with an efficacy-first agent budget and the repo’s `deepresearch` protocol
-3. `/workflow` audits the current codebase and writes the plan
-4. `/workflow` creates `SPEC.md`, executes, verifies, and only then closes out
+3. `/workflow` audits the current codebase, runs `/introspect pre-plan`, and writes the plan
+4. `/workflow` creates `SPEC.md`, executes, runs post-implementation introspection, verifies, and only then closes out
 
 **Supervisor's job:** Ensure every task is research-backed, audit-backed, spec-backed, and verified before declaring done, without handing the next phase back to the user.
 
@@ -48,12 +49,15 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 | /deepresearch | Deep multi-pass investigation with source ledgers and follow-up loops |
 | /webresearch | Current web/docs/API verification using the same effectiveness-first method |
 | /browse | Backward-compatible alias to `/webresearch` or `/deepresearch` |
+| /introspect | Hard-gate self-audit for likely mistakes, assumptions, missing verification, and confidence downgrades |
+| /instrospect | Compatibility alias to `/introspect` |
 | /codesearch | Search code by pattern |
 | /overnight | 8hr session with 30-min checkpoints |
 
 ## Rules
 - **SPEC-First**: No code without SPEC.md
 - **SPEC Archive**: `SPEC.md` is the active contract; archive completed or superseded specs to `.taste/specs/` before replacing them
+- **Introspection Gate**: `/introspect` must pass before plan freeze, closeout, retry after failed verification, and push/ship decisions
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
 - **Optional Codex Plugin Support**: If `codex-plugin-cc` is installed in Claude Code, project `.codex/config.toml` gives Codex `gpt-5.4` + `xhigh` defaults with 10 subagent threads
 - **Keep**: Architecture, security, verification decisions

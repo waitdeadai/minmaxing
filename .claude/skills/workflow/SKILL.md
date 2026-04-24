@@ -19,7 +19,9 @@ This command is the end-to-end executor.
 - For file-changing work, follow this order: deep research -> code audit -> plan -> `SPEC.md` -> execute -> verify.
 - Do efficacy-first deep research for every task before planning or execution.
 - Audit the current codebase before planning or writing `SPEC.md`.
+- Run hard-gate introspection after code audit and before freezing the plan.
 - Synthesize a concrete plan before writing `SPEC.md`.
+- Run hard-gate introspection after implementation and before closeout.
 - Do not stop after planning.
 - Do not tell the user to manually run `/autoplan`, `/sprint`, `/verify`, or `/ship`.
 - Do not rely on nested custom-skill chaining as the primary execution path.
@@ -46,6 +48,7 @@ Research brief is mandatory:
 - If the task is purely local and does not depend on current external facts, a concise local-only research brief is acceptable, but you must say why no external search was needed.
 - Build a research brief before any code audit synthesis, spec creation, or code changes.
 - Write a workflow artifact for file-changing tasks so the reasoning trail is inspectable.
+- Hard-gate introspection must name likely mistakes, cite evidence checked, downgrade confidence when warranted, and block closeout when unresolved findings remain.
 - Re-check any concrete library, framework, API, or error details again right before editing if the plan depends on them.
 
 ## Phase 0: Taste Gate
@@ -115,6 +118,7 @@ Required section order:
 ## Taste Gate
 ## Research Brief
 ## Code Audit
+## Introspection
 ## Plan
 ## SPEC Decision
 ## Execution Notes
@@ -126,6 +130,7 @@ Keep it concise, but do not skip sections. For non-file-changing analysis tasks,
 
 Required content inside the sections:
 - `## Research Brief` must record the investigation mode, collaborative research plan, effective research budget, iterative search -> read -> refine loop, source ledger, conflicting evidence, and any follow-up research required before planning.
+- `## Introspection` must record at least `pre-plan` and `post-implementation` entries for file-changing work, plus `after-test-failure` or `pre-push` entries when those triggers occur.
 - `## Plan` must record any delegated packets, their owners, and their dependencies when parallel execution is likely.
 - `## Execution Notes` must record any freshness re-checks and the final owned files touched by each delegated packet.
 
@@ -314,6 +319,27 @@ Do not write `SPEC.md` until this code audit is captured.
 
 ## Phase 4: Plan
 
+Before planning, run hard-gate introspection.
+
+### Pre-plan Introspection
+
+Use `/introspect pre-plan` as the playbook, but execute inline.
+
+Check:
+- likely mistakes in the research brief or code audit
+- assumptions that are not supported by evidence
+- counterexamples or missing edge cases
+- places where external facts, source quality, or repo inspection are too weak
+- whether the plan would violate taste, `SPEC.md` lifecycle, or existing patterns
+
+Append the result to `## Introspection` in `WORKFLOW_ARTIFACT` before writing `## Plan`.
+
+Required decision:
+- `PASS` -> continue to plan
+- `FIX_REQUIRED` -> gather more evidence or correct the audit before planning
+- `REPLAN_REQUIRED` -> change direction before writing `SPEC.md`
+- `BLOCKED` -> stop and explain the blocker
+
 Synthesize the research brief and code audit into an execution plan before writing `SPEC.md`.
 
 The plan must answer:
@@ -408,6 +434,7 @@ Implement directly with Claude Code tools.
 - Prefer direct execution over theatrical parallelism for tiny tasks.
 - Keep changes aligned with the spec and taste constraints.
 - Update `## Execution Notes` in `WORKFLOW_ARTIFACT` with the files changed and any notable deviations from the plan.
+- After implementation, run `/introspect post-implementation` inline and append the result to `## Introspection`. Check the diff against `SPEC.md`, likely mistakes, missing edge cases, and weak verification before moving on.
 
 If the task is non-code analysis, do the work directly and skip implementation.
 
@@ -422,9 +449,11 @@ Required verification behavior:
 - compare actual behavior against every success criterion
 
 If verification fails:
-1. fix the issue
-2. verify again
-3. repeat until the result is accepted or a real blocker remains
+1. run `/introspect after-test-failure` inline and append the result to `## Introspection`
+2. identify whether the fix path, plan, spec, or test expectation is wrong
+3. fix the issue only after the introspection pass names the likely mistake
+4. verify again
+5. repeat until the result is accepted or a real blocker remains
 
 Never declare success without evidence.
 
@@ -441,6 +470,8 @@ Before you emit `## Workflow Complete` for a file-changing task, confirm all of 
 - `Research Tracks Used` shows the effective budget met, a justified local-only path, or an explicitly justified shortfall.
 - The research brief records the investigation mode, collaborative research plan, loop log, and source ledger when external facts matter.
 - `Code Audit` is completed.
+- `Introspection` includes a `pre-plan` pass and a `post-implementation` or justified non-implementation pass.
+- Failed verification, if any, has an `after-test-failure` introspection entry before the next fix attempt.
 - `Plan` is completed.
 - `SPEC.md` exists on disk as a real file.
 - `WORKFLOW_ARTIFACT` exists and its phase sections are filled in.
@@ -473,18 +504,19 @@ Only perform remote-facing actions when the user clearly asked for them.
 If the user explicitly wants a push or ship:
 1. confirm the repo is in a sane git state
 2. commit intentionally
-3. archive the final active spec with the shipped outcome before or immediately after the commit:
+3. run `/introspect pre-push` inline and append the result to `## Introspection`; do not push with unresolved blockers
+4. archive the final active spec with the shipped outcome before or immediately after the commit:
 
 ```bash
 bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>/dev/null || true
 ```
 
-4. push only if a remote exists and the request includes pushing
-5. never invent deployment steps that are not present in the repo
+5. push only if a remote exists and the request includes pushing
+6. never invent deployment steps that are not present in the repo
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/deepresearch`, `/webresearch`, `/browse`, `/sprint`, `/verify`, `/audit`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/instrospect`, `/sprint`, `/verify`, `/audit`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers
@@ -506,6 +538,7 @@ When complete, return:
 - MiniMax MCP Searches: [count]
 - Follow-up Research: [not needed / completed / blocked]
 - Code Audit: [completed / skipped only for non-file-changing analysis / blocked]
+- Introspection: [PASS / FIX_REQUIRED / REPLAN_REQUIRED / BLOCKED]
 - Plan: [completed / skipped / blocked]
 - SPEC.md: [created / updated / reused / blocked]
 - Spec Archive: [archived / already archived / not needed / blocked]
@@ -527,6 +560,8 @@ When complete, return:
 - omitting a source ledger when external facts materially affect the plan
 - citing only supporting sources while ignoring conflicting evidence
 - moving to code audit or planning while core research unknowns still require follow-up research
+- planning, closing out, or pushing while introspection blockers remain unresolved
+- treating `/review` as a substitute for `/introspect`
 - running redundant search tracks just to hit the ceiling
 - delegating without owned files, dependencies, or a stop condition
 - broad `Glob("*")` exploration before the first research wave

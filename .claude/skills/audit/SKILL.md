@@ -57,6 +57,17 @@ claude -p "Audit for security issues: SQL injection, XSS, secrets in code, auth 
 
 ### Phase 3: Synthesize Findings
 
+Before final recommendations, run `/introspect pre-plan` inline as a hard gate.
+
+Check for:
+- hidden assumptions in the audit scope
+- missed high-risk files or subsystems
+- evidence gaps behind severe findings
+- weak or uncited claims
+- places where security, tests, docs, or dependencies were skipped too quickly
+
+If introspection returns `FIX_REQUIRED`, gather the missing evidence before publishing the audit. If it returns `REPLAN_REQUIRED` or `BLOCKED`, say why and do not present the recommendation as final.
+
 ```markdown
 ## Audit Report: [Repository Name]
 
@@ -108,6 +119,7 @@ claude -p "Audit for security issues: SQL injection, XSS, secrets in code, auth 
 - **Severity classification** — CRITICAL/HIGH/MEDIUM/LOW
 - **Actionable recommendations** — not just "this is bad"
 - **Evidence-based** — show the code that triggered finding
+- **Introspection gate** — final recommendations require a pre-plan self-audit for hidden assumptions, missed risk surfaces, and evidence gaps
 
 ---
 
@@ -119,3 +131,4 @@ claude -p "Audit for security issues: SQL injection, XSS, secrets in code, auth 
 - Sequential execution when distinct high-value tracks exist → BLOCK
 - Inflating the audit with low-value filler tracks → BLOCK
 - Skipping security for speed → BLOCK (always audit security)
+- Publishing final recommendations with unresolved `/introspect` blockers → BLOCK

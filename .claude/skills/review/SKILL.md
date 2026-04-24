@@ -14,6 +14,8 @@ Two-stage code review: AI review followed by human sign-off. AI catches logic er
 
 Catch defects, security issues, and quality problems before they reach production. Two stages ensure both mechanical and business concerns are addressed.
 
+`/review` is not a substitute for `/introspect`. Review evaluates code and change quality; introspection is the model's hard-gate self-audit before confidence, closeout, or push. When reviewing your own implementation, run `/introspect post-implementation` before treating the review as complete.
+
 ---
 
 ## Execution Protocol
@@ -58,6 +60,13 @@ For each changed file:
 - Do tests actually run and pass?
 
 ### Stage 2: Human Review (Output for User)
+
+Before producing the final recommendation, run an introspection pass:
+- Did the review miss changed files or generated artifacts?
+- Did it rely on the diff without reading the actual code?
+- Are there missing tests that should be blockers?
+- Are security or rollback risks under-classified?
+- Should confidence be downgraded because verification did not run?
 
 Format for human review:
 
@@ -113,6 +122,7 @@ Reply with: APPROVE / REQUEST_CHANGES / COMMENT
 - **Missing tests are blockers** for new code → FAIL
 - **Must verify tests actually run** (not just exist) → FAIL
 - **Must read the actual code** (not just diff) → FAIL
+- **Self-review requires `/introspect post-implementation`** → FAIL if unresolved introspection blockers remain
 
 ---
 
@@ -124,3 +134,4 @@ Reply with: APPROVE / REQUEST_CHANGES / COMMENT
 - Not running tests → BLOCK
 - Approving without understanding → BLOCK
 - Skipping Stage 2 (going straight to approval) → BLOCK
+- Treating review as a replacement for `/introspect` → BLOCK
