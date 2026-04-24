@@ -33,7 +33,14 @@ bash scripts/memory.sh search "spec" 2>/dev/null || true
 
 ### Step 2: Parallel Research (use MAX_PARALLEL_AGENTS)
 
-**Research FIRST using the right number of agents.** Deep research produces better specs when the tracks are distinct and high-value.
+**Research FIRST using the right number of agents.** Deep research produces better specs when the tracks are distinct and high-value, but the research should behave like a Gemini-style investigation loop rather than a generic search dump.
+
+Before the first search wave, write a collaborative research plan that names:
+- the target deliverable the spec must unlock
+- the core questions or branches
+- the source classes to consult
+- the likely contradictions or unknowns to pressure-test
+- the stop condition for "research is sufficient to plan"
 
 Decompose research into distinct tracks:
 - Track 1: Current best practices / state of art
@@ -42,7 +49,7 @@ Decompose research into distinct tracks:
 - Track 4: Similar implementations / patterns
 - Track N: [domain-specific aspects]
 
-Choose an effective research budget up to `MAX_PARALLEL_AGENTS`, spawn only the non-redundant tracks, then synthesize findings.
+Choose an effective research budget up to `MAX_PARALLEL_AGENTS`, spawn only the non-redundant tracks, then run an iterative search -> read -> refine loop. Keep a source ledger with cited sources, reviewed but not cited sources, and conflicting evidence that still needs follow-up before the spec is frozen.
 
 ### Step 3: Code Audit
 

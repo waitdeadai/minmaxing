@@ -40,6 +40,7 @@ Research brief is mandatory:
 - If `mcp__MiniMax__web_search` is available in the tool list, you MUST use it before planning, explaining, auditing, or editing.
 - Use `mcp__MiniMax__web_search` as the primary external research tool when it is available.
 - Fall back to Claude Code `WebSearch` only if the MiniMax MCP is unavailable.
+- Deep research must feel closer to Gemini Deep Research than to a generic search fan-out: start with a collaborative research plan, run an iterative search -> read -> refine loop, maintain a source ledger, resolve conflicting evidence, and do follow-up research before freezing the plan.
 - Treat `MAX_PARALLEL_AGENTS` as a ceiling, not a quota.
 - Choose an effective research budget based on the number of distinct questions that materially affect the plan.
 - If the task is purely local and does not depend on current external facts, a concise local-only research brief is acceptable, but you must say why no external search was needed.
@@ -124,7 +125,7 @@ Required section order:
 Keep it concise, but do not skip sections. For non-file-changing analysis tasks, this artifact is optional.
 
 Required content inside the sections:
-- `## Research Brief` must record the effective research budget, why it was chosen, and the distinct tracks used.
+- `## Research Brief` must record the investigation mode, collaborative research plan, effective research budget, iterative search -> read -> refine loop, source ledger, conflicting evidence, and any follow-up research required before planning.
 - `## Plan` must record any delegated packets, their owners, and their dependencies when parallel execution is likely.
 - `## Execution Notes` must record any freshness re-checks and the final owned files touched by each delegated packet.
 
@@ -134,6 +135,16 @@ Every task gets a research-backed brief before planning or execution.
 
 This phase is mandatory and cannot be satisfied by local repo inspection alone when the MiniMax MCP is available.
 
+Research here should feel closer to Gemini Deep Research than to a one-shot search batch. The goal is an inspectable investigation that plans first, then iteratively searches, reads, refines, and pressure-tests until the plan is grounded enough to act.
+
+### Investigation Mode
+
+Choose one mode up front and record it in the brief:
+- `standard` — narrow implementation or debugging work with a small number of decisive questions
+- `comprehensive` — audits, architecture, strategic planning, high-stakes debugging, security work, or any request that explicitly asks for deep research / top-quality investigation
+
+Default to `comprehensive` for audits, planning, refactors, architecture, reverse engineering, and any task where the user explicitly asks for deep research or investigation quality.
+
 ### Research Requirements
 
 1. Start from repo context:
@@ -141,30 +152,46 @@ This phase is mandatory and cannot be satisfied by local repo inspection alone w
    - identify the languages, frameworks, libraries, APIs, and likely problem area
    - avoid blind full-tree globs before you know what to inspect
 2. Run memory recall first, then external research.
-3. Read the agent pool size:
+3. Draft a collaborative research plan before the first external wave. It must name:
+   - the target deliverable
+   - the core questions or branches to investigate
+   - the source classes to consult
+   - likely contradictions or unknowns to pressure-test
+   - the stop condition for "research is sufficient to plan"
+   - whether the user must review the plan before execution
+4. Read the agent pool size:
 
 ```bash
 MAX_AGENTS="${MAX_PARALLEL_AGENTS:-10}"
 echo "$MAX_AGENTS"
 ```
 
-4. Determine an effective research budget:
+5. Determine an effective research budget:
    - start at `MAX_AGENTS` as the ceiling
    - reduce it to the number of distinct, non-redundant research questions the task actually needs
    - allow `0` external tracks only when the task is purely local and no current external fact materially affects the plan
    - prefer fewer high-signal tracks over synthetic filler
-5. Use the MiniMax MCP for live research:
+6. Use the MiniMax MCP for live research:
    - official docs
    - recent best practices
    - release notes / version-specific behavior
    - GitHub issues or discussions for known pitfalls
    - alternatives or implementation patterns when architecture is involved
-6. Launch the research wave:
+7. Launch the first discovery wave:
    - launch only distinct search tracks
    - issue the first wave of MiniMax MCP searches before broad local inspection
    - prefer sending many MCP search calls in the same response turn so they execute as a batch
    - do not widen the task just to consume slots
-7. For simple local tasks, use a smaller wave and focus on the highest-value angles:
+8. Read the returned sources before expanding the wave. The first batch should change what you search next.
+9. Run an iterative search -> read -> refine loop:
+   - Loop 1: discovery and landscape mapping
+   - Loop 2: targeted deepening on the highest-value branches
+   - Loop 3: adversarial verification for conflicting evidence, failure modes, or missing edges when the task is high-stakes or non-trivial
+10. Maintain a source ledger throughout the investigation:
+   - sources cited in the final brief
+   - sources reviewed but not cited because they were duplicative, lower-signal, or merely confirmatory
+   - rejected or downweighted sources when source quality is a material issue
+11. For simple local tasks, use a smaller wave and focus on the highest-value angles:
    - implementation pattern
    - verification pattern
    - file-format conventions
@@ -175,13 +202,15 @@ echo "$MAX_AGENTS"
    - dependency surface
    - portability concerns
    - maintenance implications
-8. For debugging tasks, research the exact error, framework version, and any known regressions.
-9. For security-sensitive or architecture tasks, widen the search and cite multiple sources.
-10. If fewer than the effective budget complete because of a tool failure, redundant tracks, or the task simply not needing more angles, report the shortfall and reason explicitly.
+12. For debugging tasks, research the exact error, framework version, and any known regressions.
+13. For security-sensitive, architecture, or strategy tasks, widen the search and cite multiple source classes.
+14. When conflicting evidence appears, do not just pick the first convenient source. Weigh the evidence explicitly, record the conflict, and resolve or bracket it before moving on.
+15. If key unknowns remain after the first synthesis, do follow-up research before code audit or planning. Do not move forward with unresolved core uncertainty unless the user must make the call.
+16. If fewer than the effective budget complete because of a tool failure, redundant tracks, or the task simply not needing more angles, report the shortfall and reason explicitly.
 
 For file-changing tasks that depend on current external facts, `Research Tracks Used` must not be `0 / ...` when the MiniMax MCP is available. For purely local tasks, `0` external tracks are allowed only with an explicit justification.
 
-### Research Queries
+### Research Queries And Loops
 
 Create only the focused tracks that materially change the plan. Expand or narrow them based on complexity, and stop when additional tracks would be redundant.
 
@@ -201,13 +230,24 @@ Core track ideas:
 - competing implementation patterns
 - production debugging or observability patterns
 
-Do the MCP searches before relying on your own prior knowledge.
+Do the MCP searches before relying on your own prior knowledge, but do not stop at the query list. Each wave should answer a concrete branch from the collaborative research plan.
+
+Loop expectations:
+- discovery wave -> map the landscape and surface candidate sources
+- deep-read wave -> open the highest-value sources, extract facts, and identify gaps
+- pressure-test wave -> search for conflicting evidence, failure modes, or missing edges when the task is non-trivial
+- follow-up wave -> only when the plan or audit still depends on unresolved questions
 
 ### Research Output
 
 Before moving on, produce a concise brief with:
+- investigation mode
+- collaborative research plan
 - research track table with one row per track
+- loop log that shows what changed between waves
+- source ledger with cited sources, reviewed but not cited sources, and rejected or downweighted sources when relevant
 - key facts
+- conflicting evidence and how it was resolved or bracketed
 - relevant sources or URLs
 - concrete implications for the plan
 - known pitfalls to avoid
@@ -219,6 +259,7 @@ Also include:
 - research tracks completed versus planned
 - whether any fallback WebSearch was used
 - whether the task used a justified local-only research path
+- whether follow-up research was required before planning or edits
 
 Store important research findings in memory when they would be useful again:
 
@@ -398,6 +439,7 @@ For file-changing tasks, update `## Verification Evidence` in `WORKFLOW_ARTIFACT
 Before you emit `## Workflow Complete` for a file-changing task, confirm all of these are true:
 
 - `Research Tracks Used` shows the effective budget met, a justified local-only path, or an explicitly justified shortfall.
+- The research brief records the investigation mode, collaborative research plan, loop log, and source ledger when external facts matter.
 - `Code Audit` is completed.
 - `Plan` is completed.
 - `SPEC.md` exists on disk as a real file.
@@ -459,8 +501,10 @@ When complete, return:
 - Task: [task]
 - Taste Gate: PASS / BOOTSTRAPPED / REALIGNED
 - Research: [completed with MiniMax MCP / local-only brief / fallback used / blocked]
+- Research Mode: [standard / comprehensive]
 - Research Tracks Used: [completed] / [effective budget] (ceiling [MAX_PARALLEL_AGENTS])
 - MiniMax MCP Searches: [count]
+- Follow-up Research: [not needed / completed / blocked]
 - Code Audit: [completed / skipped only for non-file-changing analysis / blocked]
 - Plan: [completed / skipped / blocked]
 - SPEC.md: [created / updated / reused / blocked]
@@ -479,6 +523,10 @@ When complete, return:
 - overwriting a non-reused `SPEC.md` without archiving it to `.taste/specs/`
 - planning from memory alone without a research brief
 - skipping MiniMax MCP research when current external facts matter and the tool is available
+- treating deep research as a one-shot search batch instead of a collaborative research plan plus iterative search -> read -> refine loop
+- omitting a source ledger when external facts materially affect the plan
+- citing only supporting sources while ignoring conflicting evidence
+- moving to code audit or planning while core research unknowns still require follow-up research
 - running redundant search tracks just to hit the ceiling
 - delegating without owned files, dependencies, or a stop condition
 - broad `Glob("*")` exploration before the first research wave

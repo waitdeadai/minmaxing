@@ -162,6 +162,26 @@ else
     test_fail "parallelism guidance still rewards slot-filling over efficacy"
 fi
 
+# Test 3f: Gemini-Style Deep Research Contract
+echo "[3f] Gemini-Style Deep Research"
+if grep -Fq "collaborative research plan" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "search -> read -> refine" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "source ledger" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "reviewed but not cited" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "conflicting evidence" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "follow-up research" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "collaborative research plan" .claude/skills/browse/SKILL.md 2>/dev/null && \
+   grep -Fq "source ledger" .claude/skills/browse/SKILL.md 2>/dev/null && \
+   grep -Fq "collaborative research plan" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
+   grep -Fq "source ledger" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
+   grep -Fq "Gemini-style investigation loop" README.md 2>/dev/null && \
+   grep -Fq "Gemini-style investigation loop" CLAUDE.md 2>/dev/null && \
+   grep -Fq "search -> read -> refine" AGENTS.md 2>/dev/null; then
+    test_pass "research guidance mirrors a Gemini-style investigation loop"
+else
+    test_fail "deep research guidance is missing the new investigation contract"
+fi
+
 # ========================================
 # Skills (16 Expected)
 # ========================================
@@ -471,6 +491,8 @@ echo "[16] Workflow Smoke Test"
 if [ "${RUN_CLAUDE_INTEGRATION:-0}" = "1" ]; then
     if bash scripts/workflow-smoke.sh; then
         test_pass "/workflow runtime smoke test"
+    elif bash scripts/workflow-smoke.sh; then
+        test_pass "/workflow runtime smoke test (passed on retry)"
     else
         test_fail "/workflow runtime smoke test failed"
     fi

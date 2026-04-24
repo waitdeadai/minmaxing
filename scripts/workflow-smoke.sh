@@ -82,7 +82,7 @@ PY
     if echo "$OUTPUT" | grep -Eqi "Research[^[:cntrl:]]*completed with MiniMax MCP"; then
         echo "$OUTPUT" | grep -Eqi "MiniMax MCP Searches[^[:cntrl:]]*[1-9][0-9]*"
     else
-        echo "$OUTPUT" | grep -Eqi "Research[^[:cntrl:]]*(local-only brief|no external research needed|trivial task)"
+        echo "$OUTPUT" | grep -Eqi "Research[^[:cntrl:]]*(local-only brief|local-only justified|no external research needed|no external facts needed|trivial task)"
         echo "$OUTPUT" | grep -Eqi "MiniMax MCP Searches[^[:cntrl:]]*0"
     fi
     echo "$OUTPUT" | grep -Eqi "Code Audit[^[:cntrl:]]*completed"
@@ -109,6 +109,11 @@ PY
             exit 1
         }
     ' "$ARTIFACT"
+    grep -Eqi "Investigation Mode|Research Mode" "$ARTIFACT"
+    grep -Eqi "Research Tracks Used" "$ARTIFACT"
+    if ! grep -Eqi "0 ?/ ?0|local-only|no external search needed|no external facts needed" "$ARTIFACT"; then
+        grep -Eqi "source ledger" "$ARTIFACT"
+    fi
 )
 
 echo "[workflow-smoke] PASS"

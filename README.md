@@ -160,7 +160,7 @@ With SPEC-first:
 | SPEC-first: write spec before code | Vague prompts, rebuild loops |
 | Efficacy-first parallelism: use the right number of agents for the task | Sequential one-at-a-time |
 | Separate verifier agent | Same AI checks its own work |
-| Research-first: `/workflow` fans out MiniMax MCP-backed searches across the distinct tracks that materially affect the plan | AI hallucinates best practices |
+| Research-first: `/workflow` drafts a plan, runs a Gemini-style `search -> read -> refine` investigation loop, and keeps an inspectable source ledger before planning or edits | AI hallucinates best practices |
 
 **Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. In a fresh repo, define them with `/tastebootstrap` before anything is built.
 
@@ -206,7 +206,7 @@ Not the same AI that wrote the code. A different agent checks output against you
 ### Research-First
 AI training data is stale. Every external claim gets verified with live web search.
 
-`/workflow` now treats a research brief as mandatory for all tasks, with the MiniMax MCP as the preferred source whenever current external facts matter. It uses up to `MAX_PARALLEL_AGENTS` parallel search tracks, but only when the added tracks are distinct and plan-changing. For a purely local task, it can justify a local-only research brief instead of doing pointless external calls.
+`/workflow` now treats a research brief as mandatory for all tasks, with the MiniMax MCP as the preferred source whenever current external facts matter. But the brief is not just a search tally. The workflow now mirrors the strongest public Gemini Deep Research behaviors: draft a collaborative research plan, run an iterative search -> read -> refine loop, keep a source ledger, challenge conflicting evidence, and do targeted follow-up research before freezing the plan. It still uses up to `MAX_PARALLEL_AGENTS` tracks, but only when the added tracks are distinct and plan-changing. For a purely local task, it can justify a local-only research brief instead of doing pointless external calls.
 
 ### Permission Mode
 - **bypassPermissions** (shared-project default by design): Zero safety checks for trusted personal setups
@@ -246,7 +246,7 @@ LLMs forget because live conversation context is lossy. minmaxing now keeps a co
 Claude Code hooks refresh it after each turn, snapshot it before `/compact` or auto-compact, record the compact summary, and rehydrate it on startup, resume, and post-compact. Durable lessons still go to SQLite memory; `CURRENT.md` is only for the active task: files in play, current phase, latest `SPEC.md`, workflow artifact, verification status, and next steps.
 
 ### Central Orchestrator
-`/workflow` owns the full lifecycle inline: taste gate, deep research, code audit, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` and archived specs under `.taste/specs/` so the research/audit/plan/spec trail is inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
+`/workflow` owns the full lifecycle inline: taste gate, deep research, code audit, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` and archived specs under `.taste/specs/` so the research plan, loop log, source ledger, audit, plan, and spec trail stay inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
 
 ---
 
@@ -263,7 +263,7 @@ Think of minmaxing as an operating system:
 ├─────────────────────────────────────────────────────┤
 │  PHASE 0: TASTE CHECK [GATE]  ← taste.md + vision │
 │  PHASE 1: ROUTE                                     │
-│  PHASE 2: DEEP RESEARCH (MiniMax MCP × MAX AGENTS) │
+│  PHASE 2: DEEP RESEARCH (plan -> search -> read -> refine) │
 │  PHASE 3: CODE AUDIT                               │
 │  PHASE 4: PLAN                                     │
 │  PHASE 5: SPEC.md                                  │
@@ -286,6 +286,8 @@ Think of minmaxing as an operating system:
 **Skills are system calls.** Each skill does one thing well. They are still useful directly, but `/workflow` is responsible for finishing the main end-to-end path itself.
 
 **/workflow is the shell.** It orchestrates everything. Routes tasks to the right phase, performs live research, audits the repo, synthesizes the plan, writes `SPEC.md`, executes the work, verifies output, and gates progression.
+
+Inside Phase 2, `/workflow` now follows a Gemini-style investigation loop instead of a generic search fan-out: it drafts a collaborative research plan, launches only the discovery tracks that matter, reads and refines in loops, records a source ledger including reviewed but not cited sources, pressure-tests conflicting evidence, and runs follow-up research before locking the plan.
 
 ### The 4 Execution Paths
 
@@ -447,7 +449,7 @@ Now you can use any workflow pattern:
 | `/overnight` | 8hr session with 30-min checkpoints |
 | `/council` | Multi-perspective analysis |
 | `/codesearch` | Search code by pattern |
-| `/browse` | Web research with citations |
+| `/browse` | Web research with citations, source ledgers, and iterative follow-up |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
 **Parallelism:** All skills that support parallelism treat `MAX_PARALLEL_AGENTS` as a ceiling, not a target. `/align` remains single-threaded by design because taste alignment is sequential judgment.

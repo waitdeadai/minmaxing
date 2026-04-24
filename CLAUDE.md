@@ -11,7 +11,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 ## Core Workflow
 
 1. **SPEC-First**: File-changing tasks get a concrete `SPEC.md` before edits
-2. **Research-First**: `/workflow` must do live MiniMax MCP-backed research before planning or edits, using as many distinct tracks as materially help
+2. **Research-First**: `/workflow` must do live MiniMax MCP-backed research before planning or edits, using as many distinct tracks as materially help and behaving like a Gemini-style investigation loop: collaborative research plan -> search -> read -> refine, with source ledger, contradiction handling, and follow-up passes
 3. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
 4. **Plan Before Spec**: `/workflow` synthesizes research + audit into a concrete plan before edits
 5. **Supervisor Pattern**: AI supervises workers, not the other way around
@@ -22,7 +22,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 
 **When you say "plan this" or "build this":**
 1. In a fresh repo, run `/tastebootstrap` once to define the kernel
-2. `/workflow` researches with an efficacy-first agent budget
+2. `/workflow` researches with an efficacy-first agent budget and a Gemini-style investigation loop
 3. `/workflow` audits the current codebase and writes the plan
 4. `/workflow` creates `SPEC.md`, executes, verifies, and only then closes out
 
@@ -45,7 +45,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 | /investigate | Debug with 3-fix limit |
 | /sprint | Manual parallel execution with ownership discipline |
 | /council | Multi-perspective synthesis |
-| /browse | Web research with citations |
+| /browse | Web research with citations, source ledgers, and iterative follow-up |
 | /codesearch | Search code by pattern |
 | /overnight | 8hr session with 30-min checkpoints |
 

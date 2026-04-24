@@ -1,55 +1,43 @@
-# SPEC: Active SPEC Archive Lifecycle
+# SPEC: Gemini-Style Deep Research Workflow
 
 ## Problem Statement
-
-`SPEC.md` is the active workflow contract, but each new task can overwrite the previous contract and erase useful history. The harness should preserve completed or superseded specs with descriptive archive names while keeping `SPEC.md` as the current source of truth.
+minmaxing already promises research-first work, but its current contract still treats deep research mostly as a parallel search wave. The repo should mirror the strongest public behaviors of Gemini Deep Research by enforcing a plan-first, iterative, source-conscious investigation workflow before planning or editing.
 
 ## Codebase Anchors
-
-- `.claude/skills/workflow/SKILL.md` owns the end-to-end research -> audit -> plan -> spec -> execute -> verify flow.
-- `.claude/skills/autoplan/SKILL.md` can create specs directly without executing implementation.
-- `.claude/rules/spec.rules.md` and `.claude/rules/context.rules.md` define SPEC-first and context-reset behavior.
-- `scripts/test-harness.sh` is the fast local contract suite.
-- `.taste/` is already ignored and is the right home for generated workflow history.
+- `.claude/skills/workflow/SKILL.md` is the primary end-to-end workflow contract.
+- `.claude/skills/browse/SKILL.md` defines direct research behavior and should match the workflow contract.
+- `.claude/skills/autoplan/SKILL.md` must synthesize specs from the same investigation model.
+- `README.md`, `CLAUDE.md`, and `AGENTS.md` are the repo's public/operator-facing promise surfaces.
+- `scripts/test-harness.sh` and `scripts/workflow-smoke.sh` are the regression gates for contract drift.
 
 ## Success Criteria
-
-- [ ] Existing `SPEC.md` can be archived before a new spec replaces it.
-- [ ] Verified closeout can archive the final active spec with a descriptive task/outcome filename.
-- [ ] Archiving is deduplicated by content hash to avoid repeated copies of the same spec.
-- [ ] `/workflow` and `/autoplan` instructions tell agents when to archive versus reuse.
-- [ ] README documents active specs versus archived specs.
-- [ ] Test coverage verifies archive creation, metadata, filename shape, and dedupe.
+- [ ] `workflow` requires a research plan, iterative search/read/refine loops, a source ledger, contradiction handling, and follow-up research before planning or edits when external facts matter.
+- [ ] `browse` and `autoplan` reuse the same Gemini-inspired investigation contract instead of generic parallel-search language.
+- [ ] Repo docs describe the upgraded research behavior clearly and consistently.
+- [ ] Harness checks cover the new research contract markers so future drift is caught.
 
 ## Scope
-
 ### In Scope
-- Add a local `scripts/spec-archive.sh` helper.
-- Add `.taste/specs/` to setup-created local directories.
-- Update workflow, autoplan, spec, context, and README guidance.
-- Extend test harness coverage.
+- Updating research-facing skill instructions.
+- Updating repo instructions and public docs to match the new investigation contract.
+- Extending harness and smoke checks to validate the new contract.
 
 ### Out of Scope
-- Changing `/verify` to consume archived specs by default.
-- Tracking archived specs in git.
-- Moving `SPEC.md` out of the project root.
+- Integrating the actual Gemini API or cloning Gemini-specific UI features.
+- Forcing literal streaming/thinking UIs inside Claude Code.
+- Adding new runtime services, databases, or network dependencies.
 
 ## Implementation Plan
-
-1. Add `scripts/spec-archive.sh` with `prepare`, `archive`, `closeout`, and `status` commands.
-2. Update `/workflow` Phase 5 to archive non-reused active specs before replacement and Phase 8 to archive verified closeouts.
-3. Update `/autoplan` and spec/context rules with the same active-versus-archive policy.
-4. Update README and setup directory initialization.
-5. Add a test-harness block that creates temporary specs and verifies archive behavior.
+1. Patch `workflow` to add investigation modes, research planning, iterative loops, source ledgers, contradiction handling, and follow-up passes.
+2. Patch `browse` and `autoplan` so standalone research/planning behavior matches the upgraded workflow contract.
+3. Update `AGENTS.md`, `CLAUDE.md`, and `README.md` to describe the new deep research model consistently.
+4. Extend `scripts/test-harness.sh` and `scripts/workflow-smoke.sh` to verify the new research contract.
 
 ## Verification
-
-- Archive helper behavior -> temp-dir test in `scripts/test-harness.sh`.
-- Script syntax -> `bash -n scripts/spec-archive.sh`.
+- Skill/docs alignment -> targeted `rg` / manual inspection of updated files.
 - Harness contract -> `bash scripts/test-harness.sh`.
-- Smoke contract remains compatible -> `bash scripts/workflow-smoke.sh`.
+- Script syntax -> `bash -n scripts/test-harness.sh` and `bash -n scripts/workflow-smoke.sh`.
 
 ## Rollback Plan
-
-- Revert the commit that adds `scripts/spec-archive.sh` and documentation updates.
-- Existing `.taste/specs/` files are generated local history and can be deleted without affecting active workflow execution.
+- Revert the commit that updates the research workflow contract, docs, and harness checks.
+- Restore the previous active `SPEC.md` from `.taste/specs/` if needed.
