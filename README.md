@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 20 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 19 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -278,8 +278,8 @@ Think of minmaxing as an operating system:
 ├─────────────────────────────────────────────────────┤
 │  /autoplan /sprint /verify /ship /investigate     │
 │  /audit /council /qa /review /deepresearch        │
-│  /webresearch /browse /introspect /instrospect    │
-│  /codesearch /overnight /align                    │
+│  /webresearch /browse /introspect /codesearch     │
+│  /overnight /align                                │
 │              (System Calls)                          │
 └─────────────────────────────────────────────────────┘
 ```
@@ -292,7 +292,7 @@ Think of minmaxing as an operating system:
 
 Inside Phase 2, `/workflow` now follows the repo’s effectiveness-first `deepresearch` protocol instead of a generic search fan-out: it drafts a collaborative research plan, launches only the discovery tracks that matter, reads and refines in loops, records a source ledger including reviewed but not cited sources, pressure-tests conflicting evidence, and runs follow-up research before locking the plan.
 
-Before confidence is allowed, `/workflow` runs the repo’s hard-gate `/introspect` protocol. It names likely mistakes, checks assumptions, looks for counterexamples, compares implementation against `SPEC.md`, identifies missing verification, downgrades confidence when evidence is weak, and blocks closeout or push when unresolved findings remain. `/instrospect` is kept as a compatibility alias.
+Before confidence is allowed, `/workflow` runs the repo’s hard-gate `/introspect` protocol. It names likely mistakes, checks assumptions, looks for counterexamples, compares implementation against `SPEC.md`, identifies missing verification, downgrades confidence when evidence is weak, and blocks closeout or push when unresolved findings remain.
 
 ### The 4 Execution Paths
 
@@ -436,7 +436,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 20 Skills
+## The 19 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -457,7 +457,6 @@ Now you can use any workflow pattern:
 | `/webresearch` | Current web/docs/API verification using the same effectiveness-first method |
 | `/browse` | Backward-compatible alias to `/webresearch` or `/deepresearch` |
 | `/introspect` | Hard-gate self-audit for likely mistakes, assumptions, missing verification, and confidence downgrades |
-| `/instrospect` | Compatibility alias to `/introspect` |
 | `/codesearch` | Search code by pattern |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
@@ -611,7 +610,7 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 20 skills (system calls)
+│   ├── skills/                 # 19 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap
 │   │   ├── align/              # Taste gate
@@ -628,7 +627,6 @@ minmaxing/
 │   │   ├── webresearch/        # Focused current web research
 │   │   ├── browse/             # Backward-compatible research alias
 │   │   ├── introspect/         # Hard-gate self-audit
-│   │   ├── instrospect/        # Compatibility alias to introspect
 │   │   ├── codesearch/         # Code search
 │   │   ├── memory/             # 5-tier memory skill
 │   │   └── overnight/          # 8hr session with checkpoints

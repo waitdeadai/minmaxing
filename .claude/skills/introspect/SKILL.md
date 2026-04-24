@@ -6,7 +6,9 @@ Hard-gate self-audit mode. Use this when the model must actively find its own li
 
 **Use when:** The user asks for introspection, self-audit, "find your mistakes", "challenge your plan", or when the workflow reaches a required introspection trigger.
 
-**Alias:** `/instrospect` routes here for compatibility with the requested spelling.
+**Canonical command:** `/introspect` is the only public slash command for this mode.
+
+If a user writes "instrospect" in plain language, treat it as a typo for introspection and use `/introspect`. Do not advertise or create a second slash-command surface for the typo.
 
 ---
 
@@ -119,3 +121,4 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
 - treating `/review` as a substitute for self-audit
 - ignoring failed tests and trying the same fix again
 - pushing or closing out with unresolved introspection blockers
+- publishing typo aliases as if they were separate commands

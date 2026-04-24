@@ -50,7 +50,6 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 | /webresearch | Current web/docs/API verification using the same effectiveness-first method |
 | /browse | Backward-compatible alias to `/webresearch` or `/deepresearch` |
 | /introspect | Hard-gate self-audit for likely mistakes, assumptions, missing verification, and confidence downgrades |
-| /instrospect | Compatibility alias to `/introspect` |
 | /codesearch | Search code by pattern |
 | /overnight | 8hr session with 30-min checkpoints |
 

@@ -195,8 +195,8 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "manual" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "Blocker Decision" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "downgrade confidence" .claude/skills/introspect/SKILL.md 2>/dev/null && \
-   grep -Fq "Compatibility alias" .claude/skills/instrospect/SKILL.md 2>/dev/null && \
-   grep -Fq "Always route" .claude/skills/instrospect/SKILL.md 2>/dev/null && \
+   grep -Fq "only public slash command" .claude/skills/introspect/SKILL.md 2>/dev/null && \
+   grep -Fq "instrospect" AGENTS.md 2>/dev/null && \
    grep -Fq "## Introspection" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "after-test-failure" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "pre-push" .claude/skills/workflow/SKILL.md 2>/dev/null && \
@@ -205,35 +205,37 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "/instrospect" README.md 2>/dev/null && \
-   grep -Fq "20 skills" README.md 2>/dev/null && \
+   grep -Fq "19 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
-   grep -Fq "hard gate" AGENTS.md 2>/dev/null; then
+   grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
+   [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
+   ! grep -Fq "/instrospect" README.md 2>/dev/null && \
+   ! grep -Fq "/instrospect" CLAUDE.md 2>/dev/null; then
     test_pass "introspection is a hard gate across workflow, skills, docs, and instructions"
 else
     test_fail "introspection hard-gate contract is incomplete"
 fi
 
 # ========================================
-# Skills (20 Expected)
+# Skills (19 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 20 Expected]"
+echo "[Skills - 19 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 20 ]; then
+if [ "$SKILL_COUNT" -ge 19 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 20+ skills, found $SKILL_COUNT"
+    test_fail "Expected 19+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow align audit autoplan deepresearch webresearch introspect instrospect verify review qa ship investigate; do
+for skill in tastebootstrap workflow align audit autoplan deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then

@@ -516,7 +516,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/instrospect`, `/sprint`, `/verify`, `/audit`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/sprint`, `/verify`, `/audit`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers
