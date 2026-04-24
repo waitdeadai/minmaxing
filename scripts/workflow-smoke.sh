@@ -59,7 +59,7 @@ EOF
 
     OUTPUT="$(
         MAX_PARALLEL_AGENTS=10 claude -p --settings "$SETTINGS_PATH" \
-        "/workflow This is a harness contract smoke test. Even though the implementation is tiny, treat it as full file-changing work and follow the full research -> code audit -> plan -> SPEC.md -> execute -> verify flow. Create note.txt containing ok. Keep everything local and do not push or deploy anything external."
+        "/workflow This is a harness contract smoke test. Even though the implementation is tiny, treat it as full file-changing work and follow the full research -> code audit -> plan -> SPEC.md -> execute -> verify flow. SPEC.md must exist on disk before editing note.txt. Create note.txt containing ok. Keep everything local and do not push or deploy anything external."
     )"
 
     echo "$OUTPUT"
@@ -87,6 +87,7 @@ PY
     fi
     echo "$OUTPUT" | grep -Eqi "Code Audit[^[:cntrl:]]*completed"
     echo "$OUTPUT" | grep -Eqi "Plan[^[:cntrl:]]*completed"
+    echo "$OUTPUT" | grep -Eqi "SPEC\\.md[^[:cntrl:]]*(created|updated|reused)"
     echo "$OUTPUT" | grep -Eqi "Workflow Artifact[^[:cntrl:]]*\\.taste/workflow-runs/"
     test -f "$TMPDIR/SPEC.md"
     test -f "$TMPDIR/note.txt"

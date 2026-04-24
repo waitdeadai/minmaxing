@@ -193,6 +193,8 @@ The important part is not hitting the ceiling. The important part is using the s
 ### SPEC-First
 File-changing tasks start with research, code audit, and a concrete plan. `SPEC.md` is the formal contract that comes out of that work, and AI implements to spec.
 
+Even tiny local file-changing tasks should still produce a small `SPEC.md` when you invoke the full `/workflow` contract.
+
 ### Separate Verifier
 Not the same AI that wrote the code. A different agent checks output against your spec.
 

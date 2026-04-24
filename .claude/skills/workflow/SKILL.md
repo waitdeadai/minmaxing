@@ -434,7 +434,7 @@ When complete, return:
 - MiniMax MCP Searches: [count]
 - Code Audit: [completed / skipped only for non-file-changing analysis / blocked]
 - Plan: [completed / skipped / blocked]
-- SPEC.md: [created, updated, reused, or not needed]
+- SPEC.md: [created / updated / reused / blocked]
 - Implementation: [done / not needed]
 - Verification: ACCEPT / REJECT / BLOCKED
 - Remote Actions: none / committed / pushed / deployed
@@ -453,6 +453,7 @@ When complete, return:
 - broad `Glob("*")` exploration before the first research wave
 - skipping a code audit before planning for file-changing work
 - creating `SPEC.md` before the plan exists
+- claiming `SPEC.md` was not needed for file-changing work
 - claiming `SPEC.md` was created when the only copy lives inside `WORKFLOW_ARTIFACT`
 - editing code before the research brief exists
 - telling the user to manually invoke the next phase

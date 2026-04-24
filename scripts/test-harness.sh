@@ -153,6 +153,7 @@ if [ "$PARALLEL_OK" = true ] && \
    grep -Fq "not automatically a 10-agent sprint" .claude/skills/sprint/SKILL.md 2>/dev/null && \
    grep -Fq "Effective Agent Budget" obsidian/Memory/Patterns/parallel-workers.md 2>/dev/null && \
    grep -Fq "effective subagent budget" AGENTS.md 2>/dev/null && \
+   ! grep -Fq "SPEC.md: [created, updated, reused, or not needed]" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    ! grep -Fq "always use the full agent pool" .claude/skills/sprint/SKILL.md 2>/dev/null && \
    ! grep -Fq "6-8 parallel tasks per phase" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    ! grep -Fq "10-agent parallelism for max throughput" .claude/skills/align/SKILL.md 2>/dev/null; then
