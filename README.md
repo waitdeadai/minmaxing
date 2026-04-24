@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 16 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 18 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -160,7 +160,7 @@ With SPEC-first:
 | SPEC-first: write spec before code | Vague prompts, rebuild loops |
 | Efficacy-first parallelism: use the right number of agents for the task | Sequential one-at-a-time |
 | Separate verifier agent | Same AI checks its own work |
-| Research-first: `/workflow` drafts a plan, runs a Gemini-style `search -> read -> refine` investigation loop, and keeps an inspectable source ledger before planning or edits | AI hallucinates best practices |
+| Research-first: `/workflow` drafts a plan, runs the repo’s effectiveness-first `deepresearch` `search -> read -> refine` investigation loop, and keeps an inspectable source ledger before planning or edits | AI hallucinates best practices |
 
 **Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. In a fresh repo, define them with `/tastebootstrap` before anything is built.
 
@@ -206,7 +206,7 @@ Not the same AI that wrote the code. A different agent checks output against you
 ### Research-First
 AI training data is stale. Every external claim gets verified with live web search.
 
-`/workflow` now treats a research brief as mandatory for all tasks, with the MiniMax MCP as the preferred source whenever current external facts matter. But the brief is not just a search tally. The workflow now mirrors the strongest public Gemini Deep Research behaviors: draft a collaborative research plan, run an iterative search -> read -> refine loop, keep a source ledger, challenge conflicting evidence, and do targeted follow-up research before freezing the plan. It still uses up to `MAX_PARALLEL_AGENTS` tracks, but only when the added tracks are distinct and plan-changing. For a purely local task, it can justify a local-only research brief instead of doing pointless external calls.
+`/workflow` now treats a research brief as mandatory for all tasks, with the MiniMax MCP as the preferred source whenever current external facts matter. But the brief is not just a search tally. The workflow now uses the repo’s effectiveness-first `deepresearch` protocol: draft a collaborative research plan, run an iterative search -> read -> refine loop, keep a source ledger, challenge conflicting evidence, and do targeted follow-up research before freezing the plan. It still uses up to `MAX_PARALLEL_AGENTS` tracks, but only when the added tracks are distinct and plan-changing. For a purely local task, it can justify a local-only research brief instead of doing pointless external calls.
 
 ### Permission Mode
 - **bypassPermissions** (shared-project default by design): Zero safety checks for trusted personal setups
@@ -275,8 +275,8 @@ Think of minmaxing as an operating system:
 │                  (Kernel / OS)                     │
 ├─────────────────────────────────────────────────────┤
 │  /autoplan /sprint /verify /ship /investigate     │
-│  /audit   /council /qa   /review  /browse         │
-│  /codesearch /overnight /align                       │
+│  /audit /council /qa /review /deepresearch        │
+│  /webresearch /browse /codesearch /overnight /align │
 │              (System Calls)                          │
 └─────────────────────────────────────────────────────┘
 ```
@@ -287,7 +287,7 @@ Think of minmaxing as an operating system:
 
 **/workflow is the shell.** It orchestrates everything. Routes tasks to the right phase, performs live research, audits the repo, synthesizes the plan, writes `SPEC.md`, executes the work, verifies output, and gates progression.
 
-Inside Phase 2, `/workflow` now follows a Gemini-style investigation loop instead of a generic search fan-out: it drafts a collaborative research plan, launches only the discovery tracks that matter, reads and refines in loops, records a source ledger including reviewed but not cited sources, pressure-tests conflicting evidence, and runs follow-up research before locking the plan.
+Inside Phase 2, `/workflow` now follows the repo’s effectiveness-first `deepresearch` protocol instead of a generic search fan-out: it drafts a collaborative research plan, launches only the discovery tracks that matter, reads and refines in loops, records a source ledger including reviewed but not cited sources, pressure-tests conflicting evidence, and runs follow-up research before locking the plan.
 
 ### The 4 Execution Paths
 
@@ -431,7 +431,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 16 Skills
+## The 18 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -448,8 +448,10 @@ Now you can use any workflow pattern:
 | `/investigate` | Debug with 3-fix limit |
 | `/overnight` | 8hr session with 30-min checkpoints |
 | `/council` | Multi-perspective analysis |
+| `/deepresearch` | Deep multi-pass investigation with source ledgers and follow-up loops |
+| `/webresearch` | Current web/docs/API verification using the same effectiveness-first method |
+| `/browse` | Backward-compatible alias to `/webresearch` or `/deepresearch` |
 | `/codesearch` | Search code by pattern |
-| `/browse` | Web research with citations, source ledgers, and iterative follow-up |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
 **Parallelism:** All skills that support parallelism treat `MAX_PARALLEL_AGENTS` as a ceiling, not a target. `/align` remains single-threaded by design because taste alignment is sequential judgment.
@@ -464,7 +466,7 @@ claude
 /workflow "build a REST API for users"
 ```
 
-`/workflow` now owns the whole lifecycle inline: taste check → MiniMax research → code audit → plan → `SPEC.md` → implementation → verification → closeout.
+`/workflow` now owns the whole lifecycle inline: taste check → `deepresearch` / `webresearch` → code audit → plan → `SPEC.md` → implementation → verification → closeout.
 
 **Direct skill invocation (advanced):**
 ```bash
@@ -602,23 +604,25 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 16 skills (system calls)
+│   ├── skills/                 # 18 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap
 │   │   ├── align/              # Taste gate
 │   │   ├── audit/              # Deep codebase analysis
-│   │   ├── autoplan/            # SPEC.md generator
-│   │   ├── sprint/              # Ownership-safe parallel executor
-│   │   ├── verify/              # SPEC compliance checker
-│   │   ├── ship/                # Pre-ship checklist
-│   │   ├── investigate/         # Root-cause debugging
-│   │   ├── council/             # Multi-perspective synthesis
-│   │   ├── qa/                  # E2E testing
-│   │   ├── review/              # AI review + human sign-off
-│   │   ├── codesearch/          # Code search
-│   │   ├── browse/              # Web research
-│   │   ├── overnight/           # 8hr session with checkpoints
-│   │   └── loop/                # Cron-style recurring tasks
+│   │   ├── autoplan/           # SPEC.md generator
+│   │   ├── sprint/             # Ownership-safe parallel executor
+│   │   ├── verify/             # SPEC compliance checker
+│   │   ├── ship/               # Pre-ship checklist
+│   │   ├── investigate/        # Root-cause debugging
+│   │   ├── council/            # Multi-perspective synthesis
+│   │   ├── qa/                 # E2E testing
+│   │   ├── review/             # AI review + human sign-off
+│   │   ├── deepresearch/        # Canonical deep investigation
+│   │   ├── webresearch/        # Focused current web research
+│   │   ├── browse/             # Backward-compatible research alias
+│   │   ├── codesearch/         # Code search
+│   │   ├── memory/             # 5-tier memory skill
+│   │   └── overnight/          # 8hr session with checkpoints
 │   └── rules/                  # Modular rules (spec, pev, quality, etc.)
 ├── scripts/
 │   ├── memory.sh               # 5-tier memory CLI

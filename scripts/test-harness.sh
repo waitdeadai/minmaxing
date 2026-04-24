@@ -149,7 +149,7 @@ EOF
 if [ "$PARALLEL_OK" = true ] && \
    grep -Fq "ceiling, not a quota" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "Do not split work just to fill slots." .claude/skills/sprint/SKILL.md 2>/dev/null && \
-   grep -Fq "distinct tracks" .claude/skills/browse/SKILL.md 2>/dev/null && \
+   grep -Fq "distinct branches" .claude/skills/deepresearch/SKILL.md 2>/dev/null && \
    grep -Fq "not automatically a 10-agent sprint" .claude/skills/sprint/SKILL.md 2>/dev/null && \
    grep -Fq "Effective Agent Budget" obsidian/Memory/Patterns/parallel-workers.md 2>/dev/null && \
    grep -Fq "effective subagent budget" AGENTS.md 2>/dev/null && \
@@ -162,46 +162,50 @@ else
     test_fail "parallelism guidance still rewards slot-filling over efficacy"
 fi
 
-# Test 3f: Gemini-Style Deep Research Contract
-echo "[3f] Gemini-Style Deep Research"
+# Test 3f: Effectiveness-First DeepResearch Contract
+echo "[3f] Effectiveness-First DeepResearch"
 if grep -Fq "collaborative research plan" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "search -> read -> refine" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "source ledger" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "reviewed but not cited" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "conflicting evidence" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "follow-up research" .claude/skills/workflow/SKILL.md 2>/dev/null && \
-   grep -Fq "collaborative research plan" .claude/skills/browse/SKILL.md 2>/dev/null && \
-   grep -Fq "source ledger" .claude/skills/browse/SKILL.md 2>/dev/null && \
+   grep -Fq "collaborative research plan" .claude/skills/deepresearch/SKILL.md 2>/dev/null && \
+   grep -Fq "source ledger" .claude/skills/deepresearch/SKILL.md 2>/dev/null && \
+   grep -Fq "MAX_PARALLEL_AGENTS" .claude/skills/webresearch/SKILL.md 2>/dev/null && \
+   grep -Fqi "backward-compatible" .claude/skills/browse/SKILL.md 2>/dev/null && \
    grep -Fq "collaborative research plan" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq "source ledger" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
-   grep -Fq "Gemini-style investigation loop" README.md 2>/dev/null && \
-   grep -Fq "Gemini-style investigation loop" CLAUDE.md 2>/dev/null && \
+   grep -Fq 'effectiveness-first `deepresearch` protocol' README.md 2>/dev/null && \
+   grep -Fq 'effectiveness-first `deepresearch` protocol' CLAUDE.md 2>/dev/null && \
+   grep -Fq "/deepresearch" README.md 2>/dev/null && \
+   grep -Fq "/webresearch" README.md 2>/dev/null && \
    grep -Fq "search -> read -> refine" AGENTS.md 2>/dev/null; then
-    test_pass "research guidance mirrors a Gemini-style investigation loop"
+    test_pass "research guidance mirrors the effectiveness-first deepresearch protocol"
 else
     test_fail "deep research guidance is missing the new investigation contract"
 fi
 
 # ========================================
-# Skills (16 Expected)
+# Skills (18 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 16 Expected]"
+echo "[Skills - 18 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 16 ]; then
+if [ "$SKILL_COUNT" -ge 18 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 16+ skills, found $SKILL_COUNT"
+    test_fail "Expected 18+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow align audit autoplan verify review qa ship investigate; do
+for skill in tastebootstrap workflow align audit autoplan deepresearch webresearch verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then

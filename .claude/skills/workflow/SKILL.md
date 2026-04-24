@@ -40,7 +40,7 @@ Research brief is mandatory:
 - If `mcp__MiniMax__web_search` is available in the tool list, you MUST use it before planning, explaining, auditing, or editing.
 - Use `mcp__MiniMax__web_search` as the primary external research tool when it is available.
 - Fall back to Claude Code `WebSearch` only if the MiniMax MCP is unavailable.
-- Deep research must feel closer to Gemini Deep Research than to a generic search fan-out: start with a collaborative research plan, run an iterative search -> read -> refine loop, maintain a source ledger, resolve conflicting evidence, and do follow-up research before freezing the plan.
+- Deep research must follow the repo’s effectiveness-first `deepresearch` protocol rather than a generic search fan-out: start with a collaborative research plan, run an iterative search -> read -> refine loop, maintain a source ledger, resolve conflicting evidence, and do follow-up research before freezing the plan.
 - Treat `MAX_PARALLEL_AGENTS` as a ceiling, not a quota.
 - Choose an effective research budget based on the number of distinct questions that materially affect the plan.
 - If the task is purely local and does not depend on current external facts, a concise local-only research brief is acceptable, but you must say why no external search was needed.
@@ -87,7 +87,7 @@ Choose the route from user intent:
 |--------|-------------------|
 | build, implement, create, add, refactor, optimize, migrate | run full research → audit → plan → spec → execute → verify → closeout flow |
 | fix, debug, investigate | research first, audit the relevant code path, then reproduce/fix/verify; create `SPEC.md` if files change |
-| audit, analyze, understand | inspect deeply, report findings, make fixes only if the user asked for them |
+| audit, analyze, understand, deepresearch, webresearch | inspect deeply, report findings, make fixes only if the user asked for them |
 | explain | inspect and explain directly |
 | review | review directly |
 | qa | run focused validation directly |
@@ -135,7 +135,7 @@ Every task gets a research-backed brief before planning or execution.
 
 This phase is mandatory and cannot be satisfied by local repo inspection alone when the MiniMax MCP is available.
 
-Research here should feel closer to Gemini Deep Research than to a one-shot search batch. The goal is an inspectable investigation that plans first, then iteratively searches, reads, refines, and pressure-tests until the plan is grounded enough to act.
+Research here should follow the repo’s own effectiveness-first `deepresearch` protocol, not a one-shot search batch. The goal is an inspectable investigation that plans first, then iteratively searches, reads, refines, and pressure-tests until the plan is grounded enough to act.
 
 ### Investigation Mode
 
@@ -484,7 +484,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/sprint`, `/verify`, `/audit`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/deepresearch`, `/webresearch`, `/browse`, `/sprint`, `/verify`, `/audit`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers
