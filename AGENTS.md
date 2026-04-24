@@ -6,6 +6,7 @@ This repo is optimized for Claude Code first, but it also ships project-scoped C
 
 - For planning, audits, debugging, refactors, and architecture work, start with a research brief before proposing edits.
 - When the task benefits from parallelism, explicitly choose an effective subagent budget up to the configured `max_threads`.
+- Use `.minimaxing/state/CURRENT.md` as the current-task continuity handoff after startup, resume, or compaction; reconcile it with live git status and `SPEC.md` before editing.
 - Prefer this split for deep research:
   - `repo_explorer` to map the code paths and evidence inside the repo
   - `docs_researcher` to verify APIs, versions, and current behavior with citations

@@ -251,13 +251,75 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness; do
+for script in start-session sprint overnight-loop council test-harness state; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else
         test_fail "$script.sh missing"
     fi
 done
+
+# Test 9a: Compaction-Safe Working State
+echo "[9a] Compaction-Safe Working State"
+STATE_OK=true
+for file in \
+    "scripts/state.sh" \
+    ".claude/hooks/state-sessionstart.sh" \
+    ".claude/hooks/state-precompact.sh" \
+    ".claude/hooks/state-postcompact.sh" \
+    ".claude/hooks/state-stop.sh"; do
+    if [ ! -x "$file" ]; then
+        STATE_OK=false
+    fi
+done
+
+if ! python3 -m json.tool .claude/settings.json >/dev/null 2>&1; then
+    STATE_OK=false
+fi
+
+for pattern in \
+    '"SessionStart"' \
+    '"PreCompact"' \
+    '"PostCompact"' \
+    '"Stop"' \
+    'state-sessionstart.sh' \
+    'state-precompact.sh' \
+    'state-postcompact.sh' \
+    'state-stop.sh'; do
+    if ! grep -Fq "$pattern" .claude/settings.json 2>/dev/null; then
+        STATE_OK=false
+    fi
+done
+
+TMP_STATE_DIR="$(mktemp -d)"
+if MINIMAXING_STATE_DIR="$TMP_STATE_DIR/state" CLAUDE_PROJECT_DIR="$ROOT_DIR" \
+    bash scripts/state.sh snapshot <<'EOF' >/dev/null 2>&1
+{"session_id":"state-test","hook_event_name":"Stop","last_assistant_message":"done sk-testSECRET1234567890"}
+EOF
+then
+    if [ ! -f "$TMP_STATE_DIR/state/CURRENT.md" ]; then
+        STATE_OK=false
+    fi
+    if grep -q "sk-testSECRET1234567890" "$TMP_STATE_DIR/state/CURRENT.md" 2>/dev/null; then
+        STATE_OK=false
+    fi
+    HYDRATE_OUTPUT="$(MINIMAXING_STATE_DIR="$TMP_STATE_DIR/state" CLAUDE_PROJECT_DIR="$ROOT_DIR" bash scripts/state.sh hydrate <<'EOF'
+{"hook_event_name":"SessionStart","source":"compact"}
+EOF
+)"
+    if ! printf '%s' "$HYDRATE_OUTPUT" | python3 -c 'import json,sys; data=json.load(sys.stdin); assert data["hookSpecificOutput"]["hookEventName"] == "SessionStart"; assert "additionalContext" in data["hookSpecificOutput"]' >/dev/null 2>&1; then
+        STATE_OK=false
+    fi
+else
+    STATE_OK=false
+fi
+rm -rf "$TMP_STATE_DIR"
+
+if [ "$STATE_OK" = true ]; then
+    test_pass "working state hooks create redacted state and hydrate context"
+else
+    test_fail "working state hooks or state.sh are not wired correctly"
+fi
 
 # ========================================
 # Documentation

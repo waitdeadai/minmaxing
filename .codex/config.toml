@@ -6,6 +6,9 @@ model_reasoning_effort = "xhigh"
 model_reasoning_summary = "detailed"
 model_verbosity = "high"
 
+[features]
+memories = true
+
 [agents]
 max_threads = 10
 max_depth = 1

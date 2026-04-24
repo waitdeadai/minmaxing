@@ -31,6 +31,27 @@ When context is 50+ turns long, you notice missed instructions, or discussion ha
 - Discussion has drifted from original topic
 - You need a fresh start on the same project
 
+### Compaction-Safe Working State
+
+minmaxing persists a compact working state in `.minimaxing/state/CURRENT.md`.
+This is the live task handoff that survives startup, resume, and compaction.
+
+Use it for ephemeral execution context:
+- active task and current phase
+- files in play
+- latest `SPEC.md` and workflow artifact pointers
+- last compact summary
+- verification status and next action hints
+
+Do not use working state as durable memory. Durable lessons, decisions, errors,
+and reusable patterns belong in `bash scripts/memory.sh add ...`.
+
+After compaction or resume:
+- read injected working state from the SessionStart hook
+- reconcile it with live `git status`
+- re-open `SPEC.md` and the latest `.taste/workflow-runs/*-workflow.md` when they exist
+- refresh stale assumptions before editing
+
 ## Sub-Agent Context Isolation
 
 Each parallel agent gets its own clean context:
@@ -56,6 +77,7 @@ Load context in layers, not all at once:
 ## Context Management
 
 - Read CLAUDE.md for project context
+- Use `.minimaxing/state/CURRENT.md` for current-task continuity after compaction
 - Use memory for cross-session context
 - Use web search for external context
 - Keep current task context minimal
@@ -78,6 +100,7 @@ If any checkpoint fails, stop, refresh the brief, and re-sync before continuing.
 - Ignoring context rot symptoms → BLOCK
 - Overloading context with irrelevant info → BLOCK
 - Not using SPEC.md as reset point → WARN
+- Treating `.minimaxing/state/CURRENT.md` as verified without reconciling live repo state → BLOCK
 - Sharing context between parallel agents → BLOCK
 - Passing the full parent conversation to every agent → BLOCK
 - Acting on a stale brief after dependencies changed → BLOCK

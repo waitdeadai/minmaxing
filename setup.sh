@@ -143,6 +143,55 @@ if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
       "Bash(bash *.sh)"
     ],
     "defaultMode": "bypassPermissions"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-sessionstart.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-precompact.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-postcompact.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-stop.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
   }
 }
 EOF
@@ -224,6 +273,8 @@ mkdir -p obsidian/Memory/Stories/commits
 mkdir -p obsidian/Memory/Dashboard
 mkdir -p .taste/sessions
 mkdir -p .taste/workflow-runs
+mkdir -p .minimaxing/state/events
+mkdir -p .minimaxing/state/snapshots
 echo "  [PASS] Memory directories created"
 
 # Initialize taste system (taste files are defined later via /tastebootstrap)

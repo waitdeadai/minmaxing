@@ -104,6 +104,21 @@ minmaxing maintains a 5-tier memory architecture backed by SQLite + FTS5:
 
 **Causal graph**: Tracks what caused success/failure, enabling learned patterns across sessions.
 
+## Working State (Compaction-Safe)
+
+minmaxing keeps durable memory and live working state separate.
+
+- **Durable memory**: SQLite + FTS5 stores reusable decisions, patterns, errors, and causal factors.
+- **Working state**: `.minimaxing/state/CURRENT.md` stores the current task handoff so compaction, resume, and startup do not lose the thread.
+
+Claude Code lifecycle hooks keep working state fresh by default:
+- `Stop` refreshes `CURRENT.md` after each completed turn.
+- `PreCompact` snapshots state before manual or automatic compaction.
+- `PostCompact` records Claude Code's compact summary.
+- `SessionStart` rehydrates `CURRENT.md` into context on startup, resume, and compact.
+
+Treat working state as a continuity hint, not ground truth. Before editing, reconcile it with live `git status`, `SPEC.md`, and the latest `.taste/workflow-runs/*-workflow.md` artifact.
+
 ## Quick Start
 ```bash
 ./scripts/start-session.sh

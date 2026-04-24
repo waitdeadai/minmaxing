@@ -57,17 +57,26 @@ Research brief is mandatory:
    - do not write `taste.md` or `taste.vision` from inside `/workflow`
    - resume `/workflow` only after the kernel is defined
 3. Read `taste.md` and `taste.vision`.
-4. Recall memory for the task:
+4. Rehydrate current working state if it exists:
+
+```bash
+bash scripts/state.sh status 2>/dev/null || true
+```
+
+Treat `.minimaxing/state/CURRENT.md` as a compact continuity handoff, then reconcile it with live `git status`, `SPEC.md`, and the latest workflow artifact before editing.
+
+5. Recall memory for the task:
 
 ```bash
 bash scripts/memory.sh recall "$ARGUMENTS" --depth medium 2>/dev/null || echo "Memory recall skipped"
 ```
 
-5. Summarize:
+6. Summarize:
    - relevant taste principles
+   - relevant working-state continuity and any stale assumptions to refresh
    - relevant recalled memories
    - an alignment score from 0 to 10
-6. If the task clearly conflicts with taste, pause only to get an explicit alignment decision from the user.
+7. If the task clearly conflicts with taste, pause only to get an explicit alignment decision from the user.
 
 ## Phase 1: Route
 

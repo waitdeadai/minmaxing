@@ -19,6 +19,11 @@ fi
 if [ -f "$SCRIPT_DIR/memory.sh" ]; then
     bash "$SCRIPT_DIR/memory.sh" stats 2>/dev/null | head -10
 fi
+if [ -f ".minimaxing/state/CURRENT.md" ]; then
+    echo "Working state: .minimaxing/state/CURRENT.md available for compaction-safe resume"
+else
+    echo "Working state: none yet (created automatically after the first Claude Code turn)"
+fi
 echo ""
 
 # Step 3: Version Check
