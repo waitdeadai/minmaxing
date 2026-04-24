@@ -51,6 +51,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 
 ## Rules
 - **SPEC-First**: No code without SPEC.md
+- **SPEC Archive**: `SPEC.md` is the active contract; archive completed or superseded specs to `.taste/specs/` before replacing them
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
 - **Optional Codex Plugin Support**: If `codex-plugin-cc` is installed in Claude Code, project `.codex/config.toml` gives Codex `gpt-5.4` + `xhigh` defaults with 10 subagent threads
 - **Keep**: Architecture, security, verification decisions

@@ -42,6 +42,7 @@ Ensure all quality gates pass before production deployment. This is the last lin
 
 ### Verification
 - [ ] /verify passed against SPEC.md
+- [ ] SPEC.md archived with shipped/verified outcome
 - [ ] /review approved
 - [ ] All open issues addressed
 
@@ -78,6 +79,7 @@ Ensure all quality gates pass before production deployment. This is the last lin
 # Remote actions are conditional.
 # Only fetch, commit, push, tag, or deploy when the user explicitly asked for that outcome.
 # For local-only completion, stop after verified local readiness and report that no remote action was taken.
+bash scripts/spec-archive.sh closeout "[feature/change]" "shipped: [short outcome]" 2>/dev/null || true
 ```
 
 ### Step 6: Write Workflow Completion Artifact
@@ -195,6 +197,7 @@ bash scripts/memory.sh add episodic "Shipped: [feature description] — all gate
 - **Coverage must meet threshold** → FAIL
 - **Rollback plan must exist** before push → FAIL
 - **Verification must pass** before declaring shipped → FAIL
+- **SPEC.md must be archived before replacing or shipping** → FAIL
 
 ---
 
@@ -206,6 +209,7 @@ bash scripts/memory.sh add episodic "Shipped: [feature description] — all gate
 - Missing documentation updates → BLOCK (if user-facing)
 - "Good enough to ship" → BLOCK
 - Skipping /verify before shipping → BLOCK
+- Shipping without archiving the final SPEC.md → BLOCK
 
 ---
 

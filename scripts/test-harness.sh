@@ -227,11 +227,11 @@ for rule in quality context delegation parallelism spec verify; do
 done
 
 # ========================================
-# Scripts (5 Required)
+# Scripts (6 Required)
 # ========================================
 
 echo ""
-echo "[Scripts - 5 Required]"
+echo "[Scripts - 6 Required]"
 echo ""
 
 # Test 8: Scripts Executable
@@ -251,7 +251,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else
@@ -319,6 +319,74 @@ if [ "$STATE_OK" = true ]; then
     test_pass "working state hooks create redacted state and hydrate context"
 else
     test_fail "working state hooks or state.sh are not wired correctly"
+fi
+
+# Test 9b: SPEC Archive Lifecycle
+echo "[9b] SPEC Archive Lifecycle"
+SPEC_ARCHIVE_OK=true
+TMP_SPEC_DIR="$(mktemp -d)"
+
+cat > "$TMP_SPEC_DIR/SPEC.md" <<'EOF'
+# SPEC: Archive Demo
+
+## Problem Statement
+Preserve this completed spec.
+EOF
+
+if ! CLAUDE_PROJECT_DIR="$TMP_SPEC_DIR" bash "$ROOT_DIR/scripts/spec-archive.sh" closeout "Archive Demo" "verified accept" >/dev/null 2>&1; then
+    SPEC_ARCHIVE_OK=false
+fi
+
+ARCHIVE_COUNT="$(find "$TMP_SPEC_DIR/.taste/specs" -maxdepth 1 -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')"
+ARCHIVE_FILE="$(find "$TMP_SPEC_DIR/.taste/specs" -maxdepth 1 -type f -name "*.md" 2>/dev/null | head -n 1)"
+
+if [ "$ARCHIVE_COUNT" != "1" ] || [ -z "$ARCHIVE_FILE" ]; then
+    SPEC_ARCHIVE_OK=false
+else
+    ARCHIVE_BASENAME="$(basename "$ARCHIVE_FILE")"
+    if ! printf '%s' "$ARCHIVE_BASENAME" | grep -Eq "archive-demo.*verified-accept"; then
+        SPEC_ARCHIVE_OK=false
+    fi
+    for pattern in \
+        'reason: "closeout"' \
+        'outcome: "verified accept"' \
+        'source_sha256:' \
+        '# SPEC: Archive Demo'; do
+        if ! grep -Fq "$pattern" "$ARCHIVE_FILE" 2>/dev/null; then
+            SPEC_ARCHIVE_OK=false
+        fi
+    done
+fi
+
+CLAUDE_PROJECT_DIR="$TMP_SPEC_DIR" bash "$ROOT_DIR/scripts/spec-archive.sh" closeout "Archive Demo" "verified accept" >/dev/null 2>&1 || SPEC_ARCHIVE_OK=false
+ARCHIVE_COUNT_AFTER_DEDUPE="$(find "$TMP_SPEC_DIR/.taste/specs" -maxdepth 1 -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')"
+if [ "$ARCHIVE_COUNT_AFTER_DEDUPE" != "1" ]; then
+    SPEC_ARCHIVE_OK=false
+fi
+
+cat > "$TMP_SPEC_DIR/SPEC.md" <<'EOF'
+# SPEC: Next Active Contract
+
+## Problem Statement
+This spec is about to be replaced.
+EOF
+
+CLAUDE_PROJECT_DIR="$TMP_SPEC_DIR" bash "$ROOT_DIR/scripts/spec-archive.sh" prepare "New Work" "superseded-before-new-spec" >/dev/null 2>&1 || SPEC_ARCHIVE_OK=false
+ARCHIVE_COUNT_AFTER_PREPARE="$(find "$TMP_SPEC_DIR/.taste/specs" -maxdepth 1 -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')"
+if [ "$ARCHIVE_COUNT_AFTER_PREPARE" != "2" ]; then
+    SPEC_ARCHIVE_OK=false
+fi
+
+if ! CLAUDE_PROJECT_DIR="$TMP_SPEC_DIR" bash "$ROOT_DIR/scripts/spec-archive.sh" status 2>/dev/null | grep -Fq ".taste/specs/"; then
+    SPEC_ARCHIVE_OK=false
+fi
+
+rm -rf "$TMP_SPEC_DIR"
+
+if [ "$SPEC_ARCHIVE_OK" = true ]; then
+    test_pass "SPEC.md archives are descriptive, deduplicated, and status-readable"
+else
+    test_fail "SPEC archive lifecycle is not working correctly"
 fi
 
 # ========================================

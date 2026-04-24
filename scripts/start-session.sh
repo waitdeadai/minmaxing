@@ -24,6 +24,8 @@ if [ -f ".minimaxing/state/CURRENT.md" ]; then
 else
     echo "Working state: none yet (created automatically after the first Claude Code turn)"
 fi
+SPEC_ARCHIVE_COUNT=$(find .taste/specs -maxdepth 1 -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+echo "Spec archive: ${SPEC_ARCHIVE_COUNT:-0} archived spec(s) in .taste/specs"
 echo ""
 
 # Step 3: Version Check

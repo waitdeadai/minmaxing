@@ -294,12 +294,20 @@ Do not create or update `SPEC.md` until this plan exists.
 
 For file-changing work:
 
-1. Create or update `SPEC.md` directly in this workflow after research, audit, and planning are complete.
+1. Decide whether the active `SPEC.md` is reusable for this exact task before editing it.
+   - If it matches the current task, reuse it and do not archive it yet.
+   - If it does not match and you will create or rewrite `SPEC.md`, archive the previous active spec first:
+
+```bash
+bash scripts/spec-archive.sh prepare "$ARGUMENTS" "superseded-before-new-spec" 2>/dev/null || true
+```
+
+2. Create or update `SPEC.md` directly in this workflow after research, audit, and planning are complete.
    - `SPEC.md` must be a real file in the working directory.
    - Do not satisfy this phase only inside `WORKFLOW_ARTIFACT`.
-2. Keep the spec concrete and short enough to execute now.
-3. Derive it from the approved plan rather than improvising new scope.
-4. Include:
+3. Keep the spec concrete and short enough to execute now.
+4. Derive it from the approved plan rather than improvising new scope.
+5. Include:
    - problem statement
    - repo constraints / codebase anchors
    - success criteria
@@ -344,7 +352,7 @@ For file-changing work:
 
 6. If a suitable `SPEC.md` already exists and matches the task, reuse it instead of rewriting it.
 7. For tiny local tasks, keep the spec intentionally small rather than inflating it, but do not omit `## Codebase Anchors`.
-8. Update the `## SPEC Decision` section in `WORKFLOW_ARTIFACT` with whether `SPEC.md` was created, updated, or reused, and record the file path.
+8. Update the `## SPEC Decision` section in `WORKFLOW_ARTIFACT` with whether `SPEC.md` was created, updated, or reused, record the file path, and record the archive path or "not needed because reused/new workspace".
 
 Do not stop after `SPEC.md` is written.
 
@@ -408,6 +416,12 @@ Close out based on what the user actually asked for.
 If the user did not explicitly ask to commit, push, deploy, or publish:
 - stop after verified local completion
 - keep the workflow artifact under `.taste/workflow-runs/`
+- archive the final active spec with the verified outcome:
+
+```bash
+bash scripts/spec-archive.sh closeout "$ARGUMENTS" "verified: [short outcome]" 2>/dev/null || true
+```
+
 - summarize what changed and how it was verified
 
 ### For explicit ship or push requests
@@ -417,8 +431,14 @@ Only perform remote-facing actions when the user clearly asked for them.
 If the user explicitly wants a push or ship:
 1. confirm the repo is in a sane git state
 2. commit intentionally
-3. push only if a remote exists and the request includes pushing
-4. never invent deployment steps that are not present in the repo
+3. archive the final active spec with the shipped outcome before or immediately after the commit:
+
+```bash
+bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>/dev/null || true
+```
+
+4. push only if a remote exists and the request includes pushing
+5. never invent deployment steps that are not present in the repo
 
 ## Specialist Skills
 
@@ -444,6 +464,7 @@ When complete, return:
 - Code Audit: [completed / skipped only for non-file-changing analysis / blocked]
 - Plan: [completed / skipped / blocked]
 - SPEC.md: [created / updated / reused / blocked]
+- Spec Archive: [archived / already archived / not needed / blocked]
 - Implementation: [done / not needed]
 - Verification: ACCEPT / REJECT / BLOCKED
 - Remote Actions: none / committed / pushed / deployed
@@ -455,6 +476,7 @@ When complete, return:
 ## Anti-Patterns
 
 - stopping after writing `SPEC.md`
+- overwriting a non-reused `SPEC.md` without archiving it to `.taste/specs/`
 - planning from memory alone without a research brief
 - skipping MiniMax MCP research when current external facts matter and the tool is available
 - running redundant search tracks just to hit the ceiling

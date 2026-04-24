@@ -110,6 +110,14 @@ def latest_workflow_artifact() -> str:
     return os.path.relpath(latest, ROOT)
 
 
+def latest_spec_archive() -> str:
+    paths = glob.glob(str(ROOT / ".taste" / "specs" / "*.md"))
+    if not paths:
+        return "none"
+    latest = max(paths, key=lambda p: pathlib.Path(p).stat().st_mtime)
+    return os.path.relpath(latest, ROOT)
+
+
 def path_status(path: str) -> str:
     return "present" if (ROOT / path).exists() else "missing"
 
@@ -216,6 +224,7 @@ def state_payload(input_data: dict) -> dict:
         "git_status": "clean" if not status else redact(status),
         "git_status_count": len(status.splitlines()) if status else 0,
         "spec_status": path_status("SPEC.md"),
+        "latest_spec_archive": latest_spec_archive(),
         "taste_status": f"taste.md {path_status('taste.md')}, taste.vision {path_status('taste.vision')}",
         "latest_workflow_artifact": latest_workflow_artifact(),
         "files_in_play": files,
@@ -246,6 +255,7 @@ git_status_count: {payload['git_status_count']}
 
 ## Source Of Truth
 - SPEC.md: {payload['spec_status']}
+- Latest archived spec: {payload['latest_spec_archive']}
 - Taste kernel: {payload['taste_status']}
 - Latest workflow artifact: {payload['latest_workflow_artifact']}
 - Durable memory: use `bash scripts/memory.sh recall "<task>" --depth medium`

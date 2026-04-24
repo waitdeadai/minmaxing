@@ -4,6 +4,9 @@
 
 Every meaningful task requires SPEC.md BEFORE any implementation.
 
+`SPEC.md` is the active contract. Historical contracts belong in `.taste/specs/`
+so a new task can get a fresh active spec without erasing what already shipped.
+
 **Protocol:**
 1. User describes goal (vague or specific)
 2. If vague → Invoke /align first
@@ -93,9 +96,18 @@ How to undo if this breaks production?
 - User-requested changes → update spec first
 - **SPEC.md is source of truth, not implementation**
 
+## When to Archive Spec
+
+- Before replacing a non-reused active `SPEC.md` → run `bash scripts/spec-archive.sh prepare "[task]" "superseded-before-new-spec"`
+- After verified local closeout → run `bash scripts/spec-archive.sh closeout "[task]" "verified: [short outcome]"`
+- Before or after an explicit ship commit → run `bash scripts/spec-archive.sh closeout "[task]" "shipped: [short outcome]"`
+- If `SPEC.md` already matches the current task → reuse it and do not archive until closeout
+- If the archive helper reports the same hash already exists → treat that as success, not a failure
+
 ## Anti-Patterns
 
 - Writing code before SPEC.md → BLOCK
+- Overwriting a non-reused SPEC.md without archiving it → BLOCK
 - Accepting vague criteria ("looks good") → BLOCK
 - Skipping rollback plan → BLOCK
 - Implementing without verification method → BLOCK

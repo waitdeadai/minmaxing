@@ -6,6 +6,7 @@
 
 When starting a new task or feature, SPEC.md acts as a context reset:
 - New SPEC.md = new clean context
+- Previous SPEC.md = archive to `.taste/specs/` before replacement unless it is being reused
 - Read SPEC.md from scratch for each major task
 - Don't carry stale context from previous tasks
 
@@ -50,6 +51,7 @@ After compaction or resume:
 - read injected working state from the SessionStart hook
 - reconcile it with live `git status`
 - re-open `SPEC.md` and the latest `.taste/workflow-runs/*-workflow.md` when they exist
+- check `.taste/specs/` only for historical context; the active contract remains `SPEC.md`
 - refresh stale assumptions before editing
 
 ## Sub-Agent Context Isolation
@@ -100,6 +102,7 @@ If any checkpoint fails, stop, refresh the brief, and re-sync before continuing.
 - Ignoring context rot symptoms → BLOCK
 - Overloading context with irrelevant info → BLOCK
 - Not using SPEC.md as reset point → WARN
+- Overwriting active SPEC.md without archive → BLOCK
 - Treating `.minimaxing/state/CURRENT.md` as verified without reconciling live repo state → BLOCK
 - Sharing context between parallel agents → BLOCK
 - Passing the full parent conversation to every agent → BLOCK

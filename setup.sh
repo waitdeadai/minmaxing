@@ -273,6 +273,7 @@ mkdir -p obsidian/Memory/Stories/commits
 mkdir -p obsidian/Memory/Dashboard
 mkdir -p .taste/sessions
 mkdir -p .taste/workflow-runs
+mkdir -p .taste/specs
 mkdir -p .minimaxing/state/events
 mkdir -p .minimaxing/state/snapshots
 echo "  [PASS] Memory directories created"

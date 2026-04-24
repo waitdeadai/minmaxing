@@ -75,6 +75,14 @@ The plan should state:
 
 ### Step 5: Generate SPEC.md
 
+If an active `SPEC.md` already exists and is not reusable for this exact task, archive it before replacing it:
+
+```bash
+bash scripts/spec-archive.sh prepare "[planning topic]" "superseded-by-autoplan" 2>/dev/null || true
+```
+
+If the active `SPEC.md` already matches the current task, reuse it instead of archiving or rewriting it.
+
 Write SPEC.md with these sections:
 
 ```markdown
@@ -159,6 +167,7 @@ For each task in SPEC.md:
 
 ```
 SPEC.md created: /path/to/SPEC.md
+Spec archive: [.taste/specs/... or not needed]
 
 ## Summary
 - Scope: [in/out count] components

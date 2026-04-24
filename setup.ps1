@@ -111,6 +111,10 @@ New-Item -ItemType Directory -Force -Path "obsidian\Memory\Errors" | Out-Null
 New-Item -ItemType Directory -Force -Path "obsidian\Memory\Stories" | Out-Null
 New-Item -ItemType Directory -Force -Path "obsidian\Memory\Dashboard" | Out-Null
 New-Item -ItemType Directory -Force -Path ".taste\sessions" | Out-Null
+New-Item -ItemType Directory -Force -Path ".taste\workflow-runs" | Out-Null
+New-Item -ItemType Directory -Force -Path ".taste\specs" | Out-Null
+New-Item -ItemType Directory -Force -Path ".minimaxing\state\events" | Out-Null
+New-Item -ItemType Directory -Force -Path ".minimaxing\state\snapshots" | Out-Null
 Write-Host "  [PASS] Memory directories created" -ForegroundColor Green
 
 if (Test-Path "scripts\taste.sh") {

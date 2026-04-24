@@ -195,6 +195,11 @@ File-changing tasks start with research, code audit, and a concrete plan. `SPEC.
 
 Even tiny local file-changing tasks should still produce a small `SPEC.md` when you invoke the full `/workflow` contract.
 
+### Active SPEC + Archive
+`SPEC.md` stays as the active contract in the project root so `/verify` and fresh agents always know what to read first.
+
+Before a new task replaces a non-reused active spec, minmaxing archives the previous one under `.taste/specs/` with a descriptive task/outcome filename. Verified closeout archives the final spec too, deduplicated by content hash, so repeated closeouts do not create noisy copies.
+
 ### Separate Verifier
 Not the same AI that wrote the code. A different agent checks output against your spec.
 
@@ -241,7 +246,7 @@ LLMs forget because live conversation context is lossy. minmaxing now keeps a co
 Claude Code hooks refresh it after each turn, snapshot it before `/compact` or auto-compact, record the compact summary, and rehydrate it on startup, resume, and post-compact. Durable lessons still go to SQLite memory; `CURRENT.md` is only for the active task: files in play, current phase, latest `SPEC.md`, workflow artifact, verification status, and next steps.
 
 ### Central Orchestrator
-`/workflow` owns the full lifecycle inline: taste gate, deep research, code audit, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` so the research/audit/plan trail is inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
+`/workflow` owns the full lifecycle inline: taste gate, deep research, code audit, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` and archived specs under `.taste/specs/` so the research/audit/plan/spec trail is inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
 
 ---
 
@@ -353,6 +358,7 @@ Then run:
 
 - **Workflow Artifact** — `.taste/workflow-runs/...` with research brief, code audit, plan, and verification trail
 - **SPEC.md** — exact specification created from the researched plan
+- **Spec Archive** — `.taste/specs/...` snapshots of completed or superseded specs
 - **Implementation** — parallel agents building simultaneously
 - **Verification** — separate agent adversarial-checking against spec
 - **Closeout** — local completion by default, remote push only when you explicitly ask for it
@@ -615,6 +621,7 @@ minmaxing/
 ├── scripts/
 │   ├── memory.sh               # 5-tier memory CLI
 │   ├── state.sh                # Compaction-safe working state CLI
+│   ├── spec-archive.sh          # Active SPEC.md archive helper
 │   ├── memory-auto.sh           # Session start/end hooks
 │   ├── taste.sh                 # Taste system CLI
 │   ├── start-session.sh         # Session initializer
@@ -634,6 +641,8 @@ minmaxing/
 │   └── state/                  # Generated current-task handoff, snapshots, and events
 └── .taste/
     ├── sessions/                # Episodic tier (daily JSONL)
+    ├── workflow-runs/           # Research/audit/plan/verification artifacts
+    ├── specs/                   # Archived completed or superseded specs
     └── taste.memory             # Append-only decision log
 ```
 
