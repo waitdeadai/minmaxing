@@ -1,62 +1,61 @@
-# SPEC: Governed Autonomy Messaging And Harness Truth Surfaces
+# SPEC: Digestflow External Report Intake Workflow
 
 ## Problem Statement
-minmaxing has a strong harness story, but the public messaging and a few repo surfaces still overclaim or drift from the current implementation. The project should position itself around governed Claude Code autonomy: delegate execution, keep human judgment, and require evidence before trusting the result.
+minmaxing needs a first-class `/digestflow` route for work that starts from external AI research reports, then continues through the existing governed workflow without laundering those reports into trusted truth.
 
-The harness must make that angle credible by correcting stale counts, tightening memory and verifier claims, clarifying permission posture, and updating public copy without implying magical or fully hands-off autonomy.
+The route must treat Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, and similar reports as untrusted candidate evidence. Report intake should improve the repo's own `deepresearch` phase, not replace it or recursively call `/workflow`.
 
 ## Codebase Anchors
-- `README.md` is the primary public harness contract.
-- `CLAUDE.md` and `AGENTS.md` are operator-facing harness contracts.
-- `scripts/start-session.sh` prints setup/session truth and currently has stale skill/rule counts.
-- `scripts/memory.sh` and `scripts/memory-auto.sh` define memory durability and fallback behavior.
-- `.claude/skills/workflow/SKILL.md` defines the workflow artifact and governed execution path.
-- `.claude/skills/verify/SKILL.md` defines verification behavior.
-- `.claude/settings.json` is the fast trusted-local default profile.
-- `/home/fer/Documents/minmaxing-dev-site` is the separate public site repo and must stay separate from harness internals.
+- `.claude/skills/workflow/SKILL.md` is the central inline lifecycle contract.
+- `.claude/skills/deepresearch/SKILL.md` defines the repo's source-ledger, contradiction-aware research protocol.
+- `.claude/skills/introspect/SKILL.md` defines the required self-audit hard gates.
+- `README.md`, `CLAUDE.md`, and `AGENTS.md` are public and operator-facing command contracts.
+- `scripts/start-session.sh` and `scripts/test-harness.sh` enforce the visible skill count and command inventory.
+- `scripts/workflow-smoke.sh` is the existing runtime smoke pattern for slash-command workflows.
 
 ## Success Criteria
-- [ ] `scripts/start-session.sh` reports the tested 19-skill / 6+-rule contract and lists current core skills.
-- [ ] Memory messaging is changed from absolute "remembers everything" language to durable, layered, best-effort memory with visible health status.
-- [ ] `scripts/memory.sh health` reports `healthy`, `degraded`, or `disabled` with concrete evidence about flat files and SQLite availability.
-- [ ] Verification messaging no longer claims a guaranteed separate AI unless isolated execution metadata exists; it describes an independent verification pass against `SPEC.md`.
-- [ ] `/workflow` artifact requirements include verification metadata fields that can prove executor/verifier isolation when available.
-- [ ] Permission copy frames `bypassPermissions` as a trusted-local fast profile and documents stricter team-safe options.
-- [ ] README/site copy uses the governed-autonomy angle: delegate execution, keep judgment, require evidence.
-- [ ] Public claims avoid unsupported absolutes like "every claim", "everything remembered", and "not the same AI" unless backed by machine-verifiable evidence.
-- [ ] Harness tests enforce the new truth surfaces.
+- [ ] `.claude/skills/digestflow/SKILL.md` exists and defines `/digestflow` as a report-informed sibling of `/workflow`.
+- [ ] `/digestflow` requires 1-10 report inputs and fails closed when no report is supplied.
+- [ ] Report Intake requires a report manifest, claim ledger, contradiction handling, injection quarantine, source ledger handoff, and no-persist default for report bodies.
+- [ ] External report claims are explicitly labeled `report-derived` until verified by repo inspection or live sources.
+- [ ] The normal minmaxing `deepresearch` pass remains mandatory after intake and before planning.
+- [ ] `/workflow` recognizes report intake as a sibling-route prelude without changing normal `/workflow` behavior.
+- [ ] README, CLAUDE, AGENTS, and startup output document `/digestflow` and the 20-skill contract.
+- [ ] Harness tests enforce the `/digestflow` contract and stale skill-count wording is removed.
+- [ ] A dedicated digestflow smoke script exists for optional integration verification.
 
 ## Scope
 ### In Scope
-- Update harness docs and scripts.
-- Add a memory health command.
-- Add a team-safe settings example if useful.
-- Update the separate site copy and verification tokens.
-- Run harness and site verification.
+- Add the `/digestflow` skill contract.
+- Update workflow guidance, public docs, operator instructions, startup output, and harness tests.
+- Add optional runtime smoke coverage using tiny report fixtures generated in a temporary repo.
+- Preserve the existing `/workflow` path and governed autonomy language.
 
 ### Out of Scope
-- Replacing the Claude Code runtime.
-- Building a full benchmark suite for autonomous workflow effectiveness.
-- Changing the shared `.claude/settings.json` default unless a concrete compatibility need appears.
-- Pushing changes unless requested after verification.
+- Building binary PDF/DOCX extraction.
+- Adding a persistent report database.
+- Changing Claude Code runtime behavior or MiniMax MCP configuration.
+- Pushing changes unless explicitly requested.
 
 ## Implementation Plan
-1. Update `scripts/start-session.sh` to report 19 skills, 6+ rules, memory health, and current skill list.
-2. Add `memory health` to `scripts/memory.sh` and wire it into `start-session.sh`.
-3. Add a `.claude/settings.team-safe.example.json` profile for stricter team usage.
-4. Tighten `/verify` and `/workflow` language around independent verification and metadata.
-5. Update README/CLAUDE/AGENTS copy around governed autonomy, memory, permissions, and evidence.
-6. Update the separate site home/workflow/community copy and `llms` briefs with the new angle.
-7. Extend tests to catch stale counts, memory health, team-safe profile, and overclaim drift.
+1. Add `.claude/skills/digestflow/SKILL.md` with the report intake, evidence-state, privacy, and full-workflow handoff contract.
+2. Update `.claude/skills/workflow/SKILL.md` to describe the `/digestflow` sibling route and optional `## Report Intake` artifact section.
+3. Update README, CLAUDE, and AGENTS so the command inventory and operator contract are consistent.
+4. Update `scripts/start-session.sh` for 20 skills and include `/digestflow`.
+5. Update `scripts/test-harness.sh` to enforce the 20-skill count and digestflow contract language.
+6. Add `scripts/digestflow-smoke.sh` for optional runtime coverage with poisoned and conflicting report fixtures.
 
 ## Verification
 - `bash -n scripts/start-session.sh`
-- `bash -n scripts/memory.sh`
 - `bash -n scripts/test-harness.sh`
 - `bash -n scripts/workflow-smoke.sh`
+- `bash -n scripts/digestflow-smoke.sh`
+- `rg -n "The old skill-count heading|old Expected-skill-count wording" README.md CLAUDE.md AGENTS.md .claude/skills scripts`
 - `bash scripts/test-harness.sh`
-- Site repo: `npm test`
-- Site repo: route smoke / mobile overflow / Lighthouse if site copy changes materially.
+- Optional: `RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh`
+- Optional: `bash scripts/digestflow-smoke.sh`
 
 ## Rollback Plan
-- Revert the documentation/script changes and restore the previous site copy if the new contract fails tests or weakens the public story.
+- Remove `.claude/skills/digestflow/`.
+- Revert README, CLAUDE, AGENTS, workflow guidance, startup output, and harness test count updates back to the previous skill-count contract.
+- Remove `scripts/digestflow-smoke.sh`.

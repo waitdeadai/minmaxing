@@ -13,6 +13,8 @@ $ARGUMENTS
 
 This command is the end-to-end executor.
 
+`/digestflow` is a sibling route that reuses this same inline lifecycle after an external report-intake prelude. Normal `/workflow` behavior stays unchanged when no external research reports are supplied.
+
 ## Non-Negotiable Contract
 
 - Finish the task in this command whenever it is feasible.
@@ -134,6 +136,8 @@ Required content inside the sections:
 - `## Plan` must record any delegated packets, their owners, and their dependencies when parallel execution is likely.
 - `## Execution Notes` must record any freshness re-checks and the final owned files touched by each delegated packet.
 - `## Verification Evidence` must include `Verification Metadata`: executor identity/model/workspace, verifier identity/model/workspace, and isolation status. Use `unknown` instead of implying separation when the run cannot prove it.
+
+When this lifecycle is reused by `/digestflow`, insert `## Report Intake` between `## Taste Gate` and `## Research Brief`. The intake section must record a report manifest, claim ledger, contradictions, injection quarantine, and the default `no-persist report bodies` decision. Imported claims remain `report-derived` until the repo's own deepresearch, live sources, or repo inspection upgrade them to `web-verified` or `repo-verified`.
 
 ## Phase 2: Deep Research
 
@@ -519,7 +523,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/sprint`, `/verify`, `/audit`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/sprint`, `/verify`, `/audit`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers

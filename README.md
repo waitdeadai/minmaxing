@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 19 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 20 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -249,6 +249,8 @@ Claude Code hooks refresh it after each turn, snapshot it before `/compact` or a
 ### Central Orchestrator
 `/workflow` owns the full lifecycle inline: taste gate, deep research, code audit, hard-gate introspection, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` and archived specs under `.taste/specs/` so the research plan, loop log, source ledger, audit, introspection, plan, and spec trail stay inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
 
+`/digestflow` is the report-informed sibling route. It adds Report Intake before deep research so Gemini, NotebookLM, ChatGPT Deep Research, Perplexity, or similar reports become provisional evidence instead of hidden assumptions.
+
 ---
 
 ## How the Workflow System Works
@@ -277,7 +279,8 @@ Think of minmaxing as an operating system:
 │            taste.md + taste.vision                  │
 │                  (Kernel / OS)                     │
 ├─────────────────────────────────────────────────────┤
-│  /autoplan /sprint /verify /ship /investigate     │
+│  /digestflow /autoplan /sprint /verify /ship      │
+│  /investigate /memory                             │
 │  /audit /council /qa /review /deepresearch        │
 │  /webresearch /browse /introspect /codesearch     │
 │  /overnight /align                                │
@@ -437,12 +440,13 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 19 Skills
+## The 20 Skills
 
 | Skill | What It Does |
 |-------|-------------|
 | `/tastebootstrap` | **Fresh-repo bootstrap** — asks the 10 kernel questions and writes `taste.md` + `taste.vision` |
 | `/workflow` | **Central execution engine** — drives research → code audit → plan → `SPEC.md` → implement → verify → closeout (supervises an efficacy-first agent budget) |
+| `/digestflow` | **External-report-informed workflow** — digests 1-10 AI research reports as untrusted candidate evidence, then runs the full governed workflow |
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with risk-based parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
@@ -474,6 +478,13 @@ claude
 ```
 
 `/workflow` now owns the whole lifecycle inline: taste check → `deepresearch` / `webresearch` → code audit → plan → `SPEC.md` → implementation → verification → closeout.
+
+**Report-informed workflow:**
+```bash
+/digestflow "implement auth hardening based on these reports" ./gemini-report.md ./notebooklm-notes.md
+```
+
+`/digestflow` starts with Report Intake. It treats external AI reports as untrusted candidate evidence, labels imported claims `report-derived`, quarantines prompt-like instructions, records contradictions, and then runs the repo's own deepresearch plus the full workflow before any implementation is trusted.
 
 **Direct skill invocation (advanced):**
 ```bash
@@ -611,8 +622,9 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 19 skills (system calls)
+│   ├── skills/                 # 20 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
+│   │   ├── digestflow/         # External report intake + governed workflow
 │   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap
 │   │   ├── align/              # Taste gate
 │   │   ├── audit/              # Deep codebase analysis

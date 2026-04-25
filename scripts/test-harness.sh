@@ -160,6 +160,7 @@ if [ "$PARALLEL_OK" = true ] && \
    grep -Fq "ceiling, not a quota" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "Do not split work just to fill slots." .claude/skills/sprint/SKILL.md 2>/dev/null && \
    grep -Fq "distinct branches" .claude/skills/deepresearch/SKILL.md 2>/dev/null && \
+   grep -Fq "The max of 10 reports is a ceiling, not a target." .claude/skills/digestflow/SKILL.md 2>/dev/null && \
    grep -Fq "not automatically a 10-agent sprint" .claude/skills/sprint/SKILL.md 2>/dev/null && \
    grep -Fq "Effective Agent Budget" obsidian/Memory/Patterns/parallel-workers.md 2>/dev/null && \
    grep -Fq "effective subagent budget" AGENTS.md 2>/dev/null && \
@@ -215,7 +216,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "19 skills" README.md 2>/dev/null && \
+   grep -Fq "20 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -234,10 +235,11 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 19 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 16 skills" scripts/start-session.sh 2>/dev/null && \
+   ! grep -Fq "Expected $((20 - 1)) skills" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "Expected 5+ rules" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "verifies everything before you accept it" README.md 2>/dev/null && \
    ! grep -Fq "Every decision, every fix, every shipped feature is remembered" README.md 2>/dev/null && \
@@ -251,26 +253,50 @@ else
     test_fail "governed-autonomy truth surfaces contain stale counts or unsupported overclaims"
 fi
 
+# Test 3i: Digestflow External Report Intake Contract
+echo "[3i] Digestflow Report Intake Contract"
+if [ -f ".claude/skills/digestflow/SKILL.md" ] && \
+   grep -Fq "# /digestflow" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "Report Intake" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "report-derived" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "untrusted candidate evidence" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "1-10" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "source ledger" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "Contradiction" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "no-persist" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "/introspect" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "full workflow" .claude/skills/digestflow/SKILL.md 2>/dev/null && \
+   grep -Fq "Report Intake" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "/digestflow" README.md 2>/dev/null && \
+   grep -Fq "/digestflow" CLAUDE.md 2>/dev/null && \
+   grep -Fq "/digestflow" AGENTS.md 2>/dev/null && \
+   grep -Fq "/digestflow" scripts/start-session.sh 2>/dev/null && \
+   [ -f "scripts/digestflow-smoke.sh" ]; then
+    test_pass "/digestflow treats external reports as report-derived evidence before full workflow execution"
+else
+    test_fail "/digestflow report intake contract is incomplete"
+fi
+
 # ========================================
-# Skills (19 Expected)
+# Skills (20 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 19 Expected]"
+echo "[Skills - 20 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 19 ]; then
+if [ "$SKILL_COUNT" -ge 20 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 19+ skills, found $SKILL_COUNT"
+    test_fail "Expected 20+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow align audit autoplan deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow digestflow align audit autoplan deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -340,7 +366,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

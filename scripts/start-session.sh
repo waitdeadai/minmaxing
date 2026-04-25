@@ -46,11 +46,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 19 ]; then
+if [ "$SKILL_COUNT" -ge 20 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 19 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 20 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -91,7 +91,7 @@ echo ""
 echo "[5/5] Ready"
 echo "Philosophy: governed autonomy — delegate execution, keep judgment, require evidence"
 echo "Fresh repos: run /tastebootstrap before /workflow"
-echo "Skills: /tastebootstrap, /workflow, /align, /autoplan, /verify,"
+echo "Skills: /tastebootstrap, /workflow, /digestflow, /align, /autoplan, /verify,"
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
 echo "        /audit, /deepresearch, /webresearch, /browse, /introspect, /codesearch, /memory"
 echo ""

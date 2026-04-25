@@ -27,6 +27,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 3. `/workflow` audits the current codebase, runs `/introspect pre-plan`, and writes the plan
 4. `/workflow` creates `SPEC.md`, executes, runs post-implementation introspection, verifies, and only then closes out
 
+**When you say `/digestflow`:** first digest the supplied external reports as untrusted candidate evidence, then run the same governed path as `/workflow`. Report claims stay `report-derived` until verified by repo inspection or live sources.
+
 **Supervisor's job:** Ensure every non-trivial task is research-backed, audit-backed, spec-backed, introspected, and verified before declaring done, without handing the next phase back to the user.
 
 **Taste alignment uses Socratic questions.** When taste is unclear or a proposal conflicts with the project kernel in `taste.md` and `taste.vision`, `/align` asks focused questions before `/workflow` proceeds.
@@ -36,6 +38,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 |-------|---------|
 | /tastebootstrap | Fresh-repo kernel interview that writes taste.md + taste.vision |
 | /workflow | Central execution engine — taste-first, runs the full phases inline |
+| /digestflow | External-report-informed workflow with Report Intake before deepresearch |
 | /audit | Deep codebase audit with efficacy-first parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
 | /autoplan | Create SPEC.md with efficacy-first parallel planning |
@@ -52,6 +55,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /introspect | Hard-gate self-audit for likely mistakes, assumptions, missing verification, and confidence downgrades |
 | /codesearch | Search code by pattern |
 | /overnight | 8hr session with 30-min checkpoints |
+| /memory | 5-tier memory system health, recall, and logging |
 
 ## Rules
 - **SPEC-First**: No code without SPEC.md
