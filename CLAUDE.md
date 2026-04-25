@@ -18,6 +18,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 6. **Supervisor Pattern**: AI supervises workers, not the other way around
 7. **PEV Loop**: Plan → Execute → Verify. Verification is an independent evidence pass; claim separate executor/verifier isolation only when metadata proves it.
 8. **Quality Gates**: /verify must pass; tests must pass; unresolved introspection blockers stop closeout
+9. **Surgical Diff Discipline**: choose the smallest sufficient implementation, allow no speculative abstractions, allow no drive-by refactors, and require a changed-line trace to `SPEC.md`
 
 ## Default Behavior
 
@@ -62,6 +63,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **SPEC Archive**: `SPEC.md` is the active contract; archive completed or superseded specs to `.taste/specs/` before replacing them
 - **Introspection Gate**: `/introspect` must pass before plan freeze, closeout, retry after failed verification, and push/ship decisions
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
+- **Surgical Changes**: Vague requests become verifiable contracts; every meaningful diff should trace to `SPEC.md`, generated output, or cleanup caused by the current change
 - **Optional Codex Plugin Support**: If `codex-plugin-cc` is installed in Claude Code, project `.codex/config.toml` gives Codex `gpt-5.4` + `xhigh` defaults with 10 subagent threads
 - **Keep**: Architecture, security, verification decisions
 - **Delegate**: Single-file changes, tests, mechanical refactoring

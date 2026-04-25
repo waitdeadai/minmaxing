@@ -27,6 +27,7 @@ Catch defects, security issues, and quality problems before they reach productio
 - What files changed?
 - What's the purpose of these changes?
 - Are there tests?
+- Does each changed file have a changed-line trace back to the user request, `SPEC.md`, generated output, or cleanup caused by this change?
 
 #### Step 2: Logic Review
 
@@ -52,6 +53,8 @@ For each changed file:
 - Comment accuracy (not outdated)
 - Code duplication
 - Complexity warnings
+- Speculative abstractions, generic adapters, or configurability not required by the current spec
+- Drive-by refactors, formatting churn, comment rewrites, or adjacent cleanup outside the requested scope
 
 #### Step 5: Test Coverage
 
@@ -67,6 +70,8 @@ Before producing the final recommendation, run an introspection pass:
 - Are there missing tests that should be blockers?
 - Are security or rollback risks under-classified?
 - Should confidence be downgraded because verification did not run?
+- Did the implementation stay to the smallest sufficient implementation?
+- Are any changed-line trace gaps, speculative abstractions, or drive-by refactors still unresolved?
 
 Format for human review:
 
@@ -123,6 +128,9 @@ Reply with: APPROVE / REQUEST_CHANGES / COMMENT
 - **Must verify tests actually run** (not just exist) → FAIL
 - **Must read the actual code** (not just diff) → FAIL
 - **Self-review requires `/introspect post-implementation`** → FAIL if unresolved introspection blockers remain
+- **Changed-line trace gaps** are findings → FAIL if meaningful diff cannot be tied to `SPEC.md` or requested scope
+- **No drive-by refactors** → FAIL if unrelated cleanup, formatting churn, or comment rewrites are mixed into the change
+- **No speculative abstractions** → FAIL if the diff adds generic flexibility not required by current success criteria
 
 ---
 
@@ -135,3 +143,5 @@ Reply with: APPROVE / REQUEST_CHANGES / COMMENT
 - Approving without understanding → BLOCK
 - Skipping Stage 2 (going straight to approval) → BLOCK
 - Treating review as a replacement for `/introspect` → BLOCK
+- Ignoring changed-line trace gaps → BLOCK
+- Approving speculative abstractions or drive-by refactors as harmless polish → BLOCK

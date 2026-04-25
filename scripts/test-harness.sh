@@ -277,6 +277,26 @@ else
     test_fail "/digestflow report intake contract is incomplete"
 fi
 
+# Test 3j: Surgical Diff Discipline Contract
+echo "[3j] Surgical Diff Discipline"
+if grep -Fq "changed-line trace" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "no drive-by refactors" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "no speculative abstractions" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "smallest sufficient implementation" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "changed-line trace" .claude/skills/introspect/SKILL.md 2>/dev/null && \
+   grep -Fq "drive-by refactors" .claude/skills/introspect/SKILL.md 2>/dev/null && \
+   grep -Fq "speculative abstractions" .claude/skills/introspect/SKILL.md 2>/dev/null && \
+   grep -Fq "smallest sufficient implementation" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
+   grep -Fq "Changed-line trace gaps" .claude/skills/review/SKILL.md 2>/dev/null && \
+   grep -Fq "Surgical Diff Discipline" README.md 2>/dev/null && \
+   grep -Fq "vague requests become verifiable contracts" README.md 2>/dev/null && \
+   grep -Fq "Surgical Diff Discipline" CLAUDE.md 2>/dev/null && \
+   grep -Fq "surgical diff discipline" AGENTS.md 2>/dev/null; then
+    test_pass "surgical diff discipline blocks speculative abstractions and drive-by refactors"
+else
+    test_fail "surgical diff discipline contract is incomplete"
+fi
+
 # ========================================
 # Skills (20 Expected)
 # ========================================

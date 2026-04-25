@@ -68,8 +68,11 @@ Before writing spec, challenge the scope and synthesize a concrete plan:
 
 - **Is this scope creep?** Flag if > 3 major components
 - **What's the narrowest wedge?** Can we ship less?
-- **What's the 20% that gives 80% of value?
+- **What's the 20% that gives 80% of value?**
 - **What's the smallest shippable thing?**
+- **What is the smallest sufficient implementation?** Prefer the narrowest implementation that satisfies the user's request and can be verified.
+- **Are we inventing speculative abstractions?** Block generic frameworks, adapters, configurability, or future-proofing that no success criterion requires.
+- **Are we planning drive-by refactors?** Move unrelated cleanup to out-of-scope unless it is required by the active change.
 
 Ask: "What if we only built X? Would that be enough?"
 
@@ -88,6 +91,8 @@ Check:
 - whether the research and code audit actually support the plan
 - whether the plan is too broad, too vague, or missing a rollback path
 - whether success criteria are objective enough to verify
+- whether the smallest sufficient implementation has been chosen
+- whether speculative abstractions or drive-by refactors slipped into scope
 - whether the active spec should be reused or archived
 - whether hidden assumptions need user input before the spec is frozen
 
@@ -126,6 +131,12 @@ What problem does this solve? (1-2 sentences)
 ### Out of Scope
 - Component C (reason: requires separate project)
 - Component D (reason: out of budget)
+
+## Surgical Diff Discipline
+- Smallest sufficient implementation: [narrowest version that satisfies the request]
+- No speculative abstractions: [what is intentionally not generalized]
+- No drive-by refactors: [what adjacent code will stay untouched]
+- Changed-line trace: [how planned file changes map to success criteria]
 
 ## Implementation Plan
 ### Phase 1: Foundation [PARALLEL: 2 agents]

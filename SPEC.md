@@ -1,61 +1,58 @@
-# SPEC: Digestflow External Report Intake Workflow
+# SPEC: Surgical Diff Discipline
 
 ## Problem Statement
-minmaxing needs a first-class `/digestflow` route for work that starts from external AI research reports, then continues through the existing governed workflow without laundering those reports into trusted truth.
+minmaxing already forces research, `SPEC.md`, introspection, and verification, but it should make one more failure mode explicit: agents often overbuild, refactor adjacent code, or modify lines that do not trace back to the requested outcome.
 
-The route must treat Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, and similar reports as untrusted candidate evidence. Report intake should improve the repo's own `deepresearch` phase, not replace it or recursively call `/workflow`.
+Add a harness-level surgical-diff discipline so plans prefer the smallest sufficient implementation and closeout checks verify every meaningful changed line is justified by the active spec.
 
 ## Codebase Anchors
-- `.claude/skills/workflow/SKILL.md` is the central inline lifecycle contract.
-- `.claude/skills/deepresearch/SKILL.md` defines the repo's source-ledger, contradiction-aware research protocol.
-- `.claude/skills/introspect/SKILL.md` defines the required self-audit hard gates.
-- `README.md`, `CLAUDE.md`, and `AGENTS.md` are public and operator-facing command contracts.
-- `scripts/start-session.sh` and `scripts/test-harness.sh` enforce the visible skill count and command inventory.
-- `scripts/workflow-smoke.sh` is the existing runtime smoke pattern for slash-command workflows.
+- `.claude/skills/workflow/SKILL.md` owns the central inline lifecycle and pre-closeout gate.
+- `.claude/skills/autoplan/SKILL.md` owns scope challenge and spec generation guidance.
+- `.claude/skills/introspect/SKILL.md` owns self-audit prompts for plan and implementation confidence.
+- `.claude/skills/review/SKILL.md` owns review language and blocker classification.
+- `README.md`, `CLAUDE.md`, and `AGENTS.md` are public/operator contracts.
+- `scripts/test-harness.sh` enforces repo-contract language.
+- `/home/fer/Documents/minmaxing-dev-site` is the separate public site repo that should reflect the value prop when docs change.
 
 ## Success Criteria
-- [ ] `.claude/skills/digestflow/SKILL.md` exists and defines `/digestflow` as a report-informed sibling of `/workflow`.
-- [ ] `/digestflow` requires 1-10 report inputs and fails closed when no report is supplied.
-- [ ] Report Intake requires a report manifest, claim ledger, contradiction handling, injection quarantine, source ledger handoff, and no-persist default for report bodies.
-- [ ] External report claims are explicitly labeled `report-derived` until verified by repo inspection or live sources.
-- [ ] The normal minmaxing `deepresearch` pass remains mandatory after intake and before planning.
-- [ ] `/workflow` recognizes report intake as a sibling-route prelude without changing normal `/workflow` behavior.
-- [ ] README, CLAUDE, AGENTS, and startup output document `/digestflow` and the 20-skill contract.
-- [ ] Harness tests enforce the `/digestflow` contract and stale skill-count wording is removed.
-- [ ] A dedicated digestflow smoke script exists for optional integration verification.
+- [ ] `/workflow` requires a surgical diff check during planning, execution, post-implementation introspection, verification, and closeout.
+- [ ] `/autoplan` requires the smallest sufficient implementation and blocks speculative abstractions or vague success criteria before writing `SPEC.md`.
+- [ ] `/introspect` names drive-by refactors, speculative abstractions, and changed-line trace gaps as self-audit risks.
+- [ ] `/review` treats unexplained scope creep, drive-by refactors, and missing changed-line trace as review findings.
+- [ ] README, CLAUDE, and AGENTS document the harness value: vague requests become verifiable contracts and diffs stay tied to the spec.
+- [ ] `scripts/test-harness.sh` has a static contract test for `changed-line trace`, `no drive-by refactors`, `no speculative abstractions`, and `smallest sufficient implementation`.
+- [ ] The separate site repo reflects the same public value proposition without adding harness files to the site or site files to the harness.
+- [ ] Harness tests pass and any site verification affected by the page copy passes.
 
 ## Scope
 ### In Scope
-- Add the `/digestflow` skill contract.
-- Update workflow guidance, public docs, operator instructions, startup output, and harness tests.
-- Add optional runtime smoke coverage using tiny report fixtures generated in a temporary repo.
-- Preserve the existing `/workflow` path and governed autonomy language.
+- Integrate surgical-diff and simplicity-first language into existing skills and docs.
+- Add static harness coverage so the behavior does not silently drift.
+- Update public site copy/verification in the separate site repo if necessary.
 
 ### Out of Scope
-- Building binary PDF/DOCX extraction.
-- Adding a persistent report database.
-- Changing Claude Code runtime behavior or MiniMax MCP configuration.
-- Pushing changes unless explicitly requested.
+- Adding a new `/karpathy` command or changing the skill count.
+- Copying the external repo wholesale.
+- Changing runtime model configuration or MiniMax MCP setup.
+- Deploying the site unless a configured remote/deployment target exists.
 
 ## Implementation Plan
-1. Add `.claude/skills/digestflow/SKILL.md` with the report intake, evidence-state, privacy, and full-workflow handoff contract.
-2. Update `.claude/skills/workflow/SKILL.md` to describe the `/digestflow` sibling route and optional `## Report Intake` artifact section.
-3. Update README, CLAUDE, and AGENTS so the command inventory and operator contract are consistent.
-4. Update `scripts/start-session.sh` for 20 skills and include `/digestflow`.
-5. Update `scripts/test-harness.sh` to enforce the 20-skill count and digestflow contract language.
-6. Add `scripts/digestflow-smoke.sh` for optional runtime coverage with poisoned and conflicting report fixtures.
+1. Update workflow planning/execution/verification contracts with a named surgical diff check.
+2. Update autoplan, introspect, and review contracts with smallest-sufficient and changed-line trace language.
+3. Update public/operator docs to explain the new discipline as part of governed execution.
+4. Add a harness static contract test for the new phrases.
+5. Update the separate site copy and site verification tokens if needed.
+6. Run syntax, harness, and site checks; then commit and push repos with configured remotes.
 
 ## Verification
-- `bash -n scripts/start-session.sh`
 - `bash -n scripts/test-harness.sh`
-- `bash -n scripts/workflow-smoke.sh`
-- `bash -n scripts/digestflow-smoke.sh`
-- `rg -n "The old skill-count heading|old Expected-skill-count wording" README.md CLAUDE.md AGENTS.md .claude/skills scripts`
 - `bash scripts/test-harness.sh`
-- Optional: `RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh`
-- Optional: `bash scripts/digestflow-smoke.sh`
+- `git diff --check`
+- Site repo: `npm test`
+- Site repo: `git diff --check`
+- Confirm remote availability before pushing each repo.
 
 ## Rollback Plan
-- Remove `.claude/skills/digestflow/`.
-- Revert README, CLAUDE, AGENTS, workflow guidance, startup output, and harness test count updates back to the previous skill-count contract.
-- Remove `scripts/digestflow-smoke.sh`.
+- Revert the skill/doc/test copy changes.
+- Restore the previous public site copy if changed.
+- Leave the archived digestflow spec untouched.

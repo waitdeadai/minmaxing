@@ -161,6 +161,7 @@ With SPEC-first:
 | Efficacy-first parallelism: use the right number of agents for the task | Sequential one-at-a-time |
 | Independent verification pass with metadata when isolation can be proved | Casual self-checks |
 | Research-first: `/workflow` drafts a plan, runs the repo’s effectiveness-first `deepresearch` `search -> read -> refine` investigation loop, and keeps an inspectable source ledger before planning or edits | AI hallucinates best practices |
+| Surgical diffs: vague requests become verifiable contracts, then every meaningful change needs a changed-line trace to `SPEC.md` | Drive-by refactors, speculative abstractions, and "while I was here" churn |
 
 **Taste is the kernel.** `/workflow` starts by checking taste.md and taste.vision. In a fresh repo, define them with `/tastebootstrap` before anything is built.
 
@@ -194,6 +195,11 @@ The important part is not hitting the ceiling. The important part is using the s
 File-changing tasks start with research, code audit, and a concrete plan. `SPEC.md` is the formal contract that comes out of that work, and AI implements to spec.
 
 Even tiny local file-changing tasks should still produce a small `SPEC.md` when you invoke the full `/workflow` contract.
+
+### Surgical Diff Discipline
+minmaxing does not just ask the model to "be careful." It requires the smallest sufficient implementation, no speculative abstractions, no drive-by refactors, and a changed-line trace from meaningful diff hunks back to `SPEC.md`.
+
+That means vague requests become verifiable contracts before code changes, and unrelated cleanup stays out of the diff unless the spec makes it necessary.
 
 ### Active SPEC + Archive
 `SPEC.md` stays as the active contract in the project root so `/verify` and fresh agents always know what to read first.
@@ -297,6 +303,8 @@ Think of minmaxing as an operating system:
 Inside Phase 2, `/workflow` now follows the repo’s effectiveness-first `deepresearch` protocol instead of a generic search fan-out: it drafts a collaborative research plan, launches only the discovery tracks that matter, reads and refines in loops, records a source ledger including reviewed but not cited sources, pressure-tests conflicting evidence, and runs follow-up research before locking the plan.
 
 Before confidence is allowed, `/workflow` runs the repo’s hard-gate `/introspect` protocol. It names likely mistakes, checks assumptions, looks for counterexamples, compares implementation against `SPEC.md`, identifies missing verification, downgrades confidence when evidence is weak, and blocks closeout or push when unresolved findings remain.
+
+Before closeout, `/workflow` also applies surgical diff discipline: smallest sufficient implementation, no speculative abstractions, no drive-by refactors, and a changed-line trace for the meaningful diff. This keeps autonomy from turning into "helpful" churn.
 
 ### The 4 Execution Paths
 

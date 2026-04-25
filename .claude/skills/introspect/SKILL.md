@@ -22,6 +22,8 @@ It must:
 - audit assumptions
 - look for counterexamples
 - compare implementation against `SPEC.md`
+- check for speculative abstractions, drive-by refactors, and scope creep
+- require a changed-line trace when files changed
 - identify missing verification
 - downgrade confidence when evidence is weak
 - block closeout when unresolved findings remain
@@ -49,6 +51,8 @@ effective_introspection_budget = min(MAX_PARALLEL_AGENTS, distinct_risk_surfaces
 Typical lanes:
 - assumptions and hidden requirements
 - spec / plan / implementation mismatch
+- surgical diff discipline: smallest sufficient implementation, no speculative abstractions, no drive-by refactors
+- changed-line trace from diff to `SPEC.md`
 - missing tests or weak verification
 - security / privacy / rollback risk
 - concurrency / state / migration risk
@@ -68,9 +72,10 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
    - relevant docs or source ledger when research drove the plan
 3. List the model's most likely mistakes.
 4. Check each mistake against evidence.
-5. Look for counterexamples and omitted cases.
-6. Decide whether confidence should be downgraded.
-7. Return a blocker decision:
+5. Check whether the plan or diff is larger than the smallest sufficient implementation.
+6. Look for counterexamples and omitted cases.
+7. Decide whether confidence should be downgraded.
+8. Return a blocker decision:
    - `PASS` — no unresolved issues remain
    - `FIX_REQUIRED` — issues found and must be fixed before continuing
    - `REPLAN_REQUIRED` — the plan or spec is wrong
@@ -97,6 +102,12 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
 ### Spec / Diff / Verification Mismatch
 - ...
 
+### Surgical Diff Check
+- Smallest sufficient implementation: [pass / concern]
+- No speculative abstractions: [pass / concern]
+- No drive-by refactors: [pass / concern]
+- Changed-line trace: [pass / gap]
+
 ### Confidence
 - Level: [high / medium / low]
 - Downgrade: [none / reason]
@@ -111,6 +122,8 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
 - missing tests must be named, not hand-waved
 - unresolved blockers must stop the workflow
 - confidence must be lowered when evidence is incomplete
+- file-changing work must satisfy changed-line trace or return `FIX_REQUIRED`
+- speculative abstractions and drive-by refactors must be removed or justified by `SPEC.md`
 - remote actions require a `pre-push` introspection pass
 - failed verification requires an `after-test-failure` pass before another fix attempt
 

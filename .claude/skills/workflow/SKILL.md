@@ -24,6 +24,7 @@ This command is the end-to-end executor.
 - Run hard-gate introspection after code audit and before freezing the plan.
 - Synthesize a concrete plan before writing `SPEC.md`.
 - Run hard-gate introspection after implementation and before closeout.
+- Keep implementation surgical: smallest sufficient implementation, no speculative abstractions, no drive-by refactors, and a changed-line trace back to `SPEC.md`.
 - Do not stop after planning.
 - Do not tell the user to manually run `/autoplan`, `/sprint`, `/verify`, or `/ship`.
 - Do not rely on nested custom-skill chaining as the primary execution path.
@@ -350,6 +351,8 @@ Synthesize the research brief and code audit into an execution plan before writi
 The plan must answer:
 - what exactly will change
 - what will explicitly not change
+- what the smallest sufficient implementation is
+- which abstractions, refactors, or adjacent cleanup are explicitly out of scope
 - why this approach is the best fit for this repo
 - what risks or unknowns remain
 - how the work will be verified
@@ -384,6 +387,8 @@ bash scripts/spec-archive.sh prepare "$ARGUMENTS" "superseded-before-new-spec" 2
    - repo constraints / codebase anchors
    - success criteria
    - scope
+   - smallest sufficient implementation
+   - explicit non-goals / no drive-by refactors
    - implementation plan
    - verification
    - rollback plan when relevant
@@ -409,6 +414,12 @@ bash scripts/spec-archive.sh prepare "$ARGUMENTS" "superseded-before-new-spec" 2
 
 ### Out of Scope
 - ...
+
+## Surgical Diff Discipline
+- Smallest sufficient implementation: [what is the narrowest change that satisfies the request]
+- No speculative abstractions: [what flexibility, configurability, or refactor is intentionally avoided]
+- No drive-by refactors: [adjacent cleanup not required by the spec]
+- Changed-line trace: [how changed files or sections map to success criteria]
 
 ## Implementation Plan
 1. ...
@@ -438,8 +449,10 @@ Implement directly with Claude Code tools.
 - Give every delegated packet a thin brief with owned files, dependencies, stop conditions, and expected evidence.
 - Prefer direct execution over theatrical parallelism for tiny tasks.
 - Keep changes aligned with the spec and taste constraints.
+- Keep the diff surgical: do not refactor, reformat, rename, or "improve" adjacent code unless the active `SPEC.md` requires it.
+- Remove only unused imports, variables, files, or docs that your own changes orphaned; mention pre-existing dead code instead of deleting it.
 - Update `## Execution Notes` in `WORKFLOW_ARTIFACT` with the files changed and any notable deviations from the plan.
-- After implementation, run `/introspect post-implementation` inline and append the result to `## Introspection`. Check the diff against `SPEC.md`, likely mistakes, missing edge cases, and weak verification before moving on.
+- After implementation, run `/introspect post-implementation` inline and append the result to `## Introspection`. Check the diff against `SPEC.md`, likely mistakes, missing edge cases, weak verification, speculative abstractions, drive-by refactors, and changed-line trace gaps before moving on.
 
 If the task is non-code analysis, do the work directly and skip implementation.
 
@@ -467,6 +480,7 @@ For file-changing tasks, update `## Verification Evidence` in `WORKFLOW_ARTIFACT
 - commands run
 - files inspected
 - which success criteria passed
+- changed-line trace from modified files or sections back to `SPEC.md`
 - any residual risk
 
 ## Pre-Closeout Gate
@@ -484,6 +498,8 @@ Before you emit `## Workflow Complete` for a file-changing task, confirm all of 
 - Implementation is done or explicitly not required.
 - Verification includes concrete evidence.
 - Verification metadata is recorded without overstating executor/verifier isolation.
+- The changed-line trace is satisfied: every meaningful diff maps to `SPEC.md`, generated output, or cleanup caused by this change.
+- No speculative abstractions or drive-by refactors remain in the diff.
 
 If any item above is false, continue the workflow instead of closing out.
 
@@ -548,6 +564,7 @@ When complete, return:
 - Introspection: [PASS / FIX_REQUIRED / REPLAN_REQUIRED / BLOCKED]
 - Plan: [completed / skipped / blocked]
 - SPEC.md: [created / updated / reused / blocked]
+- Surgical Diff: [PASS / FIX_REQUIRED / not applicable]
 - Spec Archive: [archived / already archived / not needed / blocked]
 - Implementation: [done / not needed]
 - Verification: ACCEPT / REJECT / BLOCKED
@@ -576,6 +593,9 @@ When complete, return:
 - creating `SPEC.md` before the plan exists
 - claiming `SPEC.md` was not needed for file-changing work
 - claiming `SPEC.md` was created when the only copy lives inside `WORKFLOW_ARTIFACT`
+- adding speculative abstractions, options, or configurability not required by the spec
+- drive-by refactors, formatting churn, comment rewrites, or adjacent cleanup without a `SPEC.md` reason
+- closing out without a changed-line trace for the meaningful diff
 - editing code before the research brief exists
 - telling the user to manually invoke the next phase
 - claiming verification without commands or evidence
