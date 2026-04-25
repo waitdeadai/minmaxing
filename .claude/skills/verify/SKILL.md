@@ -1,8 +1,8 @@
 # /verify
 
-**THE VERIFIER** — mandatory output validation against SPEC.md before accepting. This is a **separate check** from the AI that wrote the code.
+**THE VERIFIER** — mandatory output validation against SPEC.md before accepting. This is an **Independent verification pass** with evidence for each criterion.
 
-**This is NOT the same AI that wrote the code.** It verifies independently, adversarially, against the spec.
+**Isolation rule:** Do not claim a different model, agent, process, or workspace performed verification unless the workflow artifact records metadata that proves it. When isolation metadata is unavailable, describe this as an independent verification pass against the spec, not as guaranteed separate execution.
 
 **MAX_PARALLEL_AGENTS** — ceiling for verification lanes. Split verification only when criteria or surfaces are independent enough to check separately.
 
@@ -18,9 +18,9 @@
 
 Verify implementation output against SPEC.md. This is the critical quality gate that prevents spec drift and catches implementation errors early.
 
-**The Problem:** Implementation verifies itself → confirmation bias → bugs ship.
+**The Problem:** Implementation verifies itself too casually → confirmation bias → bugs ship.
 
-**The Solution:** You are adversarial to the implementation. Find the flaws.
+**The Solution:** Run a deliberately adversarial pass against `SPEC.md`. Find the flaws before the user does.
 
 ---
 
@@ -72,6 +72,11 @@ For each criterion, perform verification:
 ## Verification Results: [Task Name]
 
 ### Against SPEC.md: /path/to/SPEC.md
+
+### Verification Metadata
+- Executor identity/model/workspace: [known value or unknown]
+- Verifier identity/model/workspace: [known value or unknown]
+- Isolation status: [proved separate / same session independent pass / unknown]
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
@@ -184,7 +189,7 @@ You are **adversarial** to the implementation. Your job is to find flaws.
 - Missing evidence → treat as FAIL
 - Vague claims → demand specifics
 - "Works fine" without test → FAIL
-- Implementation self-verification → BLOCK, use this skill
+- Implementation self-verification without a separate evidence pass → BLOCK, use this skill
 
 ---
 

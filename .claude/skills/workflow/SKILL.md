@@ -133,6 +133,7 @@ Required content inside the sections:
 - `## Introspection` must record at least `pre-plan` and `post-implementation` entries for file-changing work, plus `after-test-failure` or `pre-push` entries when those triggers occur.
 - `## Plan` must record any delegated packets, their owners, and their dependencies when parallel execution is likely.
 - `## Execution Notes` must record any freshness re-checks and the final owned files touched by each delegated packet.
+- `## Verification Evidence` must include `Verification Metadata`: executor identity/model/workspace, verifier identity/model/workspace, and isolation status. Use `unknown` instead of implying separation when the run cannot prove it.
 
 ## Phase 2: Deep Research
 
@@ -458,6 +459,7 @@ If verification fails:
 Never declare success without evidence.
 
 For file-changing tasks, update `## Verification Evidence` in `WORKFLOW_ARTIFACT` with:
+- Verification Metadata: executor identity/model/workspace, verifier identity/model/workspace, and isolation status (`proved separate`, `same session independent pass`, or `unknown`)
 - commands run
 - files inspected
 - which success criteria passed
@@ -477,6 +479,7 @@ Before you emit `## Workflow Complete` for a file-changing task, confirm all of 
 - `WORKFLOW_ARTIFACT` exists and its phase sections are filled in.
 - Implementation is done or explicitly not required.
 - Verification includes concrete evidence.
+- Verification metadata is recorded without overstating executor/verifier isolation.
 
 If any item above is false, continue the workflow instead of closing out.
 

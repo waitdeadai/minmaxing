@@ -11,14 +11,19 @@ echo "=========================================="
 echo ""
 
 # Step 1: Memory System
-echo "[1/4] Memory system..."
+echo "[1/5] Memory system..."
 SCRIPT_DIR="$(dirname "$0")"
 if [ -f "$SCRIPT_DIR/memory-auto.sh" ]; then
     bash "$SCRIPT_DIR/memory-auto.sh" start 2>/dev/null || true
 fi
 if [ -f "$SCRIPT_DIR/memory.sh" ]; then
     bash "$SCRIPT_DIR/memory.sh" stats 2>/dev/null | head -10
+    bash "$SCRIPT_DIR/memory.sh" health 2>/dev/null | tail -1 || echo "status: disabled"
 fi
+echo ""
+
+# Step 2: Working State
+echo "[2/5] Working state..."
 if [ -f ".minimaxing/state/CURRENT.md" ]; then
     echo "Working state: .minimaxing/state/CURRENT.md available for compaction-safe resume"
 else
@@ -29,33 +34,33 @@ echo "Spec archive: ${SPEC_ARCHIVE_COUNT:-0} archived spec(s) in .taste/specs"
 echo ""
 
 # Step 3: Version Check
-echo "[3/4] Version information..."
+echo "[3/5] Version information..."
 echo "Claude Code: $(claude --version 2>/dev/null || echo 'not found')"
-echo "Model: MiniMax M2.7 Highspeed (100 TPS, 204K context)"
+echo "Model: MiniMax M2.7 Highspeed (provider capability: 100 TPS, 204K context)"
 echo ""
 
 # Step 4: Quick Health Check
-echo "[4/4] Health check..."
+echo "[4/5] Health check..."
 PASS=0
 FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 16 ]; then
+if [ "$SKILL_COUNT" -ge 19 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 16 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 19 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
 # Check rules
 RULE_COUNT=$(find .claude/rules -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$RULE_COUNT" -ge 5 ]; then
+if [ "$RULE_COUNT" -ge 6 ]; then
     echo "  [PASS] $RULE_COUNT rules found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 5+ rules, found $RULE_COUNT"
+    echo "  [FAIL] Expected 6+ rules, found $RULE_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -83,10 +88,12 @@ echo "  Session Ready"
 echo "  $PASS checks passed, $FAIL failed"
 echo "=========================================="
 echo ""
-echo "Philosophy: SPEC-First, PEV loops, Quality Gates"
+echo "[5/5] Ready"
+echo "Philosophy: governed autonomy — delegate execution, keep judgment, require evidence"
 echo "Fresh repos: run /tastebootstrap before /workflow"
 echo "Skills: /tastebootstrap, /workflow, /align, /autoplan, /verify,"
-echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council"
+echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
+echo "        /audit, /deepresearch, /webresearch, /browse, /introspect, /codesearch, /memory"
 echo ""
 echo "Start with: ./scripts/test-harness.sh to verify setup"
 echo "Optional runtime check: RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh"

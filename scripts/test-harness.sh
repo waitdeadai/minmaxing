@@ -51,6 +51,16 @@ else
     test_fail ".claude/settings.json missing"
 fi
 
+# Test 3aa: Team-Safe Settings Profile
+echo "[3aa] Team-Safe Settings Profile"
+if [ -f ".claude/settings.team-safe.example.json" ] && \
+   python3 -m json.tool .claude/settings.team-safe.example.json >/dev/null 2>&1 && \
+   grep -Fq '"defaultMode": "acceptEdits"' .claude/settings.team-safe.example.json 2>/dev/null; then
+    test_pass "team-safe settings example is valid and uses acceptEdits"
+else
+    test_fail "team-safe settings example is missing, invalid, or not using acceptEdits"
+fi
+
 # Test 3a: Taste Kernel Structure
 echo "[3a] Taste Kernel Structure"
 KERNEL_OK=true
@@ -214,6 +224,31 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
     test_pass "introspection is a hard gate across workflow, skills, docs, and instructions"
 else
     test_fail "introspection hard-gate contract is incomplete"
+fi
+
+# Test 3h: Governed Autonomy Truth Surfaces
+echo "[3h] Governed Autonomy Truth Surfaces"
+if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/dev/null && \
+   grep -Fq "governed Claude Code harness" README.md 2>/dev/null && \
+   grep -Fq "Verification Metadata" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
+   grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
+   grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
+   grep -Fq "Expected 19 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
+   ! grep -Fq "Expected 16 skills" scripts/start-session.sh 2>/dev/null && \
+   ! grep -Fq "Expected 5+ rules" scripts/start-session.sh 2>/dev/null && \
+   ! grep -Fq "verifies everything before you accept it" README.md 2>/dev/null && \
+   ! grep -Fq "Every decision, every fix, every shipped feature is remembered" README.md 2>/dev/null && \
+   ! grep -Fq "Every external claim gets verified" README.md 2>/dev/null && \
+   ! grep -Fq "Zero safety checks" README.md 2>/dev/null && \
+   ! grep -Fq "Not the same AI" README.md 2>/dev/null && \
+   ! grep -Fq "This is NOT the same AI" .claude/skills/verify/SKILL.md 2>/dev/null && \
+   ! grep -Fq "Same model. Better results." README.md 2>/dev/null; then
+    test_pass "public and runtime claims are governed, evidence-first, and contract-tested"
+else
+    test_fail "governed-autonomy truth surfaces contain stale counts or unsupported overclaims"
 fi
 
 # ========================================
@@ -502,6 +537,16 @@ if command -v forgegod &> /dev/null; then
     test_pass "ForgeGod installed"
 else
     test_fail "ForgeGod not installed"
+fi
+
+# Test 14a: Memory Health Command
+echo "[14a] Memory Health Command"
+MEMORY_HEALTH_OUTPUT="$(bash scripts/memory.sh health 2>/dev/null || true)"
+if printf '%s' "$MEMORY_HEALTH_OUTPUT" | grep -Eq "status: (healthy|degraded|disabled)" && \
+   printf '%s' "$MEMORY_HEALTH_OUTPUT" | grep -Fq "Flat-file Decisions"; then
+    test_pass "memory health reports concrete status and flat-file evidence"
+else
+    test_fail "memory health command did not report status and evidence"
 fi
 
 # ========================================

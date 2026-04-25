@@ -3,6 +3,7 @@
 # Usage: memory add <tier> <content> [--tags TAG1,TAG2]
 #        memory list [--tier TIERS]
 #        memory search <query>
+#        memory health
 #        memory stats
 #        memory recall <task> [--depth simple|medium|complex]
 #        memory causal-factors [--outcome success|failure] [--limit N]
@@ -22,10 +23,10 @@ mkdir -p "${MEMORY_DIR}/Patterns"
 mkdir -p "${MEMORY_DIR}/Errors"
 mkdir -p "${MEMORY_DIR}/Stories"
 
-# Python call helper — runs memory Python package for SQLite FTS5 search
-# Falls back gracefully if Python fails
+# Python call helper — runs memory Python package for SQLite FTS5 search.
+# Call sites decide how to handle a degraded SQLite layer.
 python_call() {
-  python3 -m memory.cli "$@" 2>/dev/null || true
+  python3 -m memory.cli "$@" 2>/dev/null
 }
 
 # Parse arguments
@@ -203,6 +204,49 @@ EOF
     fi
     ;;
 
+  health)
+    echo "=== Memory Health ==="
+    echo ""
+
+    status="healthy"
+
+    if [ -d "${TASTE_DIR}/sessions" ]; then
+      echo "[PASS] Episodic sessions directory: ${TASTE_DIR}/sessions"
+    else
+      echo "[FAIL] Episodic sessions directory missing: ${TASTE_DIR}/sessions"
+      status="disabled"
+    fi
+
+    for folder in Decisions Patterns Errors Stories; do
+      if [ -d "${MEMORY_DIR}/${folder}" ]; then
+        count="$(find "${MEMORY_DIR}/${folder}" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')"
+        echo "[PASS] Flat-file ${folder}: ${count:-0} note(s)"
+      else
+        echo "[FAIL] Flat-file ${folder} missing: ${MEMORY_DIR}/${folder}"
+        status="disabled"
+      fi
+    done
+
+    health_tmp="$(mktemp)"
+    health_err="$(mktemp)"
+    if python3 -m memory.cli stats >"$health_tmp" 2>"$health_err"; then
+      echo "[PASS] SQLite/FTS5 memory CLI available"
+    else
+      echo "[WARN] SQLite/FTS5 memory CLI unavailable; flat-file memory remains usable"
+      if [ "$status" = "healthy" ]; then
+        status="degraded"
+      fi
+    fi
+    rm -f "$health_tmp" "$health_err"
+
+    echo ""
+    echo "status: $status"
+
+    if [ "$status" = "disabled" ]; then
+      exit 1
+    fi
+    ;;
+
   recall)
     task="${1:-}"
     if [ -z "$task" ]; then
@@ -241,6 +285,7 @@ EOF
     echo "  add <tier> <content> [--tags TAG1,TAG2]  Add memory"
     echo "  list [--tier TIERS]                      List memories"
     echo "  search <query>                           Search memories (FTS5)"
+    echo "  health                                   Show memory health status"
     echo "  stats                                    Show stats (flat + SQLite)"
     echo "  recall <task> [--depth simple|medium|complex]  Recall task context"
     echo "  causal-factors [--outcome success|failure] [--limit N]  Analyze causal factors"

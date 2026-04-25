@@ -7,9 +7,9 @@
   <img src="https://img.shields.io/badge/Context-204K%20tokens-3B82F6?style=for-the-badge&logo=data&logoColor=white" alt="204K Context" />
 </h1>
 
-**Right results, not fast results.**
+**Delegate execution. Keep judgment. Require evidence.**
 
-One command sets up a Claude Code harness where AI researches with an efficacy-first agent budget, audits the codebase, writes a concrete plan and `SPEC.md`, implements, and verifies everything before you accept it.
+One command sets up a governed Claude Code harness where AI researches with an efficacy-first agent budget, audits the codebase, writes a concrete plan and `SPEC.md`, implements with clear ownership, and produces evidence before you trust the result.
 
 <p align="center">
   <a href="https://github.com/waitdeadai/minmaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Stars"></a>
@@ -34,7 +34,7 @@ That's it. Memory system, MiniMax MCP, and 19 skills — all configured.
 
 **Fresh repos should start with `/tastebootstrap`.** It asks the 10 kernel questions, writes `taste.md` + `taste.vision`, and gives `/workflow` explicit taste to follow before anything is built.
 
-> **Note:** Setup adds hardware auto-detection to `~/.bashrc` — `MAX_PARALLEL_AGENTS` is set automatically on every shell start.
+> **Note:** Setup adds hardware auto-detection to `~/.bashrc` — `MAX_PARALLEL_AGENTS` is set automatically for new Bash sessions that source `~/.bashrc`.
 
 ### Windows Setup
 
@@ -153,22 +153,22 @@ With SPEC-first:
 
 | This harness | Other harnesses |
 |-------------|----------------|
-| Taste-first: taste.md + vision gate every decision | No taste — just "build X" |
-| 5-tier memory: remembers decisions, patterns, errors across sessions | Tabula rasa every session |
-| Central orchestrator: /workflow runs research → audit → plan → spec → execute → verify automatically | Skills are isolated, no chaining |
-| Auto-capture: outcomes logged to memory automatically | Manual documentation |
+| Taste-first: `/workflow` starts from `taste.md` + `taste.vision` | No taste — just "build X" |
+| 5-tier memory: captures durable decisions, patterns, and errors when hooks/CLI are healthy | Tabula rasa every session |
+| Central orchestrator: `/workflow` runs research → audit → plan → spec → execute → verify with hard gates | Skills are isolated, no chaining |
+| Health-checked capture: outcomes and reusable lessons can be logged to memory | Manual documentation |
 | SPEC-first: write spec before code | Vague prompts, rebuild loops |
 | Efficacy-first parallelism: use the right number of agents for the task | Sequential one-at-a-time |
-| Separate verifier agent | Same AI checks its own work |
+| Independent verification pass with metadata when isolation can be proved | Casual self-checks |
 | Research-first: `/workflow` drafts a plan, runs the repo’s effectiveness-first `deepresearch` `search -> read -> refine` investigation loop, and keeps an inspectable source ledger before planning or edits | AI hallucinates best practices |
 
-**Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. In a fresh repo, define them with `/tastebootstrap` before anything is built.
+**Taste is the kernel.** `/workflow` starts by checking taste.md and taste.vision. In a fresh repo, define them with `/tastebootstrap` before anything is built.
 
 **Taste is NOT just frontend/aesthetic, and it is not a frontend/backend checklist.** It's the project's operating kernel — design principles, experience direction, interface contracts, observability rules, architecture constraints, code style, intent, non-goals, and values. When `/tastebootstrap` asks its 10 kernel questions, it captures the vision and guardrails that make the whole system coherent.
 
-**Memory is persistent.** Every decision, every fix, every shipped feature is remembered. The second session knows what the first session learned.
+**Memory is durable when healthy.** minmaxing uses working-state handoffs, flat-file audit notes, and SQLite/FTS5 retrieval so reusable decisions, patterns, and failures can survive beyond one chat. Run `bash scripts/memory.sh health` when memory quality matters.
 
-**Same model. Better results.** The LangChain team moved from Top 30 to Top 5 on Terminal Bench 2.0 with better harness design.
+**Harness quality matters.** The point is not to pretend the model became smarter. The point is to reduce verification debt: force research, write the contract, preserve context, inspect assumptions, and prove the outcome before trust.
 
 ---
 
@@ -200,17 +200,18 @@ Even tiny local file-changing tasks should still produce a small `SPEC.md` when 
 
 Before a new task replaces a non-reused active spec, minmaxing archives the previous one under `.taste/specs/` with a descriptive task/outcome filename. Verified closeout archives the final spec too, deduplicated by content hash, so repeated closeouts do not create noisy copies.
 
-### Separate Verifier
-Not the same AI that wrote the code. A different agent checks output against your spec.
+### Independent Verification Pass
+Verification is not a vibe check. `/verify` reads `SPEC.md`, checks every success criterion, records evidence, and now asks the workflow artifact to capture executor/verifier metadata when isolation is known. If the run cannot prove a separate agent/model/workspace, it must say `unknown` instead of pretending.
 
 ### Research-First
-AI training data is stale. Every external claim gets verified with live web search.
+AI training data can be stale, and repo context can be incomplete. Current external facts get verified when they materially affect the plan; purely local tasks can justify a local-only research brief instead of doing fake research theater.
 
 `/workflow` now treats a research brief as mandatory for all tasks, with the MiniMax MCP as the preferred source whenever current external facts matter. But the brief is not just a search tally. The workflow now uses the repo’s effectiveness-first `deepresearch` protocol: draft a collaborative research plan, run an iterative search -> read -> refine loop, keep a source ledger, challenge conflicting evidence, and do targeted follow-up research before freezing the plan. It still uses up to `MAX_PARALLEL_AGENTS` tracks, but only when the added tracks are distinct and plan-changing. For a purely local task, it can justify a local-only research brief instead of doing pointless external calls.
 
 ### Permission Mode
-- **bypassPermissions** (shared-project default by design): Zero safety checks for trusted personal setups
-- If you want more guardrails, switch your local Claude session to `acceptEdits` or `plan`
+- **bypassPermissions** (shared-project default by design): trusted-local fast profile for personal repos where you want fewer prompts.
+- **Team-safe option:** copy [`.claude/settings.team-safe.example.json`](/home/fer/Music/ultimateminimax/.claude/settings.team-safe.example.json) to your local settings and keep `defaultMode` at `acceptEdits`.
+- If you want even more guardrails, switch your local Claude session to `plan` before high-risk work.
 
 ### OpenAI Codex Plugin
 This repo now ships a project-scoped Codex config under [`.codex/config.toml`](/home/fer/Music/ultimateminimax/.codex/config.toml) plus focused Codex agents in [`.codex/agents/`](/home/fer/Music/ultimateminimax/.codex/agents) so the official OpenAI Claude Code plugin can inherit sane defaults when you use Codex from inside Claude Code.
@@ -306,7 +307,7 @@ Before confidence is allowed, `/workflow` runs the repo’s hard-gate `/introspe
 
 ### 5-Tier Memory System
 
-Every action is remembered:
+Memory is layered and inspectable, not magic. It captures task state, durable decisions, reusable patterns, error fixes, and causal notes when the hooks and CLI are healthy:
 
 | Tier | What | When |
 |------|------|------|
@@ -317,7 +318,7 @@ Every action is remembered:
 | Graph | Causal chains | What caused success/failure |
 | Commit Log | Git commit summaries | Every `git commit` (auto-summarized) |
 
-Memory is SQLite-backed with FTS5 search. Type `bash scripts/memory.sh stats` to see it.
+Memory uses flat-file audit notes plus SQLite-backed FTS5 search when the Python memory CLI is available. Type `bash scripts/memory.sh health` to see whether the current repo is `healthy`, `degraded`, or `disabled`.
 
 **Commit auto-summarize:** Every `git commit` triggers `commit-summarize.sh` via a git post-commit hook, generating `obsidian/Memory/Stories/commits/{date}-{hash}.md` with structured frontmatter and a brief summary. Also written to SQLite for agent retrieval.
 
@@ -367,9 +368,9 @@ Then run:
 - **SPEC.md** — exact specification created from the researched plan
 - **Spec Archive** — `.taste/specs/...` snapshots of completed or superseded specs
 - **Implementation** — parallel agents building simultaneously
-- **Verification** — separate agent adversarial-checking against spec
+- **Verification** — independent evidence pass against spec, with isolation metadata when known
 - **Closeout** — local completion by default, remote push only when you explicitly ask for it
-- **Memory** — everything logged to 5-tier memory for next session
+- **Memory** — durable lessons logged to 5-tier memory when the health check supports it
 
 ### After Bootstrap
 
@@ -446,7 +447,7 @@ Now you can use any workflow pattern:
 | `/audit` | Deep codebase audit with risk-based parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
 | `/sprint` | Run an ownership-safe parallel execution wave |
-| `/verify` | Check output against SPEC (separate verifier) |
+| `/verify` | Check output against SPEC with an independent evidence pass |
 | `/review` | AI review + you decide |
 | `/qa` | Playwright E2E testing — Pass/Fail only |
 | `/ship` | Pre-ship checklist + rollback plan |

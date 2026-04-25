@@ -4,7 +4,7 @@
 
 **Effective = right results. Efficient = fast results.**
 
-We prioritize getting it right over getting it done fast. Parallel agents done properly with a competent supervisor = guaranteed results.
+We prioritize getting it right over getting it done fast. Parallel agents only help when the supervisor keeps ownership clear, judgment human-visible, and evidence mandatory.
 
 ---
 
@@ -16,7 +16,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 4. **Introspect Before Confidence**: `/workflow` runs hard-gate `/introspect` before plan freeze, after implementation, after failed verification, and before push/ship moments
 5. **Plan Before Spec**: `/workflow` synthesizes research + audit + introspection into a concrete plan before edits
 6. **Supervisor Pattern**: AI supervises workers, not the other way around
-7. **PEV Loop**: Plan → Execute → Verify. The verifier is separate from the implementer.
+7. **PEV Loop**: Plan → Execute → Verify. Verification is an independent evidence pass; claim separate executor/verifier isolation only when metadata proves it.
 8. **Quality Gates**: /verify must pass; tests must pass; unresolved introspection blockers stop closeout
 
 ## Default Behavior
@@ -27,7 +27,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 3. `/workflow` audits the current codebase, runs `/introspect pre-plan`, and writes the plan
 4. `/workflow` creates `SPEC.md`, executes, runs post-implementation introspection, verifies, and only then closes out
 
-**Supervisor's job:** Ensure every task is research-backed, audit-backed, spec-backed, and verified before declaring done, without handing the next phase back to the user.
+**Supervisor's job:** Ensure every non-trivial task is research-backed, audit-backed, spec-backed, introspected, and verified before declaring done, without handing the next phase back to the user.
 
 **Taste alignment uses Socratic questions.** When taste is unclear or a proposal conflicts with the project kernel in `taste.md` and `taste.vision`, `/align` asks focused questions before `/workflow` proceeds.
 
@@ -61,7 +61,7 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 - **Optional Codex Plugin Support**: If `codex-plugin-cc` is installed in Claude Code, project `.codex/config.toml` gives Codex `gpt-5.4` + `xhigh` defaults with 10 subagent threads
 - **Keep**: Architecture, security, verification decisions
 - **Delegate**: Single-file changes, tests, mechanical refactoring
-- **Memory**: Run `/memory` or `bash scripts/memory.sh stats`
+- **Memory**: Run `/memory`, `bash scripts/memory.sh stats`, or `bash scripts/memory.sh health`
 
 ## Agent Pool (10 default)
 | Hardware | MAX_PARALLEL_AGENTS |
@@ -70,11 +70,11 @@ We prioritize getting it right over getting it done fast. Parallel agents done p
 | 16GB RAM, 4+ cores | 6 |
 | 8GB RAM, 2+ cores | 3 |
 
-Hardware auto-detection runs via `scripts/detect-hardware.sh` on every shell start (added to `~/.bashrc` by setup).
+Hardware auto-detection runs via `scripts/detect-hardware.sh` for new Bash sessions that source `~/.bashrc` after setup.
 
 ## 5-Tier Memory System
 
-minmaxing maintains a 5-tier memory architecture backed by SQLite + FTS5:
+minmaxing maintains a 5-tier memory architecture backed by flat-file audit notes plus SQLite + FTS5 when the Python memory CLI is available:
 
 | Tier | Content | Storage |
 |------|---------|---------|
@@ -107,6 +107,7 @@ minmaxing maintains a 5-tier memory architecture backed by SQLite + FTS5:
 **Commands:**
 - `memory recall` — Inject relevant context from SQLite memory into current session
 - `/memory` or `bash scripts/memory.sh stats` — Query memory stats
+- `bash scripts/memory.sh health` — Report whether memory is `healthy`, `degraded`, or `disabled`
 
 **Causal graph**: Tracks what caused success/failure, enabling learned patterns across sessions.
 
