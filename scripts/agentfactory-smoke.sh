@@ -74,6 +74,12 @@ for pattern in \
   "egress_policy" \
   "durable_orchestration" \
   "observability_contract" \
+  "development_host_profile" \
+  "target_runtime_profile" \
+  "host_capacity_profile" \
+  "capacity_binding" \
+  "concurrency_budget" \
+  "degrade_policy" \
   "Status Transition Matrix" \
   "operator_exception" \
   "Required adversarial stress cases" \
@@ -211,6 +217,11 @@ validate_fixture() {
     'credential_strategy' \
     'egress_policy' \
     'durable_orchestration' \
+    'development_host_profile' \
+    'target_runtime_profile' \
+    'host_capacity_profile' \
+    'capacity_binding' \
+    'concurrency_budget' \
     'observability_contract'; do
     grep -Fq "$pattern" "$manifest" || return 1
   done
@@ -227,6 +238,12 @@ validate_fixture() {
     '"max_input_bytes"' \
     '"approval_gate"' \
     '"audit_sink"' \
+    '"development_host_profile"' \
+    '"target_runtime_profile"' \
+    '"capacity_profile"' \
+    '"capacity_binding"' \
+    '"concurrency_budget"' \
+    '"degrade_policy"' \
     '"kill_switch"' \
     '"fixtures"' \
     '"expected_statuses"'; do
@@ -284,7 +301,7 @@ run_negative_fixture_checks() {
   trap 'rm -rf "${AGENTFACTORY_SMOKE_TMP:-}"' EXIT
   local tmp="$AGENTFACTORY_SMOKE_TMP"
 
-  mkdir -p "$tmp/positive" "$tmp/raw-secret" "$tmp/read-only-write" "$tmp/no-kill-evidence" "$tmp/operator-exception-active" "$tmp/verifier-overclaim"
+  mkdir -p "$tmp/positive" "$tmp/raw-secret" "$tmp/read-only-write" "$tmp/no-kill-evidence" "$tmp/operator-exception-active" "$tmp/verifier-overclaim" "$tmp/no-target-runtime"
 
   cat > "$tmp/positive/hermes.manifest.md" <<'EOF'
 status: "active"
@@ -297,6 +314,19 @@ action_authority_matrix: []
 credential_strategy: {}
 egress_policy: {}
 durable_orchestration: {}
+development_host_profile: {}
+target_runtime_profile:
+  environment: "local"
+  evidence: "local capacity fixture"
+host_capacity_profile:
+  development_host: "fixture"
+  target_runtime: "fixture"
+  effective_runtime_limit: 1
+capacity_binding:
+  target_equals_development_host: true
+  budget_basis: "development_host_profile"
+concurrency_budget:
+  degrade_policy: "pause-new-work"
 observability_contract: {}
 EOF
   cat > "$tmp/positive/hermes.runtime.json" <<'EOF'
@@ -320,6 +350,28 @@ EOF
         "approval_gate": "none"
       }
     ]
+  },
+  "development_host_profile": {
+    "recommended_ceiling": 2
+  },
+  "target_runtime_profile": {
+    "environment": "local",
+    "runtime_limit": 2,
+    "evidence": "local capacity fixture"
+  },
+  "capacity_profile": {
+    "development_host": "fixture",
+    "target_runtime": "fixture",
+    "effective_runtime_limit": 2
+  },
+  "capacity_binding": {
+    "target_equals_development_host": true,
+    "budget_basis": "development_host_profile"
+  },
+  "concurrency_budget": {
+    "max_parallel_runs": 1,
+    "max_parallel_tools": 1,
+    "degrade_policy": "pause-new-work"
   },
   "kill_switch": {
     "test_command": "true"
@@ -390,6 +442,28 @@ action_authority_matrix: []
 credential_strategy: {}
 egress_policy: {}
 durable_orchestration: {}
+host_capacity_profile: {}
+concurrency_budget:
+  degrade_policy: "pause-new-work"
+observability_contract: {}
+EOF
+
+  cp "$tmp/positive/"* "$tmp/no-target-runtime/"
+  cat > "$tmp/no-target-runtime/hermes.manifest.md" <<'EOF'
+status: "active"
+decision_authority: "read-only"
+verification_status: "verified"
+runtime_control_plane: {}
+system_of_record: {}
+runtime_identity: {}
+action_authority_matrix: []
+credential_strategy: {}
+egress_policy: {}
+durable_orchestration: {}
+development_host_profile: {}
+host_capacity_profile: {}
+concurrency_budget:
+  degrade_policy: "pause-new-work"
 observability_contract: {}
 EOF
 
@@ -405,6 +479,7 @@ EOF
   expect_invalid_fixture "$tmp/no-kill-evidence" "active-without-kill-evidence"
   expect_invalid_fixture "$tmp/operator-exception-active" "operator-exception-active"
   expect_invalid_fixture "$tmp/verifier-overclaim" "verifier-overclaim"
+  expect_invalid_fixture "$tmp/no-target-runtime" "missing-target-runtime-profile"
 }
 
 require_no_invalid_active_rows

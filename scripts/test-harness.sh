@@ -216,7 +216,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "21 skills" README.md 2>/dev/null && \
+   grep -Fq "22 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -235,12 +235,12 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 21 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 22 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "Expected 16 skills" scripts/start-session.sh 2>/dev/null && \
-   ! grep -Fq "Expected $((21 - 1)) skills" scripts/start-session.sh 2>/dev/null && \
+   ! grep -Fq "Expected $((22 - 1)) skills" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "Expected 5+ rules" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "verifies everything before you accept it" README.md 2>/dev/null && \
    ! grep -Fq "Every decision, every fix, every shipped feature is remembered" README.md 2>/dev/null && \
@@ -467,26 +467,81 @@ else
     test_fail "open-core boundary, license, or moat-protection docs are incomplete"
 fi
 
+# Test 3m: Parallel Mode Contract
+echo "[3m] Parallel Mode Contract"
+PARALLEL_MODE_OK=true
+for required_file in \
+    ".claude/skills/parallel/SKILL.md" \
+    "scripts/parallel-capacity.sh" \
+    "scripts/parallel-smoke.sh"; do
+    if [ ! -f "$required_file" ]; then
+        PARALLEL_MODE_OK=false
+    fi
+done
+for pattern in \
+    "# /parallel" \
+    "Parallel Eligibility Audit" \
+    "Hardware Capacity Profile" \
+    "Execution Substrate Selector" \
+    "Packet DAG" \
+    "Ownership Matrix" \
+    "Sync Barrier" \
+    "Worker Result Schema" \
+    "parallel-instances" \
+    "subagents" \
+    "Agent teams are opt-in experimental" \
+    "MAX_PARALLEL_AGENTS" \
+    "development_host_profile" \
+    "target_runtime_profile" \
+    "host_capacity_profile" \
+    "capacity_binding" \
+    "concurrency_budget" \
+    "agentfactory"; do
+    if ! grep -Fq "$pattern" .claude/skills/parallel/SKILL.md 2>/dev/null; then
+        PARALLEL_MODE_OK=false
+    fi
+done
+for pattern in \
+    "parallel-capacity.sh --summary" \
+    "/parallel"; do
+    if ! grep -Fq "$pattern" README.md CLAUDE.md AGENTS.md scripts/start-session.sh 2>/dev/null; then
+        PARALLEL_MODE_OK=false
+    fi
+done
+if [ "$PARALLEL_MODE_OK" = true ] && \
+   grep -Fq "Hardware-Aware Capacity" .claude/rules/parallelism.rules.md 2>/dev/null && \
+   grep -Fq "Parallel substrate selection" .claude/rules/delegation.rules.md 2>/dev/null && \
+   grep -Fq "development_host_profile" .claude/skills/agentfactory/SKILL.md 2>/dev/null && \
+   grep -Fq "target_runtime_profile" .claude/skills/agentfactory/SKILL.md 2>/dev/null && \
+   grep -Fq "host_capacity_profile" .claude/skills/agentfactory/SKILL.md 2>/dev/null && \
+   grep -Fq "capacity_binding" .claude/skills/agentfactory/SKILL.md 2>/dev/null && \
+   grep -Fq "concurrency_budget" .claude/skills/agentfactory/SKILL.md 2>/dev/null && \
+   bash scripts/parallel-smoke.sh >/dev/null 2>&1; then
+    test_pass "/parallel is registered as a hardware-aware orchestrator"
+else
+    test_fail "/parallel contract, capacity script, docs, or smoke test is incomplete"
+fi
+
 # ========================================
-# Skills (21 Expected)
+# Skills (22 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 21 Expected]"
+echo "[Skills - 22 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 21 ]; then
+if [ "$SKILL_COUNT" -ge 22 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 21+ skills, found $SKILL_COUNT"
+    test_fail "Expected 22+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow digestflow align audit autoplan agentfactory deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow digestflow align audit autoplan agentfactory parallel deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -556,7 +611,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

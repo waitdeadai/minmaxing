@@ -66,6 +66,14 @@ For each criterion, perform verification:
 - Verify values match spec
 - Test that config takes effect
 
+**For `/parallel` runs:**
+- Read the parallel artifact when present
+- Verify every worker packet returned the Worker Result Schema
+- Check changed files against the ownership matrix
+- Confirm sync barriers were honored before dependent work
+- Confirm the effective budget did not exceed the hardware capacity profile, `MAX_PARALLEL_AGENTS`, or Codex `max_threads`
+- Treat worker summaries as claims until aggregate evidence proves them
+
 ### Step 4: Verification Results
 
 ```markdown
@@ -150,6 +158,10 @@ record_outcome(factors, 'failure')
 | PASS | Test output, command output, screenshot, inspection finding |
 | FAIL | Expected value, actual value, specific difference |
 | CONDITIONAL | What is uncertain, what would resolve it |
+
+For `/parallel`, PASS also requires packet evidence, ownership-matrix checks,
+capacity checks, sync-barrier checks, and aggregate verification against
+`SPEC.md`.
 
 **NOT acceptable as evidence:**
 - "Looks good"

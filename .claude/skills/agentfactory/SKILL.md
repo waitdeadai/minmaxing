@@ -27,6 +27,7 @@ Hermes agents may be used as single workflow executors, department-specific assi
 - Keep all output reproducible: the same intent answers and repo evidence must produce a functionally equivalent Hermes agent.
 - Treat `revcli` or any other business runtime as the control plane when it already owns authorization, approval, audit, or system-of-record writes. Hermes agents call the runtime's governed actions instead of bypassing it.
 - Treat runtime compatibility as a machine contract, not prose. Every Hermes agent must include `hermes.runtime.json` with parseable invocation, authority, approval, audit, kill-switch, and fixture evidence fields.
+- Treat runtime capacity as a machine contract, not optimism. Every Hermes agent or fleet must include `development_host_profile`, `target_runtime_profile`, `host_capacity_profile`, `capacity_binding`, `concurrency_budget`, maximum parallel runs, queue/backpressure behavior, and `degrade_policy`; never assume the developer machine and production host have the same specs, and never assume either can run every Hermes agent at once.
 - Any command capability must pin `cwd`, allowed argv shape, allowed config paths, env allowlist, max input size, input schema, denied flags, and expected exit/status behavior.
 - Do not mark an enterprise or REVCLI-facing agent `active` when `verification_status` is `operator_exception`, when runtime evidence is missing, or when read-write/destructive authority is paired with exception-based verification.
 - Keep `.minimaxing/state/CURRENT.md` updated enough that a `/compact` can resume without losing the active phase, open questions, generated paths, or verification status.
@@ -47,6 +48,7 @@ Hermes agents may be used as single workflow executors, department-specific assi
 | C10 | Zero-trust verification | Readiness is decided by verification evidence, not executor confidence. |
 | C11 | Runtime-bound | Production readiness requires a parseable runtime contract and executable runtime evidence. |
 | C12 | Side-effect-safe | Side effects require argument constraints, approval gates, audit events, and rollback or compensation proof. |
+| C13 | Capacity-aware | Development host capacity, target runtime capacity, concurrency budget, queue behavior, and degradation policy must be declared and verified before production readiness. |
 
 ## Agent Factory Workflow Artifact
 
@@ -69,6 +71,7 @@ Required section order:
 ## Deep Research Brief
 ## Source Ledger
 ## Runtime Audit
+## Capacity-Aware Runtime
 ## Manifest Draft
 ## Capability Stack
 ## Research Sufficiency Introspection
@@ -84,6 +87,7 @@ Required behavior:
 - `## Deep Research Brief` must follow the same effectiveness-first shape as `/workflow`: collaborative research plan, search -> read -> refine loop, source ledger, contradiction handling, and follow-up research before freezing the manifest.
 - `## Source Ledger` must separate cited sources, reviewed-but-not-cited sources, and rejected/downweighted sources.
 - `## Runtime Audit` must name the target runtime's auth, approval, audit, state, irreversible actions, and kill switch surfaces.
+- `## Capacity-Aware Runtime` must record both the development host profile and the target runtime profile. Use `bash scripts/parallel-capacity.sh --json` only for the development host or for a truly local target runtime. When the agent will run on a cloud server, container host, VPS, CI runner, managed queue, or another fleet runtime, record target runtime evidence from infrastructure config, provider limits, runtime telemetry, deployment docs, or an explicit operator-provided capacity contract. Concurrency budgets derive from the target runtime, not the dev PC, unless `capacity_binding.target_equals_development_host` is true.
 - `## Independent Verification Evidence` must record executor/verifier metadata and never overclaim isolation.
 - `## Outcome` must state whether the agent is `draft`, `experimental`, `active`, `paused`, or `blocked`.
 
@@ -145,6 +149,8 @@ Required research branches:
 |--------|-------------------|
 | Repo overlap | Existing agents, workflows, scripts, policies, profiles, skills, or runtime modules that overlap the intended purpose. |
 | Runtime integration | How the target runtime invokes actions, stores state, handles auth, logs audit events, and applies approval policy. |
+| Development host capacity | Local CPU/RAM class, configured `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and local verification ceiling from `scripts/parallel-capacity.sh` or equivalent. |
+| Target runtime capacity | Cloud/server/VPS/container/CI/managed-runtime CPU/RAM class, provider limits, autoscaling behavior, production concurrency limit, queue/backpressure behavior, maximum parallel runs, and degrade policy. |
 | Runtime authority chain | Which system owns policy, which system owns durable state, which system is the system of record, and which writes are forbidden bypasses. |
 | Approval and side-effect matrix | Every external, customer-visible, financial, legal, destructive, credential, workflow-state, or system-of-record action and its approval gate. |
 | Identity and credentials | Runtime principal, auth mode, credential owner, vault/provider, env var names, expiry, rotation, revocation, and secret redaction. |
@@ -227,6 +233,11 @@ Use Markdown with YAML front matter followed by required sections. Field names a
 | `credential_strategy` | yes | object | includes `env_var_names`, `vault_or_provider`, `scope`, `expiry`, `rotation`, `revocation`, `redaction` | raw secret value included |
 | `egress_policy` | yes | object | includes `default`, `allowed_domains`, `denied_domains`, `proxy_or_filter`, `ssrf_controls` | default is allow-all for production |
 | `durable_orchestration` | yes | object | includes `workflow_id`, `state_store`, `retry_policy`, `timeout_policy`, `resume_policy`, `idempotency` | persistent/scheduled agent lacks durable state |
+| `development_host_profile` | yes | object | includes `source`, `hardware_class`, `cpu_cores`, `ram_gb`, `recommended_ceiling`, `codex_max_threads`, `max_parallel_agents`, `measured_at`, `evidence` | missing, stale, or presented as production capacity without binding proof |
+| `target_runtime_profile` | yes | object | includes `environment`, `provider`, `region`, `instance_type`, `hardware_class`, `cpu_cores`, `ram_gb`, `gpu`, `runtime_limit`, `autoscaling`, `queue_limit`, `measured_at`, `evidence`, `confidence` | missing for non-local runtime, lacks evidence, or copies dev-host values without proof |
+| `host_capacity_profile` | yes | object | compatibility summary that includes `development_host`, `target_runtime`, and `effective_runtime_limit` | flattens dev and target into one ambiguous host or lacks effective target limit |
+| `capacity_binding` | yes | object | includes `target_equals_development_host`, `budget_basis`, `promotion_rule`, `minimum_target_evidence`, `stale_after`, `unknown_target_policy` | budget_basis is dev host for cloud/server target without explicit proof; unknown target can become active |
+| `concurrency_budget` | yes | object | includes `max_parallel_runs`, `max_parallel_tools`, `queue_policy`, `backpressure_policy`, `degrade_policy`, `supervisor_review_capacity`, `verification_capacity` | exceeds capacity profile, lacks queue/backpressure, or has no degrade policy |
 | `observability_contract` | yes | object | includes `trace_id`, `events`, `sink`, `redaction`, `retention`, `evidence_path` | no action-level attribution |
 | `memory_seed` | yes | list[object] | each object includes `tier`, `id`, `content`, `source`, `contradiction_check` | contradiction unresolved |
 | `success_criteria` | yes | list[string] | at least one objective, machine-checkable criterion | all criteria require human taste |
@@ -235,7 +246,7 @@ Use Markdown with YAML front matter followed by required sections. Field names a
 | `audit_logging` | yes | object | includes `events`, `sink`, `redaction`, `retention` | no runtime outcome logging |
 | `handoff_protocol` | yes | object | includes `when`, `to_whom`, `payload`, `timeout` | missing owner or payload |
 | `verification_status` | yes | enum | `draft`, `verified`, `failed`, `operator_exception` | `verified` without evidence; `operator_exception` with active/read-write/destructive status |
-| `constraints` | yes | list[string] | references C1-C12 and project-specific constraints | empty |
+| `constraints` | yes | list[string] | references C1-C13 and project-specific constraints | empty |
 | `source_ledger` | yes | list[object] | repo, memory, and external sources used | missing for non-trivial design |
 
 Optional fields:
@@ -294,15 +305,23 @@ Design capabilities using least privilege.
    - negative tests for config escape, oversized input, actor override, and forbidden side effect
 8. For MCP capabilities, require OAuth/PKCE or equivalent runtime auth when applicable, token audience validation, HTTPS for remote auth endpoints, explicit `allowed_tools`, no query-string tokens, secure token storage, and SSRF/egress controls.
 9. Place approval checks beside the tool or runtime action that creates the side effect. Do not rely only on top-level prompt instructions or outer guardrails.
-10. Build the memory scaffold:
+10. Design capacity before designing fleet behavior:
+   - run `bash scripts/parallel-capacity.sh --json` for `development_host_profile`
+   - use the local result for `target_runtime_profile` only when `target_runtime` is local and `capacity_binding.target_equals_development_host` is true
+   - record target runtime capacity evidence when the target host differs: IaC files, deployment manifests, provider instance class, container limits, queue limits, runtime telemetry, or an explicit operator capacity contract
+   - set `concurrency_budget.max_parallel_runs` no higher than the measured or declared target runtime limit, not the development host ceiling
+   - define `queue_policy`, `backpressure_policy`, and `degrade_policy`
+   - if target runtime capacity is unknown, set status to `experimental` or `blocked`; never `active`
+   - require human approval before increasing concurrency for customer-visible, financial, legal, destructive, or system-of-record actions
+11. Build the memory scaffold:
    - semantic tier: known decisions and operating boundaries
    - procedural tier: known runtime invocation patterns
    - error-solution tier: failure modes and mitigations
    - episodic tier: creation event and verification run
    - causal graph tier: relationships between agent purpose, capabilities, risk, and success metrics
-11. Build the system prompt from the manifest, not freeform improvisation.
+12. Build the system prompt from the manifest, not freeform improvisation.
 
-Hard gate: any capability without a manifest justification is removed before `HERMES-{SLUG}-SPEC.md`.
+Hard gate: any capability without a manifest justification is removed before `HERMES-{SLUG}-SPEC.md`. Any Hermes fleet, cloud/server deployment, or scheduled agent without target runtime capacity evidence, concurrency budget, and degrade policy is blocked from `active` status.
 
 ## Phase 5: SPEC.md For The Hermes Agent
 
@@ -317,6 +336,7 @@ Required sections:
 ## Taste Alignment
 ## Runtime And Integration Surface
 ## Runtime Contract
+## Runtime Capacity Contract
 ## Authority Model
 ## Capability Grants
 ## Action Authority Matrix
@@ -410,6 +430,50 @@ durable_orchestration:
   timeout_policy: "{timeout policy}"
   resume_policy: "{resume policy}"
   idempotency: "{idempotency policy}"
+development_host_profile:
+  source: "scripts/parallel-capacity.sh|operator-contract"
+  hardware_class: "low|standard|high|workstation"
+  cpu_cores: 0
+  ram_gb: 0
+  recommended_ceiling: 1
+  codex_max_threads: 1
+  max_parallel_agents: 1
+  measured_at: "YYYY-MM-DD"
+  evidence: "{local capacity command output or contract path}"
+target_runtime_profile:
+  environment: "local|ci|vps|cloud-vm|container|serverless|managed-workflow|revcli"
+  provider: "{local|aws|gcp|azure|vercel|railway|fly|render|private-vps|custom}"
+  region: "{region-or-n/a}"
+  instance_type: "{instance/container/runtime class}"
+  hardware_class: "low|standard|high|workstation|managed|unknown"
+  cpu_cores: 0
+  ram_gb: 0
+  gpu: "none|declared"
+  runtime_limit: 1
+  autoscaling: "{none|horizontal|vertical|provider-managed|unknown}"
+  queue_limit: 1
+  measured_at: "YYYY-MM-DD"
+  evidence: "{IaC, provider limit, runtime telemetry, deploy docs, or operator contract}"
+  confidence: "high|medium|low"
+host_capacity_profile:
+  development_host: "{summary of development_host_profile}"
+  target_runtime: "{summary of target_runtime_profile}"
+  effective_runtime_limit: 1
+capacity_binding:
+  target_equals_development_host: false
+  budget_basis: "target_runtime_profile|development_host_profile"
+  promotion_rule: "active requires target runtime evidence unless target_equals_development_host is true"
+  minimum_target_evidence: "{required evidence source}"
+  stale_after: "{duration or date}"
+  unknown_target_policy: "experimental-or-blocked"
+concurrency_budget:
+  max_parallel_runs: 1
+  max_parallel_tools: 1
+  queue_policy: "{fifo|priority|runtime-managed|none}"
+  backpressure_policy: "{pause|queue|shed|escalate}"
+  degrade_policy: "{downgrade-to-local|read-only|pause-new-work|escalate}"
+  supervisor_review_capacity: 1
+  verification_capacity: 1
 observability_contract:
   trace_id: "{trace id field}"
   events: []
@@ -435,6 +499,11 @@ verification_status: "draft"
 ## Credential Strategy
 ## Egress Policy
 ## Durable Orchestration
+## Development Host Profile
+## Target Runtime Profile
+## Host Capacity Profile
+## Capacity Binding
+## Concurrency Budget
 ## Observability Contract
 ## Memory Seed Summary
 ## Success Criteria
@@ -572,6 +641,55 @@ version: "0.1.0"
     "timeout_policy": "{timeout policy}",
     "resume_policy": "{resume policy}"
   },
+  "development_host_profile": {
+    "source": "scripts/parallel-capacity.sh|operator-contract",
+    "hardware_class": "low|standard|high|workstation",
+    "cpu_cores": 0,
+    "ram_gb": 0,
+    "recommended_ceiling": 1,
+    "codex_max_threads": 1,
+    "max_parallel_agents": 1,
+    "measured_at": "YYYY-MM-DD",
+    "evidence": "{local capacity command output or contract path}"
+  },
+  "target_runtime_profile": {
+    "environment": "local|ci|vps|cloud-vm|container|serverless|managed-workflow|revcli",
+    "provider": "{local|aws|gcp|azure|vercel|railway|fly|render|private-vps|custom}",
+    "region": "{region-or-n/a}",
+    "instance_type": "{instance/container/runtime class}",
+    "hardware_class": "low|standard|high|workstation|managed|unknown",
+    "cpu_cores": 0,
+    "ram_gb": 0,
+    "gpu": "none|declared",
+    "runtime_limit": 1,
+    "autoscaling": "{none|horizontal|vertical|provider-managed|unknown}",
+    "queue_limit": 1,
+    "measured_at": "YYYY-MM-DD",
+    "evidence": "{IaC, provider limit, runtime telemetry, deploy docs, or operator contract}",
+    "confidence": "high|medium|low"
+  },
+  "capacity_profile": {
+    "development_host": "{summary of development_host_profile}",
+    "target_runtime": "{summary of target_runtime_profile}",
+    "effective_runtime_limit": 1
+  },
+  "capacity_binding": {
+    "target_equals_development_host": false,
+    "budget_basis": "target_runtime_profile|development_host_profile",
+    "promotion_rule": "active requires target runtime evidence unless target_equals_development_host is true",
+    "minimum_target_evidence": "{required evidence source}",
+    "stale_after": "{duration or date}",
+    "unknown_target_policy": "experimental-or-blocked"
+  },
+  "concurrency_budget": {
+    "max_parallel_runs": 1,
+    "max_parallel_tools": 1,
+    "queue_policy": "fifo|priority|runtime-managed|none",
+    "backpressure_policy": "pause|queue|shed|escalate",
+    "degrade_policy": "downgrade-to-local|read-only|pause-new-work|escalate",
+    "supervisor_review_capacity": 1,
+    "verification_capacity": 1
+  },
   "observability": {
     "trace_id_field": "trace_id",
     "events": [],
@@ -606,6 +724,11 @@ version: "0.1.0"
 
 ## Runtime
 ## Runtime Control Plane
+## Development Host Capacity
+## Target Runtime Capacity
+## Capacity Binding
+## Concurrency Budget
+## Queue Backpressure And Degrade Policy
 ## Invocation
 ## Environment Variables
 ## Authentication
@@ -633,6 +756,10 @@ version: "0.1.0"
 |---------|---------|---------|-----------------|---------------|---------------|----------|--------|
 ## Smoke Test
 ## Runtime Control Plane Test
+## Development Host Capacity Test
+## Target Runtime Capacity Test
+## Capacity Binding Test
+## Concurrency Budget Test
 ## Behavioral Boundary Test
 ## Memory Integrity Check
 ## Escalation Test
@@ -680,6 +807,10 @@ Run introspection inline before readiness.
 Required checks:
 - Is every tool authorization justified by a specific use case in the manifest?
 - Is every runtime action represented in `hermes.runtime.json` with allowed/denied actions, argument constraints, input limits, and audit events?
+- Does `development_host_profile` describe the machine used to build and verify, without being treated as production capacity by default?
+- Does `target_runtime_profile` have real evidence when the agent will run in cloud, CI, VPS, container, serverless, REVCLI, or another non-local runtime?
+- Does `capacity_binding` prove whether the target equals the development host, and does `concurrency_budget` stay at or below the measured or declared target runtime limit?
+- Does the agent define queue/backpressure behavior and `degrade_policy` for overload, host downgrade, or runtime throttling?
 - Does the escalation trigger cover all identified failure modes?
 - Is there at least one testable success criterion that does not require human judgment?
 - Does the kill switch actually work, with test evidence, or is it only documented?
@@ -710,6 +841,10 @@ Required tests:
 | Escalation test | The agent stops and hands off when a defined trigger occurs. |
 | Capability authorization test | The agent cannot use tools or workflows outside its manifest. |
 | Runtime control plane test | The agent can only perform side effects through the declared runtime control plane. |
+| Development host capacity test | `development_host_profile` is current and evidenced for the build/verification host. |
+| Target runtime capacity test | `target_runtime_profile` is current, evidenced, and matches the cloud/server/runtime where the agent will actually run. |
+| Capacity binding test | The manifest proves whether target and development host are the same; non-local targets do not inherit local PC capacity. |
+| Concurrency budget test | `max_parallel_runs` and tool concurrency do not exceed target runtime capacity; overload follows `degrade_policy`. |
 | Argument constraint test | Disallowed argv, config paths, env vars, oversized inputs, and actor overrides are denied. |
 | Approval gate test | Side-effecting actions pause or route through the declared approval gate. |
 | Egress policy test | Unlisted network/API destinations are denied or escalated. |
@@ -730,6 +865,9 @@ Required adversarial stress cases:
 | Command grant pins binary but not argv/config/input limits | Factory returns `FIX_REQUIRED` for argument escape risk. |
 | MCP server exposes write/security/financial tools without `allowed_tools` narrowing | Factory blocks capability grant. |
 | Audit test only checks stdout, not runtime audit sink | Factory returns `FIX_REQUIRED` for audit mirage. |
+| Concurrency budget exceeds host or runtime capacity | Factory lowers the budget, queues work, or blocks active status. |
+| Host capacity profile is missing or stale | Factory reruns capacity detection or requires production runtime evidence. |
+| Development host profile is used as cloud runtime capacity without binding proof | Factory blocks active status until target runtime evidence exists. |
 | Memory seed contradicts another tier | Factory blocks until superseded or resolved. |
 | Kill switch is documented but untested | Agent cannot become `active`. |
 | Registry row claims `active` without verification metadata | Factory downgrades status or blocks closeout. |
@@ -836,6 +974,11 @@ Seed these entries into the Agent Factory error-solution tier and copy relevant 
 | Paper runtime contract | Generated files describe runtime but lack `hermes.runtime.json` | Agent cannot be invoked or verified reproducibly | Missing entrypoint, fixtures, or evidence path | Block file generation until runtime contract exists. |
 | Argument escape | Command grant pins binary but not args/config/input | Agent runs approved command in unapproved mode | Disallowed argv/config path accepted in verification | Require argv allowlist, config allowlist, env allowlist, input schema, and negative tests. |
 | Audit mirage | Stdout is treated as audit evidence | Incident reconstruction is impossible | No runtime audit sink event or trace ID | Require audit sink evidence and trace/action attribution. |
+| Capacity hallucination | Agent or fleet assumes a fixed 10-agent host | Host overload, timeouts, noisy verification, missed SLAs | Missing/stale `host_capacity_profile` or budget exceeds measured ceiling | Require capacity evidence; cap runs; queue, degrade, or pause new work. |
+| Dev-host leakage | Local development PC capacity is copied into a cloud/server agent budget | Production runtime overload or underprovisioned fleet | `budget_basis` is `development_host_profile` while target runtime is non-local | Require `target_runtime_profile`; block active status until target evidence exists. |
+| Target capacity fiction | Operator names a cloud/server target but provides no instance, container, queue, or provider limit evidence | Agent system cannot be sized or verified | Target runtime profile confidence is low or evidence is empty | Mark experimental/blocked; require IaC, provider class, telemetry, or operator capacity contract. |
+| Autoscaling mirage | Manifest assumes autoscaling means unlimited parallel agents | Cost spikes, rate limits, queue storms, verifier backlog | Autoscaling field lacks max replicas, queue limit, or review capacity | Cap concurrency by target limit and supervisor verification capacity; require backpressure. |
+| Backpressure gap | Runtime accepts more work than the supervisor can review | Bad outputs pile up faster than verification | Queue length grows while verification is stale | Lower `max_parallel_runs`; enforce `degrade_policy`; escalate overload. |
 | Exception laundering | `operator_exception` is used to ship production authority | Unverified agent becomes trusted | Active/read-write/destructive status with exception | Block active and write authority until verification passes. |
 | Authority mismatch | `read-only` agent gets write tool | Business data changes despite read-only contract | Permission contradicts `decision_authority` | Remove permission or change authority with approval and spec update. |
 | Missing escalation | Failure mode has no stop condition | Agent guesses through ambiguous/high-risk cases | Failure catalog entry lacks escalation trigger | Add trigger and test it. |

@@ -40,6 +40,8 @@ Requires human judgment — never delegate:
 - **Scope negotiation** — what to include/exclude
 - **Verification against spec** — use /verify skill
 - **Complex multi-file refactors** — requires understanding
+- **Parallel substrate selection** — the main orchestrator chooses local, subagents, parallel-instances, or experimental agent-teams after capacity and ownership checks
+- **Packet aggregation** — the main orchestrator reconciles worker evidence, conflicts, sync barriers, and final status
 
 ## Delegation Protocol
 
@@ -71,6 +73,11 @@ Stop if: [overlap, missing dependency, stale assumptions]
 - Never skip verification
 - Use /verify skill against SPEC.md
 - Accept or reject with specific feedback
+
+### 4.5. Aggregate Parallel Output
+- For `/parallel`, workers return evidence; they do not decide readiness.
+- The main orchestrator checks packet DAG dependencies, ownership matrix, sync barriers, capacity budget, and aggregate verification.
+- If two packets conflict, stop and reconcile in the main thread instead of asking workers to negotiate authority.
 
 ### 5. Accept or Reject
 - **Accept:** All criteria met, evidence provided

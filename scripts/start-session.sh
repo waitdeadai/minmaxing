@@ -37,6 +37,9 @@ echo ""
 echo "[3/5] Version information..."
 echo "Claude Code: $(claude --version 2>/dev/null || echo 'not found')"
 echo "Model: MiniMax M2.7 Highspeed (provider capability: 100 TPS, 204K context)"
+if [ -f "$SCRIPT_DIR/parallel-capacity.sh" ]; then
+    bash "$SCRIPT_DIR/parallel-capacity.sh" --summary 2>/dev/null || true
+fi
 echo ""
 
 # Step 4: Quick Health Check
@@ -46,11 +49,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 21 ]; then
+if [ "$SKILL_COUNT" -ge 22 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 21 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 22 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -94,7 +97,7 @@ echo "Fresh repos: run /tastebootstrap before /workflow"
 echo "Skills: /tastebootstrap, /workflow, /digestflow, /align, /autoplan, /verify,"
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
 echo "        /audit, /deepresearch, /webresearch, /browse, /introspect, /codesearch,"
-echo "        /memory, /agentfactory"
+echo "        /memory, /agentfactory, /parallel"
 echo ""
 echo "Start with: ./scripts/test-harness.sh to verify setup"
 echo "Optional runtime check: RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh"

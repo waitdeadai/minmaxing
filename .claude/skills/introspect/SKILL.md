@@ -56,6 +56,7 @@ Typical lanes:
 - missing tests or weak verification
 - security / privacy / rollback risk
 - concurrency / state / migration risk
+- parallel orchestration risk: stale worker context, split-brain claims, same-file collisions, wrong substrate, over-budget hardware use, unverified parallel-instances, or accidental agent-team dependency
 - documentation or user-facing promise drift
 
 Do not fill the pool just to look thorough. A tiny local change can use one concise lane when the evidence is simple.

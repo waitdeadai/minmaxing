@@ -8,6 +8,12 @@ SPEC-first planning that generates or updates `SPEC.md` before implementation.
 
 **MAX_PARALLEL_AGENTS** — ceiling for parallel planning research. Use the smallest effective wave that covers the distinct questions.
 
+For dense work that may use `/parallel`, gather a hardware-aware capacity profile before assigning budgets:
+
+```bash
+bash scripts/parallel-capacity.sh --summary 2>/dev/null || true
+```
+
 **Use when:** User says "plan this", "how do I build", "spec out", "create a plan", "swarm", or when a new feature/project is described.
 
 **Swarm:** "swarm" → `/autoplan` with an efficacy-first research wave up to `MAX_PARALLEL_AGENTS`.
@@ -168,6 +174,10 @@ How do we undo if this breaks production?
 ## Parallelization Notes
 - Effective Agent Budget: [B] of [MAX_PARALLEL_AGENTS]
 - Why this budget: [distinct independent packets only]
+- Hardware Capacity Profile: [hardware class, recommended ceiling, source]
+- Execution Substrate: [local|subagents|parallel-instances|agent-teams]
+- Packet DAG: [packet IDs, dependencies, sync barriers]
+- Ownership Matrix: [packet ID -> owned files/surfaces -> do-not-touch list]
 - For every delegated task, record:
   - Owned files/surfaces
   - Dependencies / prerequisites

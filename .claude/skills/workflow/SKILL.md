@@ -26,7 +26,7 @@ This command is the end-to-end executor.
 - Run hard-gate introspection after implementation and before closeout.
 - Keep implementation surgical: smallest sufficient implementation, no speculative abstractions, no drive-by refactors, and a changed-line trace back to `SPEC.md`.
 - Do not stop after planning.
-- Do not tell the user to manually run `/autoplan`, `/sprint`, `/verify`, or `/ship`.
+- Do not tell the user to manually run `/autoplan`, `/parallel`, `/sprint`, `/verify`, or `/ship`.
 - Do not rely on nested custom-skill chaining as the primary execution path.
 
 Reason:
@@ -94,11 +94,17 @@ Choose the route from user intent:
 | build, implement, create, add, refactor, optimize, migrate | run full research → audit → plan → spec → execute → verify → closeout flow |
 | fix, debug, investigate | research first, audit the relevant code path, then reproduce/fix/verify; create `SPEC.md` if files change |
 | audit, analyze, understand, deepresearch, webresearch | inspect deeply, report findings, make fixes only if the user asked for them |
+| parallel, mode parallel, dense workflow, orchestrate subagents, split across instances | run the `/parallel` eligibility audit; use `/parallel` only when capacity, ownership, and verification pass |
 | explain | inspect and explain directly |
 | review | review directly |
 | qa | run focused validation directly |
 
 Default to the full build flow when the task changes files.
+
+For dense work, automatically consider `/parallel` even if the user did not
+name it. Use it only when the eligibility audit proves independent packets,
+clear ownership, host capacity, and a verification path. Downgrade to normal
+inline `/workflow` when those conditions fail.
 
 ## Workflow Artifact
 
@@ -445,8 +451,10 @@ Implement directly with Claude Code tools.
 
 - Make the necessary file changes.
 - Re-check any version-sensitive or API-sensitive assumptions from the research brief immediately before editing when necessary.
+- Use `/parallel` for dense work when the eligibility audit, hardware capacity profile, ownership matrix, and verification plan show real critical-path reduction.
 - Use subagents or parallel work only when it materially helps and file ownership is clear.
 - Give every delegated packet a thin brief with owned files, dependencies, stop conditions, and expected evidence.
+- If `/parallel` is used, record the selected substrate (`local`, `subagents`, `parallel-instances`, or experimental `agent-teams`), effective budget, packet DAG, ownership matrix, and sync barriers in the workflow artifact or a dedicated `.taste/workflow-runs/*-parallel.md` artifact.
 - Prefer direct execution over theatrical parallelism for tiny tasks.
 - Keep changes aligned with the spec and taste constraints.
 - Keep the diff surgical: do not refactor, reformat, rename, or "improve" adjacent code unless the active `SPEC.md` requires it.
@@ -539,7 +547,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/sprint`, `/verify`, `/audit`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/sprint`, `/verify`, `/audit`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers

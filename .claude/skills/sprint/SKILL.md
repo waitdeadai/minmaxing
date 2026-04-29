@@ -4,7 +4,9 @@ Parallel execution with up to `MAX_PARALLEL_AGENTS` agents and strict FILE OWNER
 
 **MAX_PARALLEL_AGENTS** — ceiling for parallel task execution. Use the smallest effective wave that fits independent work packets.
 
-**Use when:** User says "sprint this", "parallel this", "run in parallel", "split this up", "swarm sprint".
+**Use when:** User says "sprint this" or "swarm sprint", or when `/workflow` or `/parallel` needs an execution-only wave after SPEC and ownership are already clear.
+
+For whole-workflow acceleration, use `/parallel`. `/sprint` does not choose the route, research strategy, hardware-aware substrate, packet DAG, or final verification plan.
 
 **Swarm:** "swarm sprint" → `/sprint` with an efficacy-first execution wave up to `MAX_PARALLEL_AGENTS`.
 
@@ -21,6 +23,12 @@ Achieve parallel speedup without merge conflicts. Use as many agents as there ar
 ## Execution Protocol
 
 ### Step 0: Read Agent Pool Size
+
+Read the hardware-aware capacity profile first, then treat `MAX_PARALLEL_AGENTS` as a ceiling:
+
+```bash
+bash scripts/parallel-capacity.sh --summary 2>/dev/null || true
+```
 
 Read `MAX_PARALLEL_AGENTS` from env (default: 10):
 

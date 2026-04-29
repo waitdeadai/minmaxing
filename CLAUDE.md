@@ -44,6 +44,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
 | /autoplan | Create SPEC.md with efficacy-first parallel planning |
 | /agentfactory | Create governed runtime-bound Hermes agents with manifest, runtime contract, capability stack, memory seed, verification, registry, and kill switch |
+| /parallel | Hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | /verify | Check output against SPEC |
 | /review | AI review + human sign-off |
 | /qa | Playwright E2E testing |
@@ -64,8 +65,9 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **SPEC Archive**: `SPEC.md` is the active contract; archive completed or superseded specs to `.taste/specs/` before replacing them
 - **Introspection Gate**: `/introspect` must pass before plan freeze, closeout, retry after failed verification, and push/ship decisions
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
+- **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile.
 - **Surgical Changes**: Vague requests become verifiable contracts; every meaningful diff should trace to `SPEC.md`, generated output, or cleanup caused by the current change
-- **Agent Factory**: `/agentfactory` creates Hermes agents as bounded enterprise operating units, not generic prompts; it keeps its own workflow artifact, deepresearch brief, manifest, `hermes.runtime.json`, explicit capabilities, memory coherence, verification, registry evidence, and tested kill switch. REVCLI/Revis-facing agents must route side effects through the runtime control plane instead of direct system-of-record writes.
+- **Agent Factory**: `/agentfactory` creates Hermes agents as bounded enterprise operating units, not generic prompts; it keeps its own workflow artifact, deepresearch brief, manifest, `hermes.runtime.json`, explicit capabilities, memory coherence, verification, registry evidence, tested kill switch, `development_host_profile`, `target_runtime_profile`, `host_capacity_profile`, `capacity_binding`, `concurrency_budget`, and `degrade_policy`. Local dev capacity is not production capacity unless the target runtime is explicitly local. REVCLI/Revis-facing agents must route side effects through the runtime control plane instead of direct system-of-record writes.
 - **Open-Core Boundary**: The public repo is the Apache-2.0 core. Do not publish REVCLI private runtime code, customer Hermes agents, customer memory seeds, audit logs, real credentials, private connectors, commercial playbooks, or managed-service implementation packs.
 - **Optional Codex Plugin Support**: If `codex-plugin-cc` is installed in Claude Code, project `.codex/config.toml` gives Codex `gpt-5.5` + `medium` defaults with 10 subagent threads
 - **Keep**: Architecture, security, verification decisions
@@ -79,7 +81,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | 16GB RAM, 4+ cores | 6 |
 | 8GB RAM, 2+ cores | 3 |
 
-Hardware auto-detection runs via `scripts/detect-hardware.sh` for new Bash sessions that source `~/.bashrc` after setup.
+Hardware auto-detection runs via `scripts/detect-hardware.sh` for new Bash sessions that source `~/.bashrc` after setup. For an immediate capacity profile, run `bash scripts/parallel-capacity.sh --summary`.
 
 ## 5-Tier Memory System
 

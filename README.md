@@ -53,7 +53,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 21 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 22 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -201,7 +201,9 @@ With SPEC-first:
 ## Key Features
 
 ### Efficacy-First Parallelism
-Spawn up to 10 workers when the task genuinely has 10 bounded, independent packets. Supervisor decomposes tasks, workers execute in parallel, supervisor verifies.
+Spawn up to the hardware-aware ceiling when the task genuinely has bounded,
+independent packets. Supervisor decomposes tasks, workers execute in parallel,
+supervisor verifies.
 
 ```
 Supervisor (you/AI)
@@ -212,9 +214,26 @@ Supervisor (you/AI)
 └── Supervisor verifies all
 ```
 
-Auto-detects your hardware: 32GB+ → 10 agents, 16GB → 6 agents, 8GB → 3 agents.
+Auto-detects your hardware: 32GB+ and 8+ cores -> 10 agents, 16GB and 4+ cores -> 6 agents, 8GB and 2+ cores -> 3 agents. For a live profile, run `bash scripts/parallel-capacity.sh --summary`.
 
 The important part is not hitting the ceiling. The important part is using the smallest agent budget that preserves fresh context, clear ownership, and a shorter critical path.
+
+### Parallel Mode
+`/parallel` is the dense-work orchestrator. It runs a Parallel Eligibility Audit,
+reads the hardware capacity profile, chooses an execution substrate, writes a
+Packet DAG and Ownership Matrix, inserts Sync Barriers, aggregates Worker Result
+Schema returns, then verifies the aggregate against `SPEC.md`.
+
+Execution substrate selection is explicit:
+- `local` for one tight reasoning loop, shared files, low hardware, or high coordination cost.
+- `subagents` as the default for bounded same-workspace research, audit, implementation, and review packets.
+- `parallel-instances` only for large disjoint work where separate sessions or worktrees materially shorten elapsed time.
+- `agent-teams` only as opt-in experimental behavior when explicitly enabled and fallback is documented.
+
+`/workflow` may auto-consider `/parallel` for dense work, but it downgrades when
+independent packets, file ownership, host capacity, or verification are weak.
+Main stays orchestrator; workers do not own taste, architecture, SPEC,
+security, registry, or final verification decisions.
 
 ### SPEC-First
 File-changing tasks start with research, code audit, and a concrete plan. `SPEC.md` is the formal contract that comes out of that work, and AI implements to spec.
@@ -240,11 +259,11 @@ AI training data can be stale, and repo context can be incomplete. Current exter
 `/workflow` now treats a research brief as mandatory for all tasks, with the MiniMax MCP as the preferred source whenever current external facts matter. But the brief is not just a search tally. The workflow now uses the repo’s effectiveness-first `deepresearch` protocol: draft a collaborative research plan, run an iterative search -> read -> refine loop, keep a source ledger, challenge conflicting evidence, and do targeted follow-up research before freezing the plan. It still uses up to `MAX_PARALLEL_AGENTS` tracks, but only when the added tracks are distinct and plan-changing. For a purely local task, it can justify a local-only research brief instead of doing pointless external calls.
 
 ### Agent Factory
-`/agentfactory` is a governed workflow for creating Hermes agents, not a prompt template. It uses the same effectiveness-first spine as `/workflow`: taste gate, 12-question intent intake, deepresearch brief, runtime audit, manifest, least-privilege capability stack, Hermes `SPEC.md`, generated agent files, hard-gate introspection, independent verification, registry closeout, and memory integration.
+`/agentfactory` is a governed workflow for creating Hermes agents, not a prompt template. It uses the same effectiveness-first spine as `/workflow`: taste gate, 12-question intent intake, deepresearch brief, runtime audit, capacity-aware runtime contract, manifest, least-privilege capability stack, Hermes `SPEC.md`, generated agent files, hard-gate introspection, independent verification, registry closeout, and memory integration.
 
 A Hermes agent can operate one workflow, one department lane, or one bounded subsystem. A fleet can operate a larger business process only by composing narrow agents with explicit handoffs, not by giving one agent omnipotent company authority.
 
-Agent Factory writes its own run artifact under `.taste/workflow-runs/*-agentfactory.md` and keeps the durable registry in `hermes-registry.md`. The secondary factory taste contract lives in `hermes-factory.taste.md`. Production status requires `hermes.runtime.json`, a passing kill-switch test, verifier metadata, source ledger, memory-coherence check, runtime evidence, and registry links to manifest, spec, verify, kill-switch, and runtime artifacts. The dedicated `scripts/agentfactory-smoke.sh` stress test keeps the skill from regressing into a checklist by checking negative fixtures such as raw secrets, read-only agents with write actions, untested kill switches, active `operator_exception`, and verifier overclaims.
+Agent Factory writes its own run artifact under `.taste/workflow-runs/*-agentfactory.md` and keeps the durable registry in `hermes-registry.md`. The secondary factory taste contract lives in `hermes-factory.taste.md`. Production status requires `hermes.runtime.json`, `development_host_profile`, `target_runtime_profile`, `host_capacity_profile`, `capacity_binding`, `concurrency_budget`, queue/backpressure behavior, `degrade_policy`, a passing kill-switch test, verifier metadata, source ledger, memory-coherence check, runtime evidence, and registry links to manifest, spec, verify, kill-switch, and runtime artifacts. The local `scripts/parallel-capacity.sh` profile describes the developer machine unless the target runtime is explicitly local; a cloud server, VPS, container host, CI runner, managed workflow runtime, or REVCLI fleet needs its own target runtime capacity evidence before an agent can be marked active. The dedicated `scripts/agentfactory-smoke.sh` stress test keeps the skill from regressing into a checklist by checking negative fixtures such as raw secrets, read-only agents with write actions, missing capacity budgets, untested kill switches, active `operator_exception`, and verifier overclaims.
 
 For REVCLI/Revis-style products, `/agentfactory` treats Hermes as the role-scoped interaction/runtime shell, REVCLI/Revis as the policy and audit control plane, and Odoo or the configured database as the system of record. The repo includes `REVCLI_HERMES_AGENT_MAP.md` so generated agents map to concrete roles, approval gates, runtime evidence, kill switches, and closed-loop outcomes instead of broad “run the company” authority.
 
@@ -482,7 +501,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 21 Skills
+## The 22 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -493,6 +512,7 @@ Now you can use any workflow pattern:
 | `/audit` | Deep codebase audit with risk-based parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
 | `/agentfactory` | Create governed runtime-bound Hermes agents with manifest, `hermes.runtime.json`, capability stack, memory seed, verification, registry, and tested kill switch |
+| `/parallel` | Run hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | `/sprint` | Run an ownership-safe parallel execution wave |
 | `/verify` | Check output against SPEC with an independent evidence pass |
 | `/review` | AI review + you decide |
@@ -508,7 +528,7 @@ Now you can use any workflow pattern:
 | `/codesearch` | Search code by pattern |
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
-**Parallelism:** All skills that support parallelism treat `MAX_PARALLEL_AGENTS` as a ceiling, not a target. `/align` remains single-threaded by design because taste alignment is sequential judgment.
+**Parallelism:** All skills that support parallelism treat `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and hardware capacity as ceilings, not targets. `/align` remains single-threaded by design because taste alignment is sequential judgment.
 
 ---
 
@@ -671,7 +691,7 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 21 skills (system calls)
+│   ├── skills/                 # 22 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── digestflow/         # External report intake + governed workflow
 │   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap
@@ -679,6 +699,7 @@ minmaxing/
 │   │   ├── audit/              # Deep codebase analysis
 │   │   ├── autoplan/           # SPEC.md generator
 │   │   ├── agentfactory/       # Governed Hermes agent generator
+│   │   ├── parallel/           # Hardware-aware workflow parallelizer
 │   │   ├── sprint/             # Ownership-safe parallel executor
 │   │   ├── verify/             # SPEC compliance checker
 │   │   ├── ship/               # Pre-ship checklist
@@ -701,6 +722,8 @@ minmaxing/
 │   ├── memory-auto.sh           # Session start/end hooks
 │   ├── taste.sh                 # Taste system CLI
 │   ├── start-session.sh         # Session initializer
+│   ├── parallel-capacity.sh     # Hardware-aware parallel budget profile
+│   ├── parallel-smoke.sh        # Parallel mode production-contract smoke test
 │   ├── agentfactory-smoke.sh    # Agent Factory production-contract smoke test
 │   └── detect-hardware.sh       # Auto-detect agent pool
 ├── memory/                      # Python memory package (SQLite + FTS5)
