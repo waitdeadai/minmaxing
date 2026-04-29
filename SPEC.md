@@ -1,74 +1,82 @@
-# SPEC: AgentFactory Runtime Contract Hardening
+# SPEC: Open-Core Moat Boundary
 
-## Problem Statement
-`/agentfactory` is now a first-class workflow for creating Hermes agents, but the current contract can still produce agents that look governed in Markdown without proving runtime compatibility. REVCLI makes the missing layer concrete: generated Hermes agents must bind to a control plane, system of record, approvals, audit sink, kill switch, and argument-level capability constraints before they can claim enterprise readiness.
+## Purpose
 
-Harden `/agentfactory` so generated Hermes agents are reproducible, REVCLI-ready, and falsifiable by executable evidence rather than prose.
+Prepare minmaxing for public open-source release without giving away the
+private commercial moat around REVCLI, Revis, customer-specific Hermes agents,
+enterprise connectors, operational playbooks, and managed runtime execution.
 
-## Codebase Anchors
-- `.claude/skills/agentfactory/SKILL.md` owns the Agent Factory phase contract, schemas, generated file formats, and hard gates.
-- `scripts/agentfactory-smoke.sh` owns static and fixture-level regression checks for Agent Factory invariants.
-- `scripts/test-harness.sh` calls the Agent Factory smoke test as part of the repo harness.
-- `hermes-registry.md` is the root source of truth for generated Hermes agent status.
-- `hermes-factory.taste.md` defines the secondary taste contract for safe agent creation.
-- `AGENT_FACTORY_AUDIT_AND_BLUEPRINT.md` records the research/audit/design ledger.
-- `README.md`, `CLAUDE.md`, and `AGENTS.md` are operator-facing contracts.
-- `/home/fer/Music/REVCLI/revcli/headless-pilot/` is the local REVCLI runtime-control-plane evidence surface.
-- `/home/fer/Music/REVCLI/apps/revis-saas/` is the local Revis SaaS runtime/audit/approval evidence surface.
+## Research Brief
+
+Repo evidence:
+
+- `README.md` currently presents minmaxing as a public governed Claude Code
+  harness and still advertised an MIT badge.
+- `LICENSE` existed but was only a one-line MIT placeholder, not a complete
+  license text.
+- `CONTRIBUTING.md` only said "PRs welcome" and did not protect against
+  private customer artifacts, real secrets, or proprietary REVCLI code.
+- `scripts/test-harness.sh` already contract-tests important public claims and
+  is the right place to add an open-core boundary regression check.
+
+External source ledger:
+
+- Apache Software Foundation: Apache-2.0 is OSI-approved, carries SPDX
+  identifier `Apache-2.0`, includes license application guidance, and includes
+  copyright and patent grants.
+- Open Source Initiative: OSI-approved licenses allow free use, modification,
+  and sharing; the Open Source Definition forbids field-of-use restrictions,
+  including business-use restrictions.
+- GNU/FSF AGPLv3: AGPLv3 is designed to require source availability for
+  modified network-server versions, but this repo prioritizes enterprise
+  adoption and keeps the runtime moat private instead of making the OSS license
+  anti-commercial.
+
+## Decisions
+
+- Use Apache-2.0 for the public core.
+- Do not use source-available or no-commercial terms in this repository because
+  that would contradict an open-source positioning.
+- Protect the moat by scope, not by pretending an OSS license can block
+  competition: REVCLI runtime, customer agents, private memory, connectors,
+  vertical playbooks, and managed operations stay out of this repo.
+- Add public documents that make the boundary explicit: `OPEN_CORE_STRATEGY.md`,
+  `COMMERCIAL.md`, `SECURITY.md`, `TRADEMARKS.md`, `NOTICE`, and an expanded
+  `CONTRIBUTING.md`.
+- Add `.gitignore` guardrails for private/customer/commercial artifacts.
+- Add a harness regression test so public docs cannot drift back to MIT-only,
+  unbounded, "everything is included" language.
 
 ## Success Criteria
-- [ ] `/agentfactory` requires a machine-readable `hermes.runtime.json` file for every generated Hermes agent.
-- [ ] `hermes.runtime.json` includes entrypoint, cwd, args schema, argv allowlist, env allowlist, config path allowlist, input limits, allowed and denied actions, approval gates, audit sink, kill switch, fixtures, and expected statuses.
-- [ ] `hermes.manifest.md` and the manifest schema include parseable runtime-control-plane, system-of-record, action-authority, credential, egress, observability, and status-transition contracts.
-- [ ] `/agentfactory` includes a REVCLI readiness overlay requiring role-scoped profile, REVCLI/Revis policy authority, Odoo/DB system-of-record correlation, auth mode, approval gate map, egress allowlist, audit trace, kill-switch compatibility, closed-loop terminal state, and no unmanaged execution channel.
-- [ ] `hermes.verify.md` requires executable test rows with command, fixture, expected result, actual result, evidence path, verifier, and status.
-- [ ] `hermes.kill-switch.md` requires a runtime-backed test command, expected exit code/status, expected audit event, evidence path, last tested timestamp, and result.
-- [ ] `hermes-registry.md` includes verification, kill-switch, runtime evidence, verification isolation, and last kill test columns for active and experimental agents.
-- [ ] Active status is illegal unless verification is `verified`, registry evidence links are present, kill-switch evidence passed, and no unresolved production-risk residual remains.
-- [ ] Legacy verification waiver language is replaced with an explicit `operator_exception` state that cannot be active and cannot hold read-write or destructive authority.
-- [ ] `scripts/agentfactory-smoke.sh` checks the new runtime contract terms, registry evidence columns, active-row invariants, and negative fixture cases.
-- [ ] `REVCLI_HERMES_AGENT_MAP.md` exists and maps REVCLI product/workflow surfaces to candidate Hermes agents, risks, approvals, runtime evidence, and priority.
-- [ ] README/CLAUDE/AGENTS explain that `/agentfactory` generates runtime-bound Hermes agents, not merely prompt/document bundles.
-- [ ] Verification commands pass or any blocker is reported with concrete evidence.
 
-## Scope
-### In Scope
-- Strengthen the Agent Factory skill contract and generated file specs.
-- Add a REVCLI enterprise runtime overlay and agent portfolio map.
-- Upgrade registry schema and smoke tests so readiness claims are falsifiable.
-- Update operator documentation and active spec.
+- `README.md` states the open-core boundary before installation and links to
+  commercial, security, trademark, and strategy documents.
+- `LICENSE` contains complete Apache-2.0 text and `NOTICE` exists.
+- `CONTRIBUTING.md` requires Apache-2.0 contributions and forbids private
+  REVCLI/customer/secret artifacts.
+- `COMMERCIAL.md` explains what is open-source and what remains private.
+- `OPEN_CORE_STRATEGY.md` documents why the moat is runtime, service, data,
+  connectors, and enterprise operation rather than markdown prompts.
+- `SECURITY.md` gives a safe reporting policy and secret/customer-data rules.
+- `TRADEMARKS.md` explains brand/certification limits.
+- `.gitignore` blocks likely private moat artifacts.
+- `scripts/test-harness.sh` includes an open-core boundary check.
+- `bash scripts/test-harness.sh`, `git diff --check`, and targeted grep checks
+  pass before closeout.
 
-### Out of Scope
-- Editing the private REVCLI repository in this change.
-- Generating a concrete Hermes agent directory under `.taste/hermes-agents/`.
-- Building the actual REVCLI MCP/API bridge or runtime wrappers.
-- Deploying Revis SaaS or provisioning external credentials.
+## Non-Goals
 
-## Surgical Diff Discipline
-- Smallest sufficient implementation: update Agent Factory contracts, docs, tests, and the REVCLI map only.
-- No speculative runtime engine: require `hermes.runtime.json` and executable evidence, but do not invent a new orchestrator.
-- No drive-by REVCLI edits: use REVCLI as read-only evidence.
-- Changed-line trace: every meaningful edit maps to a success criterion above.
+- Do not publish private REVCLI source code.
+- Do not publish real customer Hermes agents, memory seeds, audit logs, or
+  workflow evidence.
+- Do not add a CLA/automation system in this pass.
+- Do not create sales copy that claims the OSS repo can operate an enterprise
+  without runtime integration and verification.
 
-## Implementation Plan
-1. Update `.claude/skills/agentfactory/SKILL.md` with runtime-control-plane gates, REVCLI overlay, `hermes.runtime.json`, stricter manifest/verify/kill-switch formats, transition matrix, and registry schema.
-2. Update `hermes-registry.md` with evidence columns.
-3. Add `REVCLI_HERMES_AGENT_MAP.md` from local REVCLI audit evidence.
-4. Update `scripts/agentfactory-smoke.sh` with required runtime contract terms, registry column assertions, active row checks, and negative fixtures.
-5. Update `scripts/test-harness.sh`, README, CLAUDE, AGENTS, and the audit blueprint to reflect enterprise runtime readiness.
-6. Run shell syntax, Agent Factory smoke, full harness, diff checks, and targeted grep checks for stale contracts.
+## Changed-Line Trace
 
-## Verification
-- `bash -n scripts/agentfactory-smoke.sh`
-- `bash scripts/agentfactory-smoke.sh`
-- `bash -n scripts/test-harness.sh`
-- `bash -n scripts/start-session.sh`
-- `bash scripts/test-harness.sh`
-- `git diff --check`
-- targeted stale command-name grep over changed docs and scripts
-- `rg "hermes.runtime.json|Runtime Control Plane|REVCLI Readiness Overlay|operator_exception" .claude/skills/agentfactory/SKILL.md scripts/agentfactory-smoke.sh hermes-registry.md README.md`
-
-## Rollback Plan
-- Revert the Agent Factory skill, smoke script, registry, docs, and REVCLI map changes.
-- Restore the prior Agent Factory contract from git history if the stricter runtime contract proves too heavy.
-- Leave archived specs untouched.
+- License and NOTICE changes trace to the license-posture decision.
+- README and commercial/strategy docs trace to public release readiness.
+- CONTRIBUTING, SECURITY, TRADEMARKS, and `.gitignore` changes trace to moat
+  protection and safe public collaboration.
+- Harness changes trace to regression prevention for the open-core boundary.

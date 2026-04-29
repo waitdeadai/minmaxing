@@ -66,6 +66,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
 - **Surgical Changes**: Vague requests become verifiable contracts; every meaningful diff should trace to `SPEC.md`, generated output, or cleanup caused by the current change
 - **Agent Factory**: `/agentfactory` creates Hermes agents as bounded enterprise operating units, not generic prompts; it keeps its own workflow artifact, deepresearch brief, manifest, `hermes.runtime.json`, explicit capabilities, memory coherence, verification, registry evidence, and tested kill switch. REVCLI/Revis-facing agents must route side effects through the runtime control plane instead of direct system-of-record writes.
+- **Open-Core Boundary**: The public repo is the Apache-2.0 core. Do not publish REVCLI private runtime code, customer Hermes agents, customer memory seeds, audit logs, real credentials, private connectors, commercial playbooks, or managed-service implementation packs.
 - **Optional Codex Plugin Support**: If `codex-plugin-cc` is installed in Claude Code, project `.codex/config.toml` gives Codex `gpt-5.5` + `medium` defaults with 10 subagent threads
 - **Keep**: Architecture, security, verification decisions
 - **Delegate**: Single-file changes, tests, mechanical refactoring

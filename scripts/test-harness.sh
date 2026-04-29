@@ -363,6 +363,110 @@ else
     test_fail "/agentfactory contract, registry, or docs registration is incomplete"
 fi
 
+# Test 3l: Open-Core Commercial Boundary
+echo "[3l] Open-Core Boundary"
+OPEN_CORE_OK=true
+for required_file in \
+    "LICENSE" \
+    "NOTICE" \
+    "OPEN_CORE_STRATEGY.md" \
+    "COMMERCIAL.md" \
+    "SECURITY.md" \
+    "TRADEMARKS.md" \
+    "CONTRIBUTING.md"; do
+    if [ ! -f "$required_file" ]; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "Apache License" \
+    "Grant of Patent License"; do
+    if ! grep -Fq "$pattern" LICENSE 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "Open-Core Boundary" \
+    "Apache-2.0" \
+    "private commercial moat" \
+    "REVCLI/Revis runtime code" \
+    "COMMERCIAL.md" \
+    "TRADEMARKS.md"; do
+    if ! grep -Fq "$pattern" README.md 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "Private Commercial Moat" \
+    "REVCLI private runtime" \
+    "Customer-specific Hermes agents"; do
+    if ! grep -Fq "$pattern" COMMERCIAL.md 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "Apache-2.0" \
+    "Open source cannot honestly restrict commercial use" \
+    "REVCLI private runtime source code" \
+    "Release Checklist"; do
+    if ! grep -Fq "$pattern" OPEN_CORE_STRATEGY.md 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "Do not include customer data" \
+    "REVCLI private runtime source code" \
+    "Real credentials"; do
+    if ! grep -Fq "$pattern" CONTRIBUTING.md 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "private vulnerability reporting" \
+    "No real secrets in git" \
+    "REVCLI/Revis-facing agents"; do
+    if ! grep -Fq "$pattern" SECURITY.md 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "does not grant broad trademark rights" \
+    "Hermes Enterprise Certified"; do
+    if ! grep -Fq "$pattern" TRADEMARKS.md 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "Preserve the open-core boundary" \
+    "Do not publish REVCLI private runtime code"; do
+    if ! grep -Fq "$pattern" AGENTS.md 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "Open-Core Boundary" \
+    "The public repo is the Apache-2.0 core"; do
+    if ! grep -Fq "$pattern" CLAUDE.md 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+for pattern in \
+    "customer-artifacts/" \
+    "revcli-private/" \
+    "REVCLI/" \
+    "*.memory-seed.private.json"; do
+    if ! grep -Fq "$pattern" .gitignore 2>/dev/null; then
+        OPEN_CORE_OK=false
+    fi
+done
+if [ "$OPEN_CORE_OK" = true ] && \
+   ! grep -Fq "License-MIT" README.md 2>/dev/null && \
+   ! grep -Fq "## MIT License" README.md 2>/dev/null; then
+    test_pass "open-core public/private boundary is documented and guarded"
+else
+    test_fail "open-core boundary, license, or moat-protection docs are incomplete"
+fi
+
 # ========================================
 # Skills (21 Expected)
 # ========================================

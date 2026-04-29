@@ -14,6 +14,7 @@ Thumbs.db
 
 # Logs
 *.log
+audit-logs/
 
 # Python
 __pycache__/
@@ -29,6 +30,27 @@ memory/memory.db-*
 
 # Taste System (session logs + memory)
 .taste/
+
+# Private commercial/customer artifacts
+.private/
+private/
+commercial-private/
+customer-artifacts/
+customer-data/
+customer-agents/
+customer-memory/
+customer-workflows/
+enterprise-implementation-packs/
+revcli-private/
+REVCLI/
+revis-private/
+hermes-private/
+*.secret.md
+*.secrets.md
+*.private.md
+*.customer.json
+*.customer.jsonl
+*.memory-seed.private.json
 
 # Auto-generated commit story notes
 obsidian/Memory/Stories/commits/*.md

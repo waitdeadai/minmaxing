@@ -14,11 +14,36 @@ One command sets up a governed Claude Code harness where AI researches with an e
 <p align="center">
   <a href="https://github.com/waitdeadai/minmaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Stars"></a>
   <a href="https://github.com/waitdeadai/minmaxing/network/members"><img src="https://img.shields.io/github/forks/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Forks"></a>
-  <a href="https://github.com/waitdeadai/minmaxing/issues"><img src="https://img.shields.io/github/issues/waitdeadai/minimaxing?style=flat-square&logo=github" alt="Issues"></a>
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License"></a>
+  <a href="https://github.com/waitdeadai/minmaxing/issues"><img src="https://img.shields.io/github/issues/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Issues"></a>
+  <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache--2.0-green?style=flat-square" alt="License"></a>
 </p>
 
 ---
+
+## Open-Core Boundary
+
+minmaxing is the open-source core for governed AI workflows. The public repo is
+licensed under Apache-2.0 and includes the harness, skills, rules, AgentFactory
+contracts, verification patterns, and safe example blueprints.
+
+The private commercial moat is not included: REVCLI/Revis runtime code,
+customer-specific Hermes agents, enterprise connectors, memory seeds, audit
+logs, operational playbooks, tenant infrastructure, and managed service
+delivery remain private unless explicitly published later.
+
+Read the operating boundary before packaging or selling anything from this
+repo:
+
+- [OPEN_CORE_STRATEGY.md](OPEN_CORE_STRATEGY.md)
+  defines what is public, what stays private, and why the moat lives in runtime
+  operation rather than prompt files.
+- [COMMERCIAL.md](COMMERCIAL.md) explains the
+  managed-service boundary and public-claims rules.
+- [SECURITY.md](SECURITY.md) defines safe
+  vulnerability reporting and secret/customer-data handling.
+- [TRADEMARKS.md](TRADEMARKS.md) keeps project
+  names, certification claims, and managed-service branding separate from the
+  Apache-2.0 code license.
 
 ## One-Command Setup
 
@@ -225,11 +250,11 @@ For REVCLI/Revis-style products, `/agentfactory` treats Hermes as the role-scope
 
 ### Permission Mode
 - **bypassPermissions** (shared-project default by design): trusted-local fast profile for personal repos where you want fewer prompts.
-- **Team-safe option:** copy [`.claude/settings.team-safe.example.json`](/home/fer/Music/ultimateminimax/.claude/settings.team-safe.example.json) to your local settings and keep `defaultMode` at `acceptEdits`.
+- **Team-safe option:** copy [`.claude/settings.team-safe.example.json`](.claude/settings.team-safe.example.json) to your local settings and keep `defaultMode` at `acceptEdits`.
 - If you want even more guardrails, switch your local Claude session to `plan` before high-risk work.
 
 ### OpenAI Codex Plugin
-This repo now ships a project-scoped Codex config under [`.codex/config.toml`](/home/fer/Music/ultimateminimax/.codex/config.toml) plus focused Codex agents in [`.codex/agents/`](/home/fer/Music/ultimateminimax/.codex/agents) so the official OpenAI Claude Code plugin can inherit sane defaults when you use Codex from inside Claude Code.
+This repo now ships a project-scoped Codex config under [`.codex/config.toml`](.codex/config.toml) plus focused Codex agents in [`.codex/agents/`](.codex/agents) so the official OpenAI Claude Code plugin can inherit sane defaults when you use Codex from inside Claude Code.
 
 Research-backed take:
 - The best plugin for using Codex inside Claude Code is the official OpenAI [`openai/codex-plugin-cc`](https://github.com/openai/codex-plugin-cc).
@@ -559,7 +584,7 @@ codex login
 
 ### What this repo configures for Codex
 
-Once the repo is trusted, Codex loads [`.codex/config.toml`](/home/fer/Music/ultimateminimax/.codex/config.toml):
+Once the repo is trusted, Codex loads [`.codex/config.toml`](.codex/config.toml):
 
 - `model = "gpt-5.5"`
 - `model_reasoning_effort = "medium"`
@@ -630,6 +655,11 @@ Override in `.claude/settings.json`:
 minmaxing/
 ├── CLAUDE.md                    # Core instructions (for AI)
 ├── README.md                    # This file (for you)
+├── OPEN_CORE_STRATEGY.md         # OSS core vs private moat operating boundary
+├── COMMERCIAL.md                 # Managed-service and enterprise boundary
+├── SECURITY.md                   # Vulnerability reporting and secret handling
+├── TRADEMARKS.md                 # Brand, fork, and certification limits
+├── NOTICE                        # Apache-2.0 attribution notice
 ├── setup.sh                     # One-command installer
 ├── taste.md                     # Project operating kernel — created by /tastebootstrap
 ├── taste.vision                 # Product intent + tradeoff contract — created by /tastebootstrap
@@ -695,4 +725,14 @@ minmaxing/
 
 ---
 
-## MIT License
+## License
+
+minmaxing is licensed under [Apache-2.0](LICENSE).
+
+The open-source license covers this public core. It does not grant rights to
+private REVCLI/Revis runtime code, customer deployments, customer data,
+production credentials, managed-service operations, or project branding beyond
+the limited trademark language in Apache-2.0. See
+[COMMERCIAL.md](COMMERCIAL.md) and
+[TRADEMARKS.md](TRADEMARKS.md) for the
+commercial and brand boundary.
