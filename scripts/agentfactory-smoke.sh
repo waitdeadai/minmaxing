@@ -1,10 +1,10 @@
 #!/bin/bash
-# Static stress test for the /agent-factory production contract.
+# Static stress test for the /agentfactory production contract.
 
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SKILL="$ROOT_DIR/.claude/skills/agent-factory/SKILL.md"
+SKILL="$ROOT_DIR/.claude/skills/agentfactory/SKILL.md"
 REGISTRY="$ROOT_DIR/hermes-registry.md"
 FACTORY_TASTE="$ROOT_DIR/hermes-factory.taste.md"
 BLUEPRINT="$ROOT_DIR/AGENT_FACTORY_AUDIT_AND_BLUEPRINT.md"
@@ -102,4 +102,4 @@ for section in \
   require_text "$BLUEPRINT" "$section"
 done
 
-echo "[PASS] /agent-factory production contract smoke test passed"
+echo "[PASS] /agentfactory production contract smoke test passed"

@@ -1,11 +1,11 @@
 ---
-name: agent-factory
+name: agentfactory
 description: Create governed Hermes agents as auditable enterprise operating units with manifest, capability stack, memory seed, deployment plan, verification contract, registry entry, and kill switch.
 argument-hint: [Hermes agent intent]
 disable-model-invocation: true
 ---
 
-# /agent-factory
+# /agentfactory
 
 Create one governed Hermes agent for:
 
@@ -50,7 +50,7 @@ Agent Factory is a workflow on its own, not a template generator. Every invocati
 ```bash
 mkdir -p .taste/workflow-runs
 STAMP="$(date +%Y%m%d-%H%M%S)"
-AGENT_FACTORY_ARTIFACT=".taste/workflow-runs/${STAMP}-agent-factory.md"
+AGENT_FACTORY_ARTIFACT=".taste/workflow-runs/${STAMP}-agentfactory.md"
 ```
 
 Required section order:
@@ -87,7 +87,7 @@ Required behavior:
 Claude Code re-attaches only a bounded slice of invoked skill content after compaction. Treat this skill as compaction-sensitive:
 
 - Before leaving any phase, write the current phase, pending gate, generated paths, source ledger status, and unresolved risks into `AGENT_FACTORY_ARTIFACT`.
-- If resuming after `/compact`, `/resume`, or a stale `CURRENT.md`, re-read `.claude/skills/agent-factory/SKILL.md`, `AGENT_FACTORY_ARTIFACT`, `SPEC.md`, and `hermes-registry.md` before continuing.
+- If resuming after `/compact`, `/resume`, or a stale `CURRENT.md`, re-read `.claude/skills/agentfactory/SKILL.md`, `AGENT_FACTORY_ARTIFACT`, `SPEC.md`, and `hermes-registry.md` before continuing.
 - Never rely on memory of the skill body alone after compaction. Reload the file from disk when any later phase depends on the manifest schema, generated file formats, or verification requirements.
 
 ## Phase 0: Taste Gate
@@ -524,7 +524,7 @@ Hard gate: verification failure prevents `active` status. Use `experimental` onl
 4. Log creation to semantic memory:
 
 ```bash
-bash scripts/memory.sh add semantic "Hermes agent created: {slug}. Purpose: {purpose}. Status: {status}. Owner: {owner}." --tags "hermes,agent-factory,{slug}"
+bash scripts/memory.sh add semantic "Hermes agent created: {slug}. Purpose: {purpose}. Status: {status}. Owner: {owner}." --tags "hermes,agentfactory,{slug}"
 ```
 
 5. Log Agent Factory failure modes relevant to this agent to error-solution memory.
@@ -541,10 +541,10 @@ Use this exact root file format:
 # Hermes Registry
 
 ## Registry Contract
-- Source of truth for Hermes agents created by /agent-factory.
+- Source of truth for Hermes agents created by /agentfactory.
 - Status values: active, deprecated, experimental, paused.
 - Every active agent must link to manifest, spec, verification, and kill-switch evidence.
-- Registry updates require /agent-factory or an explicit operator-approved maintenance change.
+- Registry updates require /agentfactory or an explicit operator-approved maintenance change.
 
 ## Active Agents
 

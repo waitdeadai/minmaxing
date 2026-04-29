@@ -43,7 +43,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /audit | Deep codebase audit with efficacy-first parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
 | /autoplan | Create SPEC.md with efficacy-first parallel planning |
-| /agent-factory | Create governed Hermes agents with manifest, capability stack, memory seed, verification, registry, and kill switch |
+| /agentfactory | Create governed Hermes agents with manifest, capability stack, memory seed, verification, registry, and kill switch |
 | /verify | Check output against SPEC |
 | /review | AI review + human sign-off |
 | /qa | Playwright E2E testing |
@@ -65,7 +65,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Introspection Gate**: `/introspect` must pass before plan freeze, closeout, retry after failed verification, and push/ship decisions
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
 - **Surgical Changes**: Vague requests become verifiable contracts; every meaningful diff should trace to `SPEC.md`, generated output, or cleanup caused by the current change
-- **Agent Factory**: `/agent-factory` creates Hermes agents as bounded enterprise operating units, not generic prompts; it keeps its own workflow artifact, deepresearch brief, manifest, explicit capabilities, memory coherence, verification, registry entry, and tested kill switch
+- **Agent Factory**: `/agentfactory` creates Hermes agents as bounded enterprise operating units, not generic prompts; it keeps its own workflow artifact, deepresearch brief, manifest, explicit capabilities, memory coherence, verification, registry entry, and tested kill switch
 - **Optional Codex Plugin Support**: If `codex-plugin-cc` is installed in Claude Code, project `.codex/config.toml` gives Codex `gpt-5.5` + `medium` defaults with 10 subagent threads
 - **Keep**: Architecture, security, verification decisions
 - **Delegate**: Single-file changes, tests, mechanical refactoring

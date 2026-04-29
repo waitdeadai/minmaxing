@@ -302,11 +302,11 @@ fi
 echo "[3k] Agent Factory Contract"
 AGENT_FACTORY_OK=true
 while IFS= read -r pattern; do
-    if [ -n "$pattern" ] && ! grep -Fq "$pattern" .claude/skills/agent-factory/SKILL.md 2>/dev/null; then
+    if [ -n "$pattern" ] && ! grep -Fq "$pattern" .claude/skills/agentfactory/SKILL.md 2>/dev/null; then
         AGENT_FACTORY_OK=false
     fi
 done <<'EOF'
-# /agent-factory
+# /agentfactory
 12 kernel questions
 Hermes agent
 least privilege
@@ -338,14 +338,14 @@ if [ "$AGENT_FACTORY_OK" = true ] && \
    grep -Fq "Active Agents" hermes-registry.md 2>/dev/null && \
    grep -Fq "Paused Agents" hermes-registry.md 2>/dev/null && \
    grep -Fq "Deprecated Agents" hermes-registry.md 2>/dev/null && \
-   grep -Fq "/agent-factory" README.md 2>/dev/null && \
-   grep -Fq "/agent-factory" CLAUDE.md 2>/dev/null && \
-   grep -Fq "/agent-factory" AGENTS.md 2>/dev/null && \
-   grep -Fq "/agent-factory" scripts/start-session.sh 2>/dev/null && \
-   bash scripts/agent-factory-smoke.sh >/dev/null 2>&1; then
-    test_pass "/agent-factory is registered as a governed Hermes agent factory"
+   grep -Fq "/agentfactory" README.md 2>/dev/null && \
+   grep -Fq "/agentfactory" CLAUDE.md 2>/dev/null && \
+   grep -Fq "/agentfactory" AGENTS.md 2>/dev/null && \
+   grep -Fq "/agentfactory" scripts/start-session.sh 2>/dev/null && \
+   bash scripts/agentfactory-smoke.sh >/dev/null 2>&1; then
+    test_pass "/agentfactory is registered as a governed Hermes agent factory"
 else
-    test_fail "/agent-factory contract, registry, or docs registration is incomplete"
+    test_fail "/agentfactory contract, registry, or docs registration is incomplete"
 fi
 
 # ========================================
@@ -367,7 +367,7 @@ fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow digestflow align audit autoplan agent-factory deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow digestflow align audit autoplan agentfactory deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -437,7 +437,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agent-factory-smoke; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

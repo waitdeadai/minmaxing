@@ -215,11 +215,11 @@ AI training data can be stale, and repo context can be incomplete. Current exter
 `/workflow` now treats a research brief as mandatory for all tasks, with the MiniMax MCP as the preferred source whenever current external facts matter. But the brief is not just a search tally. The workflow now uses the repo’s effectiveness-first `deepresearch` protocol: draft a collaborative research plan, run an iterative search -> read -> refine loop, keep a source ledger, challenge conflicting evidence, and do targeted follow-up research before freezing the plan. It still uses up to `MAX_PARALLEL_AGENTS` tracks, but only when the added tracks are distinct and plan-changing. For a purely local task, it can justify a local-only research brief instead of doing pointless external calls.
 
 ### Agent Factory
-`/agent-factory` is a governed workflow for creating Hermes agents, not a prompt template. It uses the same effectiveness-first spine as `/workflow`: taste gate, 12-question intent intake, deepresearch brief, runtime audit, manifest, least-privilege capability stack, Hermes `SPEC.md`, generated agent files, hard-gate introspection, independent verification, registry closeout, and memory integration.
+`/agentfactory` is a governed workflow for creating Hermes agents, not a prompt template. It uses the same effectiveness-first spine as `/workflow`: taste gate, 12-question intent intake, deepresearch brief, runtime audit, manifest, least-privilege capability stack, Hermes `SPEC.md`, generated agent files, hard-gate introspection, independent verification, registry closeout, and memory integration.
 
 A Hermes agent can operate one workflow, one department lane, or one bounded subsystem. A fleet can operate a larger business process only by composing narrow agents with explicit handoffs, not by giving one agent omnipotent company authority.
 
-Agent Factory writes its own run artifact under `.taste/workflow-runs/*-agent-factory.md` and keeps the durable registry in `hermes-registry.md`. The secondary factory taste contract lives in `hermes-factory.taste.md`. Production status requires a passing kill-switch test, verifier metadata, source ledger, memory-coherence check, and registry entry. The dedicated `scripts/agent-factory-smoke.sh` stress test keeps the skill from regressing into a checklist.
+Agent Factory writes its own run artifact under `.taste/workflow-runs/*-agentfactory.md` and keeps the durable registry in `hermes-registry.md`. The secondary factory taste contract lives in `hermes-factory.taste.md`. Production status requires a passing kill-switch test, verifier metadata, source ledger, memory-coherence check, and registry entry. The dedicated `scripts/agentfactory-smoke.sh` stress test keeps the skill from regressing into a checklist.
 
 ### Permission Mode
 - **bypassPermissions** (shared-project default by design): trusted-local fast profile for personal repos where you want fewer prompts.
@@ -296,7 +296,7 @@ Think of minmaxing as an operating system:
 │  /investigate /memory                             │
 │  /audit /council /qa /review /deepresearch        │
 │  /webresearch /browse /introspect /codesearch     │
-│  /overnight /align /agent-factory                 │
+│  /overnight /align /agentfactory                 │
 │              (System Calls)                          │
 └─────────────────────────────────────────────────────┘
 ```
@@ -465,7 +465,7 @@ Now you can use any workflow pattern:
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with risk-based parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
-| `/agent-factory` | Create governed Hermes agents with manifest, capability stack, memory seed, verification, registry, and tested kill switch |
+| `/agentfactory` | Create governed Hermes agents with manifest, capability stack, memory seed, verification, registry, and tested kill switch |
 | `/sprint` | Run an ownership-safe parallel execution wave |
 | `/verify` | Check output against SPEC with an independent evidence pass |
 | `/review` | AI review + you decide |
@@ -645,7 +645,7 @@ minmaxing/
 │   │   ├── align/              # Taste gate
 │   │   ├── audit/              # Deep codebase analysis
 │   │   ├── autoplan/           # SPEC.md generator
-│   │   ├── agent-factory/      # Governed Hermes agent generator
+│   │   ├── agentfactory/      # Governed Hermes agent generator
 │   │   ├── sprint/             # Ownership-safe parallel executor
 │   │   ├── verify/             # SPEC compliance checker
 │   │   ├── ship/               # Pre-ship checklist
@@ -668,7 +668,7 @@ minmaxing/
 │   ├── memory-auto.sh           # Session start/end hooks
 │   ├── taste.sh                 # Taste system CLI
 │   ├── start-session.sh         # Session initializer
-│   ├── agent-factory-smoke.sh    # Agent Factory production-contract smoke test
+│   ├── agentfactory-smoke.sh    # Agent Factory production-contract smoke test
 │   └── detect-hardware.sh       # Auto-detect agent pool
 ├── memory/                      # Python memory package (SQLite + FTS5)
 │   ├── sqlite_db.py

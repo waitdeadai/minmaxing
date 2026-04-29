@@ -8,14 +8,14 @@ Scope: `minmaxing` in `/home/fer/Music/ultimateminimax` and local private `REVCL
 
 | Question | Finding | Evidence | Decision |
 |----------|---------|----------|----------|
-| Does `/workflow` trust agent output without verification? | For file-changing work, no. `/workflow` requires deep research, audit, plan, `SPEC.md`, execution, post-implementation introspection, verification, and closeout evidence. Analysis-only routes can report directly without `SPEC.md`; that is a deliberate non-implementation path, not trusted code output. | `.claude/skills/workflow/SKILL.md` lines 20-30, 37-55, 459-504. | Keep `/agent-factory` verification mandatory before active status. |
-| Are there hidden skill dependencies? | Yes, for direct specialist invocation. `/verify` assumes `SPEC.md`; `/sprint` assumes owned tasks; `/autoplan` assumes taste and memory; `/workflow` avoids nested chaining and owns the lifecycle inline. | `.claude/skills/workflow/SKILL.md` lines 29-35 and 540-548; `.claude/skills/verify/SKILL.md` lines 29-36. | `/agent-factory` must be self-contained and not depend on nested skill continuation. |
-| Can memory produce contradictory entries across tiers? | Yes. `scripts/memory.sh` writes flat files first and SQLite best-effort; SQLite sync can fail while flat files remain. There is no cross-tier contradiction checker. Error-solution parsing is fragile because it cuts quoted strings by delimiter. | `scripts/memory.sh` lines 61-74, 91-111, 175-183, 207-247. | `/agent-factory` requires memory seed contradiction checks and explicit supersedes/contradicts fields. |
+| Does `/workflow` trust agent output without verification? | For file-changing work, no. `/workflow` requires deep research, audit, plan, `SPEC.md`, execution, post-implementation introspection, verification, and closeout evidence. Analysis-only routes can report directly without `SPEC.md`; that is a deliberate non-implementation path, not trusted code output. | `.claude/skills/workflow/SKILL.md` lines 20-30, 37-55, 459-504. | Keep `/agentfactory` verification mandatory before active status. |
+| Are there hidden skill dependencies? | Yes, for direct specialist invocation. `/verify` assumes `SPEC.md`; `/sprint` assumes owned tasks; `/autoplan` assumes taste and memory; `/workflow` avoids nested chaining and owns the lifecycle inline. | `.claude/skills/workflow/SKILL.md` lines 29-35 and 540-548; `.claude/skills/verify/SKILL.md` lines 29-36. | `/agentfactory` must be self-contained and not depend on nested skill continuation. |
+| Can memory produce contradictory entries across tiers? | Yes. `scripts/memory.sh` writes flat files first and SQLite best-effort; SQLite sync can fail while flat files remain. There is no cross-tier contradiction checker. Error-solution parsing is fragile because it cuts quoted strings by delimiter. | `scripts/memory.sh` lines 61-74, 91-111, 175-183, 207-247. | `/agentfactory` requires memory seed contradiction checks and explicit supersedes/contradicts fields. |
 | Is `CURRENT.md` compaction-safe in all failure modes? | It is compaction-safe for normal hook paths, but not crash-proof. Stop, precompact, postcompact, snapshot, and session-start hydrate are covered; hard kills, power loss, hook failure, or out-of-band edits can leave stale state. | `scripts/state.sh` lines 201-234, 244-286, 307-341, 373-376; `CLAUDE.md` lines 122-135. | Treat `CURRENT.md` as a hint and pair it with workflow artifacts and live `git status`. |
-| Does `/introspect` have a bypass path? | In `/workflow` file-changing runs, it is a hard gate. Bypass exists only if an operator invokes specialist skills directly or edits outside `/workflow`. | `.claude/skills/workflow/SKILL.md` lines 24-27, 326-347, 442-455; `.claude/skills/introspect/SKILL.md` lines 15-42. | `/agent-factory` embeds Phase 6.5 introspection inline. |
+| Does `/introspect` have a bypass path? | In `/workflow` file-changing runs, it is a hard gate. Bypass exists only if an operator invokes specialist skills directly or edits outside `/workflow`. | `.claude/skills/workflow/SKILL.md` lines 24-27, 326-347, 442-455; `.claude/skills/introspect/SKILL.md` lines 15-42. | `/agentfactory` embeds Phase 6.5 introspection inline. |
 | Is there escalation when `/verify` fails? | Yes. `/workflow` requires after-test-failure introspection, identifies whether fix, plan, spec, or test is wrong, fixes, and re-verifies until accepted or blocked. `/verify` also instructs logging rejected criteria. | `.claude/skills/workflow/SKILL.md` lines 469-475; `.claude/skills/verify/SKILL.md` lines 110-142. | Hermes verification failure prevents `active` status. |
-| Is surgical diff discipline enforced? | Enforced by skill contracts and static harness tests, not by an AST-level diff parser. It can still be bypassed outside the harness. | `.claude/skills/workflow/SKILL.md` lines 27 and 486-502; `scripts/test-harness.sh` lines 290-299. | `/agent-factory` adds static harness coverage for its own invariants. |
-| Are 20 skills truly independent? | No. They are better understood as callable playbooks sharing repo truth surfaces. The system-call metaphor is useful, but several skills assume upstream artifacts. The repo now has 21 skills after `/agent-factory`. | `README.md` lines 451-475; `CLAUDE.md` lines 37-68. | Document `/agent-factory` as first-class while keeping `/workflow` as shell. |
+| Is surgical diff discipline enforced? | Enforced by skill contracts and static harness tests, not by an AST-level diff parser. It can still be bypassed outside the harness. | `.claude/skills/workflow/SKILL.md` lines 27 and 486-502; `scripts/test-harness.sh` lines 290-299. | `/agentfactory` adds static harness coverage for its own invariants. |
+| Are 20 skills truly independent? | No. They are better understood as callable playbooks sharing repo truth surfaces. The system-call metaphor is useful, but several skills assume upstream artifacts. The repo now has 21 skills after `/agentfactory`. | `README.md` lines 451-475; `CLAUDE.md` lines 37-68. | Document `/agentfactory` as first-class while keeping `/workflow` as shell. |
 
 ## AUDIT: revcli
 
@@ -31,7 +31,7 @@ Scope: `minmaxing` in `/home/fer/Music/ultimateminimax` and local private `REVCL
 
 ## AGENT FACTORY: Skill Specification
 
-Installed as `.claude/skills/agent-factory/SKILL.md`.
+Installed as `.claude/skills/agentfactory/SKILL.md`.
 
 | Phase | Name | Gate | Required Output |
 |-------|------|------|-----------------|
@@ -46,7 +46,7 @@ Installed as `.claude/skills/agent-factory/SKILL.md`.
 | 7 | Independent Verification | Failure prevents `active`; verifier metadata required. | Smoke, boundary, memory, escalation, capability, kill-switch, audit tests. |
 | 8 | Closeout And Registry | No `active` registry row without kill-switch test and verification metadata. | Agent directory, registry row, semantic memory log, spec archive, state update. |
 
-The 12 kernel questions are in `.claude/skills/agent-factory/SKILL.md` lines 63-84 and must be asked verbatim.
+The 12 kernel questions are in `.claude/skills/agentfactory/SKILL.md` lines 63-84 and must be asked verbatim.
 
 ## HERMES MANIFEST SCHEMA
 
@@ -708,7 +708,7 @@ If kill switch fails, revoke token, stop runtime process, mark registry `paused`
 
 ## AGENT FACTORY SKILL FILE
 
-The copy-paste-ready skill file is installed at `.claude/skills/agent-factory/SKILL.md`.
+The copy-paste-ready skill file is installed at `.claude/skills/agentfactory/SKILL.md`.
 
 The file is self-contained and includes:
 - front matter and invocation contract
@@ -730,7 +730,7 @@ Static harness coverage is in `scripts/test-harness.sh` lines 301-347, and scrip
 
 Date: 2026-04-29.
 
-Research question: Is `/agent-factory` itself a workflow with the same effectiveness-first steering as `/workflow`, or is it only a rich template?
+Research question: Is `/agentfactory` itself a workflow with the same effectiveness-first steering as `/workflow`, or is it only a rich template?
 
 Source ledger:
 
@@ -749,10 +749,10 @@ Gaps found:
 
 | Gap | Risk | Patch |
 |-----|------|-------|
-| No explicit Agent Factory run artifact | `/agent-factory` could behave like a generator rather than a workflow with inspectable state. | Added `AGENT_FACTORY_ARTIFACT` and required artifact sections to the skill. |
+| No explicit Agent Factory run artifact | `/agentfactory` could behave like a generator rather than a workflow with inspectable state. | Added `AGENT_FACTORY_ARTIFACT` and required artifact sections to the skill. |
 | Compaction risk | Later manifest/schema/verification rules could fall outside reattached skill context after `/compact`. | Added compaction safety instructions to re-read the skill, artifact, `SPEC.md`, and registry from disk. |
 | Deep research was specified but not as strongly as `/workflow` | The manifest could freeze without a source-ledger loop or sufficiency decision. | Added search -> read -> refine loop, follow-up research, and research sufficiency gate. |
-| No adversarial stress suite | A broad/unsafe agent could pass a checklist if all files existed. | Added required adversarial stress cases and `scripts/agent-factory-smoke.sh`. |
+| No adversarial stress suite | A broad/unsafe agent could pass a checklist if all files existed. | Added required adversarial stress cases and `scripts/agentfactory-smoke.sh`. |
 | README did not explain Agent Factory as its own workflow | Operators might understand it as a prompt factory. | Added Agent Factory section describing it as a governed workflow and Hermes fleet model. |
 
 Stress verdict: production-ready as a governed skill contract after the patches, with one honest boundary: generated Hermes agents are only production-ready when their own runtime smoke, boundary, memory, escalation, audit, and kill-switch tests pass in the target environment.
