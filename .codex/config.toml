@@ -1,8 +1,8 @@
 # Project-scoped Codex defaults for use with the official OpenAI Claude Code plugin.
 # Codex only loads this file when the project is trusted.
 
-model = "gpt-5.4"
-model_reasoning_effort = "xhigh"
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
 model_reasoning_summary = "detailed"
 model_verbosity = "high"
 

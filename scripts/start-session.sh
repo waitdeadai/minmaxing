@@ -46,11 +46,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 20 ]; then
+if [ "$SKILL_COUNT" -ge 21 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 20 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 21 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -93,7 +93,8 @@ echo "Philosophy: governed autonomy — delegate execution, keep judgment, requi
 echo "Fresh repos: run /tastebootstrap before /workflow"
 echo "Skills: /tastebootstrap, /workflow, /digestflow, /align, /autoplan, /verify,"
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
-echo "        /audit, /deepresearch, /webresearch, /browse, /introspect, /codesearch, /memory"
+echo "        /audit, /deepresearch, /webresearch, /browse, /introspect, /codesearch,"
+echo "        /memory, /agent-factory"
 echo ""
 echo "Start with: ./scripts/test-harness.sh to verify setup"
 echo "Optional runtime check: RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh"

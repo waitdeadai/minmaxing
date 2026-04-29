@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 20 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 21 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -214,6 +214,13 @@ AI training data can be stale, and repo context can be incomplete. Current exter
 
 `/workflow` now treats a research brief as mandatory for all tasks, with the MiniMax MCP as the preferred source whenever current external facts matter. But the brief is not just a search tally. The workflow now uses the repo’s effectiveness-first `deepresearch` protocol: draft a collaborative research plan, run an iterative search -> read -> refine loop, keep a source ledger, challenge conflicting evidence, and do targeted follow-up research before freezing the plan. It still uses up to `MAX_PARALLEL_AGENTS` tracks, but only when the added tracks are distinct and plan-changing. For a purely local task, it can justify a local-only research brief instead of doing pointless external calls.
 
+### Agent Factory
+`/agent-factory` is a governed workflow for creating Hermes agents, not a prompt template. It uses the same effectiveness-first spine as `/workflow`: taste gate, 12-question intent intake, deepresearch brief, runtime audit, manifest, least-privilege capability stack, Hermes `SPEC.md`, generated agent files, hard-gate introspection, independent verification, registry closeout, and memory integration.
+
+A Hermes agent can operate one workflow, one department lane, or one bounded subsystem. A fleet can operate a larger business process only by composing narrow agents with explicit handoffs, not by giving one agent omnipotent company authority.
+
+Agent Factory writes its own run artifact under `.taste/workflow-runs/*-agent-factory.md` and keeps the durable registry in `hermes-registry.md`. The secondary factory taste contract lives in `hermes-factory.taste.md`. Production status requires a passing kill-switch test, verifier metadata, source ledger, memory-coherence check, and registry entry. The dedicated `scripts/agent-factory-smoke.sh` stress test keeps the skill from regressing into a checklist.
+
 ### Permission Mode
 - **bypassPermissions** (shared-project default by design): trusted-local fast profile for personal repos where you want fewer prompts.
 - **Team-safe option:** copy [`.claude/settings.team-safe.example.json`](/home/fer/Music/ultimateminimax/.claude/settings.team-safe.example.json) to your local settings and keep `defaultMode` at `acceptEdits`.
@@ -229,7 +236,7 @@ Research-backed take:
 - I found no official source saying this official plugin violates OpenAI terms. This is not legal advice, but the repo itself documents Claude Code installation and current OpenAI Terms/Usage Policies do not appear to prohibit this official integration when used compliantly.
 
 What this repo config gives Codex:
-- Main Codex default: `gpt-5.4` with `xhigh` reasoning and detailed reasoning summaries
+- Main Codex default: `gpt-5.5` with `medium` reasoning and detailed reasoning summaries
 - Codex Memories enabled where supported, so useful local context can carry into future Codex sessions
 - Subagent ceiling: `10` via `[agents].max_threads`
 - OpenAI docs MCP: `https://developers.openai.com/mcp`
@@ -289,7 +296,7 @@ Think of minmaxing as an operating system:
 │  /investigate /memory                             │
 │  /audit /council /qa /review /deepresearch        │
 │  /webresearch /browse /introspect /codesearch     │
-│  /overnight /align                                │
+│  /overnight /align /agent-factory                 │
 │              (System Calls)                          │
 └─────────────────────────────────────────────────────┘
 ```
@@ -448,7 +455,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 20 Skills
+## The 21 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -458,6 +465,7 @@ Now you can use any workflow pattern:
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with risk-based parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
+| `/agent-factory` | Create governed Hermes agents with manifest, capability stack, memory seed, verification, registry, and tested kill switch |
 | `/sprint` | Run an ownership-safe parallel execution wave |
 | `/verify` | Check output against SPEC with an independent evidence pass |
 | `/review` | AI review + you decide |
@@ -551,8 +559,8 @@ codex login
 
 Once the repo is trusted, Codex loads [`.codex/config.toml`](/home/fer/Music/ultimateminimax/.codex/config.toml):
 
-- `model = "gpt-5.4"`
-- `model_reasoning_effort = "xhigh"`
+- `model = "gpt-5.5"`
+- `model_reasoning_effort = "medium"`
 - `model_reasoning_summary = "detailed"`
 - `[agents].max_threads = 10`
 - `openaiDeveloperDocs` MCP for official OpenAI/Codex docs
@@ -577,7 +585,7 @@ Notes:
 - `/codex:review` and `/codex:adversarial-review` are read-only.
 - `/codex:rescue` is the command to use when you want Codex to investigate, plan, and potentially fix.
 - Codex only fans out subagents when you explicitly ask it to.
-- For the absolute heaviest pass, try `--model gpt-5.4-pro --effort xhigh`, but expect materially higher cost and slower background jobs.
+- The shared project standard is already `--model gpt-5.5 --effort medium`; use explicit CLI overrides only for temporary one-off experiments.
 
 ---
 
@@ -630,13 +638,14 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 20 skills (system calls)
+│   ├── skills/                 # 21 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── digestflow/         # External report intake + governed workflow
 │   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap
 │   │   ├── align/              # Taste gate
 │   │   ├── audit/              # Deep codebase analysis
 │   │   ├── autoplan/           # SPEC.md generator
+│   │   ├── agent-factory/      # Governed Hermes agent generator
 │   │   ├── sprint/             # Ownership-safe parallel executor
 │   │   ├── verify/             # SPEC compliance checker
 │   │   ├── ship/               # Pre-ship checklist
@@ -659,6 +668,7 @@ minmaxing/
 │   ├── memory-auto.sh           # Session start/end hooks
 │   ├── taste.sh                 # Taste system CLI
 │   ├── start-session.sh         # Session initializer
+│   ├── agent-factory-smoke.sh    # Agent Factory production-contract smoke test
 │   └── detect-hardware.sh       # Auto-detect agent pool
 ├── memory/                      # Python memory package (SQLite + FTS5)
 │   ├── sqlite_db.py

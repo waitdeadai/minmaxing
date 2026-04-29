@@ -216,7 +216,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "20 skills" README.md 2>/dev/null && \
+   grep -Fq "21 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -235,11 +235,12 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 21 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
+   ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "Expected 16 skills" scripts/start-session.sh 2>/dev/null && \
-   ! grep -Fq "Expected $((20 - 1)) skills" scripts/start-session.sh 2>/dev/null && \
+   ! grep -Fq "Expected $((21 - 1)) skills" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "Expected 5+ rules" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "verifies everything before you accept it" README.md 2>/dev/null && \
    ! grep -Fq "Every decision, every fix, every shipped feature is remembered" README.md 2>/dev/null && \
@@ -297,26 +298,76 @@ else
     test_fail "surgical diff discipline contract is incomplete"
 fi
 
+# Test 3k: Agent Factory Contract
+echo "[3k] Agent Factory Contract"
+AGENT_FACTORY_OK=true
+while IFS= read -r pattern; do
+    if [ -n "$pattern" ] && ! grep -Fq "$pattern" .claude/skills/agent-factory/SKILL.md 2>/dev/null; then
+        AGENT_FACTORY_OK=false
+    fi
+done <<'EOF'
+# /agent-factory
+12 kernel questions
+Hermes agent
+least privilege
+HERMES-{NAME}-SPEC.md
+hermes.manifest.md
+hermes.system-prompt.md
+hermes.memory-seed.json
+hermes.deploy.md
+hermes.verify.md
+hermes.kill-switch.md
+hermes-registry.md
+kill switch
+independent verification
+memory-coherent
+.taste/hermes-agents/{slug}/
+Agent Factory is a workflow on its own
+AGENT_FACTORY_ARTIFACT
+Compaction Safety
+Research sufficiency gate
+Required adversarial stress cases
+read-only
+read-write
+destructive-allowed
+EOF
+if [ "$AGENT_FACTORY_OK" = true ] && \
+   [ -f "hermes-factory.taste.md" ] && \
+   [ -f "hermes-registry.md" ] && \
+   grep -Fq "Enterprise Operating Model" hermes-factory.taste.md 2>/dev/null && \
+   grep -Fq "Active Agents" hermes-registry.md 2>/dev/null && \
+   grep -Fq "Paused Agents" hermes-registry.md 2>/dev/null && \
+   grep -Fq "Deprecated Agents" hermes-registry.md 2>/dev/null && \
+   grep -Fq "/agent-factory" README.md 2>/dev/null && \
+   grep -Fq "/agent-factory" CLAUDE.md 2>/dev/null && \
+   grep -Fq "/agent-factory" AGENTS.md 2>/dev/null && \
+   grep -Fq "/agent-factory" scripts/start-session.sh 2>/dev/null && \
+   bash scripts/agent-factory-smoke.sh >/dev/null 2>&1; then
+    test_pass "/agent-factory is registered as a governed Hermes agent factory"
+else
+    test_fail "/agent-factory contract, registry, or docs registration is incomplete"
+fi
+
 # ========================================
-# Skills (20 Expected)
+# Skills (21 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 20 Expected]"
+echo "[Skills - 21 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 20 ]; then
+if [ "$SKILL_COUNT" -ge 21 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 20+ skills, found $SKILL_COUNT"
+    test_fail "Expected 21+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow digestflow align audit autoplan deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow digestflow align audit autoplan agent-factory deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -386,7 +437,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agent-factory-smoke; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else
