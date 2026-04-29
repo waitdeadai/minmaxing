@@ -41,7 +41,7 @@ Installed as `.claude/skills/agentfactory/SKILL.md`.
 | 3 | Hermes Manifest Drafting | Required fields cannot be missing, vague, contradictory, or secret-bearing. | `hermes.manifest.md` draft. |
 | 4 | Capability Stack Design | Any capability without use-case justification is removed. | Least-privilege stack, MCP scopes, memory seed plan, prompt construction rules. |
 | 5 | Hermes `SPEC.md` | Spec must exist before generated files. | `.taste/hermes-agents/{slug}/HERMES-{SLUG}-SPEC.md`. |
-| 6 | Agent File Generation | All required files must be generated under one agent directory. | Manifest, prompt, taste, memory seed, deploy, verify, kill-switch, spec. |
+| 6 | Agent File Generation | All required files must be generated under one agent directory. | Manifest, prompt, taste, memory seed, runtime contract, deploy, verify, kill-switch, spec. |
 | 6.5 | Introspect | Tool justification, escalation coverage, objective criterion, kill switch, authority match, memory coherence, runtime bypass check. | `PASS`, `FIX_REQUIRED`, `REPLAN_REQUIRED`, or `BLOCKED`. |
 | 7 | Independent Verification | Failure prevents `active`; verifier metadata required. | Smoke, boundary, memory, escalation, capability, kill-switch, audit tests. |
 | 8 | Closeout And Registry | No `active` registry row without kill-switch test and verification metadata. | Agent directory, registry row, semantic memory log, spec archive, state update. |
@@ -65,20 +65,28 @@ The 12 kernel questions are in `.claude/skills/agentfactory/SKILL.md` lines 63-8
 | `non_goals` | yes | list[string] | excluded outcomes | empty |
 | `decision_authority` | yes | enum | `read-only`, `read-write`, `destructive-allowed` | mismatches grants |
 | `target_runtime` | yes | string | named runtime | missing |
+| `runtime_control_plane` | yes | object | name, owner, policy authority, invocation surface, state store, audit sink | missing authority or audit sink |
+| `system_of_record` | yes | object | name, write policy, adapter/API, direct-write flag | direct write allowed without approval proof |
+| `runtime_identity` | yes | object | principal, auth mode, tenant scope, revocation path | shared hidden credentials |
 | `deployment_lifecycle` | yes | enum | `ephemeral`, `persistent`, `scheduled` | other value |
 | `capability_stack` | yes | list[object] | `type`, `name`, `scope`, `justification`, `risk`, `approval_required` | grant lacks justification |
 | `mcp_servers` | yes | list[object] | `name`, `transport`, `scopes`, `justification`, `approval_model` | broad scope |
 | `api_access` | yes | list[object] | `service`, `env_vars`, `allowed_methods`, `denied_methods`, `justification` | includes secret values |
 | `file_access` | yes | list[object] | `path`, `mode`, `purpose` | write without reason |
 | `workflow_access` | yes | list[object] | `workflow`, `allowed_actions`, `denied_actions`, `approval_required` | unapproved side effect |
+| `action_authority_matrix` | yes | list[object] | action, side-effect level, runtime action, approval gate, rollback/compensation, idempotency, audit event | side effect lacks approval/audit |
+| `credential_strategy` | yes | object | env names, vault/provider, scope, expiry, rotation, revocation, redaction | raw secret value |
+| `egress_policy` | yes | object | default deny, allowed/denied domains, proxy/filter, SSRF controls | production allow-all |
+| `durable_orchestration` | yes | object | workflow ID, state store, retry, timeout, resume, idempotency | scheduled/persistent without durable state |
+| `observability_contract` | yes | object | trace ID, events, sink, redaction, retention, evidence path | no action attribution |
 | `memory_seed` | yes | list[object] | `tier`, `id`, `content`, `source`, `contradiction_check` | unresolved contradiction |
 | `success_criteria` | yes | list[string] | one objective machine-checkable criterion minimum | all human judgment |
 | `escalation_triggers` | yes | list[string] | concrete stop conditions | failure modes uncovered |
 | `kill_switch` | yes | object | `mechanism`, `owner`, `test_command`, `last_tested`, `expected_result` | untested for active |
 | `audit_logging` | yes | object | `events`, `sink`, `redaction`, `retention` | no outcome logging |
 | `handoff_protocol` | yes | object | `when`, `to_whom`, `payload`, `timeout` | missing owner/payload |
-| `verification_status` | yes | enum | `draft`, `verified`, `failed`, `waived` | verified without evidence |
-| `constraints` | yes | list[string] | C1-C10 references | empty |
+| `verification_status` | yes | enum | `draft`, `verified`, `failed`, `operator_exception` | verified without evidence; operator exception with active/read-write/destructive authority |
+| `constraints` | yes | list[string] | C1-C12 references | empty |
 | `source_ledger` | yes | list[object] | repo/memory/external sources | missing for non-trivial design |
 
 Optional fields: `parent_agent`, `child_agents`, `schedule`, `rollback_plan`, `cost_budget`, `data_classification`.
@@ -100,6 +108,52 @@ accountability_owner: "{owner}"
 purpose: "{one sentence}"
 decision_authority: "read-only|read-write|destructive-allowed"
 target_runtime: "{runtime}"
+runtime_control_plane:
+  name: "{runtime control plane}"
+  owner: "{runtime owner}"
+  policy_authority: "{policy authority}"
+  invocation_surface: "{cli|api|mcp|workflow|sandbox}"
+  state_store: "{state store}"
+  audit_sink: "{audit sink}"
+system_of_record:
+  name: "{system of record}"
+  write_policy: "{runtime-mediated|read-only|direct-with-approval}"
+  adapter_or_api: "{adapter or API}"
+  direct_write_allowed: false
+runtime_identity:
+  principal: "{agent principal}"
+  auth_mode: "seat-attached|fleet-commercial|local-dev"
+  tenant_scope: "{tenant/team/scope}"
+  revocation_path: "{how identity is revoked}"
+action_authority_matrix: []
+credential_strategy:
+  env_var_names: []
+  vault_or_provider: "{vault/provider/runtime-injected}"
+  scope: "{credential scope}"
+  expiry: "{expiry policy}"
+  rotation: "{rotation policy}"
+  revocation: "{revocation path}"
+  redaction: "{redaction policy}"
+egress_policy:
+  default: "deny"
+  allowed_domains: []
+  denied_domains: []
+  proxy_or_filter: "{proxy/filter}"
+  ssrf_controls: []
+durable_orchestration:
+  workflow_id: "{workflow id}"
+  state_store: "{state store}"
+  retry_policy: "{retry policy}"
+  timeout_policy: "{timeout policy}"
+  resume_policy: "{resume policy}"
+  idempotency: "{idempotency policy}"
+observability_contract:
+  trace_id: "{trace id field}"
+  events: []
+  sink: "{audit/trace sink}"
+  redaction: "{redaction policy}"
+  retention: "{retention policy}"
+  evidence_path: "{evidence path}"
 deployment_lifecycle: "ephemeral|persistent|scheduled"
 verification_status: "draft"
 ---
@@ -114,6 +168,11 @@ verification_status: "draft"
 ## API Access
 ## File Access
 ## Workflow Access
+## Action Authority Matrix
+## Credential Strategy
+## Egress Policy
+## Durable Orchestration
+## Observability Contract
 ## Memory Seed Summary
 ## Success Criteria
 ## Escalation Triggers
@@ -177,6 +236,105 @@ version: "0.1.0"
 }
 ```
 
+### `hermes.runtime.json`
+
+```json
+{
+  "schema_version": "1.0",
+  "agent_slug": "revcli-nurture-signal-monitor",
+  "runtime_control_plane": {
+    "name": "REVCLI headless pilot",
+    "policy_authority": "revcli/headless-pilot/workflow-authorization-policy.mjs",
+    "state_store": "REVCLI workflow run and Odoo adapter state",
+    "audit_sink": "integrations/hermes/hooks/revcli_audit_sink.mjs",
+    "system_of_record": "Odoo/CRM via REVCLI adapter"
+  },
+  "identity": {
+    "principal": "revcli-nurture-signal-monitor",
+    "auth_mode": "fleet-commercial",
+    "tenant_scope": "REVCLI headless pilot",
+    "credential_source": "env|vault|runtime-injected",
+    "env_var_names": [
+      "REVCLI_HEADLESS_CONFIG",
+      "REVCLI_ODOO_API_TOKEN",
+      "REVIS_AUDIT_LOG",
+      "REVIS_AUDIT_API_URL",
+      "REVIS_AUDIT_API_TOKEN",
+      "HERMES_REVCLI_NURTURE_MONITOR_ENABLED"
+    ],
+    "revocation_path": "disable schedule/profile and revoke runtime token"
+  },
+  "entrypoint": {
+    "type": "cli",
+    "command": "node scripts/ingest-nurture-trigger.mjs",
+    "cwd": "/home/fer/Music/REVCLI",
+    "argv_allowlist": ["--config", "revcli/headless-pilot/config.json", "--input"],
+    "denied_flags": ["--send", "--approve", "--close", "--owner", "--token"],
+    "allowed_config_paths": ["revcli/headless-pilot/config.json"],
+    "env_allowlist": [
+      "REVCLI_HEADLESS_CONFIG",
+      "REVCLI_ODOO_API_TOKEN",
+      "REVIS_AUDIT_LOG",
+      "REVIS_AUDIT_API_URL",
+      "REVIS_AUDIT_API_TOKEN",
+      "HERMES_REVCLI_NURTURE_MONITOR_ENABLED"
+    ],
+    "input_schema": ".taste/hermes-agents/revcli-nurture-signal-monitor/fixtures/nurture-event.schema.json",
+    "max_input_bytes": 32768
+  },
+  "actions": {
+    "allowed": [
+      {
+        "name": "process-nurture-trigger",
+        "side_effect_level": "internal-write",
+        "approval_gate": "none for valid normalized event; human approval before outbound send",
+        "idempotency_key": "source_type:event_id:opportunity_id",
+        "rollback_or_compensation": "mark queued task skipped and preserve audit event",
+        "audit_event": "nurture_event_processed"
+      }
+    ],
+    "denied": ["external-send", "approve-outreach", "close-won", "close-lost", "owner-change", "direct-odoo-write"]
+  },
+  "egress_policy": {
+    "default": "deny",
+    "allowed_domains": [],
+    "denied_domains": [],
+    "ssrf_controls": ["block-private-ip", "validate-redirects"]
+  },
+  "durable_orchestration": {
+    "workflow_id": "revcli-nurture-signal-monitor:{event_id}",
+    "state_store": "REVCLI workflow run/audit evidence",
+    "retry_policy": "bounded retry with idempotency key",
+    "timeout_policy": "operator-defined SLA",
+    "resume_policy": "resume same run ID"
+  },
+  "observability": {
+    "trace_id_field": "trace_id",
+    "events": ["processed", "skipped", "escalated", "denied", "disabled"],
+    "redaction": "secret-key recursive redaction",
+    "retention": "REVCLI audit policy",
+    "evidence_path": ".taste/hermes-agents/revcli-nurture-signal-monitor/evidence/"
+  },
+  "kill_switch": {
+    "mechanism": "HERMES_REVCLI_NURTURE_MONITOR_ENABLED=false plus schedule/profile/token disable",
+    "test_command": "HERMES_REVCLI_NURTURE_MONITOR_ENABLED=false node scripts/ingest-nurture-trigger.mjs --config revcli/headless-pilot/config.json --input fixtures/valid-website-return.json",
+    "expected_exit_code": 0,
+    "expected_status": "disabled",
+    "expected_audit_event": "nurture_monitor_disabled",
+    "evidence_path": ".taste/hermes-agents/revcli-nurture-signal-monitor/evidence/kill-switch.json"
+  },
+  "fixtures": [
+    {
+      "name": "valid-website-return",
+      "path": "fixtures/valid-website-return.json",
+      "expected_status": "processed|escalated",
+      "expected_audit_event": "nurture_event_processed"
+    }
+  ],
+  "expected_statuses": ["processed", "skipped", "escalated", "denied", "disabled"]
+}
+```
+
 ### `hermes.deploy.md`
 
 ```markdown
@@ -227,7 +385,7 @@ version: "0.1.0"
 
 ### `HERMES-{SLUG}-SPEC.md`
 
-Required sections: Purpose Contract, Taste Alignment, Runtime And Integration Surface, Authority Model, Capability Grants, Memory Seed Contract, Verification Contract, Escalation And Handoff Contract, Kill Switch Contract, Audit And Observability Contract, Security And Credential Contract, Success Criteria, Non-Goals, Failure Modes, Implementation Plan, Independent Verification Plan, Rollback Plan, Constraint Trace.
+Required sections: Purpose Contract, Taste Alignment, Runtime And Integration Surface, Runtime Contract, Authority Model, Capability Grants, Action Authority Matrix, Memory Seed Contract, Durable Orchestration Contract, Verification Contract, Escalation And Handoff Contract, Kill Switch Contract, Audit And Observability Contract, Security And Credential Contract, Success Criteria, Non-Goals, Failure Modes, Implementation Plan, Independent Verification Plan, Rollback Plan, Constraint Trace.
 
 ## HERMES REGISTRY SCHEMA
 
@@ -235,7 +393,7 @@ Root file: `hermes-registry.md`.
 
 Status values: `active`, `deprecated`, `experimental`, `paused`.
 
-Required lookup columns: `Name`, `Slug`, `Purpose`, `Version`, `Authority`, `Lifecycle`, `Operator`, `Created`, `Last Verified` or reason column, `Manifest`, `Spec`, `Status`.
+Required lookup columns: `Name`, `Slug`, `Purpose`, `Version`, `Authority`, `Runtime`, `System Of Record`, `Lifecycle`, `Operator`, `Created`, `Last Verified` or reason column, `Verification Isolation`, `Last Kill Test`, `Manifest`, `Spec`, `Verify`, `Kill Switch`, `Runtime Evidence`, `Status`.
 
 The initialized registry is in `hermes-registry.md` lines 1-34.
 
@@ -263,6 +421,10 @@ Target runtime: local/private REVCLI runtime in `/home/fer/Music/REVCLI`.
 Invocation: `node scripts/ingest-nurture-trigger.mjs --config revcli/headless-pilot/config.json --input <event.json>` or stdin JSON.
 Primary REVCLI modules: `scripts/ingest-nurture-trigger.mjs`, `revcli/headless-pilot/nurture-trigger-connectors.mjs`, `revcli/headless-pilot/domain-service.mjs`, `revcli/headless-pilot/workflow-authorization-policy.mjs`, `integrations/hermes/hooks/revcli_audit_sink.mjs`.
 
+## Runtime Contract
+Required runtime artifact: `.taste/hermes-agents/revcli-nurture-signal-monitor/hermes.runtime.json`.
+The runtime contract must pin cwd, command, allowed config path, env allowlist, input schema, max input bytes, allowed/denied runtime actions, approval gates, audit sink, kill switch, fixtures, and expected statuses.
+
 ## Authority Model
 Decision authority: read-write, internal-only.
 Allowed writes: internal signal records, workflow runs, review tasks, audit events through REVCLI-governed actions.
@@ -274,11 +436,19 @@ Grant 2: Read access to REVCLI workflow/config/profile docs.
 Grant 3: Environment-variable access by name only: `REVCLI_HEADLESS_CONFIG`, `REVCLI_ODOO_API_TOKEN`, `REVIS_AUDIT_LOG`, `REVIS_AUDIT_API_URL`, `REVIS_AUDIT_API_TOKEN`, `HERMES_REVCLI_NURTURE_MONITOR_ENABLED`.
 Grant 4: Audit sink invocation.
 
+## Action Authority Matrix
+Allowed actions: process normalized nurture trigger, create internal signal, queue outreach/nurture review, log audit event.
+Denied actions: external send, direct Odoo write, proposal send, close won/lost, owner reassignment, pricing/redline, credential export.
+Every allowed internal write requires a REVCLI runtime action, idempotency key, and audit event.
+
 ## Memory Seed Contract
 Semantic: first-touch sending always requires human review.
 Procedural: use `scripts/ingest-nurture-trigger.mjs`; do not call Odoo directly.
 Error-solution: no opportunity match and ambiguous match escalate instead of guessing.
 Causal graph: nurture signal quality improves seller review focus when matched to active nurture/opportunity context.
+
+## Durable Orchestration Contract
+Scheduled runs must carry a workflow/run ID, idempotency key, retry policy, timeout policy, and resume policy. Delayed approval or audit-sink failure must preserve state and not start a new uncorrelated run.
 
 ## Verification Contract
 Smoke test: synthetic event against mock adapter or dry-run harness returns scoped processed/no-op result.
@@ -329,7 +499,7 @@ Verifier reads this spec and all Hermes files, then runs dry-run/mock tests with
 Disable env flag, remove schedule, suspend profile, revoke token, mark registry status `paused`, preserve audit logs.
 
 ## Constraint Trace
-C1 reproducible, C2 auditable, C3 malleable, C4 least privilege, C5 killable, C6 memory-coherent, C7 taste-aligned, C8 compaction-safe, C9 failure-cataloged, C10 zero-trust verification.
+C1 reproducible, C2 auditable, C3 malleable, C4 least privilege, C5 killable, C6 memory-coherent, C7 taste-aligned, C8 compaction-safe, C9 failure-cataloged, C10 zero-trust verification, C11 runtime-bound, C12 side-effect-safe.
 ```
 
 ### `hermes.manifest.md`
@@ -347,6 +517,52 @@ accountability_owner: "Fer Miras / waitdeadai"
 purpose: "Monitor normalized nurture-source events and route eligible REVCLI opportunities into governed review without sending external messages."
 decision_authority: "read-write"
 target_runtime: "REVCLI local/private headless pilot"
+runtime_control_plane:
+  name: "REVCLI headless pilot"
+  owner: "Fer Miras / waitdeadai"
+  policy_authority: "workflow-authorization-policy.mjs"
+  invocation_surface: "cli"
+  state_store: "REVCLI/Odoo adapter state"
+  audit_sink: "integrations/hermes/hooks/revcli_audit_sink.mjs"
+system_of_record:
+  name: "Odoo/CRM via REVCLI adapter"
+  write_policy: "runtime-mediated"
+  adapter_or_api: "revcli/headless-pilot/crm-adapter.mjs"
+  direct_write_allowed: false
+runtime_identity:
+  principal: "revcli-nurture-signal-monitor"
+  auth_mode: "fleet-commercial"
+  tenant_scope: "REVCLI headless pilot"
+  revocation_path: "disable schedule/profile and revoke runtime token"
+action_authority_matrix: []
+credential_strategy:
+  env_var_names: ["REVCLI_HEADLESS_CONFIG", "REVCLI_ODOO_API_TOKEN", "REVIS_AUDIT_LOG", "REVIS_AUDIT_API_URL", "REVIS_AUDIT_API_TOKEN", "HERMES_REVCLI_NURTURE_MONITOR_ENABLED"]
+  vault_or_provider: "runtime-injected env or secret manager"
+  scope: "nurture signal processing only"
+  expiry: "operator-defined"
+  rotation: "operator-defined"
+  revocation: "revoke token and suspend profile"
+  redaction: "secret-key recursive redaction"
+egress_policy:
+  default: "deny"
+  allowed_domains: []
+  denied_domains: []
+  proxy_or_filter: "REVCLI/Revis runtime egress policy"
+  ssrf_controls: ["block-private-ip", "validate-redirects"]
+durable_orchestration:
+  workflow_id: "revcli-nurture-signal-monitor:{event_id}"
+  state_store: "REVCLI workflow run/audit evidence"
+  retry_policy: "bounded retry with idempotency key"
+  timeout_policy: "operator-defined SLA"
+  resume_policy: "resume same workflow/run ID"
+  idempotency: "event source + event ID + opportunity ID"
+observability_contract:
+  trace_id: "trace_id"
+  events: ["processed", "skipped", "escalated", "denied", "disabled"]
+  sink: "REVCLI audit sink"
+  redaction: "secret-key recursive redaction"
+  retention: "REVCLI audit policy"
+  evidence_path: ".taste/hermes-agents/revcli-nurture-signal-monitor/evidence/"
 deployment_lifecycle: "scheduled"
 verification_status: "draft"
 ---
@@ -402,6 +618,25 @@ Monitor normalized nurture-source events and route eligible REVCLI opportunities
 | `sales-route-nurture` | prepare/recommend route | external send | seller review for customer-visible action |
 | `sales-approve-outreach` | queue review only | approve/send | manager approval required |
 
+## Action Authority Matrix
+| Action | Side Effect | Runtime Action | Approval Gate | Rollback/Compensation | Audit Event |
+|--------|-------------|----------------|---------------|-----------------------|-------------|
+| process normalized event | internal-write | `process-nurture-trigger` | none for valid normalized event | idempotent no-op on duplicate | `nurture_event_processed` |
+| queue outreach review | internal-write | `queue-outreach-review` | human before outbound send | close queued task / mark skipped | `outreach_review_queued` |
+| deny external send | none | refusal/escalation | manager approval required outside this agent | no send occurs | `external_send_denied` |
+
+## Credential Strategy
+Env names only; no raw values. Tokens are runtime-injected, redacted from artifacts, rotated by the operator, and revoked by disabling the profile/token.
+
+## Egress Policy
+Default deny. This agent starts with no direct external egress; REVCLI/Odoo/audit traffic must be mediated by the runtime control plane or approved adapter.
+
+## Durable Orchestration
+Scheduled runs use event source, event ID, and opportunity ID as idempotency inputs. Approval waits and audit failures preserve state and do not start uncorrelated runs.
+
+## Observability Contract
+Every processed, skipped, escalated, denied, or disabled event records trace ID, workflow run ID when available, action, decision, redacted payload summary, and audit evidence path.
+
 ## Memory Seed Summary
 Five tiers seeded with boundaries, invocation pattern, failure mitigations, creation event, and causal relation between signal monitoring and seller focus.
 
@@ -449,7 +684,7 @@ Timeout: 24h for high-intent website/buyer engagement, 48h for hiring, 72h for f
 - `integrations/hermes/hooks/revcli_audit_sink.mjs`
 
 ## Constraint Trace
-C1, C2, C3, C4, C5, C6, C7, C8, C9, C10.
+C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12.
 ```
 
 ### `hermes.system-prompt.md`
@@ -713,11 +948,12 @@ The copy-paste-ready skill file is installed at `.claude/skills/agentfactory/SKI
 The file is self-contained and includes:
 - front matter and invocation contract
 - non-negotiable contract
-- C1-C10 quality constraints
+- C1-C12 quality constraints, including runtime-bound and side-effect-safe constraints
 - Phase 0 through Phase 8 sequence
 - 12 kernel questions verbatim
 - manifest schema
 - generated file formats
+- `hermes.runtime.json` machine-readable runtime contract
 - introspection hard gate
 - independent verification protocol
 - registry schema
@@ -756,6 +992,39 @@ Gaps found:
 | README did not explain Agent Factory as its own workflow | Operators might understand it as a prompt factory. | Added Agent Factory section describing it as a governed workflow and Hermes fleet model. |
 
 Stress verdict: production-ready as a governed skill contract after the patches, with one honest boundary: generated Hermes agents are only production-ready when their own runtime smoke, boundary, memory, escalation, audit, and kill-switch tests pass in the target environment.
+
+## REVCLI ENTERPRISE HARDENING PASS
+
+Date: 2026-04-29.
+
+Research question: Can `/agentfactory` generate REVCLI/Revis-ready Hermes agents whose production claims are enforced by runtime evidence instead of prose?
+
+Source ledger:
+
+| Source | Reviewed For | Finding |
+|--------|--------------|---------|
+| `/home/fer/Music/REVCLI/researchresults/REVIS_HERMES_EXECUTION_LAYER_PLAN.md` | Hermes/REVCLI/Odoo responsibility split | Hermes should be interaction/runtime; REVCLI remains policy authority; Odoo or configured DB remains system of record. |
+| `/home/fer/Music/REVCLI/revcli/headless-pilot/domain-service.mjs` | Runtime actions and side effects | REVCLI already creates workflow runs, approvals, tasks, activities, and terminal outcome state through domain-service actions. |
+| `/home/fer/Music/REVCLI/revcli/headless-pilot/workflow-authorization-policy.mjs` | Role/scope authorization | REVCLI has roles, allowed actions, self-approval blocks, scope checks, and deny-closed behavior that Hermes must not bypass. |
+| `/home/fer/Music/REVCLI/revcli/headless-pilot/autonomy-policy.mjs` | Autonomy zones and approval gates | First outbound, proposal send, close won/lost, owner changes, and pricing/redline are human/lead governed. |
+| `/home/fer/Music/REVCLI/apps/revis-saas/` | Runtime events, profiles, approvals, execution, evidence | Revis SaaS already models profiles, assignments, approvals, runtime events, traces, sandbox execution, and evidence export. |
+| OpenAI Agents guardrails/human review docs | Approval boundary | Approval must sit beside the side-effecting tool or runtime action, not only in the outer prompt. |
+| OpenAI Agents observability docs | Trace and audit expectations | Agent workflows should trace model calls, tools, handoffs, guardrails, and custom spans. |
+| MCP authorization spec | MCP auth/security | Protected MCP requires OAuth-grade controls, token audience validation, HTTPS, PKCE, secure token storage, and scope discipline. |
+
+Critical gaps closed:
+
+| Gap | Risk | Patch |
+|-----|------|-------|
+| No machine-readable runtime contract | A generated agent could look governed but be impossible to invoke or verify consistently. | Added required `hermes.runtime.json` with entrypoint, cwd, argv/config/env allowlists, input schema, allowed/denied actions, approval gates, audit sink, kill switch, fixtures, and expected statuses. |
+| Registry evidence mismatch | `active` could lack verify/kill/runtime links despite the registry contract. | Added `Verify`, `Kill Switch`, `Runtime Evidence`, `Verification Isolation`, and `Last Kill Test` columns to registry schemas. |
+| Kill switch prose only | Runtime could keep mutating state after the documented disable path. | Strengthened kill-switch format with test command, expected exit/status, expected audit event, evidence path, last tested timestamp, and result. |
+| Audit mirage | Stdout or CRM activity could be mistaken for runtime audit evidence. | Required runtime audit sink and trace/evidence test rows in `hermes.runtime.json` and `hermes.verify.md`. |
+| Command argument escape | An exact command grant could still run unsafe config/input/actor combinations. | Required cwd, argv allowlist, denied flags, config allowlist, env allowlist, input schema, max input bytes, and negative tests. |
+| Waiver-shaped verification bypass | Legacy waiver language could become production laundering. | Replaced with `operator_exception`, which cannot become active or carry read-write/destructive authority. |
+| REVCLI as an informal target | Agents could bypass REVCLI and write CRM/Odoo directly. | Added REVCLI Readiness Overlay and `REVCLI_HERMES_AGENT_MAP.md`. |
+
+Stress verdict: `/agentfactory` is now hardened toward REVCLI-grade generation when used correctly. It still does not make a REVCLI agent production-ready by itself; production status requires an existing runtime bridge, executable kill/audit evidence, argument-constrained invocation, and independent verification against the target REVCLI/Revis environment.
 
 ## CONSTRAINT COMPLIANCE SUMMARY
 

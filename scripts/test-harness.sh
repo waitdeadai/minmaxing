@@ -310,14 +310,23 @@ done <<'EOF'
 12 kernel questions
 Hermes agent
 least privilege
-HERMES-{NAME}-SPEC.md
+HERMES-{SLUG}-SPEC.md
 hermes.manifest.md
 hermes.system-prompt.md
 hermes.memory-seed.json
+hermes.runtime.json
 hermes.deploy.md
 hermes.verify.md
 hermes.kill-switch.md
 hermes-registry.md
+REVCLI Readiness Overlay
+Runtime Control Plane
+runtime_control_plane
+action_authority_matrix
+operator_exception
+Status Transition Matrix
+Argument escape
+Audit mirage
 kill switch
 independent verification
 memory-coherent
@@ -334,10 +343,16 @@ EOF
 if [ "$AGENT_FACTORY_OK" = true ] && \
    [ -f "hermes-factory.taste.md" ] && \
    [ -f "hermes-registry.md" ] && \
+   [ -f "REVCLI_HERMES_AGENT_MAP.md" ] && \
    grep -Fq "Enterprise Operating Model" hermes-factory.taste.md 2>/dev/null && \
    grep -Fq "Active Agents" hermes-registry.md 2>/dev/null && \
+   grep -Fq "Runtime Evidence" hermes-registry.md 2>/dev/null && \
+   grep -Fq "Verification Isolation" hermes-registry.md 2>/dev/null && \
+   grep -Fq "Last Kill Test" hermes-registry.md 2>/dev/null && \
    grep -Fq "Paused Agents" hermes-registry.md 2>/dev/null && \
    grep -Fq "Deprecated Agents" hermes-registry.md 2>/dev/null && \
+   grep -Fq "Candidate Hermes Agents" REVCLI_HERMES_AGENT_MAP.md 2>/dev/null && \
+   grep -Fq "REVCLI Runtime Blocks AgentFactory Must Respect" REVCLI_HERMES_AGENT_MAP.md 2>/dev/null && \
    grep -Fq "/agentfactory" README.md 2>/dev/null && \
    grep -Fq "/agentfactory" CLAUDE.md 2>/dev/null && \
    grep -Fq "/agentfactory" AGENTS.md 2>/dev/null && \

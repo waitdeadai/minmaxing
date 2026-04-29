@@ -1,68 +1,74 @@
-# SPEC: Agent Factory Skill
+# SPEC: AgentFactory Runtime Contract Hardening
 
 ## Problem Statement
-Add `/agentfactory` as a first-class minmaxing skill for creating governed Hermes agents that can operate bounded workflows, departments, or enterprise systems through reproducible contracts rather than ad hoc prompts.
+`/agentfactory` is now a first-class workflow for creating Hermes agents, but the current contract can still produce agents that look governed in Markdown without proving runtime compatibility. REVCLI makes the missing layer concrete: generated Hermes agents must bind to a control plane, system of record, approvals, audit sink, kill switch, and argument-level capability constraints before they can claim enterprise readiness.
+
+Harden `/agentfactory` so generated Hermes agents are reproducible, REVCLI-ready, and falsifiable by executable evidence rather than prose.
 
 ## Codebase Anchors
-- `.claude/skills/workflow/SKILL.md` defines the phase/gate conventions that `/agentfactory` must mirror.
-- `.claude/skills/verify/SKILL.md` defines independent evidence expectations and verification metadata language.
-- `.claude/skills/introspect/SKILL.md` defines hard-gate self-audit behavior.
-- `README.md`, `CLAUDE.md`, `AGENTS.md`, and `scripts/start-session.sh` expose the public/operator skill count and command list.
-- `scripts/test-harness.sh` statically enforces repo-level harness contracts.
-- `hermes-factory.taste.md` and `hermes-registry.md` are new Agent Factory truth surfaces.
+- `.claude/skills/agentfactory/SKILL.md` owns the Agent Factory phase contract, schemas, generated file formats, and hard gates.
+- `scripts/agentfactory-smoke.sh` owns static and fixture-level regression checks for Agent Factory invariants.
+- `scripts/test-harness.sh` calls the Agent Factory smoke test as part of the repo harness.
+- `hermes-registry.md` is the root source of truth for generated Hermes agent status.
+- `hermes-factory.taste.md` defines the secondary taste contract for safe agent creation.
+- `AGENT_FACTORY_AUDIT_AND_BLUEPRINT.md` records the research/audit/design ledger.
+- `README.md`, `CLAUDE.md`, and `AGENTS.md` are operator-facing contracts.
+- `/home/fer/Music/REVCLI/revcli/headless-pilot/` is the local REVCLI runtime-control-plane evidence surface.
+- `/home/fer/Music/REVCLI/apps/revis-saas/` is the local Revis SaaS runtime/audit/approval evidence surface.
 
 ## Success Criteria
-- [ ] `.claude/skills/agentfactory/SKILL.md` exists and defines the complete Agent Factory phase sequence.
-- [ ] `/agentfactory` includes the 12 Hermes intent intake questions verbatim.
-- [ ] `/agentfactory` requires taste alignment, spec-first generation, deep research, hard-gate introspection, independent verification, registry closeout, compaction-safe state, memory-coherent seeds, and a tested kill switch.
-- [ ] `/agentfactory` explicitly behaves as a workflow on itself with an `AGENT_FACTORY_ARTIFACT`, compaction-resume guidance, research sufficiency gate, and adversarial stress cases.
-- [ ] `hermes-factory.taste.md` exists as the secondary taste contract for Hermes agent creation.
-- [ ] `hermes-registry.md` exists with a markdown schema supporting active, experimental, paused, and deprecated agents.
-- [ ] Public/operator docs and session startup count `/agentfactory` as the 21st skill.
-- [ ] `scripts/test-harness.sh` includes a static contract test for `/agentfactory`.
-- [ ] `scripts/agentfactory-smoke.sh` stress-tests the Agent Factory contract and is called by `scripts/test-harness.sh`.
-- [ ] `AGENT_FACTORY_AUDIT_AND_BLUEPRINT.md` records the requested minmaxing audit, REVCLI audit, Agent Factory design, registry schema, first Hermes blueprint, failure catalog, and constraint trace.
+- [ ] `/agentfactory` requires a machine-readable `hermes.runtime.json` file for every generated Hermes agent.
+- [ ] `hermes.runtime.json` includes entrypoint, cwd, args schema, argv allowlist, env allowlist, config path allowlist, input limits, allowed and denied actions, approval gates, audit sink, kill switch, fixtures, and expected statuses.
+- [ ] `hermes.manifest.md` and the manifest schema include parseable runtime-control-plane, system-of-record, action-authority, credential, egress, observability, and status-transition contracts.
+- [ ] `/agentfactory` includes a REVCLI readiness overlay requiring role-scoped profile, REVCLI/Revis policy authority, Odoo/DB system-of-record correlation, auth mode, approval gate map, egress allowlist, audit trace, kill-switch compatibility, closed-loop terminal state, and no unmanaged execution channel.
+- [ ] `hermes.verify.md` requires executable test rows with command, fixture, expected result, actual result, evidence path, verifier, and status.
+- [ ] `hermes.kill-switch.md` requires a runtime-backed test command, expected exit code/status, expected audit event, evidence path, last tested timestamp, and result.
+- [ ] `hermes-registry.md` includes verification, kill-switch, runtime evidence, verification isolation, and last kill test columns for active and experimental agents.
+- [ ] Active status is illegal unless verification is `verified`, registry evidence links are present, kill-switch evidence passed, and no unresolved production-risk residual remains.
+- [ ] Legacy verification waiver language is replaced with an explicit `operator_exception` state that cannot be active and cannot hold read-write or destructive authority.
+- [ ] `scripts/agentfactory-smoke.sh` checks the new runtime contract terms, registry evidence columns, active-row invariants, and negative fixture cases.
+- [ ] `REVCLI_HERMES_AGENT_MAP.md` exists and maps REVCLI product/workflow surfaces to candidate Hermes agents, risks, approvals, runtime evidence, and priority.
+- [ ] README/CLAUDE/AGENTS explain that `/agentfactory` generates runtime-bound Hermes agents, not merely prompt/document bundles.
 - [ ] Verification commands pass or any blocker is reported with concrete evidence.
 
 ## Scope
 ### In Scope
-- Add the `/agentfactory` skill file.
-- Add the root Hermes factory taste and registry schema files.
-- Update docs and startup/test scripts for 21 skills.
-- Add static harness coverage and a dedicated smoke script for Agent Factory invariants.
-- Add a durable audit/design/blueprint artifact for the operator.
+- Strengthen the Agent Factory skill contract and generated file specs.
+- Add a REVCLI enterprise runtime overlay and agent portfolio map.
+- Upgrade registry schema and smoke tests so readiness claims are falsifiable.
+- Update operator documentation and active spec.
 
 ### Out of Scope
-- Generating or deploying a concrete Hermes agent directory in this change.
-- Editing the local private `REVCLI` repository.
-- Changing Claude Code, Codex, MiniMax, or MCP authentication.
-- Reworking the existing `/workflow` implementation.
+- Editing the private REVCLI repository in this change.
+- Generating a concrete Hermes agent directory under `.taste/hermes-agents/`.
+- Building the actual REVCLI MCP/API bridge or runtime wrappers.
+- Deploying Revis SaaS or provisioning external credentials.
 
 ## Surgical Diff Discipline
-- Smallest sufficient implementation: add the new skill, truth surfaces, docs count, and static test.
-- No speculative abstractions: do not introduce a new runtime, database schema, or agent orchestration engine.
-- No drive-by refactors: preserve existing skill behavior and only update references needed for `/agentfactory`.
-- Changed-line trace: every changed file maps to a success criterion above.
+- Smallest sufficient implementation: update Agent Factory contracts, docs, tests, and the REVCLI map only.
+- No speculative runtime engine: require `hermes.runtime.json` and executable evidence, but do not invent a new orchestrator.
+- No drive-by REVCLI edits: use REVCLI as read-only evidence.
+- Changed-line trace: every meaningful edit maps to a success criterion above.
 
 ## Implementation Plan
-1. Create `.claude/skills/agentfactory/SKILL.md` with the complete production-grade workflow.
-2. Create `hermes-factory.taste.md` and `hermes-registry.md`.
-3. Update `README.md`, `CLAUDE.md`, `AGENTS.md`, and `scripts/start-session.sh` from 20 to 21 skills and include `/agentfactory`.
-4. Add `scripts/test-harness.sh` static coverage and `scripts/agentfactory-smoke.sh` for Agent Factory.
-5. Write `AGENT_FACTORY_AUDIT_AND_BLUEPRINT.md` with the requested audit and Hermes blueprint.
-6. Update README with the production-ready Agent Factory model.
-7. Run shell syntax, harness, skill-count, smoke, and diff checks.
+1. Update `.claude/skills/agentfactory/SKILL.md` with runtime-control-plane gates, REVCLI overlay, `hermes.runtime.json`, stricter manifest/verify/kill-switch formats, transition matrix, and registry schema.
+2. Update `hermes-registry.md` with evidence columns.
+3. Add `REVCLI_HERMES_AGENT_MAP.md` from local REVCLI audit evidence.
+4. Update `scripts/agentfactory-smoke.sh` with required runtime contract terms, registry column assertions, active row checks, and negative fixtures.
+5. Update `scripts/test-harness.sh`, README, CLAUDE, AGENTS, and the audit blueprint to reflect enterprise runtime readiness.
+6. Run shell syntax, Agent Factory smoke, full harness, diff checks, and targeted grep checks for stale contracts.
 
 ## Verification
-- `bash -n scripts/start-session.sh`
-- `bash -n scripts/test-harness.sh`
 - `bash -n scripts/agentfactory-smoke.sh`
 - `bash scripts/agentfactory-smoke.sh`
+- `bash -n scripts/test-harness.sh`
+- `bash -n scripts/start-session.sh`
 - `bash scripts/test-harness.sh`
-- `find .claude/skills -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l`
 - `git diff --check`
+- targeted stale command-name grep over changed docs and scripts
+- `rg "hermes.runtime.json|Runtime Control Plane|REVCLI Readiness Overlay|operator_exception" .claude/skills/agentfactory/SKILL.md scripts/agentfactory-smoke.sh hermes-registry.md README.md`
 
 ## Rollback Plan
-- Remove `.claude/skills/agentfactory/`, `hermes-factory.taste.md`, and `hermes-registry.md`.
-- Revert docs and scripts from 21 skills to the prior count.
-- Restore the previous active `SPEC.md` from `.taste/specs/` if needed.
+- Revert the Agent Factory skill, smoke script, registry, docs, and REVCLI map changes.
+- Restore the prior Agent Factory contract from git history if the stricter runtime contract proves too heavy.
+- Leave archived specs untouched.

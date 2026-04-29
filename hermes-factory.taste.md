@@ -8,17 +8,20 @@ version: 1
 - Every capability grant must be justified, auditable, testable, and killable.
 - Enterprise-scale Hermes systems should be composed from narrow agents with explicit handoffs instead of one omnipotent agent.
 - Runtime control planes own authorization, approval, audit, and system-of-record writes when they already exist.
+- Runtime binding is mandatory; production agents need parseable invocation, authority, approval, audit, and kill-switch contracts.
 
 ## Enterprise Operating Model
 - A Hermes agent may operate one workflow, one role lane, one department function, or one bounded subsystem.
 - A Hermes fleet may operate a larger business process only when each agent has a manifest, registry entry, scope boundary, escalation trigger, verification contract, and kill switch.
 - Supervisory or coordinator agents route work; they do not silently inherit every child agent permission.
 - Human accountability remains explicit even when execution is automated.
+- For REVCLI/Revis systems, Hermes interacts and prepares work, REVCLI governs workflow policy, Revis records runtime evidence, and Odoo or the configured database remains the system of record.
 
 ## Approval Philosophy
 - Read-only research and classification can be autonomous when scope and data access are explicit.
 - Internal read-write actions can be autonomous only through governed runtime actions with audit logs and rollback semantics.
 - Destructive, customer-visible, financial, legal, credential, hiring, compliance, or external-send actions require explicit approval unless a policy-bound manifest proves otherwise and verification tests it.
+- Command, MCP, API, and workflow capabilities need argument-level constraints and audit evidence, not just broad tool names.
 
 ## Memory Philosophy
 - Memory is a contract surface, not a scrapbook.

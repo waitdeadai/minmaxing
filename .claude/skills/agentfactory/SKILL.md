@@ -17,15 +17,18 @@ Hermes agents may be used as single workflow executors, department-specific assi
 
 ## Non-Negotiable Contract
 
-- Follow the phase sequence exactly: taste gate -> intent intake -> deep research -> manifest draft -> capability stack -> `HERMES-{NAME}-SPEC.md` -> file generation -> introspect -> verify -> closeout and registry.
+- Follow the phase sequence exactly: taste gate -> intent intake -> deep research -> manifest draft -> capability stack -> `HERMES-{SLUG}-SPEC.md` -> file generation -> introspect -> verify -> closeout and registry.
 - Start every new Hermes agent with zero permissions. Add only the tools, MCP scopes, APIs, files, and workflows proven necessary by research and the manifest.
 - Do not create or deploy an agent whose purpose conflicts with `taste.md`, `taste.vision`, or `hermes-factory.taste.md`.
-- Do not generate agent files before writing `HERMES-{NAME}-SPEC.md`.
+- Do not generate agent files before writing `HERMES-{SLUG}-SPEC.md`.
 - Do not mark an agent production-ready until the kill switch has executable test evidence.
 - Do not accept contradictory memory seeds. Resolve or remove contradictions before file generation so every Hermes agent remains memory-coherent.
 - Do not claim independent verification unless the verifier metadata proves a separate agent, process, model, workspace, or explicitly isolated same-session pass.
 - Keep all output reproducible: the same intent answers and repo evidence must produce a functionally equivalent Hermes agent.
 - Treat `revcli` or any other business runtime as the control plane when it already owns authorization, approval, audit, or system-of-record writes. Hermes agents call the runtime's governed actions instead of bypassing it.
+- Treat runtime compatibility as a machine contract, not prose. Every Hermes agent must include `hermes.runtime.json` with parseable invocation, authority, approval, audit, kill-switch, and fixture evidence fields.
+- Any command capability must pin `cwd`, allowed argv shape, allowed config paths, env allowlist, max input size, input schema, denied flags, and expected exit/status behavior.
+- Do not mark an enterprise or REVCLI-facing agent `active` when `verification_status` is `operator_exception`, when runtime evidence is missing, or when read-write/destructive authority is paired with exception-based verification.
 - Keep `.minimaxing/state/CURRENT.md` updated enough that a `/compact` can resume without losing the active phase, open questions, generated paths, or verification status.
 
 ## Quality Constraints
@@ -42,6 +45,8 @@ Hermes agents may be used as single workflow executors, department-specific assi
 | C8 | Compaction-safe | Current phase, decisions, pending gates, and paths are recorded in `.minimaxing/state/CURRENT.md` or a workflow artifact before risky transitions. |
 | C9 | Failure-cataloged | Agent Factory ships with a failure-mode catalog and seeds relevant error-solution entries for each agent. |
 | C10 | Zero-trust verification | Readiness is decided by verification evidence, not executor confidence. |
+| C11 | Runtime-bound | Production readiness requires a parseable runtime contract and executable runtime evidence. |
+| C12 | Side-effect-safe | Side effects require argument constraints, approval gates, audit events, and rollback or compensation proof. |
 
 ## Agent Factory Workflow Artifact
 
@@ -140,6 +145,10 @@ Required research branches:
 |--------|-------------------|
 | Repo overlap | Existing agents, workflows, scripts, policies, profiles, skills, or runtime modules that overlap the intended purpose. |
 | Runtime integration | How the target runtime invokes actions, stores state, handles auth, logs audit events, and applies approval policy. |
+| Runtime authority chain | Which system owns policy, which system owns durable state, which system is the system of record, and which writes are forbidden bypasses. |
+| Approval and side-effect matrix | Every external, customer-visible, financial, legal, destructive, credential, workflow-state, or system-of-record action and its approval gate. |
+| Identity and credentials | Runtime principal, auth mode, credential owner, vault/provider, env var names, expiry, rotation, revocation, and secret redaction. |
+| Observability and evidence | Trace IDs, audit event schema, runtime evidence path, retention, redaction, and replay/recovery surfaces. |
 | Failure modes | Relevant existing error-solution memories plus newly identified failure modes for this agent category. |
 | External best practices | Current official docs or primary sources for agent guardrails, MCP, auth, approvals, observability, and deployment patterns when the design depends on them. |
 | Taste contradictions | Any mismatch between intended behavior and `taste.md`, `taste.vision`, or `hermes-factory.taste.md`. |
@@ -161,6 +170,26 @@ Research sufficiency gate:
 - `BLOCKED`: unresolved runtime, auth, approval, data, legal, or destructive-action ambiguity prevents safe design.
 
 Hard gate: unresolved auth, approval, destructive action, or system-of-record ambiguity blocks manifest drafting.
+
+## REVCLI Readiness Overlay
+
+Apply this overlay whenever `target_runtime` includes `revcli`, `revis`, `odoo`, a CRM, a sales workflow, or any customer/company operating workflow. If any required item cannot be proven from repo evidence or operator intake, return `BLOCKED` or `REPLAN_REQUIRED`.
+
+| Requirement | Contract |
+|-------------|----------|
+| Role-scoped profile | Declare exactly one primary REVCLI role or narrowly justified extension: `signal-ingestor`, `opening-seller`, `qualified-seller`, `manager-approver`, `owner-auditor`, or `delivery-owner`. |
+| REVCLI policy authority | Hermes may interact, draft, classify, call bounded tools, or prepare handoffs, but workflow state transitions must go through REVCLI/Revis policy surfaces. |
+| System-of-record boundary | Odoo, CRM, or Postgres writes must be mediated by REVCLI domain service, runtime API, MCP bridge, or approved adapter; direct unmanaged writes are forbidden. |
+| Correlation fields | Every material run must carry `agent_profile_id`, `agent_session_id`, `agent_run_id`, `trace_id`, `workflow_run_id`, `approval_id` when applicable, `opportunity_id` or target object ID, `actor_id`, and audit event hash when the runtime supports it. |
+| Auth mode | Declare `seat-attached` for human-attended sessions or `fleet-commercial` for unattended/service agents. Consumer subscription/session credentials are forbidden for shared autonomous fleets. |
+| Approval gate map | First outbound touch, proposal send, close won/lost, owner reassignment, pricing/redline, evidence export, profile suspension, production workflow execution, and external side effects must map to explicit approval gates. |
+| Tool and egress allowlist | Tools, MCP servers, APIs, commands, domains, and network destinations start denied and are allowlisted per workflow/profile. |
+| Trace and audit evidence | The runtime contract must name the audit sink and prove redacted runtime events, tool calls, approvals, business-object mutations, and evidence exports are recorded. |
+| Kill-switch compatibility | Generated agents must honor tenant, workflow, profile, provider, queue, credential, and sandbox/network kill switches where the runtime exposes them. |
+| Closed-loop terminal state | Sales/prospecting agents must route work to `closed-won`, `closed-lost`, `nurture-active`, or `archived`, never open-ended consultation limbo. |
+| No unmanaged execution channel | Governed production execution must use Revis web console, approved enterprise portal, controlled Slack/Teams notification-approval surfaces, or runtime API/MCP. WhatsApp, Telegram, personal Signal, SMS, and personal email execution are forbidden. |
+
+Hard gate: if a REVCLI-facing agent needs a runtime bridge that does not exist yet, the generated status is `experimental` or `blocked`; it cannot be `active`.
 
 ## Phase 3: Hermes Manifest Drafting
 
@@ -185,20 +214,28 @@ Use Markdown with YAML front matter followed by required sections. Field names a
 | `non_goals` | yes | list[string] | excluded outcomes | empty |
 | `decision_authority` | yes | enum | `read-only`, `read-write`, `destructive-allowed` | mismatch with capabilities |
 | `target_runtime` | yes | string | local, CI, server, revcli, MCP, cloud, or named runtime | missing |
+| `runtime_control_plane` | yes | object | includes `name`, `owner`, `policy_authority`, `invocation_surface`, `state_store`, `audit_sink` | missing owner, policy authority, or audit sink |
+| `system_of_record` | yes | object | includes `name`, `write_policy`, `adapter_or_api`, `direct_write_allowed` | direct write allowed without approval proof |
+| `runtime_identity` | yes | object | includes `principal`, `auth_mode`, `tenant_scope`, `revocation_path` | shared hidden user credentials or missing revocation |
 | `deployment_lifecycle` | yes | enum | `ephemeral`, `persistent`, `scheduled` | anything else |
 | `capability_stack` | yes | list[object] | each object includes `type`, `name`, `scope`, `justification`, `risk`, `approval_required` | any permission lacks justification |
 | `mcp_servers` | yes | list[object] | each object includes `name`, `transport`, `scopes`, `justification`, `approval_model` | broad scopes or missing approval model |
 | `api_access` | yes | list[object] | each object includes `service`, `env_vars`, `allowed_methods`, `denied_methods`, `justification` | secret values included |
 | `file_access` | yes | list[object] | each object includes `path`, `mode`, `purpose` | write access without reason |
 | `workflow_access` | yes | list[object] | each object includes `workflow`, `allowed_actions`, `denied_actions`, `approval_required` | external side effects unapproved |
+| `action_authority_matrix` | yes | list[object] | each object includes `action`, `side_effect_level`, `runtime_action`, `approval_gate`, `rollback_or_compensation`, `idempotency_key`, `audit_event` | side effect lacks approval or audit event |
+| `credential_strategy` | yes | object | includes `env_var_names`, `vault_or_provider`, `scope`, `expiry`, `rotation`, `revocation`, `redaction` | raw secret value included |
+| `egress_policy` | yes | object | includes `default`, `allowed_domains`, `denied_domains`, `proxy_or_filter`, `ssrf_controls` | default is allow-all for production |
+| `durable_orchestration` | yes | object | includes `workflow_id`, `state_store`, `retry_policy`, `timeout_policy`, `resume_policy`, `idempotency` | persistent/scheduled agent lacks durable state |
+| `observability_contract` | yes | object | includes `trace_id`, `events`, `sink`, `redaction`, `retention`, `evidence_path` | no action-level attribution |
 | `memory_seed` | yes | list[object] | each object includes `tier`, `id`, `content`, `source`, `contradiction_check` | contradiction unresolved |
 | `success_criteria` | yes | list[string] | at least one objective, machine-checkable criterion | all criteria require human taste |
 | `escalation_triggers` | yes | list[string] | concrete stop conditions | missing failure coverage |
 | `kill_switch` | yes | object | includes `mechanism`, `owner`, `test_command`, `last_tested`, `expected_result` | untested for active status |
 | `audit_logging` | yes | object | includes `events`, `sink`, `redaction`, `retention` | no runtime outcome logging |
 | `handoff_protocol` | yes | object | includes `when`, `to_whom`, `payload`, `timeout` | missing owner or payload |
-| `verification_status` | yes | enum | `draft`, `verified`, `failed`, `waived` | `verified` without evidence |
-| `constraints` | yes | list[string] | references C1-C10 and project-specific constraints | empty |
+| `verification_status` | yes | enum | `draft`, `verified`, `failed`, `operator_exception` | `verified` without evidence; `operator_exception` with active/read-write/destructive status |
+| `constraints` | yes | list[string] | references C1-C12 and project-specific constraints | empty |
 | `source_ledger` | yes | list[object] | repo, memory, and external sources used | missing for non-trivial design |
 
 Optional fields:
@@ -211,8 +248,22 @@ Optional fields:
 | `rollback_plan` | no | list[string] | concrete rollback steps | destructive authority and rollback missing |
 | `cost_budget` | no | object | token, API, time, or spend limits | unbounded for persistent agent |
 | `data_classification` | no | enum | `public`, `internal`, `confidential`, `restricted` | secrets treated as public |
+| `operator_exception` | no | object | includes `owner`, `reason`, `expires_at`, `compensating_controls`, `approved_by` | used to bypass active production readiness |
 
 Hard gate: no manifest field may contain raw secrets, passwords, tokens, customer-sensitive payloads, or hidden credential instructions.
+
+### Status Transition Matrix
+
+| Manifest Status | Verification Status | Registry Section | Authority Allowed | Required Evidence |
+|-----------------|---------------------|------------------|-------------------|-------------------|
+| `experimental` | `draft` | Experimental Agents | `read-only` or bounded `read-write` with no production side effects | manifest, spec, runtime contract, residual risk |
+| `experimental` | `failed` | Experimental Agents or Paused Agents | no production authority | failed verification evidence and blocker |
+| `experimental` | `operator_exception` | Experimental Agents only | `read-only` only | exception owner, expiry, compensating controls, no production writes |
+| `active` | `verified` | Active Agents | authority exactly as manifest | passing verify, runtime evidence, kill-switch evidence, audit evidence, no unresolved production blocker |
+| `paused` | `failed` or `operator_exception` | Paused Agents | no new work | pause reason, kill-switch or disable evidence |
+| `deprecated` | any non-active status | Deprecated Agents | none | replacement or deprecation reason |
+
+Hard gate: `operator_exception` is not a waiver for enterprise production. It blocks `active`, `read-write`, and `destructive-allowed` authority.
 
 ## Phase 4: Capability Stack Design
 
@@ -230,15 +281,28 @@ Design capabilities using least privilege.
 4. Prefer runtime-owned actions over direct system-of-record writes when a governed runtime exists.
 5. Prefer local/private MCP connections when the runtime must own filtering, credentials, approvals, or audit.
 6. Use hosted MCP only when the remote tool is already policy-bounded and the model-level connection is appropriate.
-7. Build the memory scaffold:
+7. For command or shell capabilities, require:
+   - exact `entrypoint`
+   - pinned `cwd`
+   - `argv_allowlist`
+   - `denied_flags`
+   - `allowed_config_paths`
+   - `env_allowlist`
+   - `input_schema`
+   - `max_input_bytes`
+   - expected exit codes or statuses
+   - negative tests for config escape, oversized input, actor override, and forbidden side effect
+8. For MCP capabilities, require OAuth/PKCE or equivalent runtime auth when applicable, token audience validation, HTTPS for remote auth endpoints, explicit `allowed_tools`, no query-string tokens, secure token storage, and SSRF/egress controls.
+9. Place approval checks beside the tool or runtime action that creates the side effect. Do not rely only on top-level prompt instructions or outer guardrails.
+10. Build the memory scaffold:
    - semantic tier: known decisions and operating boundaries
    - procedural tier: known runtime invocation patterns
    - error-solution tier: failure modes and mitigations
    - episodic tier: creation event and verification run
    - causal graph tier: relationships between agent purpose, capabilities, risk, and success metrics
-8. Build the system prompt from the manifest, not freeform improvisation.
+11. Build the system prompt from the manifest, not freeform improvisation.
 
-Hard gate: any capability without a manifest justification is removed before `HERMES-{NAME}-SPEC.md`.
+Hard gate: any capability without a manifest justification is removed before `HERMES-{SLUG}-SPEC.md`.
 
 ## Phase 5: SPEC.md For The Hermes Agent
 
@@ -252,9 +316,12 @@ Required sections:
 ## Purpose Contract
 ## Taste Alignment
 ## Runtime And Integration Surface
+## Runtime Contract
 ## Authority Model
 ## Capability Grants
+## Action Authority Matrix
 ## Memory Seed Contract
+## Durable Orchestration Contract
 ## Verification Contract
 ## Escalation And Handoff Contract
 ## Kill Switch Contract
@@ -283,6 +350,7 @@ Required files:
 | `hermes.system-prompt.md` | Runtime behavioral kernel derived from the manifest. |
 | `hermes.taste.md` | Agent-specific operating principles and non-goals. |
 | `hermes.memory-seed.json` | Pre-seeded memory entries with contradiction checks. |
+| `hermes.runtime.json` | Machine-readable runtime contract for invocation, authority, approvals, audit, fixtures, and kill switch. |
 | `hermes.deploy.md` | Invocation, runtime, env vars, auth, schedules, observability, and rollback. |
 | `hermes.verify.md` | Smoke, boundary, escalation, memory, and kill-switch tests. |
 | `hermes.kill-switch.md` | Concrete disable mechanisms and last test evidence. |
@@ -303,6 +371,52 @@ accountability_owner: "{owner}"
 purpose: "{one sentence}"
 decision_authority: "read-only|read-write|destructive-allowed"
 target_runtime: "{runtime}"
+runtime_control_plane:
+  name: "{runtime control plane}"
+  owner: "{runtime owner}"
+  policy_authority: "{policy authority}"
+  invocation_surface: "{cli|api|mcp|workflow|sandbox}"
+  state_store: "{state store}"
+  audit_sink: "{audit sink}"
+system_of_record:
+  name: "{system of record}"
+  write_policy: "{runtime-mediated|read-only|direct-with-approval}"
+  adapter_or_api: "{adapter or API}"
+  direct_write_allowed: false
+runtime_identity:
+  principal: "{agent principal}"
+  auth_mode: "seat-attached|fleet-commercial|local-dev"
+  tenant_scope: "{tenant/team/scope}"
+  revocation_path: "{how identity is revoked}"
+action_authority_matrix: []
+credential_strategy:
+  env_var_names: []
+  vault_or_provider: "{vault/provider/runtime-injected}"
+  scope: "{credential scope}"
+  expiry: "{expiry policy}"
+  rotation: "{rotation policy}"
+  revocation: "{revocation path}"
+  redaction: "{redaction policy}"
+egress_policy:
+  default: "deny"
+  allowed_domains: []
+  denied_domains: []
+  proxy_or_filter: "{proxy/filter}"
+  ssrf_controls: []
+durable_orchestration:
+  workflow_id: "{workflow id}"
+  state_store: "{state store}"
+  retry_policy: "{retry policy}"
+  timeout_policy: "{timeout policy}"
+  resume_policy: "{resume policy}"
+  idempotency: "{idempotency policy}"
+observability_contract:
+  trace_id: "{trace id field}"
+  events: []
+  sink: "{audit/trace sink}"
+  redaction: "{redaction policy}"
+  retention: "{retention policy}"
+  evidence_path: "{evidence path}"
 deployment_lifecycle: "ephemeral|persistent|scheduled"
 verification_status: "draft"
 ---
@@ -317,6 +431,11 @@ verification_status: "draft"
 ## API Access
 ## File Access
 ## Workflow Access
+## Action Authority Matrix
+## Credential Strategy
+## Egress Policy
+## Durable Orchestration
+## Observability Contract
 ## Memory Seed Summary
 ## Success Criteria
 ## Escalation Triggers
@@ -339,6 +458,8 @@ verification_status: "draft"
 ## Tool Policy
 ## Memory Policy
 ## Runtime Policy
+## Runtime Control Plane
+## System Of Record Boundary
 ## Escalation Policy
 ## Refusal Policy
 ## Output Contract
@@ -374,6 +495,8 @@ version: "0.1.0"
   "contradiction_check": {
     "status": "pass",
     "method": "semantic/procedural/error-solution/episodic/causal graph cross-check",
+    "inspected_entry_ids": [],
+    "unresolved_entry_ids": [],
     "notes": []
   },
   "entries": [
@@ -382,11 +505,97 @@ version: "0.1.0"
       "tier": "semantic",
       "content": "Decision or boundary to preload.",
       "source": "manifest|repo|operator|research",
+      "source_ref": "file-or-url-or-operator-note",
       "tags": ["hermes", "{slug}"],
       "supersedes": [],
       "contradicts": []
     }
   ]
+}
+```
+
+### File Format: hermes.runtime.json
+
+```json
+{
+  "schema_version": "1.0",
+  "agent_slug": "{slug}",
+  "runtime_control_plane": {
+    "name": "{revcli|revis|local|ci|custom}",
+    "policy_authority": "{runtime policy file/API}",
+    "state_store": "{durable state location}",
+    "audit_sink": "{audit sink path/API}",
+    "system_of_record": "{CRM/Odoo/Postgres/etc}"
+  },
+  "identity": {
+    "principal": "{agent principal}",
+    "auth_mode": "seat-attached|fleet-commercial|local-dev",
+    "tenant_scope": "{scope}",
+    "credential_source": "env|vault|oidc|runtime-injected",
+    "env_var_names": [],
+    "revocation_path": "{disable credential or principal}"
+  },
+  "entrypoint": {
+    "type": "cli|api|mcp|workflow|sandbox",
+    "command": "{command or endpoint}",
+    "cwd": "{absolute or repo-relative cwd}",
+    "argv_allowlist": [],
+    "denied_flags": [],
+    "allowed_config_paths": [],
+    "env_allowlist": [],
+    "input_schema": "{path or inline schema}",
+    "max_input_bytes": 32768
+  },
+  "actions": {
+    "allowed": [
+      {
+        "name": "{runtime action}",
+        "side_effect_level": "none|internal-write|external-effect|destructive",
+        "approval_gate": "{none|approval id|human gate}",
+        "idempotency_key": "{required key}",
+        "rollback_or_compensation": "{rollback path}",
+        "audit_event": "{event name}"
+      }
+    ],
+    "denied": []
+  },
+  "egress_policy": {
+    "default": "deny",
+    "allowed_domains": [],
+    "denied_domains": [],
+    "ssrf_controls": ["block-private-ip", "validate-redirects"]
+  },
+  "durable_orchestration": {
+    "workflow_id": "{runtime workflow id}",
+    "state_store": "{state store}",
+    "retry_policy": "{retry policy}",
+    "timeout_policy": "{timeout policy}",
+    "resume_policy": "{resume policy}"
+  },
+  "observability": {
+    "trace_id_field": "trace_id",
+    "events": [],
+    "redaction": "{redaction rule}",
+    "retention": "{retention rule}",
+    "evidence_path": "{path}"
+  },
+  "kill_switch": {
+    "mechanism": "{env/profile/workflow/tenant/provider/queue/sandbox}",
+    "test_command": "{command}",
+    "expected_exit_code": 0,
+    "expected_status": "disabled",
+    "expected_audit_event": "{event}",
+    "evidence_path": "{path}"
+  },
+  "fixtures": [
+    {
+      "name": "{fixture name}",
+      "path": "{fixture path}",
+      "expected_status": "{expected status}",
+      "expected_audit_event": "{event}"
+    }
+  ],
+  "expected_statuses": ["processed", "skipped", "escalated", "denied", "disabled"]
 }
 ```
 
@@ -396,11 +605,17 @@ version: "0.1.0"
 # Deploy: {Name}
 
 ## Runtime
+## Runtime Control Plane
 ## Invocation
 ## Environment Variables
 ## Authentication
+## Credential Source And Rotation
+## System Of Record Boundary
 ## Authorized Network/API Surface
+## Egress Policy
+## Approval Gates
 ## Schedule Or Trigger
+## Durable State And Resume
 ## Observability
 ## Rollback
 ## Operational Runbook
@@ -414,13 +629,21 @@ version: "0.1.0"
 
 ## Verification Metadata
 ## Success Criteria Matrix
+| test_id | command | fixture | expected_result | actual_result | evidence_path | verifier | status |
+|---------|---------|---------|-----------------|---------------|---------------|----------|--------|
 ## Smoke Test
+## Runtime Control Plane Test
 ## Behavioral Boundary Test
 ## Memory Integrity Check
 ## Escalation Test
 ## Capability Authorization Test
+## Argument Constraint Test
+## Approval Gate Test
+## Egress Policy Test
+## Durable Resume Test
 ## Kill Switch Test
 ## Audit Log Test
+## Trace And Evidence Test
 ## Result
 ```
 
@@ -432,7 +655,15 @@ version: "0.1.0"
 ## Owner
 ## Disable Mechanisms
 ## Test Procedure
+## Test Command
+## Fixture
+## Expected Exit Code
+## Expected Runtime Status
+## Expected Audit Event
+## Evidence Path
 ## Expected Result
+## Last Tested At
+## Last Test Result
 ## Last Test Evidence
 ## Recovery Procedure
 ## Failure Escalation
@@ -448,6 +679,7 @@ Run introspection inline before readiness.
 
 Required checks:
 - Is every tool authorization justified by a specific use case in the manifest?
+- Is every runtime action represented in `hermes.runtime.json` with allowed/denied actions, argument constraints, input limits, and audit events?
 - Does the escalation trigger cover all identified failure modes?
 - Is there at least one testable success criterion that does not require human judgment?
 - Does the kill switch actually work, with test evidence, or is it only documented?
@@ -455,6 +687,8 @@ Required checks:
 - Does the system prompt introduce authority not present in the manifest?
 - Do memory seeds contradict each other across tiers?
 - Does the deployment plan bypass the runtime's approval, audit, or system-of-record rules?
+- Does any MCP/API/command access bypass the declared credential, egress, approval, or audit policy?
+- Is `operator_exception` being used to bypass production readiness? If yes, block active status.
 
 Decision:
 - `PASS`: continue to independent verification.
@@ -475,6 +709,11 @@ Required tests:
 | Memory integrity check | Seed entries are coherent and non-contradictory across tiers. |
 | Escalation test | The agent stops and hands off when a defined trigger occurs. |
 | Capability authorization test | The agent cannot use tools or workflows outside its manifest. |
+| Runtime control plane test | The agent can only perform side effects through the declared runtime control plane. |
+| Argument constraint test | Disallowed argv, config paths, env vars, oversized inputs, and actor overrides are denied. |
+| Approval gate test | Side-effecting actions pause or route through the declared approval gate. |
+| Egress policy test | Unlisted network/API destinations are denied or escalated. |
+| Durable resume test | Scheduled/persistent agents preserve workflow ID, state, idempotency, and approval wait state across interruption. |
 | Kill switch test | Disabling the agent prevents new work and leaves audit evidence. |
 | Audit log test | Material decisions, actions, escalations, and outcomes are recorded. |
 
@@ -488,10 +727,14 @@ Required adversarial stress cases:
 | `read-only` authority includes any write tool | Factory returns `FIX_REQUIRED`. |
 | `destructive-allowed` lacks approval and rollback proof | Factory returns `BLOCKED`. |
 | Runtime has governed action but manifest grants direct system-of-record write | Factory removes grant or blocks as runtime bypass. |
+| Command grant pins binary but not argv/config/input limits | Factory returns `FIX_REQUIRED` for argument escape risk. |
+| MCP server exposes write/security/financial tools without `allowed_tools` narrowing | Factory blocks capability grant. |
+| Audit test only checks stdout, not runtime audit sink | Factory returns `FIX_REQUIRED` for audit mirage. |
 | Memory seed contradicts another tier | Factory blocks until superseded or resolved. |
 | Kill switch is documented but untested | Agent cannot become `active`. |
 | Registry row claims `active` without verification metadata | Factory downgrades status or blocks closeout. |
 | Verifier is same session but reported as separate | Factory corrects metadata and downgrades confidence. |
+| `operator_exception` is paired with `active`, `read-write`, or `destructive-allowed` | Factory blocks promotion. |
 
 Verification metadata must record:
 - executor identity/model/workspace
@@ -515,12 +758,19 @@ Hard gate: verification failure prevents `active` status. Use `experimental` onl
    - version
    - status: `active`, `deprecated`, `experimental`, or `paused`
    - decision authority
+   - runtime control plane
+   - system of record
    - lifecycle
    - operator
    - created date
    - last verified date
    - manifest link
    - spec link
+   - verify link
+   - kill switch link
+   - runtime evidence link
+   - verification isolation
+   - last kill test result
 4. Log creation to semantic memory:
 
 ```bash
@@ -528,10 +778,10 @@ bash scripts/memory.sh add semantic "Hermes agent created: {slug}. Purpose: {pur
 ```
 
 5. Log Agent Factory failure modes relevant to this agent to error-solution memory.
-6. Archive `HERMES-{SLUG}-SPEC.md` to `.taste/specs/` after verified closeout.
+6. Copy `HERMES-{SLUG}-SPEC.md` to `.taste/specs/` after verified closeout while keeping the canonical agent-local spec in `.taste/hermes-agents/{slug}/`; if the spec is moved instead of copied, update the registry link in the same closeout.
 7. Update `.minimaxing/state/CURRENT.md` or the workflow artifact with final paths, verification result, and residual risks.
 
-Hard gate: no registry entry may claim `active` unless `hermes.verify.md` records a passing kill switch test and independent verification metadata.
+Hard gate: no registry entry may claim `active` unless `hermes.verify.md`, `hermes.kill-switch.md`, `hermes.runtime.json`, and registry columns all record passing runtime, verification, kill-switch, and isolation evidence.
 
 ## hermes-registry.md Schema
 
@@ -543,28 +793,28 @@ Use this exact root file format:
 ## Registry Contract
 - Source of truth for Hermes agents created by /agentfactory.
 - Status values: active, deprecated, experimental, paused.
-- Every active agent must link to manifest, spec, verification, and kill-switch evidence.
+- Every active agent must link to manifest, spec, verification, kill-switch evidence, and runtime evidence.
 - Registry updates require /agentfactory or an explicit operator-approved maintenance change.
 
 ## Active Agents
 
-| Name | Slug | Purpose | Version | Authority | Lifecycle | Operator | Created | Last Verified | Manifest | Spec | Status |
-|------|------|---------|---------|-----------|-----------|----------|---------|---------------|----------|------|--------|
+| Name | Slug | Purpose | Version | Authority | Runtime | System Of Record | Lifecycle | Operator | Created | Last Verified | Verification Isolation | Last Kill Test | Manifest | Spec | Verify | Kill Switch | Runtime Evidence | Status |
+|------|------|---------|---------|-----------|---------|------------------|-----------|----------|---------|---------------|------------------------|----------------|----------|------|--------|-------------|------------------|--------|
 
 ## Experimental Agents
 
-| Name | Slug | Purpose | Version | Authority | Lifecycle | Operator | Created | Last Verified | Manifest | Spec | Status |
-|------|------|---------|---------|-----------|-----------|----------|---------|---------------|----------|------|--------|
+| Name | Slug | Purpose | Version | Authority | Runtime | System Of Record | Lifecycle | Operator | Created | Last Verified | Verification Isolation | Last Kill Test | Manifest | Spec | Verify | Kill Switch | Runtime Evidence | Status |
+|------|------|---------|---------|-----------|---------|------------------|-----------|----------|---------|---------------|------------------------|----------------|----------|------|--------|-------------|------------------|--------|
 
 ## Paused Agents
 
-| Name | Slug | Purpose | Version | Authority | Lifecycle | Operator | Created | Paused Reason | Manifest | Spec | Status |
-|------|------|---------|---------|-----------|-----------|----------|---------|---------------|----------|------|--------|
+| Name | Slug | Purpose | Version | Authority | Runtime | System Of Record | Lifecycle | Operator | Created | Paused Reason | Manifest | Spec | Verify | Kill Switch | Runtime Evidence | Status |
+|------|------|---------|---------|-----------|---------|------------------|-----------|----------|---------|---------------|----------|------|--------|-------------|------------------|--------|
 
 ## Deprecated Agents
 
-| Name | Slug | Purpose | Version | Authority | Lifecycle | Operator | Created | Deprecated Reason | Manifest | Spec | Status |
-|------|------|---------|---------|-----------|-----------|----------|---------|-------------------|----------|------|--------|
+| Name | Slug | Purpose | Version | Authority | Runtime | System Of Record | Lifecycle | Operator | Created | Deprecated Reason | Manifest | Spec | Verify | Kill Switch | Runtime Evidence | Status |
+|------|------|---------|---------|-----------|---------|------------------|-----------|----------|---------|-------------------|----------|------|--------|-------------|------------------|--------|
 
 ## Change Log
 
@@ -583,6 +833,10 @@ Seed these entries into the Agent Factory error-solution tier and copy relevant 
 | Unkillable agent | Kill switch documented but untested | Persistent bad automation continues | `last_tested` empty or kill-switch test failed | Keep status experimental/paused; test disable path before active. |
 | Memory contradiction | Seeds conflict across tiers | Agent follows stale or opposing policy | Contradiction check reports unresolved entries | Resolve, supersede, or delete seed before generation. |
 | Runtime bypass | Hermes writes directly to system of record | Approval/audit policies are skipped | Direct API scope exists while runtime action exists | Route through runtime-owned action; deny direct write. |
+| Paper runtime contract | Generated files describe runtime but lack `hermes.runtime.json` | Agent cannot be invoked or verified reproducibly | Missing entrypoint, fixtures, or evidence path | Block file generation until runtime contract exists. |
+| Argument escape | Command grant pins binary but not args/config/input | Agent runs approved command in unapproved mode | Disallowed argv/config path accepted in verification | Require argv allowlist, config allowlist, env allowlist, input schema, and negative tests. |
+| Audit mirage | Stdout is treated as audit evidence | Incident reconstruction is impossible | No runtime audit sink event or trace ID | Require audit sink evidence and trace/action attribution. |
+| Exception laundering | `operator_exception` is used to ship production authority | Unverified agent becomes trusted | Active/read-write/destructive status with exception | Block active and write authority until verification passes. |
 | Authority mismatch | `read-only` agent gets write tool | Business data changes despite read-only contract | Permission contradicts `decision_authority` | Remove permission or change authority with approval and spec update. |
 | Missing escalation | Failure mode has no stop condition | Agent guesses through ambiguous/high-risk cases | Failure catalog entry lacks escalation trigger | Add trigger and test it. |
 | Registry drift | Agent files change without registry update | Operators cannot tell what is running | Manifest version differs from registry | Block closeout; update registry and changelog. |

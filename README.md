@@ -219,7 +219,9 @@ AI training data can be stale, and repo context can be incomplete. Current exter
 
 A Hermes agent can operate one workflow, one department lane, or one bounded subsystem. A fleet can operate a larger business process only by composing narrow agents with explicit handoffs, not by giving one agent omnipotent company authority.
 
-Agent Factory writes its own run artifact under `.taste/workflow-runs/*-agentfactory.md` and keeps the durable registry in `hermes-registry.md`. The secondary factory taste contract lives in `hermes-factory.taste.md`. Production status requires a passing kill-switch test, verifier metadata, source ledger, memory-coherence check, and registry entry. The dedicated `scripts/agentfactory-smoke.sh` stress test keeps the skill from regressing into a checklist.
+Agent Factory writes its own run artifact under `.taste/workflow-runs/*-agentfactory.md` and keeps the durable registry in `hermes-registry.md`. The secondary factory taste contract lives in `hermes-factory.taste.md`. Production status requires `hermes.runtime.json`, a passing kill-switch test, verifier metadata, source ledger, memory-coherence check, runtime evidence, and registry links to manifest, spec, verify, kill-switch, and runtime artifacts. The dedicated `scripts/agentfactory-smoke.sh` stress test keeps the skill from regressing into a checklist by checking negative fixtures such as raw secrets, read-only agents with write actions, untested kill switches, active `operator_exception`, and verifier overclaims.
+
+For REVCLI/Revis-style products, `/agentfactory` treats Hermes as the role-scoped interaction/runtime shell, REVCLI/Revis as the policy and audit control plane, and Odoo or the configured database as the system of record. The repo includes `REVCLI_HERMES_AGENT_MAP.md` so generated agents map to concrete roles, approval gates, runtime evidence, kill switches, and closed-loop outcomes instead of broad “run the company” authority.
 
 ### Permission Mode
 - **bypassPermissions** (shared-project default by design): trusted-local fast profile for personal repos where you want fewer prompts.
@@ -465,7 +467,7 @@ Now you can use any workflow pattern:
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with risk-based parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution in mind |
-| `/agentfactory` | Create governed Hermes agents with manifest, capability stack, memory seed, verification, registry, and tested kill switch |
+| `/agentfactory` | Create governed runtime-bound Hermes agents with manifest, `hermes.runtime.json`, capability stack, memory seed, verification, registry, and tested kill switch |
 | `/sprint` | Run an ownership-safe parallel execution wave |
 | `/verify` | Check output against SPEC with an independent evidence pass |
 | `/review` | AI review + you decide |
@@ -632,6 +634,7 @@ minmaxing/
 ├── taste.md                     # Project operating kernel — created by /tastebootstrap
 ├── taste.vision                 # Product intent + tradeoff contract — created by /tastebootstrap
 ├── AGENTS.md                    # Project instructions for Codex
+├── REVCLI_HERMES_AGENT_MAP.md    # REVCLI/Revis runtime-ready Hermes agent portfolio
 ├── .codex/
 │   ├── config.toml             # Project-scoped Codex defaults
 │   └── agents/                 # Codex custom agents for research/review
@@ -645,7 +648,7 @@ minmaxing/
 │   │   ├── align/              # Taste gate
 │   │   ├── audit/              # Deep codebase analysis
 │   │   ├── autoplan/           # SPEC.md generator
-│   │   ├── agentfactory/      # Governed Hermes agent generator
+│   │   ├── agentfactory/       # Governed Hermes agent generator
 │   │   ├── sprint/             # Ownership-safe parallel executor
 │   │   ├── verify/             # SPEC compliance checker
 │   │   ├── ship/               # Pre-ship checklist
