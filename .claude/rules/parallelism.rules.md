@@ -30,6 +30,26 @@ Use this rough rubric:
 
 Do not inflate the packet count just to hit the ceiling.
 
+## Agent-Native Time Estimation
+
+Every dense parallel plan needs an `Agent-Native Estimate` before packet launch.
+Estimate elapsed agent wall-clock from the packet DAG's critical path, not from
+summed packet effort and not by dividing human time by the number of lanes.
+
+Each packet should include estimated duration and confidence. The aggregate
+estimate should show:
+
+- effective lanes versus capacity ceiling
+- capacity evidence, preferably `scripts/parallel-capacity.sh --json`
+- critical path and sync barriers
+- total agent-hours across packets
+- human touch time
+- calendar blockers
+- confidence downgrade reason when evidence is weak
+
+Adding more lanes stops helping when supervisor review, verifier capacity,
+shared files, CI, credentials, or deploy windows are the bottleneck.
+
 ## Hardware-Aware Capacity
 
 - `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and the detected hardware profile are ceilings, not targets.

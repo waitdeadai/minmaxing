@@ -50,7 +50,14 @@ Measurable outcomes — NOT subjective. Each criterion must be verifiable by:
 - Component C (reason: requires separate project)
 - Component D (reason: out of budget)
 
-### 4. Implementation Plan
+### 4. Agent-Native Estimate
+
+Every non-trivial `SPEC.md` must include an `## Agent-Native Estimate` before
+the implementation plan is frozen. It must separate agent wall-clock,
+agent-hours, human touch time, calendar blockers, critical path, and
+confidence. Human-equivalent estimates are secondary only.
+
+### 5. Implementation Plan
 
 Tasks with definitions of done. Each task must be:
 - Single-responsibility (one clear goal)
@@ -68,12 +75,12 @@ Definition of Done:
 - [ ] Sub-task A
 ```
 
-### 5. Verification
+### 6. Verification
 How will we verify each success criterion?
 - Criterion 1 → [test name or command]
 - Criterion 2 → [inspection method]
 
-### 6. Rollback Plan
+### 7. Rollback Plan
 How to undo if this breaks production?
 1. Step 1: [git revert or rollback command]
 2. Step 2: [database rollback if needed]
@@ -88,6 +95,8 @@ How to undo if this breaks production?
 | No rollback plan for production | FAIL — must have rollback |
 | Missing verification method | FAIL — must specify how to verify |
 | Out-of-scope not listed | FAIL — scope must be explicit |
+| Missing Agent-Native Estimate for non-trivial work | FAIL — must estimate in agent-native wall-clock terms |
+| Human-equivalent-only estimate | FAIL — must be secondary only |
 
 ## When to Update Spec
 

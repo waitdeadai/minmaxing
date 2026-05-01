@@ -64,6 +64,8 @@ Owned files/surfaces: [list]
 Do not touch: [list]
 Context: [thin, relevant context only]
 Dependencies: [what must already be true]
+Estimated duration: [optimistic / likely / pessimistic]
+Estimate confidence: [high|medium|low with reason]
 Success: [definition of done]
 Verify: [how to verify completion]
 Stop if: [overlap, missing dependency, stale assumptions]
@@ -77,6 +79,8 @@ Stop if: [overlap, missing dependency, stale assumptions]
 ### 4.5. Aggregate Parallel Output
 - For `/parallel`, workers return evidence; they do not decide readiness.
 - The main orchestrator checks packet DAG dependencies, ownership matrix, sync barriers, capacity budget, and aggregate verification.
+- The main orchestrator estimates elapsed time from the longest dependency path,
+  not summed packet effort or linear lane scaling.
 - If two packets conflict, stop and reconcile in the main thread instead of asking workers to negotiate authority.
 
 ### 5. Accept or Reject

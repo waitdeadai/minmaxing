@@ -14,6 +14,10 @@ For dense work that may use `/parallel`, gather a hardware-aware capacity profil
 bash scripts/parallel-capacity.sh --summary 2>/dev/null || true
 ```
 
+**Agent-Native Estimate** — before `SPEC.md` is frozen, estimate elapsed time
+from the task DAG, effective lanes, ownership boundaries, sync barriers, and
+verification gates. Human-equivalent baselines are secondary only.
+
 **Use when:** User says "plan this", "how do I build", "spec out", "create a plan", "swarm", or when a new feature/project is described.
 
 **Swarm:** "swarm" → `/autoplan` with an efficacy-first research wave up to `MAX_PARALLEL_AGENTS`.
@@ -89,6 +93,29 @@ The plan should state:
 - verification approach
 - rollback approach when relevant
 
+### Step 4.5: Agent-Native Estimate
+
+Before writing `SPEC.md`, produce an `## Agent-Native Estimate` from the
+planned task DAG.
+
+The estimate must include:
+- estimate type: `agent-native wall-clock`, `human-equivalent`, or
+  `blocked/unknown`
+- execution topology: `local`, `subagents`, `parallel-instances`, or
+  `agent-teams-experimental`
+- capacity evidence, preferably `scripts/parallel-capacity.sh --json`
+- effective lanes versus the ceiling
+- critical path and sync barriers
+- optimistic / likely / pessimistic agent wall-clock
+- total agent-hours across lanes
+- human touch time
+- calendar blockers
+- confidence with downgrade reason
+- optional human-equivalent baseline as secondary comparison only
+
+Reject any estimate that divides human weeks by lane count, assumes linear
+scaling, hides verification/review time, or omits confidence.
+
 ### Step 5: Generate SPEC.md
 
 Before writing, replacing, or reusing `SPEC.md`, run `/introspect pre-plan` inline as a hard gate.
@@ -97,6 +124,8 @@ Check:
 - whether the research and code audit actually support the plan
 - whether the plan is too broad, too vague, or missing a rollback path
 - whether success criteria are objective enough to verify
+- whether the Agent-Native Estimate is present, uses critical-path reasoning,
+  includes verification/review time, and labels confidence
 - whether the smallest sufficient implementation has been chosen
 - whether speculative abstractions or drive-by refactors slipped into scope
 - whether the active spec should be reused or archived
@@ -143,6 +172,19 @@ What problem does this solve? (1-2 sentences)
 - No speculative abstractions: [what is intentionally not generalized]
 - No drive-by refactors: [what adjacent code will stay untouched]
 - Changed-line trace: [how planned file changes map to success criteria]
+
+## Agent-Native Estimate
+- Estimate type: agent-native wall-clock
+- Execution topology: [local|subagents|parallel-instances|agent-teams-experimental]
+- Capacity evidence: [scripts/parallel-capacity.sh --json, Codex max_threads, MAX_PARALLEL_AGENTS]
+- Effective lanes: [N of ceiling M]
+- Critical path: [P1 -> P4 -> P7]
+- Agent wall-clock: [optimistic / likely / pessimistic]
+- Agent-hours: [total active work across all lanes]
+- Human touch time: [review, approval, credentials, product decisions]
+- Calendar blockers: [CI queue, deploy window, account setup, rate limits, business-hours dependency]
+- Confidence: [high|medium|low, with downgrade reason]
+- Human-equivalent baseline: [optional secondary comparison only]
 
 ## Implementation Plan
 ### Phase 1: Foundation [PARALLEL: 2 agents]
@@ -194,6 +236,7 @@ For each task in SPEC.md:
 - Define clear "definition of done"
 - Identify dependencies (what must come first)
 - Estimate complexity (1=single file, 2=few files, 3=architectural)
+- Estimate duration and confidence for each task packet
 - Assign ownership (files or surfaces) for every delegated packet
 - **Tag each task for parallelization:**
   - `[PARALLEL]` = Can run with other parallel tasks (different files)
@@ -201,6 +244,11 @@ For each task in SPEC.md:
   - `[GATE]` = Must pass before next phase starts
 
 **Target: Maximize solved critical path, not slot usage.** Leave tasks sequential when they share context or ownership.
+
+Calculate expected elapsed time from the longest dependency path, including
+sync barriers and verification gates. Do not sum all packet effort when packets
+run concurrently, and do not claim more lanes help when the bottleneck is
+supervisor review, verifier capacity, shared files, CI, or external blockers.
 
 ### Step 7: Output Format
 
@@ -215,6 +263,9 @@ Spec archive: [.taste/specs/... or not needed]
 - Sequential Tasks: [K]
 - Verification: [N] criteria
 - Effective Agent Budget: [B] of [MAX_PARALLEL_AGENTS]
+- Agent Wall-Clock: [optimistic / likely / pessimistic]
+- Human Touch Time: [minutes/hours and why]
+- Estimate Confidence: [high / medium / low]
 
 ## Execution Plan
 With the chosen agent budget:
@@ -246,6 +297,7 @@ When `/workflow` references this skill, the parent workflow continues inline and
 - **Success criteria must be objective** — not "looks good", "works well" → FAIL
 - **Out-of-scope items must be explicitly stated** → FAIL if missing
 - **Rollback plan must exist for production changes** → FAIL if missing
+- **Agent-Native Estimate must exist before SPEC.md is frozen** → FAIL if missing or human-equivalent only
 - **Introspection must pass before SPEC.md is frozen** → FAIL if unresolved blockers remain
 
 ---
@@ -260,3 +312,5 @@ When `/workflow` references this skill, the parent workflow continues inline and
 - Skipping scope reduction → WARN
 - Missing verification method for criteria → BLOCK
 - Writing or replacing `SPEC.md` with unresolved `/introspect` blockers → BLOCK
+- Human-only estimates, linear scaling claims, or hidden blockers in the
+  Agent-Native Estimate → BLOCK

@@ -23,6 +23,7 @@ It must:
 - look for counterexamples
 - compare implementation against `SPEC.md`
 - check for speculative abstractions, drive-by refactors, and scope creep
+- audit `Agent-Native Estimate` quality for non-trivial planning work
 - require a changed-line trace when files changed
 - identify missing verification
 - downgrade confidence when evidence is weak
@@ -56,6 +57,9 @@ Typical lanes:
 - missing tests or weak verification
 - security / privacy / rollback risk
 - concurrency / state / migration risk
+- estimation risk: human-time defaults, linear scaling, hidden blockers,
+  missing verification/review time, weak capacity evidence, or missing
+  confidence labels
 - parallel orchestration risk: stale worker context, split-brain claims, same-file collisions, wrong substrate, over-budget hardware use, unverified parallel-instances, or accidental agent-team dependency
 - documentation or user-facing promise drift
 
@@ -75,8 +79,16 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
 4. Check each mistake against evidence.
 5. Check whether the plan or diff is larger than the smallest sufficient implementation.
 6. Look for counterexamples and omitted cases.
-7. Decide whether confidence should be downgraded.
-8. Return a blocker decision:
+7. Check estimation risk when the task includes planning or non-trivial work:
+   - Is there an `Agent-Native Estimate` before plan or `SPEC.md` freeze?
+   - Is agent wall-clock primary, with human-equivalent baseline secondary only?
+   - Does the estimate use critical-path math instead of linear lane scaling?
+   - Does it include agent-hours, human touch time, calendar blockers,
+     verification/review time, and confidence?
+   - Does capacity evidence cite `scripts/parallel-capacity.sh --json` or an
+     equivalent source when lanes matter?
+8. Decide whether confidence should be downgraded.
+9. Return a blocker decision:
    - `PASS` — no unresolved issues remain
    - `FIX_REQUIRED` — issues found and must be fixed before continuing
    - `REPLAN_REQUIRED` — the plan or spec is wrong
@@ -109,6 +121,15 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
 - No drive-by refactors: [pass / concern]
 - Changed-line trace: [pass / gap]
 
+### Agent-Native Estimate Risk
+- Estimate present: [yes / no / not applicable]
+- Estimate type: [agent-native / human-equivalent / blocked/unknown]
+- Critical path math: [pass / concern]
+- Capacity evidence: [pass / concern]
+- Verification and human touch time: [pass / concern]
+- Calendar blockers: [pass / concern]
+- Confidence label: [pass / concern]
+
 ### Confidence
 - Level: [high / medium / low]
 - Downgrade: [none / reason]
@@ -123,6 +144,13 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
 - missing tests must be named, not hand-waved
 - unresolved blockers must stop the workflow
 - confidence must be lowered when evidence is incomplete
+- non-trivial planning work without `Agent-Native Estimate` must return
+  `FIX_REQUIRED`
+- human-equivalent-only estimates must return `FIX_REQUIRED`
+- linear scaling claims such as "10 agents means 10x faster" must return
+  `FIX_REQUIRED`
+- estimates that omit verification/review time, calendar blockers, or
+  confidence labels must return `FIX_REQUIRED`
 - file-changing work must satisfy changed-line trace or return `FIX_REQUIRED`
 - speculative abstractions and drive-by refactors must be removed or justified by `SPEC.md`
 - remote actions require a `pre-push` introspection pass
@@ -136,3 +164,4 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
 - ignoring failed tests and trying the same fix again
 - pushing or closing out with unresolved introspection blockers
 - publishing typo aliases as if they were separate commands
+- accepting human-time defaults or linear lane scaling as a production estimate

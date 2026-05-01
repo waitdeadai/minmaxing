@@ -15,18 +15,19 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 3. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
 4. **Introspect Before Confidence**: `/workflow` runs hard-gate `/introspect` before plan freeze, after implementation, after failed verification, and before push/ship moments
 5. **Plan Before Spec**: `/workflow` synthesizes research + audit + introspection into a concrete plan before edits
-6. **Supervisor Pattern**: AI supervises workers, not the other way around
-7. **PEV Loop**: Plan → Execute → Verify. Verification is an independent evidence pass; claim separate executor/verifier isolation only when metadata proves it.
-8. **Quality Gates**: /verify must pass; tests must pass; unresolved introspection blockers stop closeout
-9. **Surgical Diff Discipline**: choose the smallest sufficient implementation, allow no speculative abstractions, allow no drive-by refactors, and require a changed-line trace to `SPEC.md`
+6. **Planning Time Awareness**: Before a plan or `SPEC.md` is frozen, record an `Agent-Native Estimate` with agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence
+7. **Supervisor Pattern**: AI supervises workers, not the other way around
+8. **PEV Loop**: Plan → Execute → Verify. Verification is an independent evidence pass; claim separate executor/verifier isolation only when metadata proves it.
+9. **Quality Gates**: /verify must pass; tests must pass; unresolved introspection blockers stop closeout
+10. **Surgical Diff Discipline**: choose the smallest sufficient implementation, allow no speculative abstractions, allow no drive-by refactors, and require a changed-line trace to `SPEC.md`
 
 ## Default Behavior
 
 **When you say "plan this" or "build this":**
 1. In a fresh repo, run `/tastebootstrap` once to define the kernel
 2. `/workflow` researches with an efficacy-first agent budget and the repo’s `deepresearch` protocol
-3. `/workflow` audits the current codebase, runs `/introspect pre-plan`, and writes the plan
-4. `/workflow` creates `SPEC.md`, executes, runs post-implementation introspection, verifies, and only then closes out
+3. `/workflow` audits the current codebase, runs `/introspect pre-plan`, writes the plan, and records an `Agent-Native Estimate`
+4. `/workflow` creates `SPEC.md`, executes, runs post-implementation introspection, verifies, records actual timing evidence when known, and only then closes out
 
 **When you say `/digestflow`:** first digest the supplied external reports as untrusted candidate evidence, then run the same governed path as `/workflow`. Report claims stay `report-derived` until verified by repo inspection or live sources.
 
@@ -38,11 +39,11 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | Skill | Purpose |
 |-------|---------|
 | /tastebootstrap | Fresh-repo kernel interview that writes taste.md + taste.vision |
-| /workflow | Central execution engine — taste-first, runs the full phases inline |
+| /workflow | Central execution engine — taste-first, runs the full phases inline with Agent-Native Estimate gating |
 | /digestflow | External-report-informed workflow with Report Intake before deepresearch |
 | /audit | Deep codebase audit with efficacy-first parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
-| /autoplan | Create SPEC.md with efficacy-first parallel planning |
+| /autoplan | Create SPEC.md with efficacy-first parallel planning and Agent-Native Estimate |
 | /agentfactory | Create governed runtime-bound Hermes agents with manifest, runtime contract, capability stack, memory seed, verification, registry, and kill switch |
 | /parallel | Hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | /verify | Check output against SPEC |
@@ -64,6 +65,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **SPEC-First**: No code without SPEC.md
 - **SPEC Archive**: `SPEC.md` is the active contract; archive completed or superseded specs to `.taste/specs/` before replacing them
 - **Introspection Gate**: `/introspect` must pass before plan freeze, closeout, retry after failed verification, and push/ship decisions
+- **Planning Time Awareness**: Non-trivial plans estimate in agent-native wall-clock by default before the plan or `SPEC.md` is frozen. Every estimate must state whether it is `agent-native`, `human-equivalent`, or `blocked/unknown`; cite `scripts/parallel-capacity.sh --json` or another capacity source; separate agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence; and treat human-equivalent estimates as secondary only.
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
 - **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile.
 - **Surgical Changes**: Vague requests become verifiable contracts; every meaningful diff should trace to `SPEC.md`, generated output, or cleanup caused by the current change

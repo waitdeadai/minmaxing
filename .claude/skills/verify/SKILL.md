@@ -46,6 +46,10 @@ Extract all criteria from SPEC.md:
 - [ ] Criterion 3
 ```
 
+For non-trivial planning work, also read `## Agent-Native Estimate`. If it is
+missing, human-equivalent only, or omits confidence, verification/review time,
+or blockers, mark the planning contract incomplete before accepting closeout.
+
 ### Step 3: Verify Each Criterion
 
 For each criterion, perform verification:
@@ -179,6 +183,7 @@ capacity checks, sync-barrier checks, and aggregate verification against
 - Silent pass is not allowed — show evidence
 - Silent fail is not allowed — show exactly what failed
 - No SPEC.md = automatic FAIL
+- Non-trivial planning work without a valid `Agent-Native Estimate` = FAIL
 
 ---
 
@@ -190,6 +195,7 @@ capacity checks, sync-barrier checks, and aggregate verification against
 - Accepting output that doesn't match spec → FAIL
 - Saying "mostly done" without specifics → FAIL
 - Silent acceptance → FAIL
+- Accepting human-equivalent-only estimates or hidden blockers → FAIL
 
 ---
 

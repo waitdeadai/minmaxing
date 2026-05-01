@@ -59,7 +59,7 @@ EOF
 
     OUTPUT="$(
         MAX_PARALLEL_AGENTS=10 claude -p --settings "$SETTINGS_PATH" \
-        "/workflow This is a harness contract smoke test. Even though the implementation is tiny, treat it as full file-changing work and follow the full research -> code audit -> introspection -> plan -> SPEC.md -> execute -> introspection -> verify flow. SPEC.md must exist on disk before editing note.txt. Create note.txt containing ok. Keep everything local and do not push or deploy anything external."
+        "/workflow This is a harness contract smoke test. Even though the implementation is tiny, treat it as full file-changing work and follow the full research -> code audit -> introspection -> plan -> Agent-Native Estimate -> SPEC.md -> execute -> introspection -> verify flow. SPEC.md must exist on disk before editing note.txt. Create note.txt containing ok. Keep everything local and do not push or deploy anything external."
     )"
 
     echo "$OUTPUT"
@@ -97,14 +97,17 @@ PY
         /^## Code Audit$/ { audit = NR }
         /^## Introspection$/ { introspection = NR }
         /^## Plan$/ { plan = NR }
+        /^## Agent-Native Estimate$/ { estimate = NR }
         /^## SPEC Decision$/ { spec = NR }
         END {
-            if (research && audit && introspection && plan && spec && research < audit && audit < introspection && introspection < plan && plan < spec) {
+            if (research && audit && introspection && plan && estimate && spec && research < audit && audit < introspection && introspection < plan && plan < estimate && estimate < spec) {
                 exit 0
             }
             exit 1
         }
     ' "$ARTIFACT"
+    grep -Eq "^## Agent-Native Estimate$" "$ARTIFACT"
+    grep -Eqi "Agent wall-clock|agent-native wall-clock" "$ARTIFACT"
     grep -Eqi "Investigation Mode|Research Mode" "$ARTIFACT"
     grep -Eqi "Research Tracks Used|Research tracks" "$ARTIFACT"
     grep -Eq "^## Introspection$" "$ARTIFACT"

@@ -4,6 +4,10 @@ Parallel execution with up to `MAX_PARALLEL_AGENTS` agents and strict FILE OWNER
 
 **MAX_PARALLEL_AGENTS** — ceiling for parallel task execution. Use the smallest effective wave that fits independent work packets.
 
+**Agent-Native Estimate** — every sprint plan must estimate elapsed time from
+the packet DAG and longest dependency path. Do not sum parallel packet effort
+as elapsed time, and do not claim linear speedup from lane count.
+
 **Use when:** User says "sprint this" or "swarm sprint", or when `/workflow` or `/parallel` needs an execution-only wave after SPEC and ownership are already clear.
 
 For whole-workflow acceleration, use `/parallel`. `/sprint` does not choose the route, research strategy, hardware-aware substrate, packet DAG, or final verification plan.
@@ -81,10 +85,21 @@ For example, a "calculator module" is not automatically a 10-agent sprint:
 - Effective Budget: [N]
 - Why: [independent packets that justify N]
 
+### Agent-Native Estimate
+- Estimate type: agent-native wall-clock
+- Capacity evidence: [scripts/parallel-capacity.sh --json or summary]
+- Effective lanes: [N of ceiling M]
+- Critical path: [Task 1 -> Barrier A -> Task 4 -> verification]
+- Agent wall-clock: [optimistic / likely / pessimistic]
+- Agent-hours: [total active agent-hours across packets]
+- Human touch time: [review/approval/operator minutes]
+- Calendar blockers: [CI/deploy/credentials/rate limits]
+- Confidence: [high|medium|low with reason]
+
 ### Task Breakdown
-- Task 1: [granular task] → Owned Files: [list]
-- Task 2: [granular task] → Owned Files: [list]
-- Task 3: [granular task] → Owned Files: [list]
+- Task 1: [granular task] -> Owned Files: [list] -> Estimated Duration: [range] -> Confidence: [level]
+- Task 2: [granular task] -> Owned Files: [list] -> Estimated Duration: [range] -> Confidence: [level]
+- Task 3: [granular task] -> Owned Files: [list] -> Estimated Duration: [range] -> Confidence: [level]
 
 ### File Isolation Check
 For each task:
@@ -100,6 +115,11 @@ For each task:
 
 **FILE ISOLATION is mandatory.** If two tasks touch the same file, they cannot run in parallel.
 
+Calculate project elapsed time from the longest dependency path plus
+aggregation and verification time. Adding more lanes stops helping when the
+bottleneck is supervisor review, verifier capacity, shared files, CI, or an
+external blocker.
+
 ### Step 2: Task Distribution
 
 ```markdown
@@ -110,6 +130,8 @@ For each task:
 - Do not touch: [file list]
 - Context: [thin current context for this task]
 - Dependencies: [what must already be true]
+- Estimated duration: [optimistic / likely / pessimistic]
+- Estimate confidence: [high|medium|low with reason]
 - Freshness checkpoint: [when to stop and re-sync]
 - Goal: [specific deliverable]
 
@@ -178,6 +200,9 @@ wait
 - **FILE ISOLATION must be verified** before sprint → FAIL if conflicts
 - **Each agent must have clean context** (no pollution) → FAIL
 - **Aggregator must check for file conflicts** → FAIL if missed
+- **Agent-Native Estimate must be present** → FAIL if sprint has only a
+  human-equivalent estimate or linear speedup claim
+- **Every packet must have estimated duration and confidence** → FAIL if hidden
 - **Failed agents must be reported explicitly** → FAIL if hidden
 - **Cannot proceed with unresolved conflicts** → BLOCK
 
@@ -190,6 +215,7 @@ wait
 - Ignoring failed agents → BLOCK
 - Inflating the wave with synthetic task splitting → BLOCK
 - Not checking file isolation → BLOCK
+- Estimating by saying "10 agents means 10x faster" → BLOCK
 
 ---
 

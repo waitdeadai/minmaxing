@@ -23,6 +23,9 @@ This command is the end-to-end executor.
 - Audit the current codebase before planning or writing `SPEC.md`.
 - Run hard-gate introspection after code audit and before freezing the plan.
 - Synthesize a concrete plan before writing `SPEC.md`.
+- Record an `Agent-Native Estimate` before writing, replacing, or reusing
+  `SPEC.md`. The estimate must be agent-native wall-clock by default, not a
+  bare human-equivalent calendar estimate.
 - Run hard-gate introspection after implementation and before closeout.
 - Keep implementation surgical: smallest sufficient implementation, no speculative abstractions, no drive-by refactors, and a changed-line trace back to `SPEC.md`.
 - Do not stop after planning.
@@ -129,6 +132,7 @@ Required section order:
 ## Code Audit
 ## Introspection
 ## Plan
+## Agent-Native Estimate
 ## SPEC Decision
 ## Execution Notes
 ## Verification Evidence
@@ -141,6 +145,10 @@ Required content inside the sections:
 - `## Research Brief` must record the investigation mode, collaborative research plan, effective research budget, iterative search -> read -> refine loop, source ledger, conflicting evidence, and any follow-up research required before planning.
 - `## Introspection` must record at least `pre-plan` and `post-implementation` entries for file-changing work, plus `after-test-failure` or `pre-push` entries when those triggers occur.
 - `## Plan` must record any delegated packets, their owners, and their dependencies when parallel execution is likely.
+- `## Agent-Native Estimate` must record estimate type, execution topology,
+  capacity evidence, effective lanes, critical path, agent wall-clock,
+  agent-hours, human touch time, calendar blockers, confidence, and any
+  human-equivalent baseline as secondary only.
 - `## Execution Notes` must record any freshness re-checks and the final owned files touched by each delegated packet.
 - `## Verification Evidence` must include `Verification Metadata`: executor identity/model/workspace, verifier identity/model/workspace, and isolation status. Use `unknown` instead of implying separation when the run cannot prove it.
 
@@ -371,6 +379,42 @@ For file-changing tasks:
 
 Do not create or update `SPEC.md` until this plan exists.
 
+### Agent-Native Estimate
+
+Before `SPEC.md` is written, replaced, or reused, append `## Agent-Native
+Estimate` to `WORKFLOW_ARTIFACT`.
+
+Use this stable block:
+
+```markdown
+## Agent-Native Estimate
+
+- Estimate type: agent-native wall-clock
+- Execution topology: local | subagents | parallel-instances | agent-teams-experimental
+- Capacity evidence: scripts/parallel-capacity.sh --json, Codex max_threads, MAX_PARALLEL_AGENTS
+- Effective lanes: N of ceiling M
+- Critical path: P1 -> P4 -> P7
+- Agent wall-clock: optimistic / likely / pessimistic
+- Agent-hours: total active work across all lanes
+- Human touch time: review, approval, credentials, product decisions
+- Calendar blockers: CI queue, deploy window, external account setup, rate limits, business-hours dependency
+- Confidence: high | medium | low, with downgrade reason
+- Human-equivalent baseline: optional secondary comparison only
+```
+
+Rules:
+- estimate elapsed time from the task DAG and the longest dependency path, not
+  summed packet effort
+- never divide a human-week estimate by the lane count
+- never assume 24/7 parallelism unless ownership, capacity, dependencies, and
+  verification support it
+- include verification, aggregation, review, and expected rework time
+- use `blocked/unknown` instead of false precision when capacity, credentials,
+  CI, deploy windows, or product decisions are missing
+
+Do not create, update, or reuse `SPEC.md` until this estimate exists for
+non-trivial file-changing work.
+
 ## Phase 5: Spec
 
 For file-changing work:
@@ -395,6 +439,7 @@ bash scripts/spec-archive.sh prepare "$ARGUMENTS" "superseded-before-new-spec" 2
    - scope
    - smallest sufficient implementation
    - explicit non-goals / no drive-by refactors
+   - Agent-Native Estimate
    - implementation plan
    - verification
    - rollback plan when relevant
@@ -426,6 +471,19 @@ bash scripts/spec-archive.sh prepare "$ARGUMENTS" "superseded-before-new-spec" 2
 - No speculative abstractions: [what flexibility, configurability, or refactor is intentionally avoided]
 - No drive-by refactors: [adjacent cleanup not required by the spec]
 - Changed-line trace: [how changed files or sections map to success criteria]
+
+## Agent-Native Estimate
+- Estimate type: agent-native wall-clock
+- Execution topology: [local|subagents|parallel-instances|agent-teams-experimental]
+- Capacity evidence: [scripts/parallel-capacity.sh --json or other source]
+- Effective lanes: [N of ceiling M]
+- Critical path: [longest dependency path]
+- Agent wall-clock: [optimistic / likely / pessimistic]
+- Agent-hours: [total active work across all lanes]
+- Human touch time: [review/approval/credentials/product decisions]
+- Calendar blockers: [CI/deploy/account/rate-limit/business-hours blockers]
+- Confidence: [high|medium|low with reason]
+- Human-equivalent baseline: [optional secondary comparison only]
 
 ## Implementation Plan
 1. ...
@@ -489,6 +547,9 @@ For file-changing tasks, update `## Verification Evidence` in `WORKFLOW_ARTIFACT
 - files inspected
 - which success criteria passed
 - changed-line trace from modified files or sections back to `SPEC.md`
+- Actual Timing when known: `started_at`, `plan_frozen_at`,
+  `implementation_started_at`, `verification_completed_at`, `closed_at`,
+  effective lanes used, failed verification count, and human blocker minutes
 - any residual risk
 
 ## Pre-Closeout Gate
@@ -501,6 +562,8 @@ Before you emit `## Workflow Complete` for a file-changing task, confirm all of 
 - `Introspection` includes a `pre-plan` pass and a `post-implementation` or justified non-implementation pass.
 - Failed verification, if any, has an `after-test-failure` introspection entry before the next fix attempt.
 - `Plan` is completed.
+- `Agent-Native Estimate` exists, is agent-native by default, includes
+  confidence, and is not only a human-equivalent baseline.
 - `SPEC.md` exists on disk as a real file.
 - `WORKFLOW_ARTIFACT` exists and its phase sections are filled in.
 - Implementation is done or explicitly not required.
@@ -508,6 +571,8 @@ Before you emit `## Workflow Complete` for a file-changing task, confirm all of 
 - Verification metadata is recorded without overstating executor/verifier isolation.
 - The changed-line trace is satisfied: every meaningful diff maps to `SPEC.md`, generated output, or cleanup caused by this change.
 - No speculative abstractions or drive-by refactors remain in the diff.
+- Actual timing fields are recorded when they are known; unknown values are
+  labeled `unknown` instead of invented.
 
 If any item above is false, continue the workflow instead of closing out.
 
@@ -571,6 +636,7 @@ When complete, return:
 - Code Audit: [completed / skipped only for non-file-changing analysis / blocked]
 - Introspection: [PASS / FIX_REQUIRED / REPLAN_REQUIRED / BLOCKED]
 - Plan: [completed / skipped / blocked]
+- Agent-Native Estimate: [completed / blocked / not applicable for tiny direct task]
 - SPEC.md: [created / updated / reused / blocked]
 - Surgical Diff: [PASS / FIX_REQUIRED / not applicable]
 - Spec Archive: [archived / already archived / not needed / blocked]
@@ -599,6 +665,11 @@ When complete, return:
 - broad `Glob("*")` exploration before the first research wave
 - skipping a code audit before planning for file-changing work
 - creating `SPEC.md` before the plan exists
+- creating, reusing, or freezing `SPEC.md` before `## Agent-Native Estimate`
+  exists for non-trivial work
+- giving only a human-equivalent estimate such as "6 weeks" without
+  agent-native wall-clock, critical path, blockers, and confidence
+- claiming linear scaling such as "10 agents means 10x faster"
 - claiming `SPEC.md` was not needed for file-changing work
 - claiming `SPEC.md` was created when the only copy lives inside `WORKFLOW_ARTIFACT`
 - adding speculative abstractions, options, or configurability not required by the spec

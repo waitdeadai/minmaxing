@@ -26,6 +26,7 @@ verifies the aggregate result against the active contract.
 - Always run a Parallel Eligibility Audit before spawning or instructing
   parallel work.
 - Always run a Hardware Capacity Profile before selecting a budget.
+- Always record an `Agent-Native Estimate` before freezing the packet plan.
 - Use the smallest effective budget that shortens the critical path.
 - Use subagents by default for bounded same-workspace sidecar packets.
 - Use parallel-instances only when disjoint ownership, speed need, and
@@ -34,6 +35,8 @@ verifies the aggregate result against the active contract.
   and must not be required for default `/parallel` behavior.
 - Record all packet ownership, dependencies, sync barriers, and returned
   evidence in a workflow artifact.
+- Estimate elapsed time from the longest dependency path, including sync
+  barriers, aggregation, verification, review, and rework risk.
 - Block when workers would touch the same files or make conflicting authority
   claims.
 - Run `/introspect` as a hard gate before freezing the packet plan, after
@@ -191,6 +194,7 @@ Required section order:
 ## Parallel Eligibility Audit
 ## Hardware Capacity Profile
 ## Execution Substrate Selector
+## Agent-Native Estimate
 ## Deep Research Brief
 ## Code Audit
 ## Pre-Plan Introspection
@@ -208,10 +212,33 @@ Required section order:
 ### Packet DAG
 
 ```markdown
-| Packet ID | Purpose | Depends On | Can Run With | Blocks | Status |
-|-----------|---------|------------|--------------|--------|--------|
-| P1 | ... | none | P2, P3 | B1 | pending |
+| Packet ID | Purpose | Depends On | Can Run With | Blocks | Estimated Duration | Confidence | Status |
+|-----------|---------|------------|--------------|--------|--------------------|------------|--------|
+| P1 | ... | none | P2, P3 | B1 | 45-90m | medium | pending |
 ```
+
+### Agent-Native Estimate
+
+```markdown
+## Agent-Native Estimate
+
+- Estimate type: agent-native wall-clock
+- Execution topology: local | subagents | parallel-instances | agent-teams-experimental
+- Capacity evidence: scripts/parallel-capacity.sh --json, Codex max_threads, MAX_PARALLEL_AGENTS
+- Effective lanes: N of ceiling M
+- Critical path: P1 -> B1 -> P4 -> verification
+- Agent wall-clock: optimistic / likely / pessimistic
+- Agent-hours: total active work across all packets
+- Human touch time: review, approval, credentials, product decisions
+- Calendar blockers: CI queue, deploy window, external account setup, rate limits, business-hours dependency
+- Confidence: high | medium | low, with downgrade reason
+- Human-equivalent baseline: optional secondary comparison only
+```
+
+Calculate elapsed time from the longest dependency path, not total packet
+effort. Show when adding lanes stops helping because the supervisor, verifier,
+shared files, sync barriers, CI, credentials, or deploy windows become the
+bottleneck.
 
 ### Ownership Matrix
 
@@ -248,6 +275,8 @@ Owned files/surfaces: [exact list]
 Do not touch: [exact list]
 Inputs: [SPEC.md section, artifact section, source refs, constraints]
 Dependencies: [packets/barriers required first]
+Estimated duration: [optimistic / likely / pessimistic]
+Estimate confidence: [high|medium|low with reason]
 Success: [objective definition of done]
 Verification to run: [commands or inspection]
 Return: [Worker Result Schema]
@@ -292,6 +321,10 @@ Parallel-specific checks:
 - Did workers produce split-brain decisions or conflicting assumptions?
 - Did the main delegate architecture, security, SPEC, or verification judgment?
 - Are packet results traceable back to `SPEC.md`?
+- Does the Agent-Native Estimate use critical-path math instead of summed
+  packet effort or linear lane scaling?
+- Did the estimate include verification, aggregation, review, blockers, and
+  confidence labels?
 - Did parallel-instances or agent teams add unverified behavior?
 - Does any Hermes/agentfactory output lack `development_host_profile`,
   `target_runtime_profile`, `capacity_binding`, or `concurrency_budget` when
@@ -330,6 +363,9 @@ Closeout must include:
 - eligibility decision and whether parallelism was used or downgraded
 - capacity profile summary
 - selected substrate and effective budget
+- Agent-Native Estimate summary, including critical path, wall-clock range,
+  agent-hours, blockers, confidence, and whether actual elapsed timing was
+  recorded
 - packet count and outcomes
 - changed files by packet
 - verification result and isolation metadata

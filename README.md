@@ -218,6 +218,19 @@ Auto-detects your hardware: 32GB+ and 8+ cores -> 10 agents, 16GB and 4+ cores -
 
 The important part is not hitting the ceiling. The important part is using the smallest agent budget that preserves fresh context, clear ownership, and a shorter critical path.
 
+### Planning Time Awareness
+minmaxing estimates meaningful work in agent-native wall-clock terms before a
+plan or `SPEC.md` is frozen. The required `Agent-Native Estimate` separates
+elapsed agent wall-clock, total agent-hours, human touch time, calendar
+blockers, critical path, and confidence.
+
+Human-equivalent estimates are allowed only as secondary context. The harness
+must not say "6 weeks" as the main estimate when the real plan is a 24/7
+agent-native DAG with 5 effective lanes, or when the honest answer is
+`blocked/unknown` because credentials, CI, deploy windows, or product decisions
+are missing. Current local capacity evidence comes from
+`bash scripts/parallel-capacity.sh --json`.
+
 ### Parallel Mode
 `/parallel` is the dense-work orchestrator. It runs a Parallel Eligibility Audit,
 reads the hardware capacity profile, chooses an execution substrate, writes a
@@ -506,11 +519,11 @@ Now you can use any workflow pattern:
 | Skill | What It Does |
 |-------|-------------|
 | `/tastebootstrap` | **Fresh-repo bootstrap** — asks the 10 kernel questions and writes `taste.md` + `taste.vision` |
-| `/workflow` | **Central execution engine** — drives research → code audit → plan → `SPEC.md` → implement → verify → closeout (supervises an efficacy-first agent budget) |
+| `/workflow` | **Central execution engine** — drives research → code audit → plan → Agent-Native Estimate → `SPEC.md` → implement → verify → closeout (supervises an efficacy-first agent budget) |
 | `/digestflow` | **External-report-informed workflow** — digests 1-10 AI research reports as untrusted candidate evidence, then runs the full governed workflow |
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with risk-based parallelism |
-| `/autoplan` | Generate SPEC.md with parallel execution in mind |
+| `/autoplan` | Generate SPEC.md with parallel execution and Agent-Native Estimate in mind |
 | `/agentfactory` | Create governed runtime-bound Hermes agents with manifest, `hermes.runtime.json`, capability stack, memory seed, verification, registry, and tested kill switch |
 | `/parallel` | Run hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | `/sprint` | Run an ownership-safe parallel execution wave |

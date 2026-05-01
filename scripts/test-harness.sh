@@ -522,6 +522,51 @@ else
     test_fail "/parallel contract, capacity script, docs, or smoke test is incomplete"
 fi
 
+# Test 3n: Agent-Native Estimate Contract
+echo "[3n] Agent-Native Estimate Contract"
+ESTIMATE_OK=true
+for required_file in \
+    ".claude/rules/estimation.rules.md" \
+    "scripts/estimate-history.sh" \
+    "scripts/estimate-smoke.sh"; do
+    if [ ! -f "$required_file" ]; then
+        ESTIMATE_OK=false
+    fi
+done
+for pattern in \
+    "Agent-Native Estimate" \
+    "agent_wall_clock" \
+    "agent_hours" \
+    "human_touch_time" \
+    "calendar_blockers" \
+    "critical path" \
+    "confidence" \
+    "scripts/parallel-capacity.sh --json"; do
+    if ! grep -Fq "$pattern" .claude/rules/estimation.rules.md 2>/dev/null; then
+        ESTIMATE_OK=false
+    fi
+done
+for file in \
+    "CLAUDE.md" \
+    "AGENTS.md" \
+    ".claude/skills/workflow/SKILL.md" \
+    ".claude/skills/autoplan/SKILL.md" \
+    ".claude/skills/parallel/SKILL.md" \
+    ".claude/skills/introspect/SKILL.md"; do
+    if ! grep -Fq "Agent-Native Estimate" "$file" 2>/dev/null; then
+        ESTIMATE_OK=false
+    fi
+done
+if [ "$ESTIMATE_OK" = true ] && \
+   grep -Fq "human-equivalent-only estimate fixture was accepted" scripts/estimate-smoke.sh 2>/dev/null && \
+   grep -Fq "linear scaling estimate fixture was accepted" scripts/estimate-smoke.sh 2>/dev/null && \
+   grep -Fq "10 agents means 10x faster" scripts/estimate-smoke.sh 2>/dev/null && \
+   bash scripts/estimate-smoke.sh >/dev/null 2>&1; then
+    test_pass "Agent-Native Estimate is enforced across planning contracts"
+else
+    test_fail "Agent-Native Estimate contract or smoke test is incomplete"
+fi
+
 # ========================================
 # Skills (22 Expected)
 # ========================================
@@ -573,7 +618,7 @@ fi
 
 # Test 7: Individual Rules
 echo "[7] Individual Rules"
-for rule in quality context delegation parallelism spec verify; do
+for rule in quality context delegation parallelism spec verify estimation; do
     if [ -f ".claude/rules/$rule.rules.md" ]; then
         LINES=$(wc -l < ".claude/rules/$rule.rules.md" | tr -d ' ')
         if [ "$LINES" -gt 10 ]; then
@@ -611,7 +656,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else
