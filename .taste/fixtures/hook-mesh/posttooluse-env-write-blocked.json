@@ -1,0 +1,12 @@
+{
+  "fixture_id": "posttooluse-env-write-blocked",
+  "expected_exit": 2,
+  "event": {
+    "hook_event_name": "PostToolUse",
+    "tool_name": "Write",
+    "tool_input": {
+      "file_path": ".env.local",
+      "content": "SECRET_TOKEN=example"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "hook-smoke-fixture",
+  "argv": [
+    "bash",
+    "scripts/hook-smoke.sh"
+  ],
+  "expected_exit_code": 0,
+  "stdout_contains": [
+    "[PASS] Claude Code governance hook smoke test passed"
+  ],
+  "stdout_not_contains": [
+    "[FAIL]",
+    "http://",
+    "https://"
+  ],
+  "stderr_contains": [],
+  "stderr_not_contains": [
+    "[FAIL]",
+    "http://",
+    "https://"
+  ],
+  "risk_tags": [
+    "local",
+    "no-network",
+    "no-secret",
+    "governance-hook"
+  ],
+  "timeout_s": 120
+}

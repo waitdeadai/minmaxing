@@ -1,0 +1,3 @@
+{"timestamp":"2026-05-01T12:00:00Z","run_id":"fixture-green","event":"run.started","status":"started","source":"fixture","data":{"packet":"P1-trace"}}
+{"timestamp":"2026-05-01T12:00:02Z","run_id":"fixture-green","event":"command.finished","status":"passed","source":"fixture","duration_ms":1750,"data":{"command":"bash -n scripts/trace-ledger.sh"}}
+{"timestamp":"2026-05-01T12:00:03Z","run_id":"fixture-green","event":"run.finished","status":"passed","source":"fixture","duration_ms":3000,"metrics":{"provider_cost":"insufficient_data","provider_tokens":"insufficient_data"}}

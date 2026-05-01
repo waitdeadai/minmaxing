@@ -1,0 +1,10 @@
+{
+  "fixture_id": "taskcreated-readonly-allowed",
+  "expected_exit": 0,
+  "event": {
+    "hook_event_name": "TaskCreated",
+    "task": {
+      "prompt": "Read-only audit of the hook mesh behavior. Do not edit files; report findings with evidence."
+    }
+  }
+}

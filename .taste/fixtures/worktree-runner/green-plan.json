@@ -1,0 +1,18 @@
+{
+  "run_id": "m11-green",
+  "base_ref": "HEAD",
+  "packets": [
+    {
+      "id": "P3-worktree",
+      "owner": "worker-p3",
+      "owned_files": [
+        "scripts/worktree-runner.sh",
+        ".taste/fixtures/worktree-runner/"
+      ],
+      "commands": [
+        "bash -n scripts/worktree-runner.sh",
+        "bash scripts/worktree-runner.sh --fixtures"
+      ]
+    }
+  ]
+}

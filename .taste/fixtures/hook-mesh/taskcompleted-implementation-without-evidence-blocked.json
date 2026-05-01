@@ -1,0 +1,11 @@
+{
+  "fixture_id": "taskcompleted-implementation-without-evidence-blocked",
+  "expected_exit": 2,
+  "event": {
+    "hook_event_name": "TaskCompleted",
+    "task": {
+      "prompt": "Implement the hook mesh behavior. Ownership: .claude/hooks/govern-effectiveness.sh, scripts/hook-mesh-smoke.sh, .taste/fixtures/hook-mesh/."
+    },
+    "task_result": "Implemented the hook mesh behavior and it is ready."
+  }
+}

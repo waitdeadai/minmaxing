@@ -1,0 +1,12 @@
+{
+  "fixture_id": "posttoolusefailure-fails-open",
+  "expected_exit": 0,
+  "event": {
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "bash scripts/missing-smoke.sh"
+    },
+    "error": "bash: scripts/missing-smoke.sh: No such file or directory"
+  }
+}

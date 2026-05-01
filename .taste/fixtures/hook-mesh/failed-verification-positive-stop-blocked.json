@@ -1,0 +1,9 @@
+{
+  "fixture_id": "failed-verification-positive-stop-blocked",
+  "expected_exit": 2,
+  "event": {
+    "hook_event_name": "Stop",
+    "stop_hook_active": false,
+    "last_assistant_message": "Implemented and ready. Verification failed when running `bash scripts/hook-mesh-smoke.sh`."
+  }
+}

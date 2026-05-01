@@ -1,0 +1,31 @@
+{
+  "status": "fail",
+  "scenario_count": 1,
+  "passed": 0,
+  "failed": 1,
+  "errors": [],
+  "results": [
+    {
+      "id": "red-missing-pass-output",
+      "path": "evals/scenarios/red-missing-pass-output.json",
+      "argv": [
+        "bash",
+        "scripts/estimate-smoke.sh"
+      ],
+      "risk_tags": [
+        "local",
+        "no-network",
+        "no-secret"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "duration_ms": 20,
+      "status": "fail",
+      "reasons": [
+        "stdout_missing: [PASS] missing fixture text"
+      ],
+      "stdout_excerpt": "[PASS] Agent-Native Estimate contract smoke test passed\n",
+      "stderr_excerpt": ""
+    }
+  ]
+}

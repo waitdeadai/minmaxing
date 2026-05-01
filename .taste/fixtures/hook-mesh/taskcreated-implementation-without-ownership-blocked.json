@@ -1,0 +1,10 @@
+{
+  "fixture_id": "taskcreated-implementation-without-ownership-blocked",
+  "expected_exit": 2,
+  "event": {
+    "hook_event_name": "TaskCreated",
+    "task": {
+      "prompt": "Implement the M12 hook behavior and update fixture tests."
+    }
+  }
+}

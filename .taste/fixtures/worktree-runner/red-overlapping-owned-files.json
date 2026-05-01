@@ -1,0 +1,26 @@
+{
+  "run_id": "m11-overlap",
+  "base_ref": "HEAD",
+  "packets": [
+    {
+      "id": "P3-script",
+      "owner": "worker-p3",
+      "owned_files": [
+        "scripts/worktree-runner.sh"
+      ],
+      "commands": [
+        "true"
+      ]
+    },
+    {
+      "id": "P3-all-scripts",
+      "owner": "worker-p3b",
+      "owned_files": [
+        "scripts/"
+      ],
+      "commands": [
+        "true"
+      ]
+    }
+  ]
+}

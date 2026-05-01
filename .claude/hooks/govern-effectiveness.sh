@@ -1,5 +1,6 @@
 #!/bin/bash
 # Claude Code hook: block destructive Bash and low-evidence positive closeout.
+# Extra hook events fail open unless the payload is clearly dangerous.
 
 set -euo pipefail
 
@@ -8,6 +9,89 @@ INPUT="$(cat)"
 json_get() {
   local filter="$1"
   printf '%s' "$INPUT" | jq -r "$filter // empty" 2>/dev/null || true
+}
+
+extract_file_paths() {
+  printf '%s' "$INPUT" | jq -r '
+    [
+      .tool_input.file_path?,
+      .tool_input.path?,
+      .tool_input.filename?,
+      .tool_input.file?,
+      .tool_input.files?,
+      .tool_input.paths?,
+      .tool_input.edits[]?.file_path?,
+      .tool_response.file_path?,
+      .tool_response.path?,
+      .result.file_path?,
+      .result.path?
+    ]
+    | flatten
+    | .[]?
+    | select(type == "string" and length > 0)
+  ' 2>/dev/null || true
+}
+
+collect_task_text() {
+  printf '%s' "$INPUT" | jq -r '
+    [
+      .task.title?,
+      .task.description?,
+      .task.prompt?,
+      .task.instructions?,
+      .task_input?,
+      .prompt?,
+      .description?,
+      .message?,
+      .tool_input.description?,
+      .tool_input.prompt?,
+      .tool_input.input?,
+      .tool_input.tasks[]?.title?,
+      .tool_input.tasks[]?.description?,
+      .tool_input.tasks[]?.prompt?
+    ]
+    | flatten
+    | .[]?
+    | select(type == "string" and length > 0)
+  ' 2>/dev/null || true
+}
+
+collect_completion_text() {
+  printf '%s' "$INPUT" | jq -r '
+    [
+      .task.result?,
+      .task.summary?,
+      .task_result?,
+      .result?,
+      .summary?,
+      .last_assistant_message?,
+      .assistant_message?,
+      .message?,
+      .output?,
+      .tool_response.content?,
+      .tool_response.result?
+    ]
+    | flatten
+    | .[]?
+    | select(type == "string" and length > 0)
+  ' 2>/dev/null || true
+}
+
+collect_failure_text() {
+  printf '%s' "$INPUT" | jq -r '
+    [
+      .error?,
+      .tool_error?,
+      .message?,
+      .tool_response.error?,
+      .tool_response.stderr?,
+      .result.error?,
+      .result.stderr?
+    ]
+    | flatten
+    | .[]?
+    | select(type == "string" and length > 0)
+  ' 2>/dev/null || true
 }
 
 block() {
@@ -46,6 +130,57 @@ is_destructive_bash() {
   return 1
 }
 
+is_write_tool() {
+  case "$1" in
+    Edit|Write|MultiEdit|NotebookEdit) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_sensitive_write_path() {
+  local path="$1"
+  path="${path#./}"
+
+  case "$path" in
+    .env|.env.*|*/.env|*/.env.*) return 0 ;;
+    secrets|secrets/*|*/secrets|*/secrets/*) return 0 ;;
+    .claude/settings.local.json|*/.claude/settings.local.json) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_read_only_text() {
+  local message="$1"
+  printf '%s\n' "$message" | grep -Eiq '(^|[^[:alpha:]])(read-only|read only|audit only|research only|analysis only|inspect only|review only|no edits?|no file changes?|without edits?|without editing|do not edit|do not modify)([^[:alpha:]]|$)'
+}
+
+is_implementation_like_text() {
+  local message="$1"
+  if is_read_only_text "$message"; then
+    return 1
+  fi
+  printf '%s\n' "$message" | grep -Eiq '(^|[^[:alpha:]])(implement|implementation|edit|write|modify|patch|fix|refactor|build|create|add|update|delete|change|wire|integrate|land|ship)(ing|ed|es|s)?([^[:alpha:]]|$)'
+}
+
+has_task_ownership() {
+  local message="$1"
+  printf '%s\n' "$message" | grep -Eiq '(ownership|owned files?|owned paths?|owns?:|owner:|must not touch|do not edit|do not modify|only edit|scope:|disjoint files?)'
+}
+
+block_sensitive_write_paths() {
+  local file_paths file_path
+  file_paths="$(extract_file_paths)"
+  if [ -z "$file_paths" ]; then
+    return 0
+  fi
+
+  while IFS= read -r file_path; do
+    if [ -n "$file_path" ] && is_sensitive_write_path "$file_path"; then
+      block "write tool touched sensitive env/secret path: $file_path"
+    fi
+  done <<< "$file_paths"
+}
+
 has_positive_closeout() {
   local message="$1"
   if printf '%s\n' "$message" | grep -Eiq '(^|[^[:alpha:]])(not done|not complete|not completed|not ready|incomplete|unfinished)([^[:alpha:]]|$)'; then
@@ -70,10 +205,66 @@ has_failed_verification() {
   return 1
 }
 
-if [ "$event" = "PreToolUse" ] && [ "$(json_get '.tool_name')" = "Bash" ]; then
+tool_name="$(json_get '.tool_name')"
+
+if [ "$tool_name" = "Bash" ]; then
   command="$(json_get '.tool_input.command')"
   if [ -n "$command" ] && is_destructive_bash "$command"; then
     block "destructive Bash command requires explicit human approval and a rollback plan."
+  fi
+fi
+
+if is_write_tool "$tool_name"; then
+  block_sensitive_write_paths
+fi
+
+if [ "$event" = "PreToolUse" ] && [ "$tool_name" = "Bash" ]; then
+  exit 0
+fi
+
+if [ "$event" = "PostToolUse" ] && is_write_tool "$tool_name"; then
+  exit 0
+fi
+
+if [ "$event" = "TaskCreated" ]; then
+  task_text="$(collect_task_text)"
+  if [ -z "$task_text" ]; then
+    exit 0
+  fi
+
+  if is_implementation_like_text "$task_text" && ! has_task_ownership "$task_text"; then
+    block "implementation-like TaskCreated payload needs explicit ownership or read-only scope."
+  fi
+
+  exit 0
+fi
+
+if [ "$event" = "TaskCompleted" ]; then
+  task_text="$(collect_task_text)"
+  completion_text="$(collect_completion_text)"
+  combined_text="$(printf '%s\n%s' "$task_text" "$completion_text")"
+
+  if [ -z "$combined_text" ] || [ -z "$completion_text" ]; then
+    exit 0
+  fi
+
+  if is_implementation_like_text "$combined_text"; then
+    if has_failed_verification "$completion_text" && has_positive_closeout "$completion_text"; then
+      block "implementation task closeout conflicts with failed or missing verification."
+    fi
+
+    if ! has_evidence "$completion_text"; then
+      block "implementation TaskCompleted payload needs concrete evidence."
+    fi
+  fi
+
+  exit 0
+fi
+
+if [ "$event" = "PostToolUseFailure" ]; then
+  failure_text="$(collect_failure_text)"
+  if [ -n "$failure_text" ]; then
+    echo "NOTE: tool failure observed; record command/error evidence before positive closeout." >&2
   fi
   exit 0
 fi

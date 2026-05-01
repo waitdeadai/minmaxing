@@ -1,0 +1,52 @@
+{
+  "status": "pass",
+  "scenario_count": 2,
+  "passed": 2,
+  "failed": 0,
+  "errors": [],
+  "results": [
+    {
+      "id": "estimate-smoke-fixture",
+      "path": "evals/scenarios/estimate-smoke.json",
+      "argv": [
+        "bash",
+        "scripts/estimate-smoke.sh"
+      ],
+      "risk_tags": [
+        "local",
+        "no-network",
+        "no-secret",
+        "estimate-contract"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "duration_ms": 25,
+      "status": "pass",
+      "reasons": [],
+      "stdout_excerpt": "[PASS] Agent-Native Estimate contract smoke test passed\n",
+      "stderr_excerpt": ""
+    },
+    {
+      "id": "parallel-plan-fixtures",
+      "path": "evals/scenarios/parallel-plan-fixtures.json",
+      "argv": [
+        "bash",
+        "scripts/parallel-plan-lint.sh",
+        "--fixtures"
+      ],
+      "risk_tags": [
+        "local",
+        "no-network",
+        "no-secret",
+        "parallel-fixture"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "duration_ms": 25,
+      "status": "pass",
+      "reasons": [],
+      "stdout_excerpt": "[PASS] parallel plan lint fixtures passed\n",
+      "stderr_excerpt": ""
+    }
+  ]
+}

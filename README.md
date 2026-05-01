@@ -590,6 +590,11 @@ Now you can use any workflow pattern:
 
 **Run metrics and session insights:** `bash scripts/run-metrics.sh --json` summarizes local workflow/eval/Codex artifacts, and `bash scripts/session-insights.sh --json` flags unhealthy runs. Missing provider cost, token, ACU, or calibration data is reported as `insufficient_data`.
 
+**Runtime hardening:** `bash scripts/runtime-hardening-smoke.sh` proves the
+local trace ledger, hook mesh, worktree runner, scenario evals, learning loop,
+and harness doctor without secrets or network access. See
+`docs/runtime-hardening.md` for the operator surface.
+
 **Security profiles:** `solo-fast` is a trusted-local speed profile, `team-safe` is the shared-work default, `ci-static` is no-secret static validation, and `ci-runtime` is isolated authenticated validation. Run `bash scripts/security-smoke.sh` after profile changes.
 
 **Release governance:** Public harness work should pass `bash scripts/release-check.sh --static-only`. The static GitHub Actions lane runs without secrets; authenticated runtime checks are isolated in the manual/scheduled runtime lane.

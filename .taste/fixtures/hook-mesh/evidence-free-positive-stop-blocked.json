@@ -1,0 +1,9 @@
+{
+  "fixture_id": "evidence-free-positive-stop-blocked",
+  "expected_exit": 2,
+  "event": {
+    "hook_event_name": "Stop",
+    "stop_hook_active": false,
+    "last_assistant_message": "Done. Everything is complete and ready."
+  }
+}

@@ -799,6 +799,67 @@ else
     test_fail "parallel aggregation script, fixtures, contracts, or bottleneck proof is incomplete"
 fi
 
+# Test 3v: Runtime Hardening Layer
+echo "[3v] Runtime Hardening Layer"
+RUNTIME_HARDENING_OK=true
+for required_file in \
+    "scripts/trace-ledger.sh" \
+    "scripts/hook-mesh-smoke.sh" \
+    "scripts/worktree-runner.sh" \
+    "scripts/scenario-eval.sh" \
+    "scripts/learning-loop.sh" \
+    "scripts/harness-doctor.sh" \
+    "scripts/runtime-hardening-smoke.sh" \
+    "docs/runtime-hardening.md" \
+    "evals/scenarios/estimate-smoke.json" \
+    ".taste/fixtures/trace-ledger/green/valid-trace.jsonl" \
+    ".taste/fixtures/hook-mesh/destructive-bash-blocked.json" \
+    ".taste/fixtures/worktree-runner/green-plan.json" \
+    ".taste/fixtures/learning-loop/workflow-runs/healthy-workflow.md"; do
+    if [ ! -e "$required_file" ]; then
+        RUNTIME_HARDENING_OK=false
+    fi
+done
+for script in \
+    trace-ledger \
+    hook-mesh-smoke \
+    worktree-runner \
+    scenario-eval \
+    learning-loop \
+    harness-doctor \
+    runtime-hardening-smoke; do
+    if [ ! -x "scripts/$script.sh" ]; then
+        RUNTIME_HARDENING_OK=false
+    fi
+done
+for pattern in \
+    '"PostToolUse"' \
+    '"PostToolUseFailure"' \
+    '"TaskCreated"' \
+    '"TaskCompleted"' \
+    'Edit|Write|MultiEdit|NotebookEdit'; do
+    if ! grep -Fq "$pattern" .claude/settings.json .claude/settings.solo-fast.example.json .claude/settings.team-safe.example.json 2>/dev/null; then
+        RUNTIME_HARDENING_OK=false
+    fi
+done
+for pattern in \
+    "Trace Ledger" \
+    "Worktree Runner" \
+    "Scenario Eval" \
+    "Learning Loop" \
+    "Harness Doctor" \
+    "no-secret"; do
+    if ! grep -Fq "$pattern" docs/runtime-hardening.md 2>/dev/null; then
+        RUNTIME_HARDENING_OK=false
+    fi
+done
+if [ "$RUNTIME_HARDENING_OK" = true ] && \
+   bash scripts/runtime-hardening-smoke.sh >/dev/null 2>&1; then
+    test_pass "runtime hardening layer records traces, gates hooks, runs scenarios, learns, and reports health"
+else
+    test_fail "runtime hardening scripts, settings, fixtures, docs, or smoke gate are incomplete"
+fi
+
 # ========================================
 # Skills (22 Expected)
 # ========================================
@@ -888,7 +949,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard hook-smoke codex-run-smoke parallel-plan-lint parallel-aggregate artifact-lint harness-eval harness-eval-report run-metrics session-insights memory-eval security-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard hook-smoke hook-mesh-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

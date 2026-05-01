@@ -1,0 +1,2 @@
+{"timestamp":"2026-05-01T17:40:00-03:00","event":"verification","status":"pass","verified":true,"command":"bash scripts/scenario-eval.sh --fixtures","artifact":"evals/scenarios","evidence":"scenario fixtures passed locally"}
+{"timestamp":"2026-05-01T17:41:00-03:00","event":"closeout-review","status":"fail","verified":true,"failure_category":"failed_verification_positive_closeout_risk","evidence":"fixture demonstrates taxonomy capture for bad closeout claims"}

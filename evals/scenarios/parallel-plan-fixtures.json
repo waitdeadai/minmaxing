@@ -1,0 +1,30 @@
+{
+  "id": "parallel-plan-fixtures",
+  "argv": [
+    "bash",
+    "scripts/parallel-plan-lint.sh",
+    "--fixtures"
+  ],
+  "expected_exit_code": 0,
+  "stdout_contains": [
+    "[PASS] parallel plan lint fixtures passed"
+  ],
+  "stdout_not_contains": [
+    "[FAIL]",
+    "http://",
+    "https://"
+  ],
+  "stderr_contains": [],
+  "stderr_not_contains": [
+    "[FAIL]",
+    "http://",
+    "https://"
+  ],
+  "risk_tags": [
+    "local",
+    "no-network",
+    "no-secret",
+    "parallel-fixture"
+  ],
+  "timeout_s": 120
+}

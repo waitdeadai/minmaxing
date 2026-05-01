@@ -1,0 +1,11 @@
+{
+  "fixture_id": "unknown-sensitive-write-blocked",
+  "expected_exit": 2,
+  "event": {
+    "hook_event_name": "FutureClaudeEvent",
+    "tool_name": "Write",
+    "tool_input": {
+      "file_path": ".env"
+    }
+  }
+}

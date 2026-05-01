@@ -1,0 +1,16 @@
+{
+  "run_id": "../bad",
+  "base_ref": "HEAD",
+  "packets": [
+    {
+      "id": "bad/id",
+      "owner": "worker-p3",
+      "owned_files": [
+        "scripts/worktree-runner.sh"
+      ],
+      "commands": [
+        "true"
+      ]
+    }
+  ]
+}

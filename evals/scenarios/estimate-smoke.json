@@ -1,0 +1,29 @@
+{
+  "id": "estimate-smoke-fixture",
+  "argv": [
+    "bash",
+    "scripts/estimate-smoke.sh"
+  ],
+  "expected_exit_code": 0,
+  "stdout_contains": [
+    "[PASS] Agent-Native Estimate contract smoke test passed"
+  ],
+  "stdout_not_contains": [
+    "[FAIL]",
+    "http://",
+    "https://"
+  ],
+  "stderr_contains": [],
+  "stderr_not_contains": [
+    "[FAIL]",
+    "http://",
+    "https://"
+  ],
+  "risk_tags": [
+    "local",
+    "no-network",
+    "no-secret",
+    "estimate-contract"
+  ],
+  "timeout_s": 120
+}

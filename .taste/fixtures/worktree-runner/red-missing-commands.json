@@ -1,0 +1,14 @@
+{
+  "run_id": "m11-missing-commands",
+  "base_ref": "HEAD",
+  "packets": [
+    {
+      "id": "P3-worktree",
+      "owner": "worker-p3",
+      "owned_files": [
+        "scripts/worktree-runner.sh"
+      ],
+      "commands": []
+    }
+  ]
+}

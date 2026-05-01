@@ -64,10 +64,13 @@ for file in "$SOLO" "$TEAM"; do
     "Read(./.env)" \
     "Read(./.env.*)" \
     "Read(./secrets/**)" \
-    "govern-effectiveness.sh" \
-    '"PreToolUse"' \
-    '"Stop"' \
-    '"SubagentStop"'; do
+	    "govern-effectiveness.sh" \
+	    '"PreToolUse"' \
+	    '"PostToolUse"' \
+	    '"TaskCreated"' \
+	    '"TaskCompleted"' \
+	    '"Stop"' \
+	    '"SubagentStop"'; do
     require_text "$file" "$pattern"
   done
 done
