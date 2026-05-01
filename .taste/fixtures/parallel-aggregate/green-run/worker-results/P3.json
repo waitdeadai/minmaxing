@@ -1,0 +1,35 @@
+{
+  "artifact_type": "worker-result",
+  "packet_id": "P3",
+  "owner": "worker-smoke",
+  "status": "success",
+  "owned_files": [
+    "scripts/parallel-smoke.sh",
+    "scripts/test-harness.sh"
+  ],
+  "touched_files": [
+    "scripts/parallel-smoke.sh",
+    "scripts/test-harness.sh"
+  ],
+  "commands_run": [
+    {
+      "command": "bash scripts/parallel-smoke.sh",
+      "exit_code": 0
+    }
+  ],
+  "tests_run": [
+    {
+      "command": "bash scripts/parallel-smoke.sh",
+      "exit_code": 0
+    }
+  ],
+  "evidence": [
+    "focused smoke passed"
+  ],
+  "unresolved_risks": [],
+  "changed_line_trace": [
+    "SPEC.md Success Criteria: wire smoke and harness"
+  ],
+  "handoff_notes": "Smoke wiring is ready for parent verification.",
+  "parent_verified": true
+}

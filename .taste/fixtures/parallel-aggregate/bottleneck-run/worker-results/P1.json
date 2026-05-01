@@ -1,0 +1,26 @@
+{
+  "artifact_type": "worker-result",
+  "packet_id": "P1",
+  "owner": "worker-one",
+  "status": "success",
+  "owned_files": [
+    "docs/p1.md"
+  ],
+  "touched_files": [
+    "docs/p1.md"
+  ],
+  "commands_run": [
+    "test docs/p1.md"
+  ],
+  "tests_run": [
+    "test docs/p1.md"
+  ],
+  "evidence": [
+    "packet one verified"
+  ],
+  "changed_line_trace": [
+    "P1 trace"
+  ],
+  "handoff_notes": "done",
+  "parent_verified": true
+}

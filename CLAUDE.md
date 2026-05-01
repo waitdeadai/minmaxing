@@ -20,6 +20,12 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 8. **PEV Loop**: Plan → Execute → Verify. Verification is an independent evidence pass; claim separate executor/verifier isolation only when metadata proves it.
 9. **Quality Gates**: /verify must pass; tests must pass; unresolved introspection blockers stop closeout
 10. **Surgical Diff Discipline**: choose the smallest sufficient implementation, allow no speculative abstractions, allow no drive-by refactors, and require a changed-line trace to `SPEC.md`
+11. **Effectiveness Gates**: Claude Code hooks and harness smokes must reject lazy completion patterns: destructive Bash, evidence-free closeout, failed-verification positive closeout, worker success without parent verification, fake source ledgers, missing command evidence, and linear lane-scaling claims
+12. **Artifact Sidecars**: When estimates, verification results, or worker results are machine-consumed, validate the minimal JSON sidecar with `scripts/artifact-lint.sh`; Markdown remains for humans, sidecars exist for gates
+13. **Static Harness Evals**: Use `scripts/harness-eval.sh` to score local harness behavior against the static task/golden pack before claiming the harness improved
+14. **Run Metrics Honesty**: `scripts/run-metrics.sh` and `scripts/session-insights.sh` summarize local artifacts, flag unhealthy runs, and report unavailable provider/cost/token data as `insufficient_data`
+15. **Security Profiles**: Keep `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime` distinct. `bypassPermissions` is trusted-local only, not the recommended team default.
+16. **Release Governance**: Public harness changes must pass `scripts/release-check.sh --static-only`; authenticated runtime checks stay explicit and secret-gated
 
 ## Default Behavior
 
@@ -68,6 +74,12 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Planning Time Awareness**: Non-trivial plans estimate in agent-native wall-clock by default before the plan or `SPEC.md` is frozen. Every estimate must state whether it is `agent-native`, `human-equivalent`, or `blocked/unknown`; cite `scripts/parallel-capacity.sh --json` or another capacity source; separate agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence; and treat human-equivalent estimates as secondary only.
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
 - **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile.
+- **Runtime Effectiveness Hooks**: `.claude/settings.json` wires `.claude/hooks/govern-effectiveness.sh` into Claude Code `PreToolUse`, `Stop`, and `SubagentStop` events. Do not claim hook enforcement unless `bash scripts/hook-smoke.sh` passes.
+- **Artifact Lint**: Minimal sidecars for agent-native estimates, verification results, and worker results live under `schemas/` and are checked with `bash scripts/artifact-lint.sh --fixtures`.
+- **Harness Eval Pack**: `evals/harness/tasks` and `evals/harness/golden` define static no-network evals over the local gates; `bash scripts/harness-eval-report.sh --run` summarizes the score.
+- **Session Insights**: `bash scripts/session-insights.sh --json` flags missing estimates, missing verification evidence, evidence-free closeout risk, missing eval score, and high rework indicators from local artifacts.
+- **Security Profiles**: Validate profile examples with `bash scripts/security-smoke.sh`; use `team-safe` for shared work and keep `solo-fast` as a trusted-local speed profile.
+- **Release Gate**: `bash scripts/release-check.sh --static-only` runs the no-secret public harness gate. Runtime checks belong to the manual/scheduled workflow.
 - **Surgical Changes**: Vague requests become verifiable contracts; every meaningful diff should trace to `SPEC.md`, generated output, or cleanup caused by the current change
 - **Agent Factory**: `/agentfactory` creates Hermes agents as bounded enterprise operating units, not generic prompts; it keeps its own workflow artifact, deepresearch brief, manifest, `hermes.runtime.json`, explicit capabilities, memory coherence, verification, registry evidence, tested kill switch, `development_host_profile`, `target_runtime_profile`, `host_capacity_profile`, `capacity_binding`, `concurrency_budget`, and `degrade_policy`. Local dev capacity is not production capacity unless the target runtime is explicitly local. REVCLI/Revis-facing agents must route side effects through the runtime control plane instead of direct system-of-record writes.
 - **Open-Core Boundary**: The public repo is the Apache-2.0 core. Do not publish REVCLI private runtime code, customer Hermes agents, customer memory seeds, audit logs, real credentials, private connectors, commercial playbooks, or managed-service implementation packs.

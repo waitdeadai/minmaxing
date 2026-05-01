@@ -1,0 +1,5 @@
+# Negative fixture: commands and verification evidence must be present.
+plan_id=missing-command-evidence
+effective_lanes=1
+lane_scaling_rationale=critical path and barriers
+packet=P1|owner=worker-p1|owned_files=scripts/example.sh|touched_files=scripts/example.sh|commands=none|evidence=none|parent_verified=yes|merge_barrier=none

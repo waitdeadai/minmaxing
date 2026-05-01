@@ -1,0 +1,14 @@
+{
+  "run_id": "red-linear-scaling",
+  "narrative": "10 agents means 10x faster",
+  "capacity": {
+    "recommended_ceiling": 10
+  },
+  "packets": [
+    {
+      "id": "P1",
+      "depends_on": [],
+      "estimated_minutes": 20
+    }
+  ]
+}

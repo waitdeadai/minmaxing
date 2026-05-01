@@ -1,0 +1,6 @@
+{
+  "id": "m4-artifact-sidecar-lint",
+  "expected_result": "pass",
+  "gate": "scripts/artifact-lint.sh --fixtures",
+  "expected_evidence": ".taste/fixtures/artifact-lint contains green valid sidecars and red missing evidence fixtures"
+}

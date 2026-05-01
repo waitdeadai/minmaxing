@@ -1,0 +1,18 @@
+{
+  "artifact_type": "agent_native_estimate",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "red-human-equivalent-only-estimate",
+  "expected_result": "reject",
+  "expected_error": "estimate must be agent-native and include agent wall-clock fields",
+  "estimate": {
+    "estimate_type": "human-equivalent",
+    "human_equivalent_baseline": {
+      "duration": "two engineer-days",
+      "secondary_comparison_only": false
+    },
+    "confidence": {
+      "level": "high",
+      "rationale": "This fixture intentionally lacks an agent-native estimate."
+    }
+  }
+}

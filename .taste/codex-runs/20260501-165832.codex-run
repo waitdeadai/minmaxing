@@ -1,0 +1,18 @@
+# Codex orchestration artifact for the effectiveness-first anti-lazy slice.
+run_id=20260501-165832
+target_runtime=claude-code
+implementation_executor=codex
+execution_topology=codex-main-orchestrator-plus-bounded-workers
+requested_agents=repo_explorer,docs_researcher,reviewer
+effective_lanes=4
+capacity_profile=codex_max_threads=10; recommended_ceiling=10; max_threads is a ceiling not a target; parallel-capacity=workstation-16-cores-32gb
+codex_parent_permission_profile=danger-full-access; approval_policy=never; workspace=/home/fer/Music/ultimateminimax
+child_sandbox_policy=workers limited by explicit file ownership; read-only evidence agents preferred; write-capable workers blocked unless ownership is disjoint and parent verifies claims
+approval_inheritance_risk=parent broad permissions can leak into child lanes, so worker results are claims until parent verification runs their scripts
+permission_sandbox_notes=This artifact records broad parent permissions honestly and does not claim container isolation for worker lanes.
+packet_ownership=P1 owns scripts/harness-scorecard.sh and .taste/fixtures/effectiveness; P2 owns .claude/hooks/govern-effectiveness.sh and scripts/hook-smoke.sh; P3 owns scripts/codex-run-smoke.sh scripts/parallel-plan-lint.sh .taste/fixtures/codex-run and .taste/fixtures/parallel-plan; main owns SPEC.md .claude/settings.json docs skills scripts/test-harness.sh verification
+worker_result_schema_version=minimal-1
+parent_verified_worker_claims=yes
+read_only_agents=repo_explorer,docs_researcher,reviewer
+write_capable_workers=none
+next_execution_packet_plan=Run parent verification: settings JSON, shell syntax checks, harness-scorecard, codex-run-smoke, hook-smoke, parallel-plan-lint, estimate-smoke, parallel-smoke, full test-harness, and git diff hygiene.

@@ -6,6 +6,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILL="$ROOT_DIR/.claude/skills/parallel/SKILL.md"
 CAPACITY="$ROOT_DIR/scripts/parallel-capacity.sh"
+AGGREGATE="$ROOT_DIR/scripts/parallel-aggregate.sh"
 AGENTFACTORY="$ROOT_DIR/.claude/skills/agentfactory/SKILL.md"
 
 fail() {
@@ -26,6 +27,7 @@ require_text() {
 
 require_file "$SKILL"
 require_file "$CAPACITY"
+require_file "$AGGREGATE"
 require_file "$AGENTFACTORY"
 
 for pattern in \
@@ -38,6 +40,8 @@ for pattern in \
   "Ownership Matrix" \
   "Sync Barrier" \
   "Worker Result Schema" \
+  ".taste/parallel/{run_id}" \
+  "scripts/parallel-aggregate.sh" \
   "parallel-instances" \
   "subagents" \
   "Agent teams are opt-in experimental" \
@@ -65,6 +69,17 @@ for pattern in \
   "parallel-instances" \
   "agent-teams"; do
   require_text "$CAPACITY" "$pattern"
+done
+
+for pattern in \
+  "packet-dag.json" \
+  "ownership.json" \
+  "worker-results" \
+  "effective_lanes" \
+  "bottleneck" \
+  "critical_path" \
+  "additional_lanes_help"; do
+  require_text "$AGGREGATE" "$pattern"
 done
 
 for pattern in \
@@ -107,5 +122,7 @@ if data["default_substrate"] not in {"local", "subagents"}:
 if data["hardware_class"] not in {"low", "standard", "high", "workstation"}:
     raise SystemExit("hardware_class has invalid value")
 PY
+
+bash "$AGGREGATE" --fixtures >/dev/null
 
 echo "[PASS] /parallel orchestration contract smoke test passed"

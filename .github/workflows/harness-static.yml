@@ -1,0 +1,21 @@
+name: Harness Static
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  harness-static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Static release gate
+        run: bash scripts/release-check.sh --static-only

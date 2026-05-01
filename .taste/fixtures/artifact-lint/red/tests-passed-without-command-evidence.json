@@ -1,0 +1,22 @@
+{
+  "artifact_type": "verification_result",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "red-tests-passed-without-command-evidence",
+  "expected_result": "reject",
+  "expected_error": "tests_passed requires command evidence",
+  "verification": {
+    "status": "passed",
+    "metadata": {
+      "verified_at": "2026-05-01T17:30:00-03:00",
+      "verifier": "Worker M2-Fixtures",
+      "scope": "fixture smoke",
+      "source_artifact": "SPEC.md"
+    },
+    "commands": [],
+    "tests_passed": true,
+    "closeout": {
+      "status": "verified",
+      "summary": "Tests are claimed as passing without command evidence."
+    }
+  }
+}

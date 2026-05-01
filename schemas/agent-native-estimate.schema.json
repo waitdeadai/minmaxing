@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minmaxing.dev/schemas/agent-native-estimate.schema.json",
+  "title": "Agent Native Estimate Sidecar",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "estimate_type",
+    "agent_wall_clock",
+    "agent_hours",
+    "human_touch_time",
+    "calendar_blockers",
+    "critical_path",
+    "confidence",
+    "capacity_evidence"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "agent-native-estimate"
+    },
+    "estimate_type": {
+      "const": "agent-native"
+    },
+    "agent_wall_clock": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "agent_hours": {
+      "type": [
+        "string",
+        "number",
+        "object"
+      ]
+    },
+    "human_touch_time": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "calendar_blockers": {
+      "type": [
+        "string",
+        "array"
+      ]
+    },
+    "critical_path": {
+      "type": [
+        "string",
+        "array"
+      ]
+    },
+    "confidence": {
+      "type": "string"
+    },
+    "capacity_evidence": {
+      "type": [
+        "string",
+        "object",
+        "array"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

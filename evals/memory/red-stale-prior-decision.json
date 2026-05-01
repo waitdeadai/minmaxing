@@ -1,0 +1,16 @@
+{
+  "expected_result": "fail",
+  "cases": [
+    {
+      "id": "stale-spec-first-decision",
+      "query": "SPEC.md before code",
+      "sources": [
+        "obsidian/Memory/Decisions/principle-spec-first.md"
+      ],
+      "required_any": [
+        "Always Write SPEC.md Before Code"
+      ],
+      "max_age_days": 1
+    }
+  ]
+}

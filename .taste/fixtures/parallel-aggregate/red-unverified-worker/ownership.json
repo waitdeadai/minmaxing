@@ -1,0 +1,12 @@
+{
+  "ownership": [
+    {
+      "packet_id": "P1",
+      "owner": "worker-one",
+      "owned_files": [
+        "docs/p1.md"
+      ]
+    }
+  ],
+  "approved_cross_owned_edits": []
+}

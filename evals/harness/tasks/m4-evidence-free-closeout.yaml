@@ -1,0 +1,6 @@
+id: m4-evidence-free-closeout
+title: Evidence free closeout
+gate: scripts/harness-scorecard.sh --json
+expected_result: reject
+golden: evals/harness/golden/m4-evidence-free-closeout.json
+evidence: rejects closeout claims that say complete ready or verified without evidence commands artifacts or source ledger

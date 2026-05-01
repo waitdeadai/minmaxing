@@ -1,0 +1,51 @@
+{
+  "run_id": "green-run",
+  "substrate": "subagents",
+  "capacity": {
+    "recommended_ceiling": 10,
+    "codex_max_threads": 10,
+    "max_parallel_agents": null,
+    "auto_ceiling": 10
+  },
+  "supervisor_review_capacity": 2,
+  "verification_capacity": 2,
+  "sync_barrier_capacity": 2,
+  "packets": [
+    {
+      "id": "P1",
+      "purpose": "Build aggregation script",
+      "depends_on": [],
+      "estimated_minutes": 45,
+      "confidence": "medium"
+    },
+    {
+      "id": "P2",
+      "purpose": "Update parallel contract",
+      "depends_on": [],
+      "estimated_minutes": 35,
+      "confidence": "medium"
+    },
+    {
+      "id": "P3",
+      "purpose": "Wire focused smoke",
+      "depends_on": [
+        "P1",
+        "P2"
+      ],
+      "estimated_minutes": 30,
+      "confidence": "medium"
+    }
+  ],
+  "sync_barriers": [
+    {
+      "id": "B1",
+      "waits_for": [
+        "P1",
+        "P2"
+      ],
+      "main_agent_check": "inspect worker evidence before P3",
+      "continue_when": "both packets pass parent verification",
+      "stop_when": "ownership or evidence conflict"
+    }
+  ]
+}

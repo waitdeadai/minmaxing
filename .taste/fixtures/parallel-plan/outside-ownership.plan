@@ -1,0 +1,5 @@
+# Negative fixture: touched files must be inside declared ownership.
+plan_id=outside-ownership
+effective_lanes=1
+lane_scaling_rationale=critical path and barriers
+packet=P1|owner=worker-p1|owned_files=scripts/owned.sh|touched_files=scripts/outside.sh|commands=bash -n scripts/outside.sh|evidence=syntax checked|parent_verified=yes|merge_barrier=none

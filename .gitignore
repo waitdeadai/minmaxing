@@ -29,7 +29,11 @@ memory/memory.db
 memory/memory.db-*
 
 # Taste System (session logs + memory)
-.taste/
+.taste/*
+!.taste/fixtures/
+!.taste/fixtures/**
+!.taste/codex-runs/
+!.taste/codex-runs/**
 
 # Private commercial/customer artifacts
 .private/

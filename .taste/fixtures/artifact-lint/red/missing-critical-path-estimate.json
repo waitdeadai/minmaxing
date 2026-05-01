@@ -1,0 +1,40 @@
+{
+  "artifact_type": "agent_native_estimate",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "red-missing-critical-path-estimate",
+  "expected_result": "reject",
+  "expected_error": "estimate is missing critical_path",
+  "estimate": {
+    "estimate_type": "agent-native",
+    "basis": "wall-clock",
+    "execution_topology": "codex-main-orchestrator",
+    "capacity_evidence": {
+      "command": "bash scripts/parallel-capacity.sh --json",
+      "recommended_ceiling": 10
+    },
+    "effective_lanes": {
+      "selected": 1,
+      "ceiling": 10,
+      "rationale": "Single owned fixture packet."
+    },
+    "agent_wall_clock": {
+      "optimistic_minutes": 20,
+      "likely_minutes": 35,
+      "pessimistic_minutes": 60
+    },
+    "agent_hours": {
+      "minimum": 0.3,
+      "maximum": 1.0,
+      "unit": "hours"
+    },
+    "human_touch_time": {
+      "minimum_minutes": 5,
+      "maximum_minutes": 10
+    },
+    "calendar_blockers": [],
+    "confidence": {
+      "level": "medium",
+      "rationale": "Static JSON fixture."
+    }
+  }
+}

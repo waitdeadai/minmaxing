@@ -60,7 +60,13 @@ Typical lanes:
 - estimation risk: human-time defaults, linear scaling, hidden blockers,
   missing verification/review time, weak capacity evidence, or missing
   confidence labels
+- effectiveness risk: evidence-free closeout, fake source ledger, "tests
+  passed" without command evidence, failed-verification positive closeout, or
+  worker success accepted without parent verification
 - parallel orchestration risk: stale worker context, split-brain claims, same-file collisions, wrong substrate, over-budget hardware use, unverified parallel-instances, or accidental agent-team dependency
+- parallel aggregation risk: missing `.taste/parallel/{run_id}` sidecars,
+  missing `scripts/parallel-aggregate.sh` evidence, rejected cross-owned edits,
+  failed worker results, or bottlenecks hidden behind lane-count optimism
 - documentation or user-facing promise drift
 
 Do not fill the pool just to look thorough. A tiny local change can use one concise lane when the evidence is simple.
@@ -87,8 +93,17 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
      verification/review time, and confidence?
    - Does capacity evidence cite `scripts/parallel-capacity.sh --json` or an
      equivalent source when lanes matter?
-8. Decide whether confidence should be downgraded.
-9. Return a blocker decision:
+8. Check parallel aggregation risk when the plan used worker packets:
+   - Is there a packet DAG and ownership matrix?
+   - If `.taste/parallel/{run_id}` exists, did
+     `scripts/parallel-aggregate.sh .taste/parallel/{run_id}` pass?
+   - Did aggregation report effective lanes, bottleneck, worker result count,
+     and critical path?
+   - Did it reject cross-owned edits unless explicitly approved?
+   - Did it reject failed or unparent-verified worker results?
+   - Did the plan avoid "more lanes means proportionally faster" claims?
+9. Decide whether confidence should be downgraded.
+10. Return a blocker decision:
    - `PASS` — no unresolved issues remain
    - `FIX_REQUIRED` — issues found and must be fixed before continuing
    - `REPLAN_REQUIRED` — the plan or spec is wrong
@@ -130,6 +145,13 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
 - Calendar blockers: [pass / concern]
 - Confidence label: [pass / concern]
 
+### Parallel Aggregation Risk
+- Run artifacts present: [yes / no / not applicable]
+- Aggregation command: [pass / fail / not run / not applicable]
+- Effective lanes and bottleneck reported: [pass / concern]
+- Cross-owned edits rejected or approved: [pass / concern]
+- Failed/unverified workers rejected: [pass / concern]
+
 ### Confidence
 - Level: [high / medium / low]
 - Downgrade: [none / reason]
@@ -151,6 +173,16 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
   `FIX_REQUIRED`
 - estimates that omit verification/review time, calendar blockers, or
   confidence labels must return `FIX_REQUIRED`
+- evidence-free closeout, failed-verification positive closeout, fake source
+  ledgers, and tests-passed claims without command evidence must return
+  `FIX_REQUIRED`
+- worker or subagent success without parent verification must return
+  `FIX_REQUIRED`
+- `/parallel` run artifacts without a passing `scripts/parallel-aggregate.sh`
+  result must return `FIX_REQUIRED`
+- failed or unparent-verified worker results accepted by aggregation must return
+  `FIX_REQUIRED`
+- cross-owned edits without explicit approval must return `FIX_REQUIRED`
 - file-changing work must satisfy changed-line trace or return `FIX_REQUIRED`
 - speculative abstractions and drive-by refactors must be removed or justified by `SPEC.md`
 - remote actions require a `pre-push` introspection pass

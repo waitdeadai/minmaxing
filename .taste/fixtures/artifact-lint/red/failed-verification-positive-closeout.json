@@ -1,0 +1,28 @@
+{
+  "artifact_type": "verification_result",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "red-failed-verification-positive-closeout",
+  "expected_result": "reject",
+  "expected_error": "failed verification cannot have positive closeout",
+  "verification": {
+    "status": "failed",
+    "metadata": {
+      "verified_at": "2026-05-01T17:30:00-03:00",
+      "verifier": "Worker M2-Fixtures",
+      "scope": "fixture smoke",
+      "source_artifact": "SPEC.md"
+    },
+    "commands": [
+      {
+        "command": "bash scripts/artifact-lint.sh --fixtures",
+        "exit_code": 1,
+        "evidence": "Fixture lint reported failures."
+      }
+    ],
+    "tests_passed": false,
+    "closeout": {
+      "status": "verified",
+      "summary": "Shipped despite failed verification."
+    }
+  }
+}

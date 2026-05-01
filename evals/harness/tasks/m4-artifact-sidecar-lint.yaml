@@ -1,0 +1,6 @@
+id: m4-artifact-sidecar-lint
+title: Artifact sidecar lint
+gate: scripts/artifact-lint.sh --fixtures
+expected_result: pass
+golden: evals/harness/golden/m4-artifact-sidecar-lint.json
+evidence: validates agent-native-estimate verification-result and worker-result sidecars against green and red fixtures

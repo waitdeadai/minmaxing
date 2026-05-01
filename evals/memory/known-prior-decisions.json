@@ -1,0 +1,52 @@
+{
+  "expected_result": "pass",
+  "cases": [
+    {
+      "id": "spec-first-decision",
+      "query": "SPEC.md before code",
+      "sources": [
+        "obsidian/Memory/Decisions/principle-spec-first.md"
+      ],
+      "required_any": [
+        "Always Write SPEC.md Before Code",
+        "Every meaningful task starts with SPEC.md"
+      ],
+      "max_age_days": 365
+    },
+    {
+      "id": "effective-agent-budget-pattern",
+      "query": "effective agent budget",
+      "sources": [
+        "obsidian/Memory/Patterns/parallel-workers.md"
+      ],
+      "required_any": [
+        "choose only the number of workers that materially shortens the critical path",
+        "Each worker should own a clear surface"
+      ],
+      "max_age_days": 365
+    },
+    {
+      "id": "api-key-error-solution",
+      "query": "2049 invalid api key",
+      "sources": [
+        "obsidian/Memory/Errors/api-key-missing.md"
+      ],
+      "required_any": [
+        "2049-invalid api key",
+        "Set `MINIMAX_API_KEY`"
+      ],
+      "max_age_days": 365
+    }
+  ],
+  "privacy_guard": {
+    "paths": [
+      "obsidian/Memory"
+    ],
+    "forbidden_regex": [
+      "sk-[A-Za-z0-9]{16,}",
+      "BEGIN PRIVATE KEY",
+      "real_customer_memory_seed",
+      "private_commercial_playbook"
+    ]
+  }
+}

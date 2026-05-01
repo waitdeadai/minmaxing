@@ -1,0 +1,6 @@
+id: m4-codex-run-artifact-proof
+title: Codex run artifact proof
+gate: scripts/codex-run-smoke.sh
+expected_result: pass
+golden: evals/harness/golden/m4-codex-run-artifact-proof.json
+evidence: validates the Codex run artifact contract and rejects broad no-sandbox parent runs that propose write capable workers without blocking them

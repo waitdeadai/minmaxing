@@ -1,0 +1,6 @@
+id: m4-tests-passed-without-command-evidence
+title: Tests passed without command evidence
+gate: scripts/artifact-lint.sh --fixtures
+expected_result: reject
+golden: evals/harness/golden/m4-tests-passed-without-command-evidence.json
+evidence: rejects verification-result artifacts that claim tests passed without commands_run evidence

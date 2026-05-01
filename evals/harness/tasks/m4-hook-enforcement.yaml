@@ -1,0 +1,6 @@
+id: m4-hook-enforcement
+title: Hook enforcement
+gate: scripts/hook-smoke.sh
+expected_result: pass
+golden: evals/harness/golden/m4-hook-enforcement.json
+evidence: proves govern-effectiveness hook blocks destructive Bash lazy closeout and failed verification closeout while allowing safe reads edits and evidence backed closeout

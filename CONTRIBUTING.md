@@ -41,6 +41,24 @@ Do not include customer data or private commercial artifacts:
 - Do not claim independent verification, memory capture, runtime safety, or
   enterprise readiness unless the artifact proves it.
 
+## Release Checklist
+
+Before merging or tagging public harness work:
+
+- Run `bash scripts/release-check.sh --static-only`.
+- Confirm `bash scripts/test-harness.sh` passes locally.
+- Confirm `git diff --check` is clean.
+- Confirm no private REVCLI/customer assets, credentials, memory seeds, or
+  commercial implementation packs are in the diff.
+- Confirm runtime claims distinguish static proof from authenticated Claude
+  runtime proof.
+
+CI is split into two lanes:
+
+- `harness-static.yml` runs on pull requests and pushes without secrets.
+- `harness-runtime.yml` is manual/scheduled and only runs authenticated runtime
+  checks when a dedicated `CLAUDE_SETTINGS_JSON` test secret is configured.
+
 ## Security
 
 Follow `SECURITY.md`. Do not open public issues for vulnerabilities involving

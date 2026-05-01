@@ -1,0 +1,6 @@
+id: m4-spec-archive-lifecycle
+title: SPEC archive lifecycle
+gate: scripts/test-harness.sh
+expected_result: pass
+golden: evals/harness/golden/m4-spec-archive-lifecycle.json
+evidence: proves SPEC.md closeout and prepare archives are descriptive deduplicated status readable and stored under .taste/specs

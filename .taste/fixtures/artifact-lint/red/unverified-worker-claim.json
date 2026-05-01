@@ -1,0 +1,43 @@
+{
+  "artifact_type": "worker_result",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "red-unverified-worker-claim",
+  "expected_result": "reject",
+  "expected_error": "worker claims must be independently verified",
+  "worker_result": {
+    "worker": {
+      "id": "M2-Fixtures",
+      "role": "fixture author",
+      "ownership": [
+        ".taste/fixtures/artifact-lint/**"
+      ]
+    },
+    "packet": {
+      "id": "M2-Fixtures",
+      "owned_paths": [
+        ".taste/fixtures/artifact-lint/**"
+      ],
+      "touched_paths": [
+        ".taste/fixtures/artifact-lint/red/unverified-worker-claim.json"
+      ]
+    },
+    "commands": [
+      {
+        "command": "python3 -m json.tool .taste/fixtures/artifact-lint/red/unverified-worker-claim.json",
+        "exit_code": 0,
+        "evidence": "JSON parsed successfully."
+      }
+    ],
+    "claims": [
+      {
+        "claim": "All fixture cases are complete.",
+        "verified": false,
+        "evidence": ""
+      }
+    ],
+    "parent_verification": {
+      "verified": false,
+      "evidence": ""
+    }
+  }
+}

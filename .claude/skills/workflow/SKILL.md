@@ -27,6 +27,15 @@ This command is the end-to-end executor.
   `SPEC.md`. The estimate must be agent-native wall-clock by default, not a
   bare human-equivalent calendar estimate.
 - Run hard-gate introspection after implementation and before closeout.
+- Treat worker or subagent summaries as claims until the parent workflow
+  verifies them with command evidence. For harness-governance changes, run the
+  effectiveness smokes that apply: `scripts/harness-scorecard.sh --json`,
+  `scripts/hook-smoke.sh`, `scripts/codex-run-smoke.sh`, and
+  `scripts/parallel-plan-lint.sh --fixtures`.
+- When a workflow uses `/parallel` run artifacts, aggregate
+  `.taste/parallel/{run_id}/packet-dag.json`, `ownership.json`, and
+  `worker-results/*.json` with `scripts/parallel-aggregate.sh` before treating
+  worker outputs as accepted evidence.
 - Keep implementation surgical: smallest sufficient implementation, no speculative abstractions, no drive-by refactors, and a changed-line trace back to `SPEC.md`.
 - Do not stop after planning.
 - Do not tell the user to manually run `/autoplan`, `/parallel`, `/sprint`, `/verify`, or `/ship`.
@@ -79,14 +88,23 @@ Treat `.minimaxing/state/CURRENT.md` as a compact continuity handoff, then recon
 
 ```bash
 bash scripts/memory.sh recall "$ARGUMENTS" --depth medium 2>/dev/null || echo "Memory recall skipped"
+bash scripts/memory-eval.sh --summary 2>/dev/null || echo "Memory freshness: unavailable; using local truth surfaces"
 ```
 
 6. Summarize:
    - relevant taste principles
    - relevant working-state continuity and any stale assumptions to refresh
    - relevant recalled memories
+   - memory health/freshness status and whether local truth surfaces are the
+     fallback
    - an alignment score from 0 to 10
 7. If the task clearly conflicts with taste, pause only to get an explicit alignment decision from the user.
+
+If memory is `degraded`, `disabled`, or unavailable, continue from local truth
+surfaces (`SPEC.md`, workflow artifacts, docs, git status, tests, and source
+files) and say that memory could not be trusted as the primary context source.
+Do not claim memory captured everything unless a memory event trace or durable
+memory artifact proves the relevant entry exists.
 
 ## Phase 1: Route
 
@@ -150,7 +168,17 @@ Required content inside the sections:
   agent-hours, human touch time, calendar blockers, confidence, and any
   human-equivalent baseline as secondary only.
 - `## Execution Notes` must record any freshness re-checks and the final owned files touched by each delegated packet.
+- If parallel run artifacts exist, `## Execution Notes` must record the
+  `.taste/parallel/{run_id}` path and `scripts/parallel-aggregate.sh` output,
+  including effective lanes, bottleneck, critical path, and any rejected worker
+  claim.
 - `## Verification Evidence` must include `Verification Metadata`: executor identity/model/workspace, verifier identity/model/workspace, and isolation status. Use `unknown` instead of implying separation when the run cannot prove it.
+- `## Verification Evidence` must include command evidence for "tests passed"
+  claims. Evidence-free closeout and failed-verification positive closeout are
+  blocked by the effectiveness scorecard and Claude Code governance hook.
+- When a workflow emits machine-consumed estimate, verification, or worker
+  artifacts, add the matching minimal JSON sidecar and validate it with
+  `scripts/artifact-lint.sh` before closeout.
 
 When this lifecycle is reused by `/digestflow`, insert `## Report Intake` between `## Taste Gate` and `## Research Brief`. The intake section must record a report manifest, claim ledger, contradictions, injection quarantine, and the default `no-persist report bodies` decision. Imported claims remain `report-derived` until the repo's own deepresearch, live sources, or repo inspection upgrade them to `web-verified` or `repo-verified`.
 
@@ -289,8 +317,14 @@ Also include:
 Store important research findings in memory when they would be useful again:
 
 ```bash
-bash scripts/memory.sh add semantic "Research [topic]: [key finding]. Source: [URL]" --tags "research,[topic],current"
+bash scripts/memory.sh candidate semantic "Research [topic]: [key finding]. Source: [URL]" --verified yes --source "$WORKFLOW_ARTIFACT" --tags "research,[topic],current"
 ```
+
+Only promote a candidate with `bash scripts/memory.sh add ...` after verification
+proves the finding is reusable and safe for the public repo. Never store
+customer memory seeds, private commercial playbooks, real credentials, private
+connector details, or customer-specific Hermes/REVCLI runtime facts in tracked
+public memory.
 
 For file-changing tasks, record the research brief in `WORKFLOW_ARTIFACT` before continuing.
 

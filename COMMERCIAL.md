@@ -56,3 +56,32 @@ Public materials must not say:
 
 Commercial inquiries should go through the project maintainer until a dedicated
 sales/support channel is published.
+
+## Distribution Boundary
+
+The public repo may ship:
+
+- Installer guidance for Claude Code users.
+- Project-scoped Codex defaults and optional `codex-plugin-cc` guidance.
+- Static CI, smoke tests, schemas, eval fixtures, and dummy examples.
+- Documentation for `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime`
+  profiles.
+
+The public repo must not ship:
+
+- Managed-service implementation packs.
+- Customer memory seeds or customer-specific Hermes agents.
+- REVCLI/Revis private runtime code, tenant infrastructure, or production
+  deployment automation.
+- Real audit logs, credentials, private connector configs, or commercial
+  vertical playbooks.
+
+## Plugin And Installer Claims
+
+Public materials may document how Claude Code, the optional OpenAI Codex plugin,
+and local scripts work with the open-source harness. They must not imply that an
+installer, plugin, or generated agent includes the private managed runtime or is
+production-ready without runtime evidence.
+
+Use dummy examples for public demos. Use private repos or ignored customer
+artifact folders for real implementations.

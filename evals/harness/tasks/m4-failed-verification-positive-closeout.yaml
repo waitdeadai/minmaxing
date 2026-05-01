@@ -1,0 +1,6 @@
+id: m4-failed-verification-positive-closeout
+title: Failed verification positive closeout
+gate: scripts/harness-scorecard.sh --json
+expected_result: reject
+golden: evals/harness/golden/m4-failed-verification-positive-closeout.json
+evidence: rejects messages that report failed verification while also claiming done complete ready or passed

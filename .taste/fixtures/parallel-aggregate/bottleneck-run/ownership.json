@@ -1,0 +1,33 @@
+{
+  "ownership": [
+    {
+      "packet_id": "P1",
+      "owner": "worker-one",
+      "owned_files": [
+        "docs/p1.md"
+      ]
+    },
+    {
+      "packet_id": "P2",
+      "owner": "worker-two",
+      "owned_files": [
+        "docs/p2.md"
+      ]
+    },
+    {
+      "packet_id": "P3",
+      "owner": "worker-three",
+      "owned_files": [
+        "docs/p3.md"
+      ]
+    },
+    {
+      "packet_id": "P4",
+      "owner": "worker-four",
+      "owned_files": [
+        "docs/p4.md"
+      ]
+    }
+  ],
+  "approved_cross_owned_edits": []
+}

@@ -1,0 +1,6 @@
+{
+  "id": "m4-hook-enforcement",
+  "expected_result": "pass",
+  "gate": "scripts/hook-smoke.sh",
+  "expected_evidence": "scripts/hook-smoke.sh exercises PreToolUse Stop and SubagentStop fixtures against .claude/hooks/govern-effectiveness.sh"
+}

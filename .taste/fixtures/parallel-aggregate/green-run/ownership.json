@@ -1,0 +1,36 @@
+{
+  "ownership": [
+    {
+      "packet_id": "P1",
+      "owner": "worker-script",
+      "owned_files": [
+        "scripts/parallel-aggregate.sh"
+      ],
+      "do_not_touch": [
+        ".claude/skills/**"
+      ]
+    },
+    {
+      "packet_id": "P2",
+      "owner": "worker-contract",
+      "owned_files": [
+        ".claude/skills/parallel/SKILL.md"
+      ],
+      "do_not_touch": [
+        "scripts/parallel-aggregate.sh"
+      ]
+    },
+    {
+      "packet_id": "P3",
+      "owner": "worker-smoke",
+      "owned_files": [
+        "scripts/parallel-smoke.sh",
+        "scripts/test-harness.sh"
+      ],
+      "do_not_touch": [
+        "scripts/parallel-aggregate.sh"
+      ]
+    }
+  ],
+  "approved_cross_owned_edits": []
+}

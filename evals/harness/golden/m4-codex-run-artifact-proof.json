@@ -1,0 +1,6 @@
+{
+  "id": "m4-codex-run-artifact-proof",
+  "expected_result": "pass",
+  "gate": "scripts/codex-run-smoke.sh",
+  "expected_evidence": ".taste/fixtures/codex-run/green.codex-run passes and broad-write-worker.codex-run is rejected"
+}

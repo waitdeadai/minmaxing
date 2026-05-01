@@ -1,0 +1,6 @@
+{
+  "id": "m4-parallel-claim-rejection",
+  "expected_result": "reject",
+  "gate": "scripts/parallel-plan-lint.sh --fixtures",
+  "expected_evidence": ".taste/fixtures/parallel-plan includes linear-lane-scaling.plan and unverified-worker-claims.plan red fixtures"
+}

@@ -1,0 +1,5 @@
+# Negative fixture: lane count is not an elapsed-time multiplier.
+plan_id=linear-lane-scaling
+effective_lanes=10
+lane_scaling_rationale=10 agents means 10x faster
+packet=P1|owner=worker-p1|owned_files=scripts/example.sh|touched_files=scripts/example.sh|commands=bash -n scripts/example.sh|evidence=syntax checked|parent_verified=yes|merge_barrier=none

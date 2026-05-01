@@ -1,0 +1,26 @@
+{
+  "artifact_type": "worker-result",
+  "packet_id": "P4",
+  "owner": "worker-four",
+  "status": "success",
+  "owned_files": [
+    "docs/p4.md"
+  ],
+  "touched_files": [
+    "docs/p4.md"
+  ],
+  "commands_run": [
+    "test docs/p4.md"
+  ],
+  "tests_run": [
+    "test docs/p4.md"
+  ],
+  "evidence": [
+    "packet four verified"
+  ],
+  "changed_line_trace": [
+    "P4 trace"
+  ],
+  "handoff_notes": "done",
+  "parent_verified": true
+}

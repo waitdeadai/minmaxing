@@ -1,0 +1,36 @@
+name: Harness Runtime
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 7 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  harness-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CLAUDE_SETTINGS_JSON: ${{ secrets.CLAUDE_SETTINGS_JSON }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Claude settings
+        if: ${{ env.CLAUDE_SETTINGS_JSON != '' }}
+        run: |
+          mkdir -p .claude
+          printf '%s' "$CLAUDE_SETTINGS_JSON" > .claude/settings.local.json
+          python3 -m json.tool .claude/settings.local.json >/dev/null
+
+      - name: Runtime harness smoke
+        if: ${{ env.CLAUDE_SETTINGS_JSON != '' }}
+        env:
+          RUN_CLAUDE_INTEGRATION: "1"
+        run: bash scripts/test-harness.sh
+
+      - name: Explain skipped runtime
+        if: ${{ env.CLAUDE_SETTINGS_JSON == '' }}
+        run: echo "Runtime harness smoke skipped: CLAUDE_SETTINGS_JSON secret is not configured."

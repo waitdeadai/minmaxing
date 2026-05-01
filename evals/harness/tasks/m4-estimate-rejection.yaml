@@ -1,0 +1,6 @@
+id: m4-estimate-rejection
+title: Estimate rejection
+gate: scripts/estimate-smoke.sh
+expected_result: reject
+golden: evals/harness/golden/m4-estimate-rejection.json
+evidence: rejects human-equivalent-only estimates and linear scaling estimates without agent-native capacity evidence

@@ -35,6 +35,9 @@ verifies the aggregate result against the active contract.
   and must not be required for default `/parallel` behavior.
 - Record all packet ownership, dependencies, sync barriers, and returned
   evidence in a workflow artifact.
+- For executed packet runs, also record machine-readable run artifacts under
+  `.taste/parallel/{run_id}/` and aggregate them with
+  `scripts/parallel-aggregate.sh` before accepting worker claims.
 - Estimate elapsed time from the longest dependency path, including sync
   barriers, aggregation, verification, review, and rework risk.
 - Block when workers would touch the same files or make conflicting authority
@@ -182,6 +185,8 @@ Create a durable artifact:
 mkdir -p .taste/workflow-runs
 STAMP="$(date +%Y%m%d-%H%M%S)"
 PARALLEL_ARTIFACT=".taste/workflow-runs/${STAMP}-parallel.md"
+PARALLEL_RUN_DIR=".taste/parallel/${STAMP}"
+mkdir -p "${PARALLEL_RUN_DIR}/worker-results"
 ```
 
 Required section order:
@@ -259,6 +264,36 @@ bottleneck.
 Hard gate: do not launch workers until the DAG, ownership matrix, and first
 barrier are written.
 
+### Machine-Readable Run Artifacts
+
+When packets execute, write these sidecars before aggregation:
+
+```text
+.taste/parallel/{run_id}/packet-dag.json
+.taste/parallel/{run_id}/ownership.json
+.taste/parallel/{run_id}/worker-results/{packet_id}.json
+```
+
+`packet-dag.json` records packets, dependencies, duration estimates, capacity
+evidence, supervisor review capacity, verification capacity, and sync-barrier
+capacity. `ownership.json` records each packet's owner, owned files/surfaces,
+do-not-touch paths, and any explicit cross-owned edit approvals. Each
+`worker-results/{packet_id}.json` must use the worker-result sidecar shape and
+include packet id, owned files, touched files, commands run, tests run, evidence,
+unresolved risks, changed-line trace, handoff notes, and `parent_verified`.
+
+Before closeout, run:
+
+```bash
+bash scripts/parallel-aggregate.sh "$PARALLEL_RUN_DIR"
+```
+
+The aggregate output must include packet count, worker result count, effective
+lanes, capacity ceiling, bottleneck, critical path, and whether additional lanes
+would help. If the bottleneck is supervisor review, verification, a sync
+barrier, shared files, CI, or credentials, do not claim extra agents would
+shorten elapsed time.
+
 ## Phase 6: SPEC.md And Worker Packet Contracts
 
 If files will change, `SPEC.md` must exist before worker execution. The main
@@ -308,6 +343,20 @@ Workers must stop instead of improvising when:
 - they need to touch a do-not-touch file
 - verification fails and the fix would broaden scope
 
+Before worker claims are accepted, the parent workflow must lint the aggregate
+packet evidence when `scripts/parallel-plan-lint.sh` is available. The minimal
+claim validator rejects ambiguous ownership, same-file collisions, missing
+command evidence, unverified worker claims, and linear lane-scaling claims.
+When worker results are stored as JSON sidecars, also validate them with
+`scripts/artifact-lint.sh` so touched files, owned files, command evidence, and
+parent verification are machine-checked.
+
+When a `.taste/parallel/{run_id}` folder exists, run
+`scripts/parallel-aggregate.sh {run_dir}` after individual sidecar validation.
+Aggregation is the parent-level proof that packet DAG, ownership, capacity,
+worker results, critical path, and bottlenecks agree. A passing worker sidecar
+does not bypass aggregate validation.
+
 ## Phase 6.5: Introspect Hard Gate
 
 Before aggregation is considered ready, run `/introspect`.
@@ -353,6 +402,8 @@ Required parallel verification:
 | Capacity check | Effective budget did not exceed profile or configured ceiling. |
 | Substrate check | Chosen substrate matched the documented reason. |
 | Aggregate test | Final commands or inspection prove the whole result works. |
+| Claim validator | `bash scripts/parallel-plan-lint.sh --fixtures` or a run-specific lint passes when available. |
+| Run aggregation | `bash scripts/parallel-aggregate.sh .taste/parallel/{run_id}` passes when run artifacts exist. |
 
 If verification fails, run `/introspect after-test-failure`, fix only the
 minimal failing slice, and re-verify.
@@ -368,6 +419,7 @@ Closeout must include:
   recorded
 - packet count and outcomes
 - changed files by packet
+- `parallel-aggregate` status, effective lanes, bottleneck, and critical path
 - verification result and isolation metadata
 - residual risks
 - whether `SPEC.md` was archived

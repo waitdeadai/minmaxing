@@ -1,0 +1,6 @@
+id: m4-agentfactory-kill-switch-evidence
+title: AgentFactory kill switch evidence
+gate: scripts/agentfactory-smoke.sh
+expected_result: pass
+golden: evals/harness/golden/m4-agentfactory-kill-switch-evidence.json
+evidence: requires Hermes AgentFactory outputs and registry rows to carry tested kill switch evidence before active production status

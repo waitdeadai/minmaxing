@@ -1,0 +1,6 @@
+{
+  "id": "m4-digestflow-report-derived-evidence",
+  "expected_result": "pass",
+  "gate": "digestflow-static",
+  "expected_evidence": ".claude/skills/digestflow/SKILL.md, scripts/digestflow-smoke.sh, AGENTS.md, and README.md contain report-derived evidence and Injection Quarantine contracts without invoking Claude runtime"
+}

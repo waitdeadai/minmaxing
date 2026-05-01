@@ -1,0 +1,6 @@
+id: m4-parallel-claim-rejection
+title: Parallel claim rejection
+gate: scripts/parallel-plan-lint.sh --fixtures
+expected_result: reject
+golden: evals/harness/golden/m4-parallel-claim-rejection.json
+evidence: rejects linear lane scaling unverified worker claims ambiguous ownership missing command evidence and shared file collisions

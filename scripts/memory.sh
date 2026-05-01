@@ -7,6 +7,7 @@
 #        memory stats
 #        memory recall <task> [--depth simple|medium|complex]
 #        memory causal-factors [--outcome success|failure] [--limit N]
+#        memory candidate <tier> <content> --verified yes --source SOURCE
 
 set -e
 
@@ -15,9 +16,13 @@ TASTE_DIR="${TASTE_DIR:-$(pwd)/.taste}"
 DATE=$(date +%Y-%m-%d)
 DATE_TIME=$(date +%Y-%m-%dT%H:%M:%S)
 SESSION_FILE="${TASTE_DIR}/sessions/${DATE}.jsonl"
+MEMORY_EVENT_FILE="${TASTE_DIR}/memory-events/${DATE}.jsonl"
+MEMORY_CANDIDATE_FILE="${TASTE_DIR}/memory-candidates/${DATE}.jsonl"
 
 # Ensure directories exist
 mkdir -p "${TASTE_DIR}/sessions"
+mkdir -p "${TASTE_DIR}/memory-events"
+mkdir -p "${TASTE_DIR}/memory-candidates"
 mkdir -p "${MEMORY_DIR}/Decisions"
 mkdir -p "${MEMORY_DIR}/Patterns"
 mkdir -p "${MEMORY_DIR}/Errors"
@@ -27,6 +32,37 @@ mkdir -p "${MEMORY_DIR}/Stories"
 # Call sites decide how to handle a degraded SQLite layer.
 python_call() {
   python3 -m memory.cli "$@" 2>/dev/null
+}
+
+json_quote() {
+  python3 - "$1" <<'PY' 2>/dev/null || {
+import json
+import sys
+
+print(json.dumps(sys.argv[1]))
+PY
+    printf '"%s"' "$(printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g')"
+  }
+}
+
+trace_memory_event() {
+  local event="$1"
+  local tier="$2"
+  local content="$3"
+  local target="${4:-}"
+  local source="${5:-manual}"
+  local verified="${6:-unknown}"
+
+  {
+    printf '{"timestamp":%s,"event":%s,"tier":%s,"content":%s,"target":%s,"source":%s,"verified":%s}\n' \
+      "$(json_quote "$DATE_TIME")" \
+      "$(json_quote "$event")" \
+      "$(json_quote "$tier")" \
+      "$(json_quote "$content")" \
+      "$(json_quote "$target")" \
+      "$(json_quote "$source")" \
+      "$(json_quote "$verified")"
+  } >> "$MEMORY_EVENT_FILE" 2>/dev/null || true
 }
 
 # Parse arguments
@@ -70,6 +106,7 @@ tags: [${tags:-untagged}]
 $(echo "$content" | sed 's/"/\\"/g')
 EOF
         echo "Added semantic: $content → $file"
+        trace_memory_event "memory_added" "semantic" "$content" "$file" "memory add" "true"
         # Dual-write to SQLite (best-effort, warn on failure)
         python3 -m memory.cli add semantic "$content" --tags "${tags:-untagged}" 2>/dev/null || echo "  [WARN] SQLite sync failed for semantic"
         ;;
@@ -85,6 +122,7 @@ tags: [${tags:-untagged}]
 $(echo "$content" | sed 's/"/\\"/g')
 EOF
         echo "Added procedural: $content → $file"
+        trace_memory_event "memory_added" "procedural" "$content" "$file" "memory add" "true"
         # Dual-write to SQLite (best-effort, warn on failure)
         python3 -m memory.cli add procedural "$content" --tags "${tags:-untagged}" 2>/dev/null || echo "  [WARN] SQLite sync failed for procedural"
         ;;
@@ -107,6 +145,7 @@ $(echo "$error" | sed 's/"/\\"/g')
 $(echo "$solution" | sed 's/"/\\"/g')
 EOF
         echo "Added error-solution pair → $file"
+        trace_memory_event "memory_added" "error-solution" "$error" "$file" "memory add" "true"
         # Dual-write to SQLite (best-effort, warn on failure)
         python3 -m memory.cli add error-solution "$error" "$solution" 2>/dev/null || echo "  [WARN] SQLite sync failed for error-solution"
         ;;
@@ -122,6 +161,7 @@ tags: [${tags:-untagged}]
 $(echo "$content" | sed 's/"/\\"/g')
 EOF
         echo "Added graph: $content → $file"
+        trace_memory_event "memory_added" "graph" "$content" "$file" "memory add" "true"
         # Dual-write to SQLite (best-effort, warn on failure)
         python3 -m memory.cli add graph "$content" --tags "${tags:-untagged}" 2>/dev/null || echo "  [WARN] SQLite sync failed for graph"
         ;;
@@ -131,6 +171,44 @@ EOF
         exit 1
         ;;
     esac
+    ;;
+
+  candidate)
+    tier="${1:-}"
+    content="${2:-}"
+    verified="no"
+    source=""
+    tags=""
+    while [ $# -ge 1 ]; do
+      case "$1" in
+        --verified) verified="${2:-no}"; shift 2 ;;
+        --source) source="${2:-}"; shift 2 ;;
+        --tags) tags="${2:-}"; shift 2 ;;
+        *) shift ;;
+      esac
+    done
+
+    if [ -z "$tier" ] || [ -z "$content" ] || [ -z "$source" ]; then
+      echo "Usage: memory candidate <tier> <content> --verified yes --source SOURCE [--tags TAG1,TAG2]"
+      exit 1
+    fi
+
+    if [ "$verified" != "yes" ] && [ "$verified" != "true" ]; then
+      echo "Refusing memory candidate: run insights require verified evidence before promotion review"
+      trace_memory_event "memory_candidate_rejected" "$tier" "$content" "$MEMORY_CANDIDATE_FILE" "${source:-unknown}" "false"
+      exit 1
+    fi
+
+    {
+      printf '{"timestamp":%s,"status":"candidate","tier":%s,"content":%s,"source":%s,"tags":%s,"verified":true}\n' \
+        "$(json_quote "$DATE_TIME")" \
+        "$(json_quote "$tier")" \
+        "$(json_quote "$content")" \
+        "$(json_quote "$source")" \
+        "$(json_quote "${tags:-untagged}")"
+    } >> "$MEMORY_CANDIDATE_FILE"
+    trace_memory_event "memory_candidate_recorded" "$tier" "$content" "$MEMORY_CANDIDATE_FILE" "$source" "true"
+    echo "Recorded verified memory candidate → $MEMORY_CANDIDATE_FILE"
     ;;
 
   list)
@@ -289,6 +367,7 @@ EOF
     echo "  stats                                    Show stats (flat + SQLite)"
     echo "  recall <task> [--depth simple|medium|complex]  Recall task context"
     echo "  causal-factors [--outcome success|failure] [--limit N]  Analyze causal factors"
+    echo "  candidate <tier> <content> --verified yes --source SOURCE  Record verified promotion candidate"
     echo ""
     echo "Tiers: episodic, semantic, procedural, error-solution, graph"
     ;;

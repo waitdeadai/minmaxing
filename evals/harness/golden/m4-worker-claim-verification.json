@@ -1,0 +1,6 @@
+{
+  "id": "m4-worker-claim-verification",
+  "expected_result": "reject",
+  "gate": "scripts/artifact-lint.sh --fixtures",
+  "expected_evidence": ".taste/fixtures/artifact-lint/red/unverified-worker-claim.json and unowned-worker-packet-change.json prove worker claims need parent verification and ownership"
+}

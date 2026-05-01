@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minmaxing.dev/schemas/worker-result.schema.json",
+  "title": "Worker Result Sidecar",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "packet_id",
+    "owner",
+    "owned_files",
+    "touched_files",
+    "commands_run",
+    "evidence",
+    "parent_verified"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "worker-result"
+    },
+    "packet_id": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "owned_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "touched_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "commands_run": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "object",
+            "required": [
+              "command"
+            ],
+            "properties": {
+              "command": {
+                "type": "string"
+              },
+              "exit_code": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    },
+    "evidence": {
+      "type": [
+        "array",
+        "object",
+        "string"
+      ]
+    },
+    "parent_verified": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

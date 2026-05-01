@@ -1,0 +1,37 @@
+{
+  "artifact_type": "worker_result",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "red-worker-missing-command-evidence",
+  "expected_result": "reject",
+  "expected_error": "worker result is missing command evidence",
+  "worker_result": {
+    "worker": {
+      "id": "M2-Fixtures",
+      "role": "fixture author",
+      "ownership": [
+        ".taste/fixtures/artifact-lint/**"
+      ]
+    },
+    "packet": {
+      "id": "M2-Fixtures",
+      "owned_paths": [
+        ".taste/fixtures/artifact-lint/**"
+      ],
+      "touched_paths": [
+        ".taste/fixtures/artifact-lint/red/worker-missing-command-evidence.json"
+      ]
+    },
+    "commands": [],
+    "claims": [
+      {
+        "claim": "Fixture JSON is valid.",
+        "verified": true,
+        "evidence": "No command evidence was recorded."
+      }
+    ],
+    "parent_verification": {
+      "verified": true,
+      "evidence": "This should be rejected because commands is empty."
+    }
+  }
+}

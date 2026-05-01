@@ -1,0 +1,16 @@
+{
+  "expected_result": "fail",
+  "cases": [
+    {
+      "id": "missing-critical-memory-fact",
+      "query": "nonexistent critical harness decision",
+      "sources": [
+        "obsidian/Memory/Decisions/principle-spec-first.md"
+      ],
+      "required_any": [
+        "THIS MEMORY FACT SHOULD NOT EXIST"
+      ],
+      "max_age_days": 365
+    }
+  ]
+}

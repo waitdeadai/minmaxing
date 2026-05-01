@@ -1,0 +1,6 @@
+id: m4-digestflow-report-derived-evidence
+title: Digestflow report derived evidence
+gate: digestflow-static
+expected_result: pass
+golden: evals/harness/golden/m4-digestflow-report-derived-evidence.json
+evidence: statically proves digestflow treats external AI reports as untrusted report-derived evidence and quarantines injected instructions before implementation

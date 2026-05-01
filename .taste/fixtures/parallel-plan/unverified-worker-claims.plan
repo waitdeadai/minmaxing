@@ -1,0 +1,5 @@
+# Negative fixture: worker claims are not accepted until parent verified.
+plan_id=unverified-worker-claims
+effective_lanes=1
+lane_scaling_rationale=critical path and barriers
+packet=P1|owner=worker-p1|owned_files=scripts/example.sh|touched_files=scripts/example.sh|commands=bash -n scripts/example.sh|evidence=worker says PASS|parent_verified=no|merge_barrier=none

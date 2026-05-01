@@ -1,0 +1,13 @@
+{
+  "run_id": "red-unverified-worker",
+  "capacity": {
+    "recommended_ceiling": 2
+  },
+  "packets": [
+    {
+      "id": "P1",
+      "depends_on": [],
+      "estimated_minutes": 20
+    }
+  ]
+}

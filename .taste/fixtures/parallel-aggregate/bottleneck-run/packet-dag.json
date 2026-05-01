@@ -1,0 +1,44 @@
+{
+  "run_id": "bottleneck-run",
+  "substrate": "subagents",
+  "capacity": {
+    "recommended_ceiling": 10,
+    "codex_max_threads": 10,
+    "max_parallel_agents": null,
+    "auto_ceiling": 10
+  },
+  "supervisor_review_capacity": 1,
+  "verification_capacity": 4,
+  "sync_barrier_capacity": 4,
+  "packets": [
+    {
+      "id": "P1",
+      "purpose": "Independent packet one",
+      "depends_on": [],
+      "estimated_minutes": 20,
+      "confidence": "high"
+    },
+    {
+      "id": "P2",
+      "purpose": "Independent packet two",
+      "depends_on": [],
+      "estimated_minutes": 20,
+      "confidence": "high"
+    },
+    {
+      "id": "P3",
+      "purpose": "Independent packet three",
+      "depends_on": [],
+      "estimated_minutes": 20,
+      "confidence": "high"
+    },
+    {
+      "id": "P4",
+      "purpose": "Independent packet four",
+      "depends_on": [],
+      "estimated_minutes": 20,
+      "confidence": "high"
+    }
+  ],
+  "sync_barriers": []
+}

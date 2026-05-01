@@ -1,0 +1,6 @@
+{
+  "id": "m4-spec-archive-lifecycle",
+  "expected_result": "pass",
+  "gate": "scripts/test-harness.sh",
+  "expected_evidence": "scripts/test-harness.sh SPEC archive lifecycle section checks closeout prepare dedupe status and source_sha256 archive metadata"
+}

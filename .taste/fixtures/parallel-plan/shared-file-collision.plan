@@ -1,0 +1,6 @@
+# Negative fixture: two packets cannot touch the same file without a barrier.
+plan_id=shared-file-collision
+effective_lanes=2
+lane_scaling_rationale=critical path and barriers
+packet=P1|owner=worker-p1|owned_files=scripts/shared.sh|touched_files=scripts/shared.sh|commands=bash -n scripts/shared.sh|evidence=syntax checked|parent_verified=yes|merge_barrier=none
+packet=P2|owner=worker-p2|owned_files=scripts/shared.sh|touched_files=scripts/shared.sh|commands=bash -n scripts/shared.sh|evidence=syntax checked|parent_verified=yes|merge_barrier=none

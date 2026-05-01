@@ -72,11 +72,16 @@ For each criterion, perform verification:
 
 **For `/parallel` runs:**
 - Read the parallel artifact when present
+- If `.taste/parallel/{run_id}` exists, run
+  `scripts/parallel-aggregate.sh .taste/parallel/{run_id}` and treat failure as
+  verification failure
 - Verify every worker packet returned the Worker Result Schema
 - Check changed files against the ownership matrix
 - Confirm sync barriers were honored before dependent work
 - Confirm the effective budget did not exceed the hardware capacity profile, `MAX_PARALLEL_AGENTS`, or Codex `max_threads`
 - Treat worker summaries as claims until aggregate evidence proves them
+- Reject worker success when the parent cannot cite command evidence or an
+  inspection finding that proves the aggregate result.
 
 ### Step 4: Verification Results
 
@@ -165,7 +170,9 @@ record_outcome(factors, 'failure')
 
 For `/parallel`, PASS also requires packet evidence, ownership-matrix checks,
 capacity checks, sync-barrier checks, and aggregate verification against
-`SPEC.md`.
+`SPEC.md`. When run-level JSON sidecars exist, PASS also requires a passing
+`scripts/parallel-aggregate.sh .taste/parallel/{run_id}` result that reports
+effective lanes, bottleneck, worker result count, and critical path.
 
 **NOT acceptable as evidence:**
 - "Looks good"
@@ -184,6 +191,20 @@ capacity checks, sync-barrier checks, and aggregate verification against
 - Silent fail is not allowed — show exactly what failed
 - No SPEC.md = automatic FAIL
 - Non-trivial planning work without a valid `Agent-Native Estimate` = FAIL
+- Evidence-free closeout, failed-verification positive closeout, fake source
+  ledgers, and "tests passed" without command output or equivalent durable
+  evidence = FAIL
+- Machine-consumed estimate, verification, or worker result sidecars must pass
+  `scripts/artifact-lint.sh` when present.
+- Harness-improvement claims should run `scripts/harness-eval.sh --json` when
+  the static eval pack applies. Treat it as local gate coverage, not
+  model-running benchmark coverage.
+- Harness-health claims should cite `scripts/run-metrics.sh --json` or
+  `scripts/session-insights.sh --json`; missing provider/cost/token data must
+  remain `insufficient_data`.
+- Parallel worker-output claims should cite `scripts/parallel-aggregate.sh`
+  when `.taste/parallel/{run_id}` artifacts exist; failed aggregation means the
+  parent has not verified the parallel result.
 
 ---
 

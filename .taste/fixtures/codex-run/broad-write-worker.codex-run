@@ -1,0 +1,18 @@
+# Negative fixture: broad parent permissions cannot silently authorize writers.
+run_id=fixture-broad-write-worker
+target_runtime=claude-code
+implementation_executor=codex
+execution_topology=local main plus bounded Codex subagents
+requested_agents=repo_explorer,docs_researcher,reviewer
+effective_lanes=4
+capacity_profile=codex_max_threads=10; recommended_ceiling=10; max_threads is a ceiling not a target
+codex_parent_permission_profile=danger-full-access; approval_policy=never
+child_sandbox_policy=read-only evidence agents preferred
+approval_inheritance_risk=parent broad permissions can leak into child lanes
+permission_sandbox_notes=This proposes a writer without a blocking policy.
+packet_ownership=P3 owns scripts/codex-run-smoke.sh and fixtures
+worker_result_schema_version=minimal-1
+parent_verified_worker_claims=yes
+read_only_agents=repo_explorer,docs_researcher,reviewer
+write_capable_workers=P3-writer
+next_execution_packet_plan=This should be rejected by the smoke.

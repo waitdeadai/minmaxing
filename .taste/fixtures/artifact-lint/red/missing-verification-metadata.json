@@ -1,0 +1,22 @@
+{
+  "artifact_type": "verification_result",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "red-missing-verification-metadata",
+  "expected_result": "reject",
+  "expected_error": "verification result is missing metadata",
+  "verification": {
+    "status": "passed",
+    "commands": [
+      {
+        "command": "python3 -m json.tool .taste/fixtures/artifact-lint/red/missing-verification-metadata.json",
+        "exit_code": 0,
+        "evidence": "JSON parsed successfully."
+      }
+    ],
+    "tests_passed": true,
+    "closeout": {
+      "status": "verified",
+      "summary": "This fixture intentionally omits verification.metadata."
+    }
+  }
+}

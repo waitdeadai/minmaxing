@@ -1,0 +1,36 @@
+{
+  "artifact_type": "verification_result",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "green-valid-verification-result",
+  "expected_result": "pass",
+  "verification": {
+    "status": "passed",
+    "metadata": {
+      "verified_at": "2026-05-01T17:30:00-03:00",
+      "executor": "Worker M2-Fixtures",
+      "verifier": "Worker M2-Fixtures",
+      "isolation_status": "same workspace parent verification",
+      "scope": ".taste/fixtures/artifact-lint",
+      "source_artifact": "SPEC.md"
+    },
+    "criteria": [
+      {
+        "criterion": "fixture includes verification metadata and command evidence",
+        "status": "pass",
+        "evidence": "python3 -m json.tool command recorded below"
+      }
+    ],
+    "commands": [
+      {
+        "command": "python3 -m json.tool .taste/fixtures/artifact-lint/green/valid-verification-result.json",
+        "exit_code": 0,
+        "evidence": "JSON parsed successfully."
+      }
+    ],
+    "tests_passed": true,
+    "closeout": {
+      "status": "verified",
+      "summary": "Fixture has verification metadata and command evidence before positive closeout."
+    }
+  }
+}

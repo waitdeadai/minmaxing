@@ -1,0 +1,6 @@
+{
+  "id": "m4-failed-verification-positive-closeout",
+  "expected_result": "reject",
+  "gate": "scripts/harness-scorecard.sh --json",
+  "expected_evidence": ".taste/fixtures/effectiveness/red/failed-verification-positive-closeout.md triggers failed_verification_positive_closeout"
+}

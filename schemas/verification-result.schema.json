@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minmaxing.dev/schemas/verification-result.schema.json",
+  "title": "Verification Result Sidecar",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "verification_metadata",
+    "status",
+    "criteria",
+    "commands_run",
+    "closeout_status"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "verification-result"
+    },
+    "verification_metadata": {
+      "type": "object"
+    },
+    "status": {
+      "type": "string"
+    },
+    "criteria": {
+      "type": [
+        "array",
+        "object"
+      ]
+    },
+    "commands_run": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "object",
+            "required": [
+              "command"
+            ],
+            "properties": {
+              "command": {
+                "type": "string"
+              },
+              "exit_code": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    },
+    "closeout_status": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

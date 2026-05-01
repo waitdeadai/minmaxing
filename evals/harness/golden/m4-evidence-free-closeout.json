@@ -1,0 +1,6 @@
+{
+  "id": "m4-evidence-free-closeout",
+  "expected_result": "reject",
+  "gate": "scripts/harness-scorecard.sh --json",
+  "expected_evidence": ".taste/fixtures/effectiveness/red/evidence-free-closeout.md triggers evidence_free_closeout"
+}

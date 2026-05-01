@@ -1,0 +1,18 @@
+# Minimal Codex run artifact for M0.5.
+run_id=fixture-green
+target_runtime=claude-code
+implementation_executor=codex
+execution_topology=local main plus bounded Codex subagents
+requested_agents=repo_explorer,docs_researcher,reviewer
+effective_lanes=3
+capacity_profile=codex_max_threads=10; recommended_ceiling=10; max_threads is a ceiling not a target
+codex_parent_permission_profile=danger-full-access; approval_policy=never; workspace=/home/fer/Music/ultimateminimax
+child_sandbox_policy=read-only evidence agents only; write-capable workers blocked unless disjoint packet ownership and parent verification are present
+approval_inheritance_risk=parent broad permissions can leak into child lanes; use read-only evidence agents for research and parent-owned verification for claims
+permission_sandbox_notes=This fixture records broad parent permissions honestly and does not claim container isolation.
+packet_ownership=P3 owns scripts/codex-run-smoke.sh,scripts/parallel-plan-lint.sh,.taste/fixtures/codex-run/*,.taste/fixtures/parallel-plan/*
+worker_result_schema_version=minimal-1
+parent_verified_worker_claims=yes
+read_only_agents=repo_explorer,docs_researcher,reviewer
+write_capable_workers=none
+next_execution_packet_plan=P3 validates run artifact and minimal worker-claim fixtures; integration remains with main.

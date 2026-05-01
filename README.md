@@ -45,6 +45,45 @@ repo:
   names, certification claims, and managed-service branding separate from the
   Apache-2.0 code license.
 
+## Runtime Governance
+
+Use minmaxing as a governed harness, not as an unverifiable autonomy claim. The
+public core is safe to validate without secrets:
+
+```bash
+bash scripts/test-harness.sh
+bash scripts/release-check.sh --static-only
+```
+
+Runtime checks are intentionally separate. Authenticated Claude Code smoke tests
+require local credentials and must not run by default on public PRs:
+
+```bash
+RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh
+```
+
+Choose the runtime profile deliberately:
+
+- `solo-fast`: trusted-local speed profile, useful on your own machine after
+  inspecting `.claude/settings.solo-fast.example.json`.
+- `team-safe`: shared-work default with `acceptEdits`; start from
+  `.claude/settings.team-safe.example.json`.
+- `ci-static`: no-secret static validation for public PRs and release checks.
+- `ci-runtime`: manual authenticated validation through
+  `.github/workflows/harness-runtime.yml`.
+
+The quickstart is here:
+
+- [docs/runtime-governance-quickstart.md](docs/runtime-governance-quickstart.md)
+
+Public examples must use dummy data only:
+
+- [examples/dummy-harness-run/](examples/dummy-harness-run/)
+
+The harness is effective when its gates produce evidence: `SPEC.md`,
+Agent-Native Estimates, parent-verified worker outputs, aggregate verification,
+memory health/freshness checks, and command-backed closeout.
+
 ## One-Command Setup
 
 ```bash
@@ -542,6 +581,18 @@ Now you can use any workflow pattern:
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
 **Parallelism:** All skills that support parallelism treat `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and hardware capacity as ceilings, not targets. `/align` remains single-threaded by design because taste alignment is sequential judgment.
+
+**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, and linear lane-scaling claims. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
+
+**Artifact sidecars:** Markdown remains the human contract, but machine gates can consume minimal JSON sidecars for agent-native estimates, verification results, and worker results. Validate the local fixtures with `bash scripts/artifact-lint.sh --fixtures`.
+
+**Static harness evals:** `evals/harness/tasks` and `evals/harness/golden` define local no-network eval tasks over the harness gates. Run `bash scripts/harness-eval.sh --json` or `bash scripts/harness-eval-report.sh --run` to score the current harness behavior.
+
+**Run metrics and session insights:** `bash scripts/run-metrics.sh --json` summarizes local workflow/eval/Codex artifacts, and `bash scripts/session-insights.sh --json` flags unhealthy runs. Missing provider cost, token, ACU, or calibration data is reported as `insufficient_data`.
+
+**Security profiles:** `solo-fast` is a trusted-local speed profile, `team-safe` is the shared-work default, `ci-static` is no-secret static validation, and `ci-runtime` is isolated authenticated validation. Run `bash scripts/security-smoke.sh` after profile changes.
+
+**Release governance:** Public harness work should pass `bash scripts/release-check.sh --static-only`. The static GitHub Actions lane runs without secrets; authenticated runtime checks are isolated in the manual/scheduled runtime lane.
 
 ---
 

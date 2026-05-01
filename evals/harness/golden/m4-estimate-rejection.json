@@ -1,0 +1,6 @@
+{
+  "id": "m4-estimate-rejection",
+  "expected_result": "reject",
+  "gate": "scripts/estimate-smoke.sh",
+  "expected_evidence": "scripts/estimate-smoke.sh rejects human-equivalent-only and linear scaling estimate fixtures"
+}

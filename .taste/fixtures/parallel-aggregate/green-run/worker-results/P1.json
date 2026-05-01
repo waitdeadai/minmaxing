@@ -1,0 +1,33 @@
+{
+  "artifact_type": "worker-result",
+  "packet_id": "P1",
+  "owner": "worker-script",
+  "status": "success",
+  "owned_files": [
+    "scripts/parallel-aggregate.sh"
+  ],
+  "touched_files": [
+    "scripts/parallel-aggregate.sh"
+  ],
+  "commands_run": [
+    {
+      "command": "bash -n scripts/parallel-aggregate.sh",
+      "exit_code": 0
+    }
+  ],
+  "tests_run": [
+    {
+      "command": "bash -n scripts/parallel-aggregate.sh",
+      "exit_code": 0
+    }
+  ],
+  "evidence": [
+    "syntax check passed"
+  ],
+  "unresolved_risks": [],
+  "changed_line_trace": [
+    "SPEC.md Success Criteria: Add scripts/parallel-aggregate.sh"
+  ],
+  "handoff_notes": "Aggregator script is ready for parent review.",
+  "parent_verified": true
+}

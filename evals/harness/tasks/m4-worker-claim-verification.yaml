@@ -1,0 +1,6 @@
+id: m4-worker-claim-verification
+title: Worker claim verification
+gate: scripts/artifact-lint.sh --fixtures
+expected_result: reject
+golden: evals/harness/golden/m4-worker-claim-verification.json
+evidence: rejects worker-result artifacts with parent_verified false unverified claims missing command evidence or touched files outside ownership

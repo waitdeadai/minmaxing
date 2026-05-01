@@ -1,0 +1,6 @@
+{
+  "id": "m4-agentfactory-kill-switch-evidence",
+  "expected_result": "pass",
+  "gate": "scripts/agentfactory-smoke.sh",
+  "expected_evidence": "scripts/agentfactory-smoke.sh requires hermes.kill-switch.md references Last Kill Test data and active rows with passing kill evidence"
+}

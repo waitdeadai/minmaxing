@@ -567,6 +567,238 @@ else
     test_fail "Agent-Native Estimate contract or smoke test is incomplete"
 fi
 
+# Test 3o: Effectiveness-First Anti-Lazy Gates
+echo "[3o] Effectiveness-First Anti-Lazy Gates"
+EFFECTIVENESS_OK=true
+for required_file in \
+    ".claude/hooks/govern-effectiveness.sh" \
+    "scripts/harness-scorecard.sh" \
+    "scripts/hook-smoke.sh" \
+    "scripts/codex-run-smoke.sh" \
+    "scripts/parallel-plan-lint.sh"; do
+    if [ ! -x "$required_file" ]; then
+        EFFECTIVENESS_OK=false
+    fi
+done
+for pattern in \
+    "govern-effectiveness.sh" \
+    '"PreToolUse"' \
+    '"SubagentStop"'; do
+    if ! grep -Fq "$pattern" .claude/settings.json 2>/dev/null; then
+        EFFECTIVENESS_OK=false
+    fi
+done
+for pattern in \
+    "evidence-free closeout" \
+    "failed-verification positive closeout" \
+    "fake source ledger" \
+    "tests-passed claims without command evidence" \
+    "linear lane-scaling claims"; do
+    if ! grep -Fq "$pattern" CLAUDE.md AGENTS.md README.md .claude/skills/workflow/SKILL.md .claude/skills/introspect/SKILL.md .claude/skills/verify/SKILL.md .claude/skills/parallel/SKILL.md 2>/dev/null; then
+        EFFECTIVENESS_OK=false
+    fi
+done
+if [ "$EFFECTIVENESS_OK" = true ] && \
+   python3 -m json.tool .claude/settings.json >/dev/null 2>&1 && \
+   bash scripts/harness-scorecard.sh --json >/dev/null 2>&1 && \
+   bash scripts/codex-run-smoke.sh >/dev/null 2>&1 && \
+   bash scripts/hook-smoke.sh >/dev/null 2>&1 && \
+   bash scripts/parallel-plan-lint.sh --fixtures >/dev/null 2>&1; then
+    test_pass "Claude Code runtime and harness smokes reject lazy completion patterns"
+else
+    test_fail "effectiveness-first gates are missing, unwired, or failing"
+fi
+
+# Test 3p: Minimal Artifact Sidecars
+echo "[3p] Minimal Artifact Sidecars"
+ARTIFACT_LINT_OK=true
+for required_file in \
+    "schemas/agent-native-estimate.schema.json" \
+    "schemas/verification-result.schema.json" \
+    "schemas/worker-result.schema.json" \
+    "scripts/artifact-lint.sh"; do
+    if [ ! -f "$required_file" ]; then
+        ARTIFACT_LINT_OK=false
+    fi
+done
+if [ ! -x "scripts/artifact-lint.sh" ]; then
+    ARTIFACT_LINT_OK=false
+fi
+for schema in \
+    schemas/agent-native-estimate.schema.json \
+    schemas/verification-result.schema.json \
+    schemas/worker-result.schema.json; do
+    if ! python3 -m json.tool "$schema" >/dev/null 2>&1; then
+        ARTIFACT_LINT_OK=false
+    fi
+done
+for pattern in \
+    "human-equivalent-only" \
+    "missing-confidence" \
+    "missing-critical-path" \
+    "tests-passed-without-command-evidence" \
+    "failed-verification-positive-closeout" \
+    "unowned-worker-packet-change" \
+    "unverified-worker-claim"; do
+    if ! find .taste/fixtures/artifact-lint -type f -name "*$pattern*.json" 2>/dev/null | grep -q .; then
+        ARTIFACT_LINT_OK=false
+    fi
+done
+if [ "$ARTIFACT_LINT_OK" = true ] && \
+   bash scripts/artifact-lint.sh --fixtures >/dev/null 2>&1; then
+    test_pass "minimal artifact sidecars reject missing evidence and weak worker claims"
+else
+    test_fail "artifact schemas, fixtures, or lint gate are incomplete"
+fi
+
+# Test 3q: Static Harness Eval Pack
+echo "[3q] Static Harness Eval Pack"
+HARNESS_EVAL_OK=true
+for required_file in \
+    "scripts/harness-eval.sh" \
+    "scripts/harness-eval-report.sh"; do
+    if [ ! -x "$required_file" ]; then
+        HARNESS_EVAL_OK=false
+    fi
+done
+TASK_COUNT="$(find evals/harness/tasks -maxdepth 1 -type f -name '*.yaml' 2>/dev/null | wc -l | tr -d ' ')"
+GOLDEN_COUNT="$(find evals/harness/golden -maxdepth 1 -type f -name '*.json' 2>/dev/null | wc -l | tr -d ' ')"
+if [ "$TASK_COUNT" -lt 12 ] || [ "$GOLDEN_COUNT" -lt 12 ]; then
+    HARNESS_EVAL_OK=false
+fi
+if [ "$HARNESS_EVAL_OK" = true ] && \
+   find evals/harness/golden -name '*.json' -print0 2>/dev/null | xargs -0 -n1 python3 -m json.tool >/dev/null 2>&1 && \
+   bash scripts/harness-eval.sh --metadata-json >/dev/null 2>&1 && \
+   bash scripts/harness-eval.sh --json >/dev/null 2>&1 && \
+   bash scripts/harness-eval-report.sh --run >/dev/null 2>&1; then
+    test_pass "static harness eval pack scores local gates without network or secrets"
+else
+    test_fail "static harness eval pack metadata, goldens, scripts, or gates are failing"
+fi
+
+# Test 3r: Local Run Metrics And Session Insights
+echo "[3r] Local Run Metrics And Session Insights"
+RUN_INSIGHTS_OK=true
+for required_file in \
+    "scripts/run-metrics.sh" \
+    "scripts/session-insights.sh" \
+    ".taste/fixtures/session-insights/healthy/workflow.md" \
+    ".taste/fixtures/session-insights/unhealthy/workflow.md"; do
+    if [ ! -e "$required_file" ]; then
+        RUN_INSIGHTS_OK=false
+    fi
+done
+if [ ! -x "scripts/run-metrics.sh" ] || [ ! -x "scripts/session-insights.sh" ]; then
+    RUN_INSIGHTS_OK=false
+fi
+if [ "$RUN_INSIGHTS_OK" = true ] && \
+   bash scripts/run-metrics.sh --json >/dev/null 2>&1 && \
+   bash scripts/run-metrics.sh --fixtures --json | grep -Fq '"provider_cost": "insufficient_data"' && \
+   bash scripts/session-insights.sh --json >/dev/null 2>&1 && \
+   bash scripts/session-insights.sh --fixtures --json | grep -Fq '"unhealthy_count": 1'; then
+    test_pass "local run metrics and session insights report health without inventing provider data"
+else
+    test_fail "run metrics or session insights are missing, failing, or overclaiming data"
+fi
+
+# Test 3s: Security And Permission Profiles
+echo "[3s] Security And Permission Profiles"
+SECURITY_PROFILE_OK=true
+for required_file in \
+    ".claude/settings.solo-fast.example.json" \
+    ".claude/settings.team-safe.example.json" \
+    ".claude/rules/security.rules.md" \
+    "scripts/security-smoke.sh"; do
+    if [ ! -e "$required_file" ]; then
+        SECURITY_PROFILE_OK=false
+    fi
+done
+if [ ! -x "scripts/security-smoke.sh" ]; then
+    SECURITY_PROFILE_OK=false
+fi
+if [ "$SECURITY_PROFILE_OK" = true ] && \
+   python3 -m json.tool .claude/settings.solo-fast.example.json >/dev/null 2>&1 && \
+   python3 -m json.tool .claude/settings.team-safe.example.json >/dev/null 2>&1 && \
+   bash scripts/security-smoke.sh >/dev/null 2>&1; then
+    test_pass "solo-fast and team-safe profiles are explicit, valid, and security-smoked"
+else
+    test_fail "security profiles, rules, or smoke tests are incomplete"
+fi
+
+# Test 3t: CI And Release Governance
+echo "[3t] CI And Release Governance"
+RELEASE_OK=true
+for required_file in \
+    ".github/workflows/harness-static.yml" \
+    ".github/workflows/harness-runtime.yml" \
+    "scripts/release-check.sh"; do
+    if [ ! -e "$required_file" ]; then
+        RELEASE_OK=false
+    fi
+done
+if [ ! -x "scripts/release-check.sh" ]; then
+    RELEASE_OK=false
+fi
+for pattern in \
+    "pull_request" \
+    "bash scripts/release-check.sh --static-only"; do
+    if ! grep -Fq "$pattern" .github/workflows/harness-static.yml 2>/dev/null; then
+        RELEASE_OK=false
+    fi
+done
+for pattern in \
+    "workflow_dispatch" \
+    "CLAUDE_SETTINGS_JSON" \
+    "RUN_CLAUDE_INTEGRATION"; do
+    if ! grep -Fq "$pattern" .github/workflows/harness-runtime.yml 2>/dev/null; then
+        RELEASE_OK=false
+    fi
+done
+if [ "$RELEASE_OK" = true ] && \
+   bash -n scripts/release-check.sh >/dev/null 2>&1 && \
+   bash scripts/release-check.sh --static-only --skip-full-harness >/dev/null 2>&1; then
+    test_pass "CI workflows and local release gate are static-safe by default"
+else
+    test_fail "CI workflow or release gate is missing, unsafe, or failing"
+fi
+
+# Test 3u: Parallel Aggregation Lifecycle
+echo "[3u] Parallel Aggregation Lifecycle"
+PARALLEL_AGGREGATE_OK=true
+for required_file in \
+    "scripts/parallel-aggregate.sh" \
+    ".taste/fixtures/parallel-aggregate/green-run/packet-dag.json" \
+    ".taste/fixtures/parallel-aggregate/bottleneck-run/packet-dag.json" \
+    ".taste/fixtures/parallel-aggregate/red-cross-owned-edit/packet-dag.json" \
+    ".taste/fixtures/parallel-aggregate/red-unverified-worker/packet-dag.json" \
+    ".taste/fixtures/parallel-aggregate/red-linear-scaling/packet-dag.json" \
+    ".taste/fixtures/parallel-aggregate/red-failed-worker/packet-dag.json"; do
+    if [ ! -e "$required_file" ]; then
+        PARALLEL_AGGREGATE_OK=false
+    fi
+done
+if [ ! -x "scripts/parallel-aggregate.sh" ]; then
+    PARALLEL_AGGREGATE_OK=false
+fi
+for pattern in \
+    ".taste/parallel/{run_id}" \
+    "scripts/parallel-aggregate.sh" \
+    "effective lanes" \
+    "bottleneck" \
+    "critical path"; do
+    if ! grep -Fq "$pattern" .claude/skills/parallel/SKILL.md .claude/skills/workflow/SKILL.md .claude/skills/verify/SKILL.md .claude/skills/introspect/SKILL.md 2>/dev/null; then
+        PARALLEL_AGGREGATE_OK=false
+    fi
+done
+if [ "$PARALLEL_AGGREGATE_OK" = true ] && \
+   bash -n scripts/parallel-aggregate.sh >/dev/null 2>&1 && \
+   bash scripts/parallel-aggregate.sh --fixtures >/dev/null 2>&1 && \
+   bash scripts/parallel-aggregate.sh --json .taste/fixtures/parallel-aggregate/bottleneck-run | grep -Fq '"additional_lanes_help": false'; then
+    test_pass "parallel aggregation rejects unsafe worker outputs and reports lane bottlenecks"
+else
+    test_fail "parallel aggregation script, fixtures, contracts, or bottleneck proof is incomplete"
+fi
+
 # ========================================
 # Skills (22 Expected)
 # ========================================
@@ -618,7 +850,7 @@ fi
 
 # Test 7: Individual Rules
 echo "[7] Individual Rules"
-for rule in quality context delegation parallelism spec verify estimation; do
+for rule in quality context delegation parallelism spec verify estimation security memory; do
     if [ -f ".claude/rules/$rule.rules.md" ]; then
         LINES=$(wc -l < ".claude/rules/$rule.rules.md" | tr -d ' ')
         if [ "$LINES" -gt 10 ]; then
@@ -656,7 +888,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard hook-smoke codex-run-smoke parallel-plan-lint parallel-aggregate artifact-lint harness-eval harness-eval-report run-metrics session-insights memory-eval security-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else
@@ -863,6 +1095,101 @@ if printf '%s' "$MEMORY_HEALTH_OUTPUT" | grep -Eq "status: (healthy|degraded|dis
     test_pass "memory health reports concrete status and flat-file evidence"
 else
     test_fail "memory health command did not report status and evidence"
+fi
+
+# Test 14b: Memory Eval And Promotion Policy
+echo "[14b] Memory Eval And Promotion Policy"
+MEMORY_EVAL_OK=true
+for required_file in \
+    "scripts/memory-eval.sh" \
+    "evals/memory/known-prior-decisions.json" \
+    "evals/memory/red-stale-prior-decision.json" \
+    "evals/memory/red-missing-critical-fact.json" \
+    ".claude/rules/memory.rules.md"; do
+    if [ ! -e "$required_file" ]; then
+        MEMORY_EVAL_OK=false
+    fi
+done
+if [ ! -x "scripts/memory-eval.sh" ]; then
+    MEMORY_EVAL_OK=false
+fi
+for pattern in \
+    "memory freshness" \
+    "local_truth_surfaces" \
+    "memory candidate" \
+    "memory-events" \
+    "run insights require verified evidence"; do
+    if ! grep -Fq "$pattern" scripts/memory-eval.sh scripts/start-session.sh scripts/memory.sh .claude/rules/memory.rules.md .claude/skills/workflow/SKILL.md 2>/dev/null; then
+        MEMORY_EVAL_OK=false
+    fi
+done
+if [ "$MEMORY_EVAL_OK" = true ] && \
+   bash -n scripts/memory-eval.sh >/dev/null 2>&1 && \
+   bash scripts/memory-eval.sh --fixtures >/dev/null 2>&1 && \
+   bash scripts/memory-eval.sh --summary | grep -Fq "memory freshness:"; then
+    test_pass "memory eval catches stale facts and promotion requires verified evidence"
+else
+    test_fail "memory eval, freshness report, trace policy, or promotion guard is incomplete"
+fi
+
+# Test 14c: Documentation Distribution Surface
+echo "[14c] Documentation Distribution Surface"
+DOCS_DISTRIBUTION_OK=true
+for required_file in \
+    "docs/runtime-governance-quickstart.md" \
+    "examples/dummy-harness-run/README.md" \
+    "COMMERCIAL.md"; do
+    if [ ! -e "$required_file" ]; then
+        DOCS_DISTRIBUTION_OK=false
+    fi
+done
+for pattern in \
+    "## Runtime Governance" \
+    "bash scripts/release-check.sh --static-only" \
+    "RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh" \
+    "docs/runtime-governance-quickstart.md" \
+    "examples/dummy-harness-run"; do
+    if ! grep -Fq "$pattern" README.md 2>/dev/null; then
+        DOCS_DISTRIBUTION_OK=false
+    fi
+done
+for pattern in \
+    "solo-fast" \
+    "team-safe" \
+    "ci-static" \
+    "ci-runtime" \
+    "must not run by default on public PRs" \
+    "Codex Users" \
+    "Evidence Before Trust"; do
+    if ! grep -Fq "$pattern" docs/runtime-governance-quickstart.md 2>/dev/null; then
+        DOCS_DISTRIBUTION_OK=false
+    fi
+done
+for pattern in \
+    "intentionally fake" \
+    "dummy-only" \
+    "What This Example Does Not Prove" \
+    "credentials"; do
+    if ! grep -Fq "$pattern" examples/dummy-harness-run/README.md 2>/dev/null; then
+        DOCS_DISTRIBUTION_OK=false
+    fi
+done
+for pattern in \
+    "Distribution Boundary" \
+    "Plugin And Installer Claims" \
+    "The public repo must not ship" \
+    "customer-specific Hermes agents"; do
+    if ! grep -Fq "$pattern" COMMERCIAL.md 2>/dev/null; then
+        DOCS_DISTRIBUTION_OK=false
+    fi
+done
+if grep -Fq "The repo can operate an entire company out of the box" README.md docs/runtime-governance-quickstart.md examples/dummy-harness-run/README.md 2>/dev/null; then
+    DOCS_DISTRIBUTION_OK=false
+fi
+if [ "$DOCS_DISTRIBUTION_OK" = true ]; then
+    test_pass "runtime governance docs and dummy-only examples are distribution-safe"
+else
+    test_fail "runtime governance docs, dummy examples, or commercial boundary are incomplete"
 fi
 
 # ========================================

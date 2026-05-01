@@ -1,0 +1,20 @@
+{
+  "run_id": "red-cross-owned-edit",
+  "capacity": {
+    "recommended_ceiling": 4
+  },
+  "supervisor_review_capacity": 2,
+  "verification_capacity": 2,
+  "packets": [
+    {
+      "id": "P1",
+      "depends_on": [],
+      "estimated_minutes": 20
+    },
+    {
+      "id": "P2",
+      "depends_on": [],
+      "estimated_minutes": 20
+    }
+  ]
+}

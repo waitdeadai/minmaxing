@@ -1,0 +1,26 @@
+{
+  "artifact_type": "worker-result",
+  "packet_id": "P3",
+  "owner": "worker-three",
+  "status": "success",
+  "owned_files": [
+    "docs/p3.md"
+  ],
+  "touched_files": [
+    "docs/p3.md"
+  ],
+  "commands_run": [
+    "test docs/p3.md"
+  ],
+  "tests_run": [
+    "test docs/p3.md"
+  ],
+  "evidence": [
+    "packet three verified"
+  ],
+  "changed_line_trace": [
+    "P3 trace"
+  ],
+  "handoff_notes": "done",
+  "parent_verified": true
+}

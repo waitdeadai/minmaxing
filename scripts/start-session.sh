@@ -20,6 +20,9 @@ if [ -f "$SCRIPT_DIR/memory.sh" ]; then
     bash "$SCRIPT_DIR/memory.sh" stats 2>/dev/null | head -10
     bash "$SCRIPT_DIR/memory.sh" health 2>/dev/null | tail -1 || echo "status: disabled"
 fi
+if [ -f "$SCRIPT_DIR/memory-eval.sh" ]; then
+    bash "$SCRIPT_DIR/memory-eval.sh" --summary 2>/dev/null || echo "memory freshness: degraded health=disabled fallback=local_truth_surfaces"
+fi
 echo ""
 
 # Step 2: Working State

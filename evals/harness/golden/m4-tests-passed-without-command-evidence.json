@@ -1,0 +1,6 @@
+{
+  "id": "m4-tests-passed-without-command-evidence",
+  "expected_result": "reject",
+  "gate": "scripts/artifact-lint.sh --fixtures",
+  "expected_evidence": ".taste/fixtures/artifact-lint/red/tests-passed-without-command-evidence.json is rejected because tests_passed requires command evidence"
+}

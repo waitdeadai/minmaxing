@@ -1,0 +1,52 @@
+{
+  "artifact_type": "agent_native_estimate",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "green-valid-agent-native-estimate",
+  "expected_result": "pass",
+  "estimate": {
+    "estimate_type": "agent-native",
+    "basis": "wall-clock",
+    "execution_topology": "codex-main-orchestrator-plus-bounded-worker",
+    "capacity_evidence": {
+      "command": "bash scripts/parallel-capacity.sh --json",
+      "observed_profile": "workstation-16-cores-32gb",
+      "recommended_ceiling": 10,
+      "max_threads": 10
+    },
+    "effective_lanes": {
+      "selected": 1,
+      "ceiling": 10,
+      "rationale": "Fixture creation is a narrow owned packet; more lanes would add coordination without shortening the critical path."
+    },
+    "critical_path": [
+      "read SPEC.md and existing fixture conventions",
+      "create owned JSON fixtures",
+      "run python3 -m json.tool against every artifact-lint fixture"
+    ],
+    "agent_wall_clock": {
+      "optimistic_minutes": 20,
+      "likely_minutes": 35,
+      "pessimistic_minutes": 60
+    },
+    "agent_hours": {
+      "minimum": 0.3,
+      "maximum": 1.0,
+      "unit": "hours"
+    },
+    "human_touch_time": {
+      "minimum_minutes": 5,
+      "maximum_minutes": 10
+    },
+    "calendar_blockers": [
+      "none known"
+    ],
+    "confidence": {
+      "level": "medium",
+      "rationale": "The fixtures are static JSON and scoped to the active SPEC, but the future linter implementation may refine exact field naming."
+    },
+    "human_equivalent_baseline": {
+      "duration": "half a day",
+      "secondary_comparison_only": true
+    }
+  }
+}

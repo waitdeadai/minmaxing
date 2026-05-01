@@ -1,0 +1,5 @@
+# Negative fixture: ownership cannot be shared or wildcarded.
+plan_id=ambiguous-ownership
+effective_lanes=2
+lane_scaling_rationale=critical path and barriers
+packet=P1|owner=shared|owned_files=*|touched_files=scripts/example.sh|commands=bash -n scripts/example.sh|evidence=syntax checked|parent_verified=yes|merge_barrier=none

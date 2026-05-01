@@ -1,0 +1,6 @@
+# Minimal green fixture for M1.5 worker-claim validation.
+plan_id=green
+effective_lanes=2
+lane_scaling_rationale=critical path, sync barriers, and parent verification define elapsed time
+packet=P3-codex|owner=worker-p3|owned_files=scripts/codex-run-smoke.sh,.taste/fixtures/codex-run/green.codex-run|touched_files=scripts/codex-run-smoke.sh,.taste/fixtures/codex-run/green.codex-run|commands=bash -n scripts/codex-run-smoke.sh && bash scripts/codex-run-smoke.sh|evidence=codex run smoke PASS|parent_verified=yes|merge_barrier=none
+packet=P3-parallel|owner=worker-p3|owned_files=scripts/parallel-plan-lint.sh,.taste/fixtures/parallel-plan/green.plan|touched_files=scripts/parallel-plan-lint.sh,.taste/fixtures/parallel-plan/green.plan|commands=bash -n scripts/parallel-plan-lint.sh && bash scripts/parallel-plan-lint.sh --fixtures|evidence=parallel plan fixture smoke PASS|parent_verified=yes|merge_barrier=none
