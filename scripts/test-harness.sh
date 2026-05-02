@@ -14,6 +14,10 @@ echo ""
 
 PASS=0
 FAIL=0
+STATIC_CI_MODE="${HARNESS_STATIC_CI:-0}"
+if [ "${CI:-}" = "true" ]; then
+    STATIC_CI_MODE=1
+fi
 
 test_pass() { echo "  [PASS] $1"; PASS=$((PASS+1)); }
 test_fail() { echo "  [FAIL] $1"; FAIL=$((FAIL+1)); }
@@ -32,7 +36,11 @@ if command -v claude &> /dev/null; then
     VERSION=$(claude --version 2>/dev/null || echo "unknown")
     test_pass "Claude Code $VERSION"
 else
-    test_fail "Claude Code not installed"
+    if [ "$STATIC_CI_MODE" = "1" ]; then
+        test_warn "Claude Code not installed in static CI"
+    else
+        test_fail "Claude Code not installed"
+    fi
 fi
 
 # Test 2: MiniMax Model Config
@@ -755,6 +763,14 @@ for pattern in \
         RELEASE_OK=false
     fi
 done
+for pattern in \
+    "HARNESS_STATIC_CI=1" \
+    "STATIC_CI_MODE" \
+    "not installed in static CI"; do
+    if ! grep -Fq "$pattern" scripts/release-check.sh scripts/test-harness.sh 2>/dev/null; then
+        RELEASE_OK=false
+    fi
+done
 if [ "$RELEASE_OK" = true ] && \
    bash -n scripts/release-check.sh >/dev/null 2>&1 && \
    bash scripts/release-check.sh --static-only --skip-full-harness >/dev/null 2>&1; then
@@ -1160,7 +1176,11 @@ echo "[14] ForgeGod Memory"
 if command -v forgegod &> /dev/null; then
     test_pass "ForgeGod installed"
 else
-    test_fail "ForgeGod not installed"
+    if [ "$STATIC_CI_MODE" = "1" ]; then
+        test_warn "ForgeGod not installed in static CI"
+    else
+        test_fail "ForgeGod not installed"
+    fi
 fi
 
 # Test 14a: Memory Health Command

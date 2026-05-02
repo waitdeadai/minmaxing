@@ -63,7 +63,11 @@ run bash scripts/runtime-hardening-smoke.sh
 run bash scripts/visualize-smoke.sh
 
 if [ "$RUN_FULL_HARNESS" -eq 1 ]; then
-  run bash scripts/test-harness.sh
+  if [ "$STATIC_ONLY" -eq 1 ]; then
+    run env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh
+  else
+    run bash scripts/test-harness.sh
+  fi
 fi
 
 run git diff --check

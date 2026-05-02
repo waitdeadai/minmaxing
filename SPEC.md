@@ -1,118 +1,107 @@
-# SPEC: Visualize And VisualizeWorkflow Skills
+# SPEC: CI Static Optional Tool Handling
 
 ## Problem Statement
 
-Add a visualization capability that lets the harness prove it understands a
-project's taste and intended product experience before implementation, without
-slowing down or blocking normal autonomous `/workflow` execution.
+The pushed `Harness Static / harness-static` GitHub Actions lane is failing even
+though the visualization changes pass locally and in CI. The CI runner does not
+install local developer tools such as `claude` and `forgegod`, while
+`scripts/test-harness.sh` currently treats both availability probes as hard
+failures.
 
-The correction from the first plan is important: plain `/workflow` remains the
-autonomous executor. Human visual approval belongs in an explicit
-`/visualizeworkflow` route.
+Static CI should prove the public harness contract without requiring secrets or
+local-only binaries. Runtime/provider proof remains the job of the manual
+authenticated runtime lane.
 
 ## Codebase Anchors
 
-- `.claude/skills/` contains slash-command skill contracts.
-- `.claude/skills/workflow/SKILL.md` is the autonomous end-to-end executor and
-  must not gain a mandatory visual approval pause.
-- `taste.md` and `taste.vision` are the repo's operating kernel and must be read
-  before visualization.
-- `scripts/test-harness.sh`, `scripts/start-session.sh`, `README.md`, and
-  `CLAUDE.md` currently describe a 22-skill surface and must move to 24 skills.
-- `.taste/*` is ignored except committed fixture folders, so
-  `.taste/visualizations/` is the right generated-artifact location.
+- `.github/workflows/harness-static.yml` runs
+  `bash scripts/release-check.sh --static-only` on push and pull requests.
+- `scripts/release-check.sh --static-only` is the no-secret static release gate.
+- `scripts/test-harness.sh` contains the hard availability probes for `claude`
+  and `forgegod`.
+- `AGENTS.md` says push readiness should use
+  `bash scripts/release-check.sh --static-only` and should not claim runtime CI
+  proof unless the manual authenticated lane ran.
 
 ## Success Criteria
 
-- [x] Add standalone `/visualize` skill.
-- [x] Add approval-first `/visualizeworkflow` skill.
-- [x] Add visualization rules for artifact modes, privacy boundaries, no fake
-      image claims, and autonomous `/workflow` preservation.
-- [x] Update `/workflow` so it can point users to `/visualizeworkflow` for
-      explicit approval-first work without adding a mandatory visualization gate.
-- [x] Update skill counts and skill lists from 22 to 24.
-- [x] Add a static `visualize-smoke` gate and wire it into the full harness and
-      release check.
-- [x] Keep static checks no-secret and provider-independent.
+- [x] Static CI treats missing `claude` as a warning, not a release-blocking
+      failure.
+- [x] Static CI treats missing `forgegod` as a warning, not a release-blocking
+      failure.
+- [x] Local/full harness behavior remains strict unless the caller explicitly
+      enables static-CI mode or GitHub Actions sets `CI=true`.
+- [x] `release-check --static-only` passes the static-CI mode flag into the full
+      harness so local static release checks match the GitHub lane.
+- [ ] Push the fix and confirm the `Harness Static / harness-static` check
+      passes on GitHub.
 
 ## Scope
 
 ### In Scope
 
-- Skill contracts, rules, docs, start-session, harness tests, and release gate.
-- Ignored visualization run artifact contract under `.taste/visualizations/`.
-- Static enforcement that `/workflow` remains autonomous.
+- Minimal shell gating in `scripts/test-harness.sh`.
+- Minimal release-check environment wiring in `scripts/release-check.sh`.
+- Verification of local and pushed static release gates.
 
 ### Out of Scope
 
-- New image-generation API client or provider integration.
-- Committing generated visualization artifacts.
-- Requiring image-generation credentials for static tests.
-- Making `/workflow` wait for visual approval by default.
+- Installing Claude Code or ForgeGod on GitHub-hosted runners.
+- Weakening runtime/manual integration checks.
+- Changing visualization skill behavior.
+- Broad CI workflow refactors.
 
 ## Surgical Diff Discipline
 
-- Smallest sufficient implementation: add two skills, one rules file, one smoke
-  script, and narrow docs/test wiring.
-- No speculative abstractions: do not build a scheduler, visual dashboard,
-  plugin installer, or image-generation wrapper.
-- No drive-by refactors: keep unrelated runtime-hardening, memory, security, and
-  parallel scripts untouched.
-- Changed-line trace: every edit maps to one of the success criteria above.
+- Smallest sufficient implementation: add one static-CI mode flag and use it in
+  the two optional-tool probes.
+- No speculative abstractions: do not introduce a new CI matrix, installer, or
+  provider bootstrap.
+- No drive-by refactors: keep unrelated harness checks untouched.
+- Changed-line trace: every edit maps to the CI log showing missing `claude` and
+  `forgegod` as the two static failures.
 
 ## Agent-Native Estimate
 
 - Estimate type: agent-native wall-clock
 - Execution topology: local
-- Capacity evidence: `scripts/parallel-capacity.sh --json` reported
-  workstation, 16 cores, 32GB RAM, Codex `max_threads` 10, recommended ceiling
-  10, default substrate `subagents`
-- Effective lanes: 1 of ceiling 10 because this is one coherent harness surface
-  edit with shared docs/test counts
-- Critical path: spec -> skills/rules -> workflow autonomy note -> docs/counts
-  -> smoke gate -> full harness/release verification
-- Agent wall-clock: optimistic 90 minutes / likely 3 hours / pessimistic 5 hours
-- Agent-hours: 3-6 active agent-hours
-- Human touch time: 10-20 minutes to review whether `/visualizeworkflow` feels
-  strict enough
-- Calendar blockers: none for static local implementation
-- Confidence: medium-high because the implementation is deterministic docs and
-  shell gating, but skill wording must avoid overblocking `/workflow`
-- Human-equivalent baseline: 1 engineer-day, secondary comparison only
-
-## Implementation Plan
-
-1. [x] Add `.claude/skills/visualize/SKILL.md`.
-2. [x] Add `.claude/skills/visualizeworkflow/SKILL.md`.
-3. [x] Add `.claude/rules/visualization.rules.md`.
-4. [x] Update `.claude/skills/workflow/SKILL.md` with non-blocking routing rules.
-5. [x] Update README, CLAUDE, AGENTS, and `scripts/start-session.sh` skill counts
-   and lists.
-6. [x] Add `scripts/visualize-smoke.sh`.
-7. [x] Wire the smoke into `scripts/test-harness.sh` and
-   `scripts/release-check.sh`.
-8. [x] Verify with the target commands and close out.
+- Capacity evidence: no parallel-capacity run needed; this is a narrow serial CI
+  hotfix with one file pair and one push verification path
+- Effective lanes: 1 of ceiling 10
+- Critical path: inspect CI logs -> patch optional-tool probes -> run static
+  simulations -> commit/push -> watch GitHub static check
+- Agent wall-clock: optimistic 20 minutes / likely 45 minutes / pessimistic 90
+  minutes
+- Agent-hours: 1-2 active agent-hours
+- Human touch time: none expected
+- Calendar blockers: GitHub Actions queue and network availability
+- Confidence: high because the CI log names exactly two failing harness checks
+  and both are local-tool availability probes
+- Human-equivalent baseline: under half an engineer-day, secondary comparison
+  only
 
 ## Verification
 
-- `bash -n scripts/visualize-smoke.sh`
-- `bash scripts/visualize-smoke.sh`
+- `HARNESS_STATIC_CI=1 PATH="/usr/bin:/bin" bash scripts/test-harness.sh`
 - `bash scripts/test-harness.sh`
 - `bash scripts/release-check.sh --static-only`
 - `git diff --check`
+- GitHub Actions `Harness Static / harness-static` after push
 
-Verified on 2026-05-02:
+Verified locally on 2026-05-02:
 
-- `bash -n scripts/*.sh`: pass
-- `bash -n scripts/visualize-smoke.sh`: pass
-- `bash scripts/visualize-smoke.sh`: pass
+- `bash -n scripts/test-harness.sh scripts/release-check.sh`: pass
+- `git diff --check`: pass
+- `HARNESS_STATIC_CI=1 PATH="/usr/bin:/bin" bash scripts/test-harness.sh`:
+  pass, 101 passed, 0 failed, expected static-CI warnings for missing local
+  `claude` and `forgegod`
 - `bash scripts/test-harness.sh`: pass, 103 passed, 0 failed
 - `bash scripts/release-check.sh --static-only`: pass, includes
-  `scripts/visualize-smoke.sh`, full harness, and `git diff --check`
+  `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh` and `git diff --check`
 
 ## Rollback Plan
 
-- Remove `/visualize`, `/visualizeworkflow`, visualization rules, and
-  `scripts/visualize-smoke.sh`.
-- Restore skill counts and `/workflow` text to the previous 22-skill surface.
-- Run `bash scripts/test-harness.sh` and `git diff --check`.
+- Remove the `STATIC_CI_MODE` handling from `scripts/test-harness.sh`.
+- Restore `scripts/release-check.sh` to call `bash scripts/test-harness.sh`
+  directly.
+- Run `bash scripts/release-check.sh --static-only`.
