@@ -92,7 +92,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 22 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 24 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -553,12 +553,14 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 22 Skills
+## The 24 Skills
 
 | Skill | What It Does |
 |-------|-------------|
 | `/tastebootstrap` | **Fresh-repo bootstrap** — asks the 10 kernel questions and writes `taste.md` + `taste.vision` |
 | `/workflow` | **Central execution engine** — drives research → code audit → plan → Agent-Native Estimate → `SPEC.md` → implement → verify → closeout (supervises an efficacy-first agent budget) |
+| `/visualize` | **Taste-to-artifact comprehension check** — creates ignored visual, diagram, prompt, or narrative artifacts without implementation |
+| `/visualizeworkflow` | **Approval-first workflow** — drafts SPEC + visualization, stops at `WAITING_FOR_VISUAL_APPROVAL`, then continues only with `--continue` |
 | `/digestflow` | **External-report-informed workflow** — digests 1-10 AI research reports as untrusted candidate evidence, then runs the full governed workflow |
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with risk-based parallelism |
@@ -581,6 +583,8 @@ Now you can use any workflow pattern:
 | `/memory` | 5-tier memory system — log decisions, search patterns |
 
 **Parallelism:** All skills that support parallelism treat `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and hardware capacity as ceilings, not targets. `/align` remains single-threaded by design because taste alignment is sequential judgment.
+
+**Visualization approval:** `/workflow` stays autonomous. Use `/visualize` when you only want to see the model's understanding, and `/visualizeworkflow` when you want a draft spec plus visual or operational artifact to approve before implementation.
 
 **Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, and linear lane-scaling claims. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
 
@@ -760,8 +764,10 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 22 skills (system calls)
+│   ├── skills/                 # 24 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
+│   │   ├── visualize/          # Taste-to-artifact comprehension check
+│   │   ├── visualizeworkflow/  # Approval-first workflow route
 │   │   ├── digestflow/         # External report intake + governed workflow
 │   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap
 │   │   ├── align/              # Taste gate

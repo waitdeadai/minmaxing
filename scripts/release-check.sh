@@ -60,6 +60,7 @@ run bash scripts/run-metrics.sh --fixtures --json >/dev/null
 run bash scripts/session-insights.sh --fixtures --json >/dev/null
 run bash scripts/memory-eval.sh --fixtures
 run bash scripts/runtime-hardening-smoke.sh
+run bash scripts/visualize-smoke.sh
 
 if [ "$RUN_FULL_HARNESS" -eq 1 ]; then
   run bash scripts/test-harness.sh

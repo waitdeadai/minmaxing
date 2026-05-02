@@ -46,6 +46,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 |-------|---------|
 | /tastebootstrap | Fresh-repo kernel interview that writes taste.md + taste.vision |
 | /workflow | Central execution engine — taste-first, runs the full phases inline with Agent-Native Estimate gating |
+| /visualize | Taste-to-artifact comprehension check; creates ignored visual, diagram, or narrative artifacts without implementation |
+| /visualizeworkflow | Approval-first workflow; drafts SPEC + visualization, stops at WAITING_FOR_VISUAL_APPROVAL, then continues only with `--continue` |
 | /digestflow | External-report-informed workflow with Report Intake before deepresearch |
 | /audit | Deep codebase audit with efficacy-first parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
@@ -72,6 +74,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **SPEC Archive**: `SPEC.md` is the active contract; archive completed or superseded specs to `.taste/specs/` before replacing them
 - **Introspection Gate**: `/introspect` must pass before plan freeze, closeout, retry after failed verification, and push/ship decisions
 - **Planning Time Awareness**: Non-trivial plans estimate in agent-native wall-clock by default before the plan or `SPEC.md` is frozen. Every estimate must state whether it is `agent-native`, `human-equivalent`, or `blocked/unknown`; cite `scripts/parallel-capacity.sh --json` or another capacity source; separate agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence; and treat human-equivalent estimates as secondary only.
+- **Visualization Approval**: `/workflow` remains autonomous. Use `/visualize` for standalone comprehension artifacts and `/visualizeworkflow` when the user wants to approve a visual or operational understanding before implementation.
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
 - **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile.
 - **Runtime Effectiveness Hooks**: `.claude/settings.json` wires `.claude/hooks/govern-effectiveness.sh` into Claude Code `PreToolUse`, `Stop`, and `SubagentStop` events. Do not claim hook enforcement unless `bash scripts/hook-smoke.sh` passes.

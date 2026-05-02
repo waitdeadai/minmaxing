@@ -216,7 +216,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "22 skills" README.md 2>/dev/null && \
+   grep -Fq "24 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -235,12 +235,13 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 22 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 24 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "Expected 16 skills" scripts/start-session.sh 2>/dev/null && \
-   ! grep -Fq "Expected $((22 - 1)) skills" scripts/start-session.sh 2>/dev/null && \
+   ! grep -Fq "Expected $((24 - 1)) skills" scripts/start-session.sh 2>/dev/null && \
+   ! grep -Fq "Expected 22 skills" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "Expected 5+ rules" scripts/start-session.sh 2>/dev/null && \
    ! grep -Fq "verifies everything before you accept it" README.md 2>/dev/null && \
    ! grep -Fq "Every decision, every fix, every shipped feature is remembered" README.md 2>/dev/null && \
@@ -860,26 +861,40 @@ else
     test_fail "runtime hardening scripts, settings, fixtures, docs, or smoke gate are incomplete"
 fi
 
+# Test 3w: Visualization Approval Contract
+echo "[3w] Visualization Approval Contract"
+if [ -f ".claude/skills/visualize/SKILL.md" ] && \
+   [ -f ".claude/skills/visualizeworkflow/SKILL.md" ] && \
+   [ -f ".claude/rules/visualization.rules.md" ] && \
+   [ -x "scripts/visualize-smoke.sh" ] && \
+   grep -Fq "WAITING_FOR_VISUAL_APPROVAL" .claude/skills/visualizeworkflow/SKILL.md 2>/dev/null && \
+   grep -Fq "Keep plain \`/workflow\` autonomous" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   bash scripts/visualize-smoke.sh >/dev/null 2>&1; then
+    test_pass "/visualize and /visualizeworkflow preserve autonomous workflow while adding approval-first visualization"
+else
+    test_fail "/visualize, /visualizeworkflow, visualization rules, or smoke gate are incomplete"
+fi
+
 # ========================================
-# Skills (22 Expected)
+# Skills (24 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 22 Expected]"
+echo "[Skills - 24 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 22 ]; then
+if [ "$SKILL_COUNT" -ge 24 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 22+ skills, found $SKILL_COUNT"
+    test_fail "Expected 24+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow digestflow align audit autoplan agentfactory parallel deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow visualize visualizeworkflow digestflow align audit autoplan agentfactory parallel deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -911,7 +926,7 @@ fi
 
 # Test 7: Individual Rules
 echo "[7] Individual Rules"
-for rule in quality context delegation parallelism spec verify estimation security memory; do
+for rule in quality context delegation parallelism spec verify estimation security memory visualization; do
     if [ -f ".claude/rules/$rule.rules.md" ]; then
         LINES=$(wc -l < ".claude/rules/$rule.rules.md" | tr -d ' ')
         if [ "$LINES" -gt 10 ]; then
@@ -949,7 +964,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard hook-smoke hook-mesh-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

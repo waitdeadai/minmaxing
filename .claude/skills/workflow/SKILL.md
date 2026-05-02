@@ -40,6 +40,10 @@ This command is the end-to-end executor.
 - Do not stop after planning.
 - Do not tell the user to manually run `/autoplan`, `/parallel`, `/sprint`, `/verify`, or `/ship`.
 - Do not rely on nested custom-skill chaining as the primary execution path.
+- Keep plain `/workflow` autonomous. Do not insert a mandatory visualization
+  approval pause into this command. When the user explicitly wants to see and
+  approve the intended product or operator experience before implementation,
+  route that request to `/visualizeworkflow` instead.
 
 Reason:
 In real Claude Code sessions, nested custom skills may complete their own turn and return control to the user before the rest of the chain runs. For `/workflow`, execute the phases inline with Claude Code tools so the full flow actually completes.
@@ -119,8 +123,13 @@ Choose the route from user intent:
 | explain | inspect and explain directly |
 | review | review directly |
 | qa | run focused validation directly |
+| visualize, visual approval, show me first, approve before implementation | route to `/visualizeworkflow` when the user wants implementation after visual approval; route to `/visualize` when the user only wants a comprehension artifact |
 
 Default to the full build flow when the task changes files.
+
+If a normal `/workflow` task has high visual or product-experience ambiguity,
+you may mention that `/visualizeworkflow` exists for approval-first execution,
+but continue autonomously unless the user asked for that approval pause.
 
 For dense work, automatically consider `/parallel` even if the user did not
 name it. Use it only when the eligibility audit proves independent packets,
@@ -646,7 +655,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/sprint`, `/verify`, `/audit`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers
@@ -694,6 +703,8 @@ When complete, return:
 - moving to code audit or planning while core research unknowns still require follow-up research
 - planning, closing out, or pushing while introspection blockers remain unresolved
 - treating `/review` as a substitute for `/introspect`
+- turning plain `/workflow` into a visual-approval workflow; use
+  `/visualizeworkflow` for `WAITING_FOR_VISUAL_APPROVAL`
 - running redundant search tracks just to hit the ceiling
 - delegating without owned files, dependencies, or a stop condition
 - broad `Glob("*")` exploration before the first research wave
