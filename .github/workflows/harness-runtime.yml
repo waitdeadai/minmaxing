@@ -16,7 +16,7 @@ jobs:
       CLAUDE_SETTINGS_JSON: ${{ secrets.CLAUDE_SETTINGS_JSON }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Install Claude settings
         if: ${{ env.CLAUDE_SETTINGS_JSON != '' }}

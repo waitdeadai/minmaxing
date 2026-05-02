@@ -22,6 +22,7 @@ fi
 test_pass() { echo "  [PASS] $1"; PASS=$((PASS+1)); }
 test_fail() { echo "  [FAIL] $1"; FAIL=$((FAIL+1)); }
 test_warn() { echo "  [WARN] $1"; }
+test_skip() { echo "  [SKIP] $1"; }
 
 # ========================================
 # Core Infrastructure
@@ -37,7 +38,7 @@ if command -v claude &> /dev/null; then
     test_pass "Claude Code $VERSION"
 else
     if [ "$STATIC_CI_MODE" = "1" ]; then
-        test_warn "Claude Code not installed in static CI"
+        test_skip "Claude Code runtime probe skipped in static CI"
     else
         test_fail "Claude Code not installed"
     fi
@@ -750,7 +751,8 @@ if [ ! -x "scripts/release-check.sh" ]; then
 fi
 for pattern in \
     "pull_request" \
-    "bash scripts/release-check.sh --static-only"; do
+    "bash scripts/release-check.sh --static-only" \
+    "actions/checkout@v6.0.2"; do
     if ! grep -Fq "$pattern" .github/workflows/harness-static.yml 2>/dev/null; then
         RELEASE_OK=false
     fi
@@ -758,7 +760,8 @@ done
 for pattern in \
     "workflow_dispatch" \
     "CLAUDE_SETTINGS_JSON" \
-    "RUN_CLAUDE_INTEGRATION"; do
+    "RUN_CLAUDE_INTEGRATION" \
+    "actions/checkout@v6.0.2"; do
     if ! grep -Fq "$pattern" .github/workflows/harness-runtime.yml 2>/dev/null; then
         RELEASE_OK=false
     fi
@@ -766,7 +769,7 @@ done
 for pattern in \
     "HARNESS_STATIC_CI=1" \
     "STATIC_CI_MODE" \
-    "not installed in static CI"; do
+    "runtime probe skipped in static CI"; do
     if ! grep -Fq "$pattern" scripts/release-check.sh scripts/test-harness.sh 2>/dev/null; then
         RELEASE_OK=false
     fi
@@ -1180,7 +1183,7 @@ if command -v forgegod &> /dev/null; then
     test_pass "ForgeGod installed"
 else
     if [ "$STATIC_CI_MODE" = "1" ]; then
-        test_warn "ForgeGod not installed in static CI"
+        test_skip "ForgeGod runtime probe skipped in static CI"
     else
         test_fail "ForgeGod not installed"
     fi
@@ -1318,7 +1321,7 @@ if [ "${RUN_CLAUDE_INTEGRATION:-0}" = "1" ]; then
         test_fail "/workflow runtime smoke test failed"
     fi
 else
-    test_warn "Workflow smoke test skipped (set RUN_CLAUDE_INTEGRATION=1)"
+    test_skip "Workflow smoke test skipped (set RUN_CLAUDE_INTEGRATION=1)"
 fi
 
 # ========================================
