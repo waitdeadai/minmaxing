@@ -12,6 +12,12 @@ Static CI should prove the public harness contract without requiring secrets or
 local-only binaries. Runtime/provider proof remains the job of the manual
 authenticated runtime lane.
 
+The Actions list also exposes a separate zero-job
+`.github/workflows/harness-runtime.yml` failure on push. Local `actionlint`
+identified that as a YAML parse issue caused by an inline `run:` command with a
+colon-space in the scalar. That should be fixed in the same CI hotfix so the
+branch does not keep showing a red workflow-file failure after static passes.
+
 ## Codebase Anchors
 
 - `.github/workflows/harness-static.yml` runs
@@ -19,6 +25,8 @@ authenticated runtime lane.
 - `scripts/release-check.sh --static-only` is the no-secret static release gate.
 - `scripts/test-harness.sh` contains the hard availability probes for `claude`
   and `forgegod`.
+- `.github/workflows/harness-runtime.yml` contains the manual authenticated
+  runtime lane and must parse cleanly even when it does not run on push.
 - `AGENTS.md` says push readiness should use
   `bash scripts/release-check.sh --static-only` and should not claim runtime CI
   proof unless the manual authenticated lane ran.
@@ -33,6 +41,10 @@ authenticated runtime lane.
       enables static-CI mode or GitHub Actions sets `CI=true`.
 - [x] `release-check --static-only` passes the static-CI mode flag into the full
       harness so local static release checks match the GitHub lane.
+- [x] Runtime workflow YAML parses cleanly and no longer creates a zero-job
+      workflow-file failure on push.
+- [x] The CI governance smoke rejects inline workflow `run:` commands with
+      colon-space content unless they use block syntax.
 - [ ] Push the fix and confirm the `Harness Static / harness-static` check
       passes on GitHub.
 
@@ -42,6 +54,7 @@ authenticated runtime lane.
 
 - Minimal shell gating in `scripts/test-harness.sh`.
 - Minimal release-check environment wiring in `scripts/release-check.sh`.
+- Minimal runtime workflow YAML fix for the already-observed parse failure.
 - Verification of local and pushed static release gates.
 
 ### Out of Scope
@@ -49,17 +62,20 @@ authenticated runtime lane.
 - Installing Claude Code or ForgeGod on GitHub-hosted runners.
 - Weakening runtime/manual integration checks.
 - Changing visualization skill behavior.
-- Broad CI workflow refactors.
+- Broad CI workflow refactors beyond the parse fix needed to keep the pushed
+  commit green.
 
 ## Surgical Diff Discipline
 
-- Smallest sufficient implementation: add one static-CI mode flag and use it in
-  the two optional-tool probes.
+- Smallest sufficient implementation: add one static-CI mode flag, use it in
+  the two optional-tool probes, and convert the failing runtime workflow command
+  to block syntax.
 - No speculative abstractions: do not introduce a new CI matrix, installer, or
   provider bootstrap.
 - No drive-by refactors: keep unrelated harness checks untouched.
 - Changed-line trace: every edit maps to the CI log showing missing `claude` and
-  `forgegod` as the two static failures.
+  `forgegod` as the two static failures, or the Actions zero-job runtime
+  workflow parse failure.
 
 ## Agent-Native Estimate
 
@@ -68,8 +84,9 @@ authenticated runtime lane.
 - Capacity evidence: no parallel-capacity run needed; this is a narrow serial CI
   hotfix with one file pair and one push verification path
 - Effective lanes: 1 of ceiling 10
-- Critical path: inspect CI logs -> patch optional-tool probes -> run static
-  simulations -> commit/push -> watch GitHub static check
+- Critical path: inspect CI logs -> patch optional-tool probes -> patch runtime
+  workflow parse issue -> run static simulations -> commit/push -> watch GitHub
+  static check
 - Agent wall-clock: optimistic 20 minutes / likely 45 minutes / pessimistic 90
   minutes
 - Agent-hours: 1-2 active agent-hours
@@ -87,6 +104,8 @@ authenticated runtime lane.
 - `bash scripts/release-check.sh --static-only`
 - `git diff --check`
 - GitHub Actions `Harness Static / harness-static` after push
+- GitHub Actions runtime workflow file should no longer produce a zero-job push
+  failure after the workflow YAML parse fix
 
 Verified locally on 2026-05-02:
 
@@ -98,6 +117,9 @@ Verified locally on 2026-05-02:
 - `bash scripts/test-harness.sh`: pass, 103 passed, 0 failed
 - `bash scripts/release-check.sh --static-only`: pass, includes
   `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh` and `git diff --check`
+- `actionlint .github/workflows/harness-runtime.yml .github/workflows/harness-static.yml`:
+  initially found the runtime inline `run:` YAML parse issue; pass after block
+  syntax fix
 
 ## Rollback Plan
 

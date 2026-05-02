@@ -771,6 +771,9 @@ for pattern in \
         RELEASE_OK=false
     fi
 done
+if grep -RE '^[[:space:]]*run:[[:space:]]+[^|>].*:[[:space:]]' .github/workflows/*.yml >/dev/null 2>&1; then
+    RELEASE_OK=false
+fi
 if [ "$RELEASE_OK" = true ] && \
    bash -n scripts/release-check.sh >/dev/null 2>&1 && \
    bash scripts/release-check.sh --static-only --skip-full-harness >/dev/null 2>&1; then

@@ -33,4 +33,5 @@ jobs:
 
       - name: Explain skipped runtime
         if: ${{ env.CLAUDE_SETTINGS_JSON == '' }}
-        run: echo "Runtime harness smoke skipped: CLAUDE_SETTINGS_JSON secret is not configured."
+        run: |
+          echo "Runtime harness smoke skipped: CLAUDE_SETTINGS_JSON secret is not configured."
