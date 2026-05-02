@@ -61,7 +61,7 @@ support.
       checkout version in both workflows.
 - [x] Convert intentional static/runtime non-runs from `[WARN]` to `[SKIP]` so
       release logs do not carry misleading harness warnings.
-- [ ] Push the warning cleanup and confirm the latest `Harness Static` run has
+- [x] Push the warning cleanup and confirm the latest `Harness Static` run has
       no annotations.
 
 ## Scope
@@ -148,6 +148,17 @@ Verified locally on 2026-05-02:
   published 2026-01-09
 - `gh api repos/actions/checkout/releases/tags/v6.0.0`: release notes include
   Node.js 24 support details
+- `HARNESS_STATIC_CI=1 PATH="/usr/bin:/bin" bash scripts/test-harness.sh >
+  /tmp/minmaxing-static-sim.log && ! grep -F "[WARN]"
+  /tmp/minmaxing-static-sim.log`: pass, static simulation reports skips instead
+  of warnings
+- `bash scripts/test-harness.sh > /tmp/minmaxing-full-harness.log && ! grep -F
+  "[WARN]" /tmp/minmaxing-full-harness.log`: pass, 103 passed, 0 failed
+- `bash scripts/release-check.sh --static-only >
+  /tmp/minmaxing-release-static.log && ! grep -F "[WARN]"
+  /tmp/minmaxing-release-static.log`: pass, static-only release gate passed
+- GitHub Actions `Harness Static` for `f93e423`: pass, annotations API returned
+  `[]`, job log grep found no `[WARN]` lines
 
 ## Rollback Plan
 
