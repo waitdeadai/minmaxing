@@ -10,6 +10,19 @@ Hard-gate self-audit mode. Use this when the model must actively find its own li
 
 If a user writes "instrospect" in plain language, treat it as a typo for introspection and use `/introspect`. Do not advertise or create a second slash-command surface for the typo.
 
+## Relationship To `/metacognition`
+
+`/metacognition` is upstream steering. It decides the route, evidence needs,
+parallel budget, and confidence threshold before work proceeds.
+
+`/introspect` is downstream gating. It attacks the actual plan, diff,
+verification claim, or closeout and returns `PASS`, `FIX_REQUIRED`,
+`REPLAN_REQUIRED`, or `BLOCKED`.
+
+If a metacognitive route says "run `/introspect`", that is a handoff, not a
+completed audit. A workflow cannot count `/metacognition` as satisfying a
+required `/introspect` trigger.
+
 ---
 
 ## Core Contract

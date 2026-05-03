@@ -407,6 +407,8 @@ Think of minmaxing as an operating system:
 
 Inside Phase 2, `/workflow` now follows the repo’s effectiveness-first `deepresearch` protocol instead of a generic search fan-out: it drafts a collaborative research plan, launches only the discovery tracks that matter, reads and refines in loops, records a source ledger including reviewed but not cited sources, pressure-tests conflicting evidence, and runs follow-up research before locking the plan.
 
+Before research planning for file-changing work, `/workflow` records a compact `## Metacognitive Route` that explains task class, capacity evidence, effective parallel budget, chosen route, evidence required, confidence threshold, and why the full parallel ceiling was or was not used. This is the steering record; it comes before `## Research Brief` and does not satisfy later `/introspect` gates.
+
 Before confidence is allowed, `/workflow` runs the repo’s hard-gate `/introspect` protocol. It names likely mistakes, checks assumptions, looks for counterexamples, compares implementation against `SPEC.md`, identifies missing verification, downgrades confidence when evidence is weak, and blocks closeout or push when unresolved findings remain.
 
 Before closeout, `/workflow` also applies surgical diff discipline: smallest sufficient implementation, no speculative abstractions, no drive-by refactors, and a changed-line trace for the meaningful diff. This keeps autonomy from turning into "helpful" churn.
@@ -589,9 +591,11 @@ Now you can use any workflow pattern:
 classifying the task, reading capacity evidence, computing the effective
 parallel budget, naming required evidence, and routing to `/workflow`,
 `/deepresearch`, `/parallel`, `/agentfactory`, `/verify`, `/introspect`, or a
-blocked state. It does not depend on raw hidden chain-of-thought and it rejects
-reflection without evidence. Use `bash scripts/metacognition-scorecard.sh
---fixtures --json` to prove the static contract.
+blocked state. It is upstream steering, not a substitute for `/introspect`;
+required introspection triggers still need explicit blocker decisions. It does
+not depend on raw hidden chain-of-thought and it rejects reflection without
+evidence. Use `bash scripts/metacognition-scorecard.sh --fixtures --json` to
+prove the static contract.
 
 **Visualization approval:** `/workflow` stays autonomous. Use `/visualize` when you only want to see the model's understanding, and `/visualizeworkflow` when you want a draft spec plus visual or operational artifact to approve before implementation.
 

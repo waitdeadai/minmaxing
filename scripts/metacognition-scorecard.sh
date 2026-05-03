@@ -17,6 +17,8 @@ REQUIRED_RULES=(
   "raw_cot_dependency"
   "unverified_self_report"
   "unresolved_blocker_closeout"
+  "command_boundary_confusion"
+  "workflow_route_order"
 )
 
 usage() {
@@ -88,6 +90,25 @@ has_parallel_budget() {
     grep -Eiq 'Decision:[[:space:]]*(local|subagents|parallel|blocked)' "$file"
 }
 
+workflow_route_order_ok() {
+  local file="$1"
+  awk '
+    /^# Workflow Run:/ { workflow = NR }
+    /^## Metacognitive Route$/ { route = NR }
+    /^## Research Brief$/ { research = NR }
+    /^## Introspection$/ { introspection = NR }
+    END {
+      if (!workflow) {
+        exit 0
+      }
+      if (route && research && introspection && route < research && research < introspection) {
+        exit 0
+      }
+      exit 1
+    }
+  ' "$file"
+}
+
 detect_rules() {
   local file="$1"
   local rules=""
@@ -127,6 +148,15 @@ detect_rules() {
   if grep -Eiq '(unresolved blocker|blocker:[[:space:]]*(open|unresolved)|Blocker Decision:[[:space:]]*(BLOCKED|FIX_REQUIRED|REPLAN_REQUIRED))' "$file" && \
      grep -Eiq '(ready|complete|closeout|shipped|verified|PASS)' "$file"; then
     rules="$(append_rule "$rules" "unresolved_blocker_closeout")"
+  fi
+
+  if grep -Eiq '(/metacognition|metacognitive route|metacognition).{0,80}(replace|replaces|replacing|satisfy|satisfies|satisfied|skip|skips|instead of|substitute).{0,80}(/introspect|introspection|self-audit|hard gate)' "$file" || \
+     grep -Eiq '(/introspect|introspection|self-audit|hard gate).{0,80}(replace|replaces|replacing|satisfy|satisfies|satisfied|skip|skips|instead of|substitute).{0,80}(/metacognition|metacognitive route|metacognition)' "$file"; then
+    rules="$(append_rule "$rules" "command_boundary_confusion")"
+  fi
+
+  if ! workflow_route_order_ok "$file"; then
+    rules="$(append_rule "$rules" "workflow_route_order")"
   fi
 
   printf '%s' "$rules"

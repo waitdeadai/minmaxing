@@ -59,7 +59,7 @@ EOF
 
     OUTPUT="$(
         MAX_PARALLEL_AGENTS=10 claude -p --settings "$SETTINGS_PATH" \
-        "/workflow This is a harness contract smoke test. Even though the implementation is tiny, treat it as full file-changing work and follow the full research -> code audit -> introspection -> plan -> Agent-Native Estimate -> SPEC.md -> execute -> introspection -> verify flow. SPEC.md must exist on disk before editing note.txt. Create note.txt containing ok. Keep everything local and do not push or deploy anything external."
+        "/workflow This is a harness contract smoke test. Even though the implementation is tiny, treat it as full file-changing work and follow the full metacognitive route -> research -> code audit -> introspection -> plan -> Agent-Native Estimate -> SPEC.md -> execute -> introspection -> verify flow. In the workflow artifact, include ## Metacognitive Route before ## Research Brief, record the effective parallel budget, and state that the metacognitive route does not satisfy later introspection gates. SPEC.md must exist on disk before editing note.txt. Create note.txt containing ok. Keep everything local and do not push or deploy anything external."
     )"
 
     echo "$OUTPUT"
@@ -93,6 +93,7 @@ PY
     test -n "$ARTIFACT"
 
     awk '
+        /^## Metacognitive Route$/ { route = NR }
         /^## Research Brief$/ { research = NR }
         /^## Code Audit$/ { audit = NR }
         /^## Introspection$/ { introspection = NR }
@@ -100,12 +101,15 @@ PY
         /^## Agent-Native Estimate$/ { estimate = NR }
         /^## SPEC Decision$/ { spec = NR }
         END {
-            if (research && audit && introspection && plan && estimate && spec && research < audit && audit < introspection && introspection < plan && plan < estimate && estimate < spec) {
+            if (route && research && audit && introspection && plan && estimate && spec && route < research && research < audit && audit < introspection && introspection < plan && plan < estimate && estimate < spec) {
                 exit 0
             }
             exit 1
         }
     ' "$ARTIFACT"
+    grep -Eq "^## Metacognitive Route$" "$ARTIFACT"
+    grep -Eqi "Effective Parallel Budget|effective parallel budget" "$ARTIFACT"
+    grep -Eqi "not.*introspection|not.*introspect|does not satisfy.*introspect|introspection.*still" "$ARTIFACT"
     grep -Eq "^## Agent-Native Estimate$" "$ARTIFACT"
     grep -Eqi "Agent wall-clock|agent-native wall-clock" "$ARTIFACT"
     grep -Eqi "Investigation Mode|Research Mode" "$ARTIFACT"

@@ -154,6 +154,11 @@ effective_metacognition_budget =
 Do not fill the parallel pool for theater. Do not claim max agents means max
 quality or linear speedup.
 
+The metacognitive route is not an introspection pass. It must appear in the
+workflow artifact before `## Research Brief`, and the later `## Introspection`
+section must still record the required `/introspect pre-plan` and
+`/introspect post-implementation` gates for file-changing work.
+
 ## Workflow Artifact
 
 For file-changing tasks, create a durable workflow record before writing `SPEC.md`:
@@ -193,6 +198,8 @@ Required content inside the sections:
   threshold, and why the full parallel ceiling was or was not used. It must
   explicitly state when the route downgrades from `/parallel` to local
   `/workflow` because packets overlap or verification cannot aggregate results.
+  It must not claim that `/metacognition` replaces or satisfies required
+  `/introspect` gates.
 - `## Research Brief` must record the investigation mode, collaborative research plan, effective research budget, iterative search -> read -> refine loop, source ledger, conflicting evidence, and any follow-up research required before planning.
 - `## Introspection` must record at least `pre-plan` and `post-implementation` entries for file-changing work, plus `after-test-failure` or `pre-push` entries when those triggers occur.
 - `## Plan` must record any delegated packets, their owners, and their dependencies when parallel execution is likely.

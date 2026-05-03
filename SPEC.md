@@ -42,6 +42,13 @@ shallow self-reflection as a harness-level quality gate.
 - [x] Register `/metacognition` and `metacognition-scorecard.sh` in docs,
       startup, release, and full harness checks; update expected skill counts
       from 24 to 25.
+- [x] Clarify the `/metacognition` -> `/workflow` -> `/introspect` command
+      boundary so developers understand metacognition as upstream steering and
+      introspection as downstream hard-gate audit.
+- [x] Extend static coverage so workflow artifacts must place
+      `## Metacognitive Route` before `## Research Brief`, and scorecard
+      fixtures reject artifacts that claim `/metacognition` replaces,
+      satisfies, or skips required `/introspect` gates.
 
 ## Scope
 
@@ -51,6 +58,8 @@ shallow self-reflection as a harness-level quality gate.
   wiring.
 - Minimal updates to `/workflow` and `/introspect` contracts.
 - Local no-secret verification only.
+- Command-boundary docs and static fixtures that prevent confusing
+  `/metacognition` with `/introspect`.
 
 ### Out of Scope
 
@@ -114,6 +123,18 @@ Verified locally on 2026-05-03:
 - `bash scripts/test-harness.sh`: pass, 107 passed, 0 failed
 - `bash scripts/release-check.sh --static-only`: pass, includes
   `HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`, 107 passed, 0 failed
+
+Additional boundary-hardening slice on 2026-05-03:
+
+- Clarified command boundaries in `.claude/skills/metacognition/SKILL.md`,
+  `.claude/skills/introspect/SKILL.md`, `.claude/skills/workflow/SKILL.md`,
+  `.claude/rules/metacognition.rules.md`, `README.md`, `CLAUDE.md`, and
+  `AGENTS.md`.
+- Added `command_boundary_confusion` and `workflow_route_order` static
+  scorecard rules plus green/red fixtures.
+- Extended `scripts/workflow-smoke.sh` to require `## Metacognitive Route`
+  before `## Research Brief` and to confirm the route does not satisfy later
+  introspection gates.
 
 ## Rollback Plan
 

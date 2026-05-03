@@ -257,6 +257,7 @@ for pattern in \
     "ceilings, not quotas" \
     'does not replace `/workflow`' \
     'does not replace `/introspect`' \
+    "Command Boundary" \
     "raw hidden chain-of-thought"; do
     if ! grep -Fq "$pattern" .claude/skills/metacognition/SKILL.md .claude/rules/metacognition.rules.md README.md CLAUDE.md AGENTS.md 2>/dev/null; then
         METACOG_OK=false
@@ -286,7 +287,9 @@ for rule in \
     "unsupported_confidence" \
     "raw_cot_dependency" \
     "unverified_self_report" \
-    "unresolved_blocker_closeout"; do
+    "unresolved_blocker_closeout" \
+    "command_boundary_confusion" \
+    "workflow_route_order"; do
     if ! grep -Fq "$rule" scripts/metacognition-scorecard.sh 2>/dev/null; then
         METACOG_OK=false
     fi

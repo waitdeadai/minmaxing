@@ -2,5 +2,5 @@
   "id": "m4-metacognition-scorecard",
   "expected_result": "reject",
   "gate": "scripts/metacognition-scorecard.sh --fixtures --json",
-  "expected_evidence": ".taste/fixtures/metacognition/red/* fixtures trigger the metacognition scorecard rules"
+  "expected_evidence": ".taste/fixtures/metacognition/red/* fixtures trigger the metacognition scorecard rules, including command-boundary confusion and workflow route order drift"
 }

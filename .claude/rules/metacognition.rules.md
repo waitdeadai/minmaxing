@@ -23,6 +23,17 @@ is not vague self-reflection.
 - Use the smallest effective budget that improves the outcome.
 - Never claim linear speedup or that max agents means max quality.
 
+## Command Boundary
+
+- `/metacognition` decides route, evidence needs, capacity budget, and
+  confidence threshold before execution.
+- `/introspect` is the hard-gate audit that decides whether a plan, diff,
+  verification claim, or closeout can continue.
+- Do not present `/metacognition` as replacing, satisfying, or skipping a
+  required `/introspect` trigger.
+- When `/metacognition` routes to `/introspect`, record that as a handoff and
+  require `/introspect` to produce the blocker decision.
+
 ## Raw Chain-Of-Thought Boundary
 
 - Do not depend on raw hidden chain-of-thought.

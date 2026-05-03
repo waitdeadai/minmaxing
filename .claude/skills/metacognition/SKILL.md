@@ -22,6 +22,25 @@ It does not replace `/workflow`; it steers `/workflow`.
 It does not replace `/introspect`; `/introspect` remains the canonical hard-gate
 self-audit command.
 
+## Command Boundary
+
+Use `/metacognition` to decide **how the harness should approach the task**
+before execution: route, evidence, capacity, confidence threshold, and blocked
+inputs.
+
+Use `/introspect` to decide **whether the current plan, diff, verification, or
+closeout is trustworthy enough to continue**.
+
+In a normal file-changing `/workflow`, the order is:
+
+```text
+metacognitive route -> research -> code audit -> /introspect pre-plan
+-> plan -> SPEC.md -> execute -> /introspect post-implementation -> verify
+```
+
+Do not use `/metacognition` as a softer synonym for `/introspect`. If the task
+needs a hard self-audit, route to `/introspect` and require a blocker decision.
+
 ## Core Contract
 
 Metacognition is useful only when it is evidence-grounded.
@@ -170,6 +189,7 @@ The metacognitive route must fail or block when:
 - model self-report is promoted without verified outcome
 - confidence is high while evidence is missing
 - unresolved blockers are followed by positive closeout
+- `/metacognition` is presented as replacing or satisfying `/introspect`
 
 Use `bash scripts/metacognition-scorecard.sh --fixtures --json` to prove the
 static contract.
