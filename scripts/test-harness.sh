@@ -225,7 +225,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "24 skills" README.md 2>/dev/null && \
+   grep -Fq "25 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -236,6 +236,68 @@ else
     test_fail "introspection hard-gate contract is incomplete"
 fi
 
+# Test 3g-meta: Steered Metacognition Contract
+echo "[3g-meta] Steered Metacognition Contract"
+METACOG_OK=true
+for required_file in \
+    ".claude/skills/metacognition/SKILL.md" \
+    ".claude/rules/metacognition.rules.md" \
+    "scripts/metacognition-scorecard.sh" \
+    "evals/harness/tasks/m4-metacognition-scorecard.yaml" \
+    "evals/harness/golden/m4-metacognition-scorecard.json"; do
+    if [ ! -e "$required_file" ]; then
+        METACOG_OK=false
+    fi
+done
+for pattern in \
+    "Task Class" \
+    "Capacity Evidence" \
+    "Effective Parallel Budget" \
+    "MAX_PARALLEL_AGENTS" \
+    "ceilings, not quotas" \
+    'does not replace `/workflow`' \
+    'does not replace `/introspect`' \
+    "raw hidden chain-of-thought"; do
+    if ! grep -Fq "$pattern" .claude/skills/metacognition/SKILL.md .claude/rules/metacognition.rules.md README.md CLAUDE.md AGENTS.md 2>/dev/null; then
+        METACOG_OK=false
+    fi
+done
+for pattern in \
+    "Metacognitive Route" \
+    "effective_metacognition_budget" \
+    "full parallel ceiling"; do
+    if ! grep -Fq "$pattern" .claude/skills/workflow/SKILL.md 2>/dev/null; then
+        METACOG_OK=false
+    fi
+done
+for pattern in \
+    "Metacognitive Quality" \
+    "Self-report overtrust avoided" \
+    "Parallel capacity treated as ceiling"; do
+    if ! grep -Fq "$pattern" .claude/skills/introspect/SKILL.md 2>/dev/null; then
+        METACOG_OK=false
+    fi
+done
+for rule in \
+    "missing_task_classification" \
+    "missing_parallel_budget" \
+    "linear_parallel_claim" \
+    "reflection_without_evidence" \
+    "unsupported_confidence" \
+    "raw_cot_dependency" \
+    "unverified_self_report" \
+    "unresolved_blocker_closeout"; do
+    if ! grep -Fq "$rule" scripts/metacognition-scorecard.sh 2>/dev/null; then
+        METACOG_OK=false
+    fi
+done
+if [ "$METACOG_OK" = true ] && \
+   bash scripts/metacognition-scorecard.sh --fixtures --json >/dev/null 2>&1; then
+    test_pass "/metacognition is a parallel-aware, evidence-grounded steering layer"
+else
+    test_fail "/metacognition contract, docs, fixtures, or scorecard are incomplete"
+fi
+
 # Test 3h: Governed Autonomy Truth Surfaces
 echo "[3h] Governed Autonomy Truth Surfaces"
 if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/dev/null && \
@@ -244,7 +306,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 24 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 25 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -898,25 +960,25 @@ else
 fi
 
 # ========================================
-# Skills (24 Expected)
+# Skills (25 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 24 Expected]"
+echo "[Skills - 25 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 24 ]; then
+if [ "$SKILL_COUNT" -ge 25 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 24+ skills, found $SKILL_COUNT"
+    test_fail "Expected 25+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow visualize visualizeworkflow digestflow align audit autoplan agentfactory parallel deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow visualize visualizeworkflow digestflow align audit autoplan agentfactory parallel metacognition deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -948,7 +1010,7 @@ fi
 
 # Test 7: Individual Rules
 echo "[7] Individual Rules"
-for rule in quality context delegation parallelism spec verify estimation security memory visualization; do
+for rule in quality context delegation parallelism spec verify estimation security memory visualization metacognition; do
     if [ -f ".claude/rules/$rule.rules.md" ]; then
         LINES=$(wc -l < ".claude/rules/$rule.rules.md" | tr -d ' ')
         if [ "$LINES" -gt 10 ]; then
@@ -986,7 +1048,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

@@ -56,6 +56,7 @@ KNOWN_GATES = {
     "parallel-plan-lint",
     "hook-smoke",
     "harness-scorecard",
+    "metacognition-scorecard",
     "artifact-lint",
     "codex-run-smoke",
     "agentfactory-smoke",
@@ -211,6 +212,10 @@ def normalize_gate(value: str) -> str:
         "scripts/harness-scorecard.sh": "harness-scorecard",
         "scripts/harness-scorecard.sh --json": "harness-scorecard",
         "bash scripts/harness-scorecard.sh --json": "harness-scorecard",
+        "metacognition-scorecard": "metacognition-scorecard",
+        "scripts/metacognition-scorecard.sh": "metacognition-scorecard",
+        "scripts/metacognition-scorecard.sh --fixtures --json": "metacognition-scorecard",
+        "bash scripts/metacognition-scorecard.sh --fixtures --json": "metacognition-scorecard",
         "artifact-lint": "artifact-lint",
         "scripts/artifact-lint.sh": "artifact-lint",
         "scripts/artifact-lint.sh --fixtures": "artifact-lint",
@@ -537,6 +542,10 @@ run_gate() {
     "harness-scorecard")
       require_gate_script "scripts/harness-scorecard.sh" || return $?
       bash "$ROOT_DIR/scripts/harness-scorecard.sh" --json
+      ;;
+    "metacognition-scorecard")
+      require_gate_script "scripts/metacognition-scorecard.sh" || return $?
+      bash "$ROOT_DIR/scripts/metacognition-scorecard.sh" --fixtures --json
       ;;
     "artifact-lint")
       require_gate_script "scripts/artifact-lint.sh" || return $?

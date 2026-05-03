@@ -92,7 +92,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 24 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 25 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -553,7 +553,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 24 Skills
+## The 25 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -567,6 +567,7 @@ Now you can use any workflow pattern:
 | `/autoplan` | Generate SPEC.md with parallel execution and Agent-Native Estimate in mind |
 | `/agentfactory` | Create governed runtime-bound Hermes agents with manifest, `hermes.runtime.json`, capability stack, memory seed, verification, registry, and tested kill switch |
 | `/parallel` | Run hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
+| `/metacognition` | Parallel-aware control plane for task routing, evidence-grounded reflection, confidence calibration, and verified learning |
 | `/sprint` | Run an ownership-safe parallel execution wave |
 | `/verify` | Check output against SPEC with an independent evidence pass |
 | `/review` | AI review + you decide |
@@ -584,9 +585,17 @@ Now you can use any workflow pattern:
 
 **Parallelism:** All skills that support parallelism treat `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and hardware capacity as ceilings, not targets. `/align` remains single-threaded by design because taste alignment is sequential judgment.
 
+**Metacognitive routing:** `/metacognition` steers work before execution by
+classifying the task, reading capacity evidence, computing the effective
+parallel budget, naming required evidence, and routing to `/workflow`,
+`/deepresearch`, `/parallel`, `/agentfactory`, `/verify`, `/introspect`, or a
+blocked state. It does not depend on raw hidden chain-of-thought and it rejects
+reflection without evidence. Use `bash scripts/metacognition-scorecard.sh
+--fixtures --json` to prove the static contract.
+
 **Visualization approval:** `/workflow` stays autonomous. Use `/visualize` when you only want to see the model's understanding, and `/visualizeworkflow` when you want a draft spec plus visual or operational artifact to approve before implementation.
 
-**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, and linear lane-scaling claims. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
+**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, and linear lane-scaling claims. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
 
 **Artifact sidecars:** Markdown remains the human contract, but machine gates can consume minimal JSON sidecars for agent-native estimates, verification results, and worker results. Validate the local fixtures with `bash scripts/artifact-lint.sh --fixtures`.
 
@@ -764,7 +773,7 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 24 skills (system calls)
+│   ├── skills/                 # 25 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── visualize/          # Taste-to-artifact comprehension check
 │   │   ├── visualizeworkflow/  # Approval-first workflow route

@@ -68,6 +68,9 @@ Typical lanes:
   missing `scripts/parallel-aggregate.sh` evidence, rejected cross-owned edits,
   failed worker results, or bottlenecks hidden behind lane-count optimism
 - documentation or user-facing promise drift
+- second-order metacognition risk: critique without evidence, overtrusting the
+  model's own self-report, missing the most likely failure mode, failing to
+  downgrade confidence, or misusing parallel capacity as a quota
 
 Do not fill the pool just to look thorough. A tiny local change can use one concise lane when the evidence is simple.
 
@@ -103,7 +106,14 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
    - Did it reject failed or unparent-verified worker results?
    - Did the plan avoid "more lanes means proportionally faster" claims?
 9. Decide whether confidence should be downgraded.
-10. Return a blocker decision:
+10. Run the second-order metacognition checks:
+   - Did the critique cite concrete evidence?
+   - Did it overtrust the model's own self-report or a worker summary?
+   - Did it name the most likely failure mode, not only easy risks?
+   - Did it downgrade confidence where evidence was weak?
+   - Did it misuse `MAX_PARALLEL_AGENTS`, Codex `max_threads`, or hardware
+     capacity as quotas, or imply linear speedup?
+11. Return a blocker decision:
    - `PASS` — no unresolved issues remain
    - `FIX_REQUIRED` — issues found and must be fixed before continuing
    - `REPLAN_REQUIRED` — the plan or spec is wrong
@@ -152,6 +162,13 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
 - Cross-owned edits rejected or approved: [pass / concern]
 - Failed/unverified workers rejected: [pass / concern]
 
+### Metacognitive Quality
+- Critique cites evidence: [pass / concern]
+- Self-report overtrust avoided: [pass / concern]
+- Most likely failure mode named: [pass / concern]
+- Confidence downgraded when warranted: [pass / concern]
+- Parallel capacity treated as ceiling: [pass / concern]
+
 ### Confidence
 - Level: [high / medium / low]
 - Downgrade: [none / reason]
@@ -180,6 +197,12 @@ Do not fill the pool just to look thorough. A tiny local change can use one conc
   `FIX_REQUIRED`
 - `/parallel` run artifacts without a passing `scripts/parallel-aggregate.sh`
   result must return `FIX_REQUIRED`
+- metacognitive critique without concrete evidence must return `FIX_REQUIRED`
+- hidden/raw chain-of-thought dependency must return `FIX_REQUIRED`
+- model or worker self-report promoted without verified outcome must return
+  `FIX_REQUIRED`
+- max parallel agents treated as a quota, or any linear speedup claim, must
+  return `FIX_REQUIRED`
 - failed or unparent-verified worker results accepted by aggregation must return
   `FIX_REQUIRED`
 - cross-owned edits without explicit approval must return `FIX_REQUIRED`

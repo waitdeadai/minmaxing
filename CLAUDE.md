@@ -54,6 +54,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /autoplan | Create SPEC.md with efficacy-first parallel planning and Agent-Native Estimate |
 | /agentfactory | Create governed runtime-bound Hermes agents with manifest, runtime contract, capability stack, memory seed, verification, registry, and kill switch |
 | /parallel | Hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
+| /metacognition | Parallel-aware routing and evidence-grounded self-calibration before execution |
 | /verify | Check output against SPEC |
 | /review | AI review + human sign-off |
 | /qa | Playwright E2E testing |
@@ -73,6 +74,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **SPEC-First**: No code without SPEC.md
 - **SPEC Archive**: `SPEC.md` is the active contract; archive completed or superseded specs to `.taste/specs/` before replacing them
 - **Introspection Gate**: `/introspect` must pass before plan freeze, closeout, retry after failed verification, and push/ship decisions
+- **Metacognitive Route**: `/metacognition` classifies task type, reads capacity evidence, computes the effective parallel budget, names required evidence, and routes to the existing harness command. It treats raw hidden chain-of-thought as unavailable and model self-reports as candidate evidence only.
 - **Planning Time Awareness**: Non-trivial plans estimate in agent-native wall-clock by default before the plan or `SPEC.md` is frozen. Every estimate must state whether it is `agent-native`, `human-equivalent`, or `blocked/unknown`; cite `scripts/parallel-capacity.sh --json` or another capacity source; separate agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence; and treat human-equivalent estimates as secondary only.
 - **Visualization Approval**: `/workflow` remains autonomous. Use `/visualize` for standalone comprehension artifacts and `/visualizeworkflow` when the user wants to approve a visual or operational understanding before implementation.
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
@@ -80,6 +82,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Runtime Effectiveness Hooks**: `.claude/settings.json` wires `.claude/hooks/govern-effectiveness.sh` into Claude Code `PreToolUse`, `Stop`, and `SubagentStop` events. Do not claim hook enforcement unless `bash scripts/hook-smoke.sh` passes.
 - **Artifact Lint**: Minimal sidecars for agent-native estimates, verification results, and worker results live under `schemas/` and are checked with `bash scripts/artifact-lint.sh --fixtures`.
 - **Harness Eval Pack**: `evals/harness/tasks` and `evals/harness/golden` define static no-network evals over the local gates; `bash scripts/harness-eval-report.sh --run` summarizes the score.
+- **Metacognition Scorecard**: `bash scripts/metacognition-scorecard.sh --fixtures --json` rejects missing route classification, missing parallel budgets, raw-CoT dependency, unsupported confidence, unverified self-report promotion, and linear parallel claims.
 - **Session Insights**: `bash scripts/session-insights.sh --json` flags missing estimates, missing verification evidence, evidence-free closeout risk, missing eval score, and high rework indicators from local artifacts.
 - **Security Profiles**: Validate profile examples with `bash scripts/security-smoke.sh`; use `team-safe` for shared work and keep `solo-fast` as a trusted-local speed profile.
 - **Release Gate**: `bash scripts/release-check.sh --static-only` runs the no-secret public harness gate. Runtime checks belong to the manual/scheduled workflow.

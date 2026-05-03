@@ -1,0 +1,6 @@
+id: m4-metacognition-scorecard
+title: Parallel-aware metacognition scorecard
+gate: scripts/metacognition-scorecard.sh --fixtures --json
+expected_result: reject
+golden: evals/harness/golden/m4-metacognition-scorecard.json
+evidence: rejects missing route classification missing parallel budget linear parallel claims raw cot dependency unsupported confidence and unverified self-report

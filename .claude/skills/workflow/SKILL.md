@@ -27,6 +27,10 @@ This command is the end-to-end executor.
   `SPEC.md`. The estimate must be agent-native wall-clock by default, not a
   bare human-equivalent calendar estimate.
 - Run hard-gate introspection after implementation and before closeout.
+- Record a parallel-aware metacognitive route before research planning for
+  file-changing work: task class, capacity evidence, effective parallel budget,
+  chosen route, required evidence, confidence threshold, and why the full
+  parallel ceiling was or was not used.
 - Treat worker or subagent summaries as claims until the parent workflow
   verifies them with command evidence. For harness-governance changes, run the
   effectiveness smokes that apply: `scripts/harness-scorecard.sh --json`,
@@ -136,6 +140,20 @@ name it. Use it only when the eligibility audit proves independent packets,
 clear ownership, host capacity, and a verification path. Downgrade to normal
 inline `/workflow` when those conditions fail.
 
+Before freezing the route for file-changing work, perform a compact
+metacognitive route check. Use `scripts/parallel-capacity.sh --json` when
+available, treat `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and hardware
+ceiling as ceilings, and compute the smallest useful effective budget:
+
+```text
+effective_metacognition_budget =
+  min(MAX_PARALLEL_AGENTS, codex_max_threads, hardware_recommended_ceiling,
+      independent_questions_or_packets, supervisor_capacity, verifier_capacity)
+```
+
+Do not fill the parallel pool for theater. Do not claim max agents means max
+quality or linear speedup.
+
 ## Workflow Artifact
 
 For file-changing tasks, create a durable workflow record before writing `SPEC.md`:
@@ -155,6 +173,7 @@ Required section order:
 
 ## Task
 ## Taste Gate
+## Metacognitive Route
 ## Research Brief
 ## Code Audit
 ## Introspection
@@ -169,6 +188,11 @@ Required section order:
 Keep it concise, but do not skip sections. For non-file-changing analysis tasks, this artifact is optional.
 
 Required content inside the sections:
+- `## Metacognitive Route` must record the task class, capacity evidence,
+  effective parallel budget, chosen route, evidence required, confidence
+  threshold, and why the full parallel ceiling was or was not used. It must
+  explicitly state when the route downgrades from `/parallel` to local
+  `/workflow` because packets overlap or verification cannot aggregate results.
 - `## Research Brief` must record the investigation mode, collaborative research plan, effective research budget, iterative search -> read -> refine loop, source ledger, conflicting evidence, and any follow-up research required before planning.
 - `## Introspection` must record at least `pre-plan` and `post-implementation` entries for file-changing work, plus `after-test-failure` or `pre-push` entries when those triggers occur.
 - `## Plan` must record any delegated packets, their owners, and their dependencies when parallel execution is likely.
