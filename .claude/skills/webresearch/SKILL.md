@@ -8,6 +8,12 @@ Effectiveness-first current web research for APIs, versions, docs, errors, prici
 
 **Use when:** The user wants the latest docs, current behavior, recent changes, known issues, exact error explanations, or source-backed technical guidance from the web.
 
+**Claude product questions:** Route Claude, Claude Code, Claude.ai,
+Anthropic API, connector, plugin, skill, hook, MCP, subagent, plan availability,
+limit, or setup questions through `/claudeproduct` first. It constrains this
+research mode to official Anthropic/Claude sources and separates product
+surfaces before answering.
+
 **Research-First:** Integrated into `/workflow` automatically. Use `/webresearch` directly when the main task is current-fact verification.
 
 **Swarm:** "swarm webresearch" → `/webresearch` with an effectiveness-first research wave up to `MAX_PARALLEL_AGENTS`.

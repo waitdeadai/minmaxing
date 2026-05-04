@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "minmaxing harness capability map",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "schema_version",
+    "generated_by",
+    "source_policy",
+    "counts",
+    "summary",
+    "skills",
+    "rules",
+    "scripts",
+    "evals",
+    "settings",
+    "codex",
+    "self_lookup_contract"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "harness-capability-map"
+    },
+    "schema_version": {
+      "const": "minmaxing-harness-capabilities/v1"
+    },
+    "generated_by": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "source_policy": {
+      "type": "object"
+    },
+    "counts": {
+      "type": "object",
+      "required": ["skills", "rules", "scripts", "eval_tasks"],
+      "properties": {
+        "skills": { "type": "integer", "minimum": 1 },
+        "rules": { "type": "integer", "minimum": 1 },
+        "scripts": { "type": "integer", "minimum": 1 },
+        "eval_tasks": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "summary": {
+      "type": "object"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "slash", "path", "group", "description"]
+      }
+    },
+    "rules": {
+      "type": "array"
+    },
+    "scripts": {
+      "type": "array"
+    },
+    "evals": {
+      "type": "array"
+    },
+    "self_lookup_contract": {
+      "type": "object",
+      "required": [
+        "primary_human_map",
+        "primary_machine_map",
+        "fallback_surfaces",
+        "verification_command"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

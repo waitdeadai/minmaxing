@@ -12,7 +12,13 @@ Effectiveness-first deep investigation with live data — not stale training dat
 
 **Swarm:** "swarm deepresearch" → `/deepresearch` with an effectiveness-first research wave up to `MAX_PARALLEL_AGENTS`.
 
-For narrower current-fact lookups, use `/webresearch`. For older prompts or backwards compatibility, `/browse` should route to this protocol or the `/webresearch` protocol depending on scope.
+For narrower current-fact lookups, use `/webresearch`. For Claude, Claude Code,
+Claude.ai, Anthropic API, connector, plugin, skill, hook, MCP, subagent,
+availability, limit, or setup questions, use `/claudeproduct` as the official
+product-docs branch, escalating back here only when the answer is multi-surface,
+strategic, implementation-driving, or conflict-heavy. For older prompts or
+backwards compatibility, `/browse` should route to this protocol or the
+`/webresearch` protocol depending on scope.
 
 ---
 

@@ -67,6 +67,7 @@ Choose exactly one:
 | Task Class | Use When | Route |
 | --- | --- | --- |
 | `answer` | direct answer, no repo mutation, no current facts required | answer directly |
+| `claudeproduct` | Claude, Claude Code, Claude.ai, Anthropic API, connector, plugin, skill, or subagent product question | `/claudeproduct` |
 | `webresearch` | narrow current fact check | `/webresearch` |
 | `deepresearch` | landscape, architecture, due diligence, strategic research | `/deepresearch` |
 | `workflow` | repo-changing build/fix/refactor/docs/config work | `/workflow` |
@@ -161,7 +162,7 @@ as "10 agents means 10x faster."
 - Estimate audit: ...
 
 ## Route Decision
-- Route: [/workflow, /deepresearch, /parallel, /hive, /hiveworkflow, /agentfactory, /verify, /introspect, direct answer, or blocked]
+- Route: [/workflow, /claudeproduct, /deepresearch, /parallel, /hive, /hiveworkflow, /agentfactory, /verify, /introspect, direct answer, or blocked]
 - Reason: ...
 
 ## Confidence
@@ -174,6 +175,10 @@ as "10 agents means 10x faster."
 - If effective budget is `1`, continue local.
 - If effective budget is `2+` for research only, split independent
   research/risk tracks.
+- If the task asks how to use Claude, Claude Code, Claude.ai, Anthropic API,
+  skills, connectors, plugins, hooks, MCP, subagents, models, plan availability,
+  limits, or setup, route to `/claudeproduct`. That skill may then choose
+  `/webresearch` or `/deepresearch` under an official-source policy.
 - If implementation packets are independent and file ownership is clear,
   recommend `/parallel`.
 - If packets overlap or verification cannot aggregate results, downgrade to

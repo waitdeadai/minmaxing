@@ -52,11 +52,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 27 ]; then
+if [ "$SKILL_COUNT" -ge 28 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 27 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 28 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -101,7 +101,8 @@ echo "Fresh repos: run /tastebootstrap before /workflow"
 echo "Skills: /tastebootstrap, /workflow, /digestflow, /align, /autoplan, /verify,"
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
 echo "        /audit, /deepresearch, /webresearch, /browse, /introspect, /codesearch,"
-echo "        /memory, /agentfactory, /parallel, /metacognition, /hive,"
+echo "        /memory, /agentfactory, /parallel, /metacognition, /claudeproduct,"
+echo "        /hive,"
 echo "        /hiveworkflow, /visualize, /visualizeworkflow"
 echo ""
 echo "Start with: ./scripts/test-harness.sh to verify setup"

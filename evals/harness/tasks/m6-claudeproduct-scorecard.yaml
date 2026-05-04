@@ -1,0 +1,6 @@
+id: m6-claudeproduct-scorecard
+title: Claude product knowledge scorecard
+gate: scripts/claudeproduct-scorecard.sh --fixtures --json
+expected_result: reject
+golden: evals/harness/golden/m6-claudeproduct-scorecard.json
+evidence: rejects stale memory answers unsupported Claude claims unsafe secret dependency missing source ledgers missing official source policy missing question class and missing harness implication

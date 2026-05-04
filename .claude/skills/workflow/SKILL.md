@@ -73,6 +73,9 @@ Research brief is mandatory:
 - Write a workflow artifact for file-changing tasks so the reasoning trail is inspectable.
 - Hard-gate introspection must name likely mistakes, cite evidence checked, downgrade confidence when warranted, and block closeout when unresolved findings remain.
 - Re-check any concrete library, framework, API, or error details again right before editing if the plan depends on them.
+- If the plan depends on Claude product behavior, run the `/claudeproduct`
+  protocol inside the research brief first. Separate current official
+  Anthropic/Claude docs from local harness contracts before freezing the plan.
 
 ## Phase 0: Taste Gate
 
@@ -123,6 +126,7 @@ Choose the route from user intent:
 | build, implement, create, add, refactor, optimize, migrate | run full research → audit → plan → spec → execute → verify → closeout flow |
 | fix, debug, investigate | research first, audit the relevant code path, then reproduce/fix/verify; create `SPEC.md` if files change |
 | audit, analyze, understand, deepresearch, webresearch | inspect deeply, report findings, make fixes only if the user asked for them |
+| Claude product, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, plan availability, limits, setup | route product facts through `/claudeproduct` before generic research; continue into `/workflow` only if files change |
 | parallel, mode parallel, dense workflow, orchestrate subagents, split across instances | run the `/parallel` eligibility audit; use `/parallel` only when capacity, ownership, and verification pass |
 | hive, hive mind, coordinated agents, swarm, multi-agent synthesis | route to `/hiveworkflow` only when roles, blackboard, dissent, ownership, capacity, and verification pass; otherwise downgrade to `/workflow` or `/parallel` |
 | explain | inspect and explain directly |
@@ -694,7 +698,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/hive`, `/hiveworkflow`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/digestflow`, `/claudeproduct`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/hive`, `/hiveworkflow`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers

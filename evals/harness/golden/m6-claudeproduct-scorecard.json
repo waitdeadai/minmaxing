@@ -1,0 +1,6 @@
+{
+  "id": "m6-claudeproduct-scorecard",
+  "expected_result": "reject",
+  "gate": "scripts/claudeproduct-scorecard.sh --fixtures --json",
+  "expected_evidence": ".taste/fixtures/claudeproduct contains green official-source answers and red stale memory, unsupported claim, unsafe secret, missing ledger, and missing harness implication fixtures"
+}

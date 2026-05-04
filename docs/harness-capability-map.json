@@ -1,0 +1,1493 @@
+{
+  "artifact_type": "harness-capability-map",
+  "codex": {
+    "files": [
+      {
+        "descriptions": [
+          "Documentation specialist that verifies OpenAI, Codex, and framework behavior with citations."
+        ],
+        "max_threads": "",
+        "mcp_servers": [
+          "openaiDeveloperDocs"
+        ],
+        "names": [
+          "docs_researcher"
+        ],
+        "path": ".codex/agents/docs-researcher.toml",
+        "sha256": "1584867b9481c384ed459f13c2ebd0e860180f2f52d47498683ab57dcf7e045f"
+      },
+      {
+        "descriptions": [
+          "Read-only codebase explorer for mapping execution paths and collecting evidence before planning or edits."
+        ],
+        "max_threads": "",
+        "mcp_servers": [],
+        "names": [
+          "repo_explorer"
+        ],
+        "path": ".codex/agents/repo-explorer.toml",
+        "sha256": "a9267ca8eb9e0443e87fb7f1272a77b1a4a6293ed33cb53c7783571df026e485"
+      },
+      {
+        "descriptions": [
+          "Adversarial reviewer focused on correctness, rollback risk, security, and missing tests."
+        ],
+        "max_threads": "",
+        "mcp_servers": [],
+        "names": [
+          "reviewer"
+        ],
+        "path": ".codex/agents/reviewer.toml",
+        "sha256": "4bf74d0ce987153f13271bef65547589a72891ceadf2aa6a29853e0b63be89b3"
+      },
+      {
+        "descriptions": [],
+        "max_threads": "10",
+        "mcp_servers": [
+          "openaiDeveloperDocs"
+        ],
+        "names": [],
+        "path": ".codex/config.toml",
+        "sha256": "b576095f64c5ff973a3e6d17fe8e659a7b9de7fda2d5d9ba830425c0d0fa6b1c"
+      }
+    ],
+    "path": ".codex"
+  },
+  "counts": {
+    "eval_tasks": 17,
+    "rules": 15,
+    "scripts": 45,
+    "skills": 28
+  },
+  "evals": [
+    {
+      "expected_result": "pass",
+      "gate": "scripts/agentfactory-smoke.sh",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-agentfactory-kill-switch-evidence.json",
+      "id": "m4-agentfactory-kill-switch-evidence",
+      "task_path": "evals/harness/tasks/m4-agentfactory-kill-switch-evidence.yaml",
+      "title": "AgentFactory kill switch evidence"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/artifact-lint.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-artifact-sidecar-lint.json",
+      "id": "m4-artifact-sidecar-lint",
+      "task_path": "evals/harness/tasks/m4-artifact-sidecar-lint.yaml",
+      "title": "Artifact sidecar lint"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/codex-run-smoke.sh",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-codex-run-artifact-proof.json",
+      "id": "m4-codex-run-artifact-proof",
+      "task_path": "evals/harness/tasks/m4-codex-run-artifact-proof.yaml",
+      "title": "Codex run artifact proof"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "digestflow-static",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-digestflow-report-derived-evidence.json",
+      "id": "m4-digestflow-report-derived-evidence",
+      "task_path": "evals/harness/tasks/m4-digestflow-report-derived-evidence.yaml",
+      "title": "Digestflow report derived evidence"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/estimate-smoke.sh",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-estimate-rejection.json",
+      "id": "m4-estimate-rejection",
+      "task_path": "evals/harness/tasks/m4-estimate-rejection.yaml",
+      "title": "Estimate rejection"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/harness-scorecard.sh --json",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-evidence-free-closeout.json",
+      "id": "m4-evidence-free-closeout",
+      "task_path": "evals/harness/tasks/m4-evidence-free-closeout.yaml",
+      "title": "Evidence free closeout"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/harness-scorecard.sh --json",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-failed-verification-positive-closeout.json",
+      "id": "m4-failed-verification-positive-closeout",
+      "task_path": "evals/harness/tasks/m4-failed-verification-positive-closeout.yaml",
+      "title": "Failed verification positive closeout"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/hook-smoke.sh",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-hook-enforcement.json",
+      "id": "m4-hook-enforcement",
+      "task_path": "evals/harness/tasks/m4-hook-enforcement.yaml",
+      "title": "Hook enforcement"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/metacognition-scorecard.sh --fixtures --json",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-metacognition-scorecard.json",
+      "id": "m4-metacognition-scorecard",
+      "task_path": "evals/harness/tasks/m4-metacognition-scorecard.yaml",
+      "title": "Parallel-aware metacognition scorecard"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/parallel-plan-lint.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-parallel-claim-rejection.json",
+      "id": "m4-parallel-claim-rejection",
+      "task_path": "evals/harness/tasks/m4-parallel-claim-rejection.yaml",
+      "title": "Parallel claim rejection"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/test-harness.sh",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-spec-archive-lifecycle.json",
+      "id": "m4-spec-archive-lifecycle",
+      "task_path": "evals/harness/tasks/m4-spec-archive-lifecycle.yaml",
+      "title": "SPEC archive lifecycle"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/artifact-lint.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-tests-passed-without-command-evidence.json",
+      "id": "m4-tests-passed-without-command-evidence",
+      "task_path": "evals/harness/tasks/m4-tests-passed-without-command-evidence.yaml",
+      "title": "Tests passed without command evidence"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/artifact-lint.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m4-worker-claim-verification.json",
+      "id": "m4-worker-claim-verification",
+      "task_path": "evals/harness/tasks/m4-worker-claim-verification.yaml",
+      "title": "Worker claim verification"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/hive-aggregate.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m5-hive-aggregate.json",
+      "id": "m5-hive-aggregate",
+      "task_path": "evals/harness/tasks/m5-hive-aggregate.yaml",
+      "title": "Governed hive aggregate sidecar"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/hive-scorecard.sh --fixtures --json",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m5-hive-scorecard.json",
+      "id": "m5-hive-scorecard",
+      "task_path": "evals/harness/tasks/m5-hive-scorecard.yaml",
+      "title": "Governed hive scorecard"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/claudeproduct-scorecard.sh --fixtures --json",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m6-claudeproduct-scorecard.json",
+      "id": "m6-claudeproduct-scorecard",
+      "task_path": "evals/harness/tasks/m6-claudeproduct-scorecard.yaml",
+      "title": "Claude product knowledge scorecard"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/harness-capability-map.sh --check --json",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m6-harness-capability-map.json",
+      "id": "m6-harness-capability-map",
+      "task_path": "evals/harness/tasks/m6-harness-capability-map.yaml",
+      "title": "Generated harness capability map"
+    }
+  ],
+  "generated_at": "static",
+  "generated_by": "scripts/harness-capability-map.sh",
+  "rules": [
+    {
+      "line_count": 49,
+      "name": "claudeproduct",
+      "path": ".claude/rules/claudeproduct.rules.md",
+      "sha256": "5142ec4c7ef80ad4c848aa85c3199a8f66a5561b4b4f4c60acb75e615e94d44d",
+      "title": "Claude Product Knowledge Rules"
+    },
+    {
+      "line_count": 109,
+      "name": "context",
+      "path": ".claude/rules/context.rules.md",
+      "sha256": "1774dd136e5416f63a0ccf0042ca45d08e09d25b2bb0539e0f8a58e2f8168c85",
+      "title": "Context Rules"
+    },
+    {
+      "line_count": 111,
+      "name": "delegation",
+      "path": ".claude/rules/delegation.rules.md",
+      "sha256": "e1ad394e9c5feb0f619e4b481c939f22f5ad783f12141d9e26220d925d1a76d5",
+      "title": "Delegation Rules (80/20)"
+    },
+    {
+      "line_count": 129,
+      "name": "estimation",
+      "path": ".claude/rules/estimation.rules.md",
+      "sha256": "f4cd705d6db1a252db0247a2244b01e087d7e2368a6fdddf2bb8deb364453555",
+      "title": "Estimation Rules"
+    },
+    {
+      "line_count": 48,
+      "name": "hive",
+      "path": ".claude/rules/hive.rules.md",
+      "sha256": "1c7fa0dbf202be80a96aaa9d9c6c8e42670dde1daf23ca9f6d94f336d2fe7068",
+      "title": "Hive Rules"
+    },
+    {
+      "line_count": 46,
+      "name": "memory",
+      "path": ".claude/rules/memory.rules.md",
+      "sha256": "e73b9d7b1ac6be9d72ad0ad6e593f2413bcc01804f60c39b2ddc32d4215a035f",
+      "title": "Memory Learning Rules"
+    },
+    {
+      "line_count": 69,
+      "name": "metacognition",
+      "path": ".claude/rules/metacognition.rules.md",
+      "sha256": "53f1ed34a3ff34ded58479c41a7d4bb680f7f5a9b7ba0d6380d2091a9eadef17",
+      "title": "Metacognition Rules"
+    },
+    {
+      "line_count": 114,
+      "name": "parallelism",
+      "path": ".claude/rules/parallelism.rules.md",
+      "sha256": "3f9422e89a46cdf5331f3d644fd8fd70498a77e94e11a506c7857259424b6106",
+      "title": "Parallelism Rules"
+    },
+    {
+      "line_count": 2,
+      "name": "pev-loop",
+      "path": ".claude/rules/pev-loop.rules.md",
+      "sha256": "da1162b54c821db8e22f602704accffbfea1ab0b33c720334f5fba40a382d226",
+      "title": "pev-loop"
+    },
+    {
+      "line_count": 65,
+      "name": "quality",
+      "path": ".claude/rules/quality.rules.md",
+      "sha256": "54153c6a3b71d7a259a8faf80838bd26a71a553e93e974c584ea681fb8b4c292",
+      "title": "Quality Rules"
+    },
+    {
+      "line_count": 33,
+      "name": "security",
+      "path": ".claude/rules/security.rules.md",
+      "sha256": "3c71799da2324a77bf089e5aaa6afaeaa316d96153df4899d160466d0822b83d",
+      "title": "Security Rules"
+    },
+    {
+      "line_count": 123,
+      "name": "spec",
+      "path": ".claude/rules/spec.rules.md",
+      "sha256": "ef72f707a965be43486c77626206e77efcd6794fe7b7f5148306f90f910e3ca3",
+      "title": "Spec Rules"
+    },
+    {
+      "line_count": 3,
+      "name": "speed",
+      "path": ".claude/rules/speed.rules.md",
+      "sha256": "ecf03f51d7491587ef82fdf73288dc9de82de1969e22f8ae7332a3ddfd4a9089",
+      "title": "speed"
+    },
+    {
+      "line_count": 127,
+      "name": "verify",
+      "path": ".claude/rules/verify.rules.md",
+      "sha256": "4ddb13f2bb17aa00fd01859b270cbe4bd540593ceea0c3a647a3cdd782b11891",
+      "title": "Verify Rules"
+    },
+    {
+      "line_count": 94,
+      "name": "visualization",
+      "path": ".claude/rules/visualization.rules.md",
+      "sha256": "c2b2c1cea8bac19f61d326b42cda6ae20534836639ebf34350f88b9be22873b2",
+      "title": "Visualization Rules"
+    }
+  ],
+  "schema_version": "minmaxing-harness-capabilities/v1",
+  "scripts": [
+    {
+      "line_count": 488,
+      "name": "agentfactory-smoke",
+      "path": "scripts/agentfactory-smoke.sh",
+      "purpose": "Static stress test for the /agentfactory production contract.",
+      "required_gate": false,
+      "sha256": "4dcbd22f5493e69884e2918455ca1aa0964bd31490681ef49d80e9c5a4069742"
+    },
+    {
+      "line_count": 468,
+      "name": "artifact-lint",
+      "path": "scripts/artifact-lint.sh",
+      "purpose": "machine sidecar validator",
+      "required_gate": true,
+      "sha256": "efbcc22998f8b506f2580b773ad28eb8c28bf07d2e01071b0aa2b16bd2cac477"
+    },
+    {
+      "line_count": 189,
+      "name": "claudeproduct-scorecard",
+      "path": "scripts/claudeproduct-scorecard.sh",
+      "purpose": "Claude product answer scorecard",
+      "required_gate": true,
+      "sha256": "b5c886ce2810bd02dc620293e06d38c7c3cf8da6fc70cceacb7d967463b1f940"
+    },
+    {
+      "line_count": 191,
+      "name": "codex-run-smoke",
+      "path": "scripts/codex-run-smoke.sh",
+      "purpose": "Smoke test for the Codex-orchestrated execution contract.",
+      "required_gate": false,
+      "sha256": "affc685d8dd04cbeea67a4bdb6b1e4f1ce01658389c009784e248f49d32adac4"
+    },
+    {
+      "line_count": 110,
+      "name": "commit-summarize",
+      "path": "scripts/commit-summarize.sh",
+      "purpose": "minmaxing commit summarizer \u2014 auto-summarizes git commits to obsidian",
+      "required_gate": false,
+      "sha256": "caec04bb34acc2c67daf93460b3a6976402204e36f2829e3196b41447af3ed74"
+    },
+    {
+      "line_count": 104,
+      "name": "council",
+      "path": "scripts/council.sh",
+      "purpose": "Ultimate MiniMax 2.7 Harness - Council Mode",
+      "required_gate": false,
+      "sha256": "45893ba7c1a467e774f725f3fb0697e49cbcb35943943c2449f309aed2e350e8"
+    },
+    {
+      "line_count": 28,
+      "name": "detect-hardware",
+      "path": "scripts/detect-hardware.sh",
+      "purpose": "Auto-detect hardware and set MAX_PARALLEL_AGENTS",
+      "required_gate": false,
+      "sha256": "566b7dc26e1bc33874c57dbbad028efac66f8ccef7d02fcaec79b676b6fd1ccf"
+    },
+    {
+      "line_count": 121,
+      "name": "digestflow-smoke",
+      "path": "scripts/digestflow-smoke.sh",
+      "purpose": "Runtime smoke test for /digestflow.",
+      "required_gate": false,
+      "sha256": "519c07b1ea4eddd48169009fa0d92f82d252bbac035ebb9dc14e0b0dac1f7e1d"
+    },
+    {
+      "line_count": 125,
+      "name": "estimate-history",
+      "path": "scripts/estimate-history.sh",
+      "purpose": "Summarize Agent-Native Estimate calibration data from workflow artifacts.",
+      "required_gate": false,
+      "sha256": "3af8d2f437b15b682de4a7a51e03a7a6c27fce166300efb35df74dc20ca4ef03"
+    },
+    {
+      "line_count": 145,
+      "name": "estimate-smoke",
+      "path": "scripts/estimate-smoke.sh",
+      "purpose": "Static smoke test for the Agent-Native Estimate contract.",
+      "required_gate": false,
+      "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
+    },
+    {
+      "line_count": 638,
+      "name": "harness-capability-map",
+      "path": "scripts/harness-capability-map.sh",
+      "purpose": "capability map freshness gate",
+      "required_gate": true,
+      "sha256": "aba063d657223559815c4d0667231116995e3ebac4d3af873aaa276ee737bc07"
+    },
+    {
+      "line_count": 640,
+      "name": "harness-doctor",
+      "path": "scripts/harness-doctor.sh",
+      "purpose": "Produce one local operator health summary for the minmaxing harness.",
+      "required_gate": false,
+      "sha256": "1364b4c9877be2308fca8b8718bec6c0d43e3c2287a1816719dafa924e087622"
+    },
+    {
+      "line_count": 117,
+      "name": "harness-eval-report",
+      "path": "scripts/harness-eval-report.sh",
+      "purpose": "Print a concise summary for the local static harness eval pack.",
+      "required_gate": false,
+      "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
+    },
+    {
+      "line_count": 758,
+      "name": "harness-eval",
+      "path": "scripts/harness-eval.sh",
+      "purpose": "static eval pack runner",
+      "required_gate": true,
+      "sha256": "68cbfbda1c4cc65758be54d7127b80a1e4ffac93a184cdbe8d1959df07df67ff"
+    },
+    {
+      "line_count": 322,
+      "name": "harness-scorecard",
+      "path": "scripts/harness-scorecard.sh",
+      "purpose": "Static anti-lazy scorecard for effectiveness fixtures.",
+      "required_gate": false,
+      "sha256": "40a3ce2c5c6de541beac3f1cb1c7c118d29bf8f20839fab2d3d21f131c4d6e31"
+    },
+    {
+      "line_count": 277,
+      "name": "hive-aggregate",
+      "path": "scripts/hive-aggregate.sh",
+      "purpose": "hive run aggregate validator",
+      "required_gate": true,
+      "sha256": "da259276ff462b7b282a2bf7f265e172d9e8466001526fc5391ae9ded454def2"
+    },
+    {
+      "line_count": 177,
+      "name": "hive-scorecard",
+      "path": "scripts/hive-scorecard.sh",
+      "purpose": "hive coordination scorecard",
+      "required_gate": true,
+      "sha256": "918a4375ec4a5a833abc3c0c1999c7e86316d28dc4c5726026ecac652bab21a4"
+    },
+    {
+      "line_count": 58,
+      "name": "hook-mesh-smoke",
+      "path": "scripts/hook-mesh-smoke.sh",
+      "purpose": "Smoke fixtures for the broader Claude Code governance hook mesh.",
+      "required_gate": false,
+      "sha256": "ba589818b21d29523f7319d07263521c84ff4ea000a04e5f11794143a0f764b8"
+    },
+    {
+      "line_count": 117,
+      "name": "hook-smoke",
+      "path": "scripts/hook-smoke.sh",
+      "purpose": "Claude Code hook enforcement smoke",
+      "required_gate": true,
+      "sha256": "0c2ae725a2784c4745ea7620078355a357333ed8544b222b52b21a4d61571598"
+    },
+    {
+      "line_count": 385,
+      "name": "learning-loop",
+      "path": "scripts/learning-loop.sh",
+      "purpose": "Summarize local workflow, trace, and eval artifacts into verified learnings.",
+      "required_gate": false,
+      "sha256": "698348747db43711ff65d52d9a3f4cc8e8f7236807c376e760f871c285fd511f"
+    },
+    {
+      "line_count": 83,
+      "name": "memory-auto",
+      "path": "scripts/memory-auto.sh",
+      "purpose": "minmaxing memory auto \u2014 session start/end hooks",
+      "required_gate": false,
+      "sha256": "08022fd2c6167030ca648b4109ea1743fa830400a135b20c84b30109058ec408"
+    },
+    {
+      "line_count": 276,
+      "name": "memory-eval",
+      "path": "scripts/memory-eval.sh",
+      "purpose": "Evaluate memory freshness and known critical repo facts.",
+      "required_gate": false,
+      "sha256": "cc3ec2e4f7d31004a06eed8266e3a40775ba53d475e124ac4ce19ae2a93890e6"
+    },
+    {
+      "line_count": 374,
+      "name": "memory",
+      "path": "scripts/memory.sh",
+      "purpose": "minmaxing memory CLI \u2014 5-tier memory system",
+      "required_gate": false,
+      "sha256": "7ae61e6df010e05059128f72242dde340726061a2fd0589895b9c55dd704c953"
+    },
+    {
+      "line_count": 332,
+      "name": "metacognition-scorecard",
+      "path": "scripts/metacognition-scorecard.sh",
+      "purpose": "metacognition scorecard",
+      "required_gate": true,
+      "sha256": "b71ba12d0edf762fd62ca1f48cb754ec2b683eb2dc4af47464bc3b435bbd910b"
+    },
+    {
+      "line_count": 113,
+      "name": "overnight-loop",
+      "path": "scripts/overnight-loop.sh",
+      "purpose": "Ultimate MiniMax 2.7 Harness - Overnight Loop",
+      "required_gate": false,
+      "sha256": "d7716ac32acfdf4b72696eeba4ce735e2d9a690428b17b9d791a767809835d9b"
+    },
+    {
+      "line_count": 519,
+      "name": "parallel-aggregate",
+      "path": "scripts/parallel-aggregate.sh",
+      "purpose": "parallel worker aggregate validator",
+      "required_gate": true,
+      "sha256": "7d0fbd63eaea608e8dc03aaac5ccd576d0028e75d5188d2b7067fdd549c3f6b6"
+    },
+    {
+      "line_count": 190,
+      "name": "parallel-capacity",
+      "path": "scripts/parallel-capacity.sh",
+      "purpose": "local parallel capacity profile",
+      "required_gate": true,
+      "sha256": "1dac6d381e7ccf14e2d301d89484f63d65f27264aceee4ec699e04ee6539715b"
+    },
+    {
+      "line_count": 247,
+      "name": "parallel-plan-lint",
+      "path": "scripts/parallel-plan-lint.sh",
+      "purpose": "parallel plan fixture lint",
+      "required_gate": true,
+      "sha256": "79ecffa339eca4db71f799530ad55869d328a39ff2a2e5023ca3a29f5a04430b"
+    },
+    {
+      "line_count": 128,
+      "name": "parallel-smoke",
+      "path": "scripts/parallel-smoke.sh",
+      "purpose": "Static smoke test for the /parallel orchestration contract.",
+      "required_gate": false,
+      "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
+    },
+    {
+      "line_count": 84,
+      "name": "release-check",
+      "path": "scripts/release-check.sh",
+      "purpose": "public release/static gate",
+      "required_gate": true,
+      "sha256": "d7f36604a456c2c009372cf5f1c29cfd0d3126f63f2dd982a05c2f0673e13637"
+    },
+    {
+      "line_count": 144,
+      "name": "run-metrics",
+      "path": "scripts/run-metrics.sh",
+      "purpose": "Summarize local harness run artifacts without inventing missing provider data.",
+      "required_gate": false,
+      "sha256": "502fad2934cd719683a57f4d06377dd4b07c4ad6e28f7c2e8573794461baf9c5"
+    },
+    {
+      "line_count": 109,
+      "name": "runtime-hardening-smoke",
+      "path": "scripts/runtime-hardening-smoke.sh",
+      "purpose": "Smoke the local runtime-hardening layer without secrets or network access.",
+      "required_gate": false,
+      "sha256": "6012afc636d4342efba4f8fa1f508e93461f011981dfdaa4e3df4e7ea95eeba7"
+    },
+    {
+      "line_count": 381,
+      "name": "scenario-eval",
+      "path": "scripts/scenario-eval.sh",
+      "purpose": "Run local no-secret scenario evals from JSON argv fixtures.",
+      "required_gate": false,
+      "sha256": "9c3e0a29b441fdffeb0e280f3960bfc2cc6bf7c1f18fc752316a83f632dd8b42"
+    },
+    {
+      "line_count": 98,
+      "name": "security-smoke",
+      "path": "scripts/security-smoke.sh",
+      "purpose": "Static security smoke for Claude Code profile examples and governance hooks.",
+      "required_gate": false,
+      "sha256": "69dd55fa4df2ce232516d61fcc726ea5a1b769fd93e1a57f67eb810eca2b8d3d"
+    },
+    {
+      "line_count": 130,
+      "name": "session-insights",
+      "path": "scripts/session-insights.sh",
+      "purpose": "Flag unhealthy local harness runs from workflow and eval artifacts.",
+      "required_gate": false,
+      "sha256": "bd356ea4fd33af76645ac84350398708bae2017f520d6491f5f2a9fbd47bd8d7"
+    },
+    {
+      "line_count": 186,
+      "name": "spec-archive",
+      "path": "scripts/spec-archive.sh",
+      "purpose": "minmaxing SPEC archive CLI",
+      "required_gate": false,
+      "sha256": "f54675c863977cc23a1d7356db0bfd80d4b7213797e9fc6fbe4cc5d00cd59adc"
+    },
+    {
+      "line_count": 85,
+      "name": "sprint",
+      "path": "scripts/sprint.sh",
+      "purpose": "Ultimate MiniMax 2.7 Harness - Sprint Mode",
+      "required_gate": false,
+      "sha256": "3e80abf5a2f2a5dc3532dbb294cf6f554c4acfa39189baaee2e46fcc3ff3a5f4"
+    },
+    {
+      "line_count": 110,
+      "name": "start-session",
+      "path": "scripts/start-session.sh",
+      "purpose": "Ultimate MiniMax 2.7 Harness - Session Start",
+      "required_gate": false,
+      "sha256": "25ef084624c8a50662b53734490818a652afd445a49cdbf5890174258fd02ab2"
+    },
+    {
+      "line_count": 382,
+      "name": "state",
+      "path": "scripts/state.sh",
+      "purpose": "minmaxing working state CLI",
+      "required_gate": false,
+      "sha256": "bd76e3123044f88a4f504534b9c78ab7e2596a47c80fa4251fcf745c257ce17a"
+    },
+    {
+      "line_count": 273,
+      "name": "taste",
+      "path": "scripts/taste.sh",
+      "purpose": "minmaxing taste system CLI",
+      "required_gate": false,
+      "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
+    },
+    {
+      "line_count": 1584,
+      "name": "test-harness",
+      "path": "scripts/test-harness.sh",
+      "purpose": "full local harness regression suite",
+      "required_gate": true,
+      "sha256": "09967d10572d09c0b2b981df765079faf7f13e948d46c5970150c66712f885c7"
+    },
+    {
+      "line_count": 552,
+      "name": "trace-ledger",
+      "path": "scripts/trace-ledger.sh",
+      "purpose": "Append, validate, and summarize local JSONL trace ledgers.",
+      "required_gate": false,
+      "sha256": "fa2f280325aaeabb1392236eceb265811074a8b22c5b8924eb47edc6956eef3d"
+    },
+    {
+      "line_count": 95,
+      "name": "visualize-smoke",
+      "path": "scripts/visualize-smoke.sh",
+      "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
+      "required_gate": false,
+      "sha256": "0fee7dd6de05196579664c420e8f20c90b73efad2879af6d695fd2ef4a19cea7"
+    },
+    {
+      "line_count": 121,
+      "name": "workflow-smoke",
+      "path": "scripts/workflow-smoke.sh",
+      "purpose": "Runtime smoke test for /workflow.",
+      "required_gate": false,
+      "sha256": "0b8484ec7edf3efb5415d66049a9ebefa6a6cd1579af1aff2851b7a0ba06c786"
+    },
+    {
+      "line_count": 537,
+      "name": "worktree-runner",
+      "path": "scripts/worktree-runner.sh",
+      "purpose": "Validate and optionally execute packet plans in isolated git worktrees.",
+      "required_gate": false,
+      "sha256": "efe18d73ea2c2d757be120569c309df74680cca0d4beae1e7688b955ce5df6be"
+    }
+  ],
+  "self_lookup_contract": {
+    "fallback_surfaces": [
+      ".claude/skills/",
+      ".claude/rules/",
+      ".claude/settings.json",
+      ".claude/hooks/",
+      ".codex/",
+      "CLAUDE.md",
+      "AGENTS.md",
+      "README.md",
+      "scripts/start-session.sh"
+    ],
+    "primary_human_map": "docs/harness-capability-map.md",
+    "primary_machine_map": "docs/harness-capability-map.json",
+    "verification_command": "bash scripts/harness-capability-map.sh --check"
+  },
+  "settings": {
+    "env_keys": [
+      "ANTHROPIC_AUTH_TOKEN",
+      "ANTHROPIC_BASE_URL",
+      "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+      "ANTHROPIC_DEFAULT_OPUS_MODEL",
+      "ANTHROPIC_DEFAULT_SONNET_MODEL",
+      "ANTHROPIC_MODEL",
+      "ANTHROPIC_SMALL_FAST_MODEL",
+      "API_TIMEOUT_MS",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC",
+      "CLAUDE_CODE_EFFORT_LEVEL",
+      "CLAUDE_CODE_NO_FLICKER",
+      "CLAUDE_CODE_SUBAGENT_MODEL",
+      "DISABLE_AUTO_COMPACT",
+      "MAX_THINKING_TOKENS",
+      "MINIMAX_API_HOST",
+      "MINIMAX_API_KEY"
+    ],
+    "exists": true,
+    "hooks": [
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-postcompact.sh\"",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "event": "PostCompact",
+        "matcher": "manual|auto"
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "event": "PostToolUse",
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit"
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "event": "PostToolUseFailure",
+        "matcher": "*"
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-precompact.sh\"",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "event": "PreCompact",
+        "matcher": "manual|auto"
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "event": "PreToolUse",
+        "matcher": "Bash"
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "event": "PreToolUse",
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit"
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-sessionstart.sh\"",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "event": "SessionStart",
+        "matcher": "startup|resume|compact"
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-stop.sh\"",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "event": "Stop",
+        "matcher": ""
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "event": "SubagentStop",
+        "matcher": ""
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "event": "TaskCompleted",
+        "matcher": ""
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "event": "TaskCreated",
+        "matcher": ""
+      }
+    ],
+    "path": ".claude/settings.json",
+    "permissions": {
+      "allow": [
+        "WebFetch(domain:github.com)",
+        "Bash(forgegod *)",
+        "WebSearch",
+        "mcp__MiniMax__web_search",
+        "Bash(bash *.sh)"
+      ],
+      "defaultMode": "bypassPermissions",
+      "deny": [
+        "Read(./.claude/settings.local.json)",
+        "Read(./.env)",
+        "Read(./.env.*)",
+        "Read(./secrets/**)"
+      ]
+    },
+    "secret_values_redacted": true
+  },
+  "skills": [
+    {
+      "argument_hint": "[Hermes agent intent]",
+      "core_route": true,
+      "description": "Create governed Hermes agents as auditable enterprise operating units with manifest, capability stack, memory seed, deployment plan, verification contract, registry entry, and kill switch.",
+      "group": "agent-systems",
+      "line_count": 999,
+      "model_invocation": false,
+      "name": "agentfactory",
+      "path": ".claude/skills/agentfactory/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m4-agentfactory-kill-switch-evidence.yaml"
+      ],
+      "related_rules": [
+        ".claude/rules/security.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/agentfactory-smoke.sh"
+      ],
+      "sha256": "185daa16fe201aff19aea96c931d4785b8631e1a450bafff69b2cccc5f43775a",
+      "slash": "/agentfactory",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/align",
+      "group": "kernel",
+      "line_count": 431,
+      "model_invocation": true,
+      "name": "align",
+      "path": ".claude/skills/align/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "30719728f238a6bdf80c2dcde7e2f0337860e7000f6c1c7fb77586759dfa51d0",
+      "slash": "/align",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/audit",
+      "group": "quality",
+      "line_count": 134,
+      "model_invocation": true,
+      "name": "audit",
+      "path": ".claude/skills/audit/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "f2557d1ecb3d36c26b06b2b600eb0c5f4fa23e21fc429063ba72ff009c411c2e",
+      "slash": "/audit",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/autoplan",
+      "group": "planning",
+      "line_count": 316,
+      "model_invocation": true,
+      "name": "autoplan",
+      "path": ".claude/skills/autoplan/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [
+        ".claude/rules/estimation.rules.md",
+        ".claude/rules/spec.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/estimate-smoke.sh"
+      ],
+      "sha256": "153dde5e74b30ebf5fc005e3e08a4910edb7902b62a933bf5316b0695de72659",
+      "slash": "/autoplan",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/browse",
+      "group": "research",
+      "line_count": 41,
+      "model_invocation": true,
+      "name": "browse",
+      "path": ".claude/skills/browse/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "88de9fef36dc5059a358ce00c1a855e9916b002be7033d90a34f8b729ea306c0",
+      "slash": "/browse",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": true,
+      "description": "Answer Claude, Claude Code, Anthropic API, skills, connectors, plugins, and Claude product questions using official current docs.",
+      "group": "knowledge",
+      "line_count": 187,
+      "model_invocation": true,
+      "name": "claudeproduct",
+      "path": ".claude/skills/claudeproduct/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m6-claudeproduct-scorecard.yaml"
+      ],
+      "related_rules": [
+        ".claude/rules/claudeproduct.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/claudeproduct-scorecard.sh",
+        "scripts/harness-capability-map.sh"
+      ],
+      "sha256": "bb967ca43b53c40023f738585ee5e72bd3139282bbfff58084fca326fc197171",
+      "slash": "/claudeproduct",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "Search the local codebase for patterns, symbols, implementations, and references. Use when the user wants to find where code lives or understand how a pattern is implemented without invoking the OpenAI Codex plugin namespace.",
+      "group": "debugging",
+      "line_count": 68,
+      "model_invocation": true,
+      "name": "codesearch",
+      "path": ".claude/skills/codesearch/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "d48410eb7aed9e837def818de635ebd8de12e9886f3278a647ce195f9359624f",
+      "slash": "/codesearch",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/council",
+      "group": "planning",
+      "line_count": 202,
+      "model_invocation": true,
+      "name": "council",
+      "path": ".claude/skills/council/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "45d913a44a6d5cb853d3188cd8e77a4d27bc3c194a3d8b5504e3e7c0017aed0a",
+      "slash": "/council",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": true,
+      "description": "/deepresearch",
+      "group": "research",
+      "line_count": 195,
+      "model_invocation": true,
+      "name": "deepresearch",
+      "path": ".claude/skills/deepresearch/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "656933f8c31be9044f07f9de334cf4a4feae9d9f973e8bb1ae67c4e1627306e1",
+      "slash": "/deepresearch",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[task] [1-10 report inputs]",
+      "core_route": false,
+      "description": "Run the full minmaxing workflow from external AI research reports. Use when the task begins with Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, or similar reports that must be digested before the repo's own deepresearch and governed workflow.",
+      "group": "research",
+      "line_count": 304,
+      "model_invocation": false,
+      "name": "digestflow",
+      "path": ".claude/skills/digestflow/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m4-digestflow-report-derived-evidence.yaml"
+      ],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "d728eaecd477d3ff04671a8bd82d5a0fdb652afb5a598af4ddb9dd454140928e",
+      "slash": "/digestflow",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[task]",
+      "core_route": true,
+      "description": "Coordinate a governed hive of specialized agents for broad research, planning, review, or implementation work when roles, blackboard state, dissent, synthesis, and verification materially improve the outcome.",
+      "group": "parallelism",
+      "line_count": 244,
+      "model_invocation": false,
+      "name": "hive",
+      "path": ".claude/skills/hive/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m4-spec-archive-lifecycle.yaml",
+        "evals/harness/tasks/m5-hive-aggregate.yaml",
+        "evals/harness/tasks/m5-hive-scorecard.yaml"
+      ],
+      "related_rules": [
+        ".claude/rules/hive.rules.md",
+        ".claude/rules/parallelism.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/hive-scorecard.sh",
+        "scripts/hive-aggregate.sh",
+        "scripts/artifact-lint.sh"
+      ],
+      "sha256": "0aa19cf02914a63722715e2c2b0d6a95aa7a03add1b25d3fa413a306f1412b12",
+      "slash": "/hive",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[task]",
+      "core_route": true,
+      "description": "Run the full minmaxing workflow with governed hive coordination: metacognitive route, deepresearch, role map, blackboard, packet DAG, aggregation, introspection, verification, and closeout.",
+      "group": "execution",
+      "line_count": 124,
+      "model_invocation": false,
+      "name": "hiveworkflow",
+      "path": ".claude/skills/hiveworkflow/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [
+        ".claude/rules/hive.rules.md",
+        ".claude/rules/parallelism.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/hive-scorecard.sh",
+        "scripts/hive-aggregate.sh"
+      ],
+      "sha256": "09701d40a20b911275a72cee346f8412760cf5ea891f05b9301a85ade945f8c9",
+      "slash": "/hiveworkflow",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": true,
+      "description": "/introspect",
+      "group": "quality",
+      "line_count": 235,
+      "model_invocation": true,
+      "name": "introspect",
+      "path": ".claude/skills/introspect/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "799fba6aa32ea8c5c094095b9d4a2fe635339d40ba3d9c8e08e962b22e18382c",
+      "slash": "/introspect",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/investigate",
+      "group": "debugging",
+      "line_count": 211,
+      "model_invocation": true,
+      "name": "investigate",
+      "path": ".claude/skills/investigate/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "d52eb7113d0b037a8916ed90cf9d35a8dc958f448278df8c36e065001c33bdda",
+      "slash": "/investigate",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "minmaxing 5-tier memory system management",
+      "group": "memory",
+      "line_count": 24,
+      "model_invocation": true,
+      "name": "memory",
+      "path": ".claude/skills/memory/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [
+        ".claude/rules/memory.rules.md"
+      ],
+      "related_scripts": [],
+      "sha256": "e1a3c1f9b80e6c0f8affb249feba2ba3e1b4c2dbcdd29de143a4af1a38baa885",
+      "slash": "/memory",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[task]",
+      "core_route": true,
+      "description": "Route and calibrate work with model-agnostic metacognitive control. Use when the user asks for thinking-about-thinking, harness effectiveness, task routing, self-correction, confidence calibration, or strategy improvement before execution.",
+      "group": "routing",
+      "line_count": 227,
+      "model_invocation": false,
+      "name": "metacognition",
+      "path": ".claude/skills/metacognition/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m4-metacognition-scorecard.yaml"
+      ],
+      "related_rules": [
+        ".claude/rules/metacognition.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/metacognition-scorecard.sh",
+        "scripts/parallel-capacity.sh"
+      ],
+      "sha256": "cdbb4764f7f7137153bae396b3990a7779c26d92ba5ba725236166fc9ff8dce6",
+      "slash": "/metacognition",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/overnight",
+      "group": "operations",
+      "line_count": 166,
+      "model_invocation": true,
+      "name": "overnight",
+      "path": ".claude/skills/overnight/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "01d882670885a22d814274ed31bf4ef3a6ad37ec5e727df1135dcf9943bf4fc7",
+      "slash": "/overnight",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[dense task]",
+      "core_route": true,
+      "description": "Run dense minmaxing work as a hardware-aware, main-orchestrated parallel workflow with bounded packets, explicit ownership, sync barriers, aggregation, and independent verification.",
+      "group": "parallelism",
+      "line_count": 463,
+      "model_invocation": false,
+      "name": "parallel",
+      "path": ".claude/skills/parallel/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m4-parallel-claim-rejection.yaml"
+      ],
+      "related_rules": [
+        ".claude/rules/parallelism.rules.md",
+        ".claude/rules/estimation.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/parallel-smoke.sh",
+        "scripts/parallel-capacity.sh",
+        "scripts/parallel-plan-lint.sh",
+        "scripts/parallel-aggregate.sh",
+        "scripts/artifact-lint.sh"
+      ],
+      "sha256": "37e6bf130b7216ea29f5004304c6f81dc8c435add520b63d231307ad31a26010",
+      "slash": "/parallel",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/qa",
+      "group": "quality",
+      "line_count": 67,
+      "model_invocation": true,
+      "name": "qa",
+      "path": ".claude/skills/qa/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "44bdbfad5a617234b7ac6224a4d8b6fd7c31500bbbfd053ebd133f2f6b2db1bb",
+      "slash": "/qa",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/review",
+      "group": "quality",
+      "line_count": 147,
+      "model_invocation": true,
+      "name": "review",
+      "path": ".claude/skills/review/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "8c7fb05d00fdae6e0fa792cb354609bbac366e237793266e05852f04d615d573",
+      "slash": "/review",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/ship",
+      "group": "release",
+      "line_count": 222,
+      "model_invocation": true,
+      "name": "ship",
+      "path": ".claude/skills/ship/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [
+        ".claude/rules/spec.rules.md",
+        ".claude/rules/security.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/release-check.sh"
+      ],
+      "sha256": "796a2e79521c4f0819663980eb05ee47ce3a77153ee7c49d6c589fe01a2bc1be",
+      "slash": "/ship",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/sprint",
+      "group": "parallelism",
+      "line_count": 228,
+      "model_invocation": true,
+      "name": "sprint",
+      "path": ".claude/skills/sprint/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [
+        ".claude/rules/parallelism.rules.md",
+        ".claude/rules/estimation.rules.md"
+      ],
+      "related_scripts": [],
+      "sha256": "8cf2936ae8cadb9306e4c5ccb5e2b2737376540dc414e558b991d17441cdba7d",
+      "slash": "/sprint",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": false,
+      "description": "/tastebootstrap",
+      "group": "kernel",
+      "line_count": 137,
+      "model_invocation": true,
+      "name": "tastebootstrap",
+      "path": ".claude/skills/tastebootstrap/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "de45d16b1fe06d3bd04a80fddad02a76189de9c8a8d97793fd31b476f9178363",
+      "slash": "/tastebootstrap",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": true,
+      "description": "/verify",
+      "group": "quality",
+      "line_count": 241,
+      "model_invocation": true,
+      "name": "verify",
+      "path": ".claude/skills/verify/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [
+        ".claude/rules/verify.rules.md"
+      ],
+      "related_scripts": [],
+      "sha256": "013f9df5f738b7b9ae9c3a11605dbd74bf91e09efcf5b6fe8fdb4b6ad86e35d2",
+      "slash": "/verify",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[idea, task, SPEC path, or product surface]",
+      "core_route": false,
+      "description": "Create a taste-to-artifact visualization package for a project, task, draft SPEC, UI, backend, agent runtime, dashboard, game, or product idea without implementing it. Use when the user asks to visualize taste.md, taste.vision, what the model thinks is being built, a product experience, UI mockup, architecture schematic, operator journey, or comprehension check before execution.",
+      "group": "design",
+      "line_count": 131,
+      "model_invocation": false,
+      "name": "visualize",
+      "path": ".claude/skills/visualize/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [
+        ".claude/rules/visualization.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/visualize-smoke.sh"
+      ],
+      "sha256": "57ff9c66737bf1a52141b3fa8d0b21bba106ccdf61aab7be252adaa4aa3baf1f",
+      "slash": "/visualize",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[task] | --continue .taste/visualizations/<run> | --revise .taste/visualizations/<run> [revision]",
+      "core_route": false,
+      "description": "Run an approval-first variant of the minmaxing workflow: research, audit, plan, estimate, draft SPEC, visualize the intended product or operator experience, then stop with WAITING_FOR_VISUAL_APPROVAL before implementation. Use when the user wants to see and approve the model's understanding before code changes, or wants to continue or revise a saved visualization workflow.",
+      "group": "execution",
+      "line_count": 129,
+      "model_invocation": false,
+      "name": "visualizeworkflow",
+      "path": ".claude/skills/visualizeworkflow/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [
+        ".claude/rules/visualization.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/visualize-smoke.sh"
+      ],
+      "sha256": "dd640037e06a2901c090467ccfcecc511565b7fce7f94214a31c17316e066f26",
+      "slash": "/visualizeworkflow",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "",
+      "core_route": true,
+      "description": "/webresearch",
+      "group": "research",
+      "line_count": 123,
+      "model_invocation": true,
+      "name": "webresearch",
+      "path": ".claude/skills/webresearch/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "62fca465c720d228ea16c867f33b2d22167f341d8236c0dcea4ff03b44dc1e5e",
+      "slash": "/webresearch",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[task]",
+      "core_route": true,
+      "description": "Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.",
+      "group": "execution",
+      "line_count": 771,
+      "model_invocation": false,
+      "name": "workflow",
+      "path": ".claude/skills/workflow/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [
+        ".claude/rules/estimation.rules.md",
+        ".claude/rules/verify.rules.md",
+        ".claude/rules/spec.rules.md",
+        ".claude/rules/security.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/parallel-capacity.sh",
+        "scripts/estimate-smoke.sh",
+        "scripts/artifact-lint.sh",
+        "scripts/harness-eval.sh",
+        "scripts/release-check.sh",
+        "scripts/test-harness.sh",
+        "scripts/harness-capability-map.sh"
+      ],
+      "sha256": "cc0dc33a65d3733a2d1835b4b6a9c82642d22f8b8ac9445ce0ef142bc3303b46",
+      "slash": "/workflow",
+      "user_invocable": true
+    }
+  ],
+  "source_policy": {
+    "local_truth": [
+      ".claude/skills/*/SKILL.md",
+      ".claude/rules/*.rules.md",
+      "scripts/*.sh",
+      "evals/harness/tasks/*.yaml",
+      "evals/harness/golden/*.json",
+      ".claude/settings.json",
+      ".claude/hooks/*",
+      ".codex/**/*.toml",
+      "README.md",
+      "CLAUDE.md",
+      "AGENTS.md"
+    ],
+    "secret_policy": "does not read .env, .env.*, settings.local.json, private/customer artifacts, or runtime secrets"
+  },
+  "summary": {
+    "codex_file_count": 4,
+    "core_route_count": 11,
+    "eval_task_count": 17,
+    "groups": {
+      "agent-systems": [
+        "/agentfactory"
+      ],
+      "debugging": [
+        "/codesearch",
+        "/investigate"
+      ],
+      "design": [
+        "/visualize"
+      ],
+      "execution": [
+        "/hiveworkflow",
+        "/visualizeworkflow",
+        "/workflow"
+      ],
+      "kernel": [
+        "/align",
+        "/tastebootstrap"
+      ],
+      "knowledge": [
+        "/claudeproduct"
+      ],
+      "memory": [
+        "/memory"
+      ],
+      "operations": [
+        "/overnight"
+      ],
+      "parallelism": [
+        "/hive",
+        "/parallel",
+        "/sprint"
+      ],
+      "planning": [
+        "/autoplan",
+        "/council"
+      ],
+      "quality": [
+        "/audit",
+        "/introspect",
+        "/qa",
+        "/review",
+        "/verify"
+      ],
+      "release": [
+        "/ship"
+      ],
+      "research": [
+        "/browse",
+        "/deepresearch",
+        "/digestflow",
+        "/webresearch"
+      ],
+      "routing": [
+        "/metacognition"
+      ]
+    },
+    "hook_event_count": 11,
+    "rule_count": 15,
+    "script_count": 45,
+    "skill_count": 28
+  }
+}

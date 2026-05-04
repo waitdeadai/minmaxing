@@ -225,7 +225,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "27 skills" README.md 2>/dev/null && \
+   grep -Fq "28 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -301,6 +301,110 @@ else
     test_fail "/metacognition contract, docs, fixtures, or scorecard are incomplete"
 fi
 
+# Test 3g-claude: Claude Product Knowledge Contract
+echo "[3g-claude] Claude Product Knowledge Contract"
+CLAUDEPRODUCT_OK=true
+for required_file in \
+    ".claude/skills/claudeproduct/SKILL.md" \
+    ".claude/rules/claudeproduct.rules.md" \
+    "scripts/claudeproduct-scorecard.sh" \
+    "evals/harness/tasks/m6-claudeproduct-scorecard.yaml" \
+    "evals/harness/golden/m6-claudeproduct-scorecard.json"; do
+    if [ ! -e "$required_file" ]; then
+        CLAUDEPRODUCT_OK=false
+    fi
+done
+for pattern in \
+    "Official Source Policy" \
+    "Product Surface Map" \
+    "Question Class" \
+    "Source Ledger" \
+    "Harness Implication" \
+    "code.claude.com/docs/llms.txt" \
+    "Do not assume feature parity" \
+    "never reads \`.env\`" \
+    "Claude product questions" \
+    "/claudeproduct"; do
+    if ! grep -Fq "$pattern" .claude/skills/claudeproduct/SKILL.md .claude/rules/claudeproduct.rules.md README.md CLAUDE.md AGENTS.md .claude/skills/workflow/SKILL.md .claude/skills/webresearch/SKILL.md .claude/skills/deepresearch/SKILL.md .claude/skills/metacognition/SKILL.md 2>/dev/null; then
+        CLAUDEPRODUCT_OK=false
+    fi
+done
+for rule in \
+    "missing_question_class" \
+    "missing_official_source_policy" \
+    "missing_source_ledger" \
+    "unsupported_claude_claim" \
+    "stale_memory_answer" \
+    "unsafe_secret_dependency" \
+    "missing_harness_implication"; do
+    if ! grep -Fq "$rule" scripts/claudeproduct-scorecard.sh 2>/dev/null; then
+        CLAUDEPRODUCT_OK=false
+    fi
+done
+if [ "$CLAUDEPRODUCT_OK" = true ] && \
+   bash scripts/claudeproduct-scorecard.sh --fixtures --json >/dev/null 2>&1; then
+    test_pass "/claudeproduct routes Claude product questions through official current evidence"
+else
+    test_fail "/claudeproduct contract, docs, fixtures, or scorecard are incomplete"
+fi
+
+# Test 3g-capmap: Generated Harness Capability Map
+echo "[3g-capmap] Generated Harness Capability Map"
+CAPMAP_OK=true
+for required_file in \
+    "scripts/harness-capability-map.sh" \
+    "schemas/harness-capability-map.schema.json" \
+    "docs/harness-capability-map.md" \
+    "docs/harness-capability-map.json" \
+    "evals/harness/tasks/m6-harness-capability-map.yaml" \
+    "evals/harness/golden/m6-harness-capability-map.json"; do
+    if [ ! -e "$required_file" ]; then
+        CAPMAP_OK=false
+    fi
+done
+if ! python3 - <<'PY' >/dev/null 2>&1; then
+import json
+import pathlib
+import sys
+
+root = pathlib.Path(".")
+payload = json.loads((root / "docs/harness-capability-map.json").read_text())
+skills = sorted(path.parent.name for path in (root / ".claude/skills").glob("*/SKILL.md"))
+rules = sorted(path.name for path in (root / ".claude/rules").glob("*.rules.md"))
+scripts = sorted(path.name for path in (root / "scripts").glob("*.sh"))
+tasks = sorted(path.name for path in (root / "evals/harness/tasks").glob("*.yaml"))
+assert payload["artifact_type"] == "harness-capability-map"
+assert payload["counts"]["skills"] == len(skills)
+assert payload["counts"]["rules"] == len(rules)
+assert payload["counts"]["scripts"] == len(scripts)
+assert payload["counts"]["eval_tasks"] == len(tasks)
+for skill in payload["skills"]:
+    assert (root / skill["path"]).exists(), skill["path"]
+for rule in payload["rules"]:
+    assert (root / rule["path"]).exists(), rule["path"]
+for script in payload["scripts"]:
+    assert (root / script["path"]).exists(), script["path"]
+for item in payload["evals"]:
+    assert (root / item["task_path"]).exists(), item["task_path"]
+    assert (root / item["golden_path"]).exists(), item["golden_path"]
+claudeproduct = next(item for item in payload["skills"] if item["name"] == "claudeproduct")
+assert ".claude/rules/claudeproduct.rules.md" in claudeproduct["related_rules"]
+assert "scripts/claudeproduct-scorecard.sh" in claudeproduct["related_scripts"]
+assert "scripts/harness-capability-map.sh" in claudeproduct["related_scripts"]
+assert "evals/harness/tasks/m6-claudeproduct-scorecard.yaml" in claudeproduct["related_eval_tasks"]
+assert payload["settings"]["secret_values_redacted"] is True
+PY
+    CAPMAP_OK=false
+fi
+if [ "$CAPMAP_OK" = true ] && \
+   grep -Fq "docs/harness-capability-map.json" .claude/skills/claudeproduct/SKILL.md .claude/rules/claudeproduct.rules.md README.md CLAUDE.md AGENTS.md 2>/dev/null && \
+   bash scripts/harness-capability-map.sh --check >/dev/null 2>&1 && \
+   bash scripts/harness-capability-map.sh --check --json >/dev/null 2>&1; then
+    test_pass "generated harness capability map is fresh and self-lookup ready"
+else
+    test_fail "harness capability map generator, docs, JSON, or checks are incomplete"
+fi
+
 # Test 3h: Governed Autonomy Truth Surfaces
 echo "[3h] Governed Autonomy Truth Surfaces"
 if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/dev/null && \
@@ -309,7 +413,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 27 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 28 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -1035,25 +1139,25 @@ else
 fi
 
 # ========================================
-# Skills (27 Expected)
+# Skills (28 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 27 Expected]"
+echo "[Skills - 28 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 27 ]; then
+if [ "$SKILL_COUNT" -ge 28 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 27+ skills, found $SKILL_COUNT"
+    test_fail "Expected 28+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow visualize visualizeworkflow digestflow align audit autoplan agentfactory parallel metacognition hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow visualize visualizeworkflow digestflow align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1085,7 +1189,7 @@ fi
 
 # Test 7: Individual Rules
 echo "[7] Individual Rules"
-for rule in quality context delegation parallelism spec verify estimation security memory visualization metacognition hive; do
+for rule in quality context delegation parallelism spec verify estimation security memory visualization metacognition claudeproduct hive; do
     if [ -f ".claude/rules/$rule.rules.md" ]; then
         LINES=$(wc -l < ".claude/rules/$rule.rules.md" | tr -d ' ')
         if [ "$LINES" -gt 10 ]; then
@@ -1123,7 +1227,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

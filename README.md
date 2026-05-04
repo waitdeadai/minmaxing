@@ -100,7 +100,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 27 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 28 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -563,7 +563,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 27 Skills
+## The 28 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -578,6 +578,7 @@ Now you can use any workflow pattern:
 | `/agentfactory` | Create governed runtime-bound Hermes agents with manifest, `hermes.runtime.json`, capability stack, memory seed, verification, registry, and tested kill switch |
 | `/parallel` | Run hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | `/metacognition` | Parallel-aware control plane for task routing, evidence-grounded reflection, confidence calibration, and verified learning |
+| `/claudeproduct` | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, and subagents |
 | `/hive` | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
 | `/hiveworkflow` | Full workflow mode for hive-coordinated planning, execution, aggregation, introspection, and verification |
 | `/sprint` | Run an ownership-safe parallel execution wave |
@@ -609,6 +610,8 @@ The routing ladder is:
 ```text
 local /workflow
 -> /parallel when independent execution packets are enough
+-> /claudeproduct for Claude, Claude Code, Claude.ai, API, connector, plugin,
+   skill, hook, MCP, subagent, availability, limit, model, or setup questions
 -> /hive or /hiveworkflow when coordinated roles, blackboard state, dissent,
    and synthesis materially improve the outcome
 -> blocked when evidence, ownership, capacity, or verification is missing
@@ -619,6 +622,7 @@ Use this rule of thumb:
 | Pick | When | The Developer Should Expect |
 | --- | --- | --- |
 | local `/workflow` | One tight reasoning loop, one shared file, unclear ownership, or coordination would slow the work down. | One supervisor does the whole governed lifecycle. |
+| `/claudeproduct` | The question is about Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, availability, limits, models, or setup. | Official Anthropic/Claude docs first, surface separation, source ledger, connector permission/trust caveats, confidence downgrade when current docs are missing. |
 | `/parallel` | The work splits into independent packets with clear owned files/surfaces and aggregate verification. | Packet DAG, ownership matrix, sync barriers, worker sidecars, `parallel-aggregate`. |
 | `/hive` | The task needs multiple perspectives but may not need a full file-changing workflow: research branches, adversarial review, planning alternatives, risk ranking, or synthesis. | Queen/supervisor, role map, blackboard, dissent/conflict log, evidence-backed synthesis. |
 | `/hiveworkflow` | The entire implementation lifecycle benefits from hive coordination and packet execution: broad audit plus implementation, multi-surface build, high-stakes verification, or agent/fleet design. | Full workflow plus hive artifact, `hive-run.json`, optional `/parallel` packets, `hive-aggregate`, `/introspect`, `/verify`. |
@@ -634,13 +638,32 @@ If both seem possible, default to `/parallel` for execution throughput and to
 **Metacognitive routing:** `/metacognition` steers work before execution by
 classifying the task, reading capacity evidence, computing the effective
 parallel budget, naming required evidence, and routing to `/workflow`,
-`/deepresearch`, `/parallel`, `/hive`, `/hiveworkflow`, `/agentfactory`,
+`/claudeproduct`, `/deepresearch`, `/parallel`, `/hive`, `/hiveworkflow`, `/agentfactory`,
 `/verify`, `/introspect`, or a blocked state. It is upstream steering, not a
 substitute for `/introspect`; required introspection triggers still need
 explicit blocker decisions. It does not depend on raw hidden chain-of-thought
 and it rejects reflection without evidence. Use
 `bash scripts/metacognition-scorecard.sh --fixtures --json` to prove the static
 contract.
+
+**Claude product knowledge:** `/claudeproduct` answers user and harness
+questions about Claude product behavior from official current docs. It is the
+right path for "how do we use X from Claude?", Claude Code configuration,
+skills, hooks, MCP, subagents, Claude.ai Projects, Artifacts, connectors,
+Research, web search, API/platform behavior, availability, limits, and setup.
+It separates Claude Code, Claude.ai, Desktop, Mobile, API, and MCP connector
+surfaces, includes connector permission/trust caveats, and never reads `.env`
+or secrets for product-doc answers. Use
+`bash scripts/claudeproduct-scorecard.sh --fixtures --json` to prove stale
+memory answers and unsupported Claude claims are rejected.
+
+**Harness capability map:** `docs/harness-capability-map.md` and
+`docs/harness-capability-map.json` are generated from repo truth surfaces and
+act as the canonical self-lookup index for minmaxing capabilities. They list
+skills, route groups, rules, required script gates, static evals, hooks, and
+Codex surfaces without reading secrets. Regenerate and verify them with
+`bash scripts/harness-capability-map.sh` and
+`bash scripts/harness-capability-map.sh --check`.
 
 **Hive coordination:** `/hive` adds governed multi-agent coordination above
 `/parallel`: a queen/supervisor, capability-based roles, visible blackboard,
@@ -656,7 +679,7 @@ sidecars, and aggregation for execution; hive runs also emit
 
 **Visualization approval:** `/workflow` stays autonomous. Use `/visualize` when you only want to see the model's understanding, and `/visualizeworkflow` when you want a draft spec plus visual or operational artifact to approve before implementation.
 
-**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, shallow hive consensus, and linear lane-scaling claims. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/hive-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
+**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, stale Claude product answers, shallow hive consensus, and linear lane-scaling claims. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/claudeproduct-scorecard.sh --fixtures --json`, `bash scripts/hive-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
 
 **Artifact sidecars:** Markdown remains the human contract, but machine gates can consume minimal JSON sidecars for agent-native estimates, verification results, and worker results. Validate the local fixtures with `bash scripts/artifact-lint.sh --fixtures`.
 
@@ -834,7 +857,7 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 27 skills (system calls)
+│   ├── skills/                 # 28 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── visualize/          # Taste-to-artifact comprehension check
 │   │   ├── visualizeworkflow/  # Approval-first workflow route
@@ -845,6 +868,7 @@ minmaxing/
 │   │   ├── autoplan/           # SPEC.md generator
 │   │   ├── agentfactory/       # Governed Hermes agent generator
 │   │   ├── parallel/           # Hardware-aware workflow parallelizer
+│   │   ├── claudeproduct/      # Official Claude product knowledge router
 │   │   ├── hive/               # Governed multi-agent coordination
 │   │   ├── hiveworkflow/       # Full hive-coordinated workflow
 │   │   ├── sprint/             # Ownership-safe parallel executor
@@ -869,6 +893,7 @@ minmaxing/
 │   ├── memory-auto.sh           # Session start/end hooks
 │   ├── taste.sh                 # Taste system CLI
 │   ├── start-session.sh         # Session initializer
+│   ├── harness-capability-map.sh # Generated harness capability map
 │   ├── parallel-capacity.sh     # Hardware-aware parallel budget profile
 │   ├── parallel-smoke.sh        # Parallel mode production-contract smoke test
 │   ├── agentfactory-smoke.sh    # Agent Factory production-contract smoke test

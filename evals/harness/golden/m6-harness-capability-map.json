@@ -1,0 +1,6 @@
+{
+  "id": "m6-harness-capability-map",
+  "expected_result": "pass",
+  "gate": "scripts/harness-capability-map.sh --check --json",
+  "expected_evidence": "docs/harness-capability-map.md and docs/harness-capability-map.json are generated from current repo truth and pass freshness check"
+}

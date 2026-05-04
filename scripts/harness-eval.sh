@@ -59,6 +59,8 @@ KNOWN_GATES = {
     "metacognition-scorecard",
     "hive-scorecard",
     "hive-aggregate",
+    "claudeproduct-scorecard",
+    "harness-capability-map",
     "artifact-lint",
     "codex-run-smoke",
     "agentfactory-smoke",
@@ -226,6 +228,16 @@ def normalize_gate(value: str) -> str:
         "scripts/hive-aggregate.sh": "hive-aggregate",
         "scripts/hive-aggregate.sh --fixtures": "hive-aggregate",
         "bash scripts/hive-aggregate.sh --fixtures": "hive-aggregate",
+        "claudeproduct-scorecard": "claudeproduct-scorecard",
+        "scripts/claudeproduct-scorecard.sh": "claudeproduct-scorecard",
+        "scripts/claudeproduct-scorecard.sh --fixtures --json": "claudeproduct-scorecard",
+        "bash scripts/claudeproduct-scorecard.sh --fixtures --json": "claudeproduct-scorecard",
+        "harness-capability-map": "harness-capability-map",
+        "scripts/harness-capability-map.sh": "harness-capability-map",
+        "scripts/harness-capability-map.sh --check": "harness-capability-map",
+        "scripts/harness-capability-map.sh --check --json": "harness-capability-map",
+        "bash scripts/harness-capability-map.sh --check": "harness-capability-map",
+        "bash scripts/harness-capability-map.sh --check --json": "harness-capability-map",
         "artifact-lint": "artifact-lint",
         "scripts/artifact-lint.sh": "artifact-lint",
         "scripts/artifact-lint.sh --fixtures": "artifact-lint",
@@ -564,6 +576,14 @@ run_gate() {
     "hive-aggregate")
       require_gate_script "scripts/hive-aggregate.sh" || return $?
       bash "$ROOT_DIR/scripts/hive-aggregate.sh" --fixtures
+      ;;
+    "claudeproduct-scorecard")
+      require_gate_script "scripts/claudeproduct-scorecard.sh" || return $?
+      bash "$ROOT_DIR/scripts/claudeproduct-scorecard.sh" --fixtures --json
+      ;;
+    "harness-capability-map")
+      require_gate_script "scripts/harness-capability-map.sh" || return $?
+      bash "$ROOT_DIR/scripts/harness-capability-map.sh" --check --json >/dev/null
       ;;
     "artifact-lint")
       require_gate_script "scripts/artifact-lint.sh" || return $?

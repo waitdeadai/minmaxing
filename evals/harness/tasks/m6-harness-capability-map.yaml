@@ -1,0 +1,6 @@
+id: m6-harness-capability-map
+title: Generated harness capability map
+gate: scripts/harness-capability-map.sh --check --json
+expected_result: pass
+golden: evals/harness/golden/m6-harness-capability-map.json
+evidence: verifies the committed harness capability map is fresh and generated from repo truth surfaces
