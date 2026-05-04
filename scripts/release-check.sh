@@ -54,6 +54,8 @@ run bash scripts/parallel-smoke.sh
 run bash scripts/agentfactory-smoke.sh
 run bash scripts/hook-smoke.sh
 run bash scripts/metacognition-scorecard.sh --fixtures --json >/dev/null
+run bash scripts/hive-scorecard.sh --fixtures --json >/dev/null
+run bash scripts/hive-aggregate.sh --fixtures
 run bash scripts/artifact-lint.sh --fixtures
 run bash scripts/harness-eval.sh --json >/dev/null
 run bash scripts/security-smoke.sh

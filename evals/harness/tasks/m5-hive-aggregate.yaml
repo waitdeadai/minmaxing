@@ -1,0 +1,6 @@
+id: m5-hive-aggregate
+title: Governed hive aggregate sidecar
+gate: scripts/hive-aggregate.sh --fixtures
+expected_result: reject
+golden: evals/harness/golden/m5-hive-aggregate.json
+evidence: rejects hive run folders with missing dissent majority-vote consensus or missing command evidence while accepting a valid hive-run sidecar

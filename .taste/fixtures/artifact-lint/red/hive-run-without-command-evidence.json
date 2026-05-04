@@ -1,0 +1,36 @@
+{
+  "artifact_type": "hive-run",
+  "expected_result": "reject",
+  "role_map": [
+    {
+      "role": "queen",
+      "owner": "main",
+      "purpose": "supervise",
+      "inputs": ["task"],
+      "output": "decision",
+      "stop_condition": "blocker",
+      "verification": "command"
+    }
+  ],
+  "blackboard_claims": [
+    {
+      "claim_id": "C1",
+      "owner": "main",
+      "claim": "verified",
+      "evidence": "source",
+      "status": "verified",
+      "conflicts": [],
+      "lock_or_merge_barrier": "B1"
+    }
+  ],
+  "capacity": {
+    "capacity_evidence": "bash scripts/parallel-capacity.sh --json",
+    "effective_hive_budget": 2
+  },
+  "dissent_log": ["skeptic checked"],
+  "synthesis": "accepted",
+  "verification": {
+    "status": "pass",
+    "commands_run": []
+  }
+}

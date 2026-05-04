@@ -57,6 +57,8 @@ KNOWN_GATES = {
     "hook-smoke",
     "harness-scorecard",
     "metacognition-scorecard",
+    "hive-scorecard",
+    "hive-aggregate",
     "artifact-lint",
     "codex-run-smoke",
     "agentfactory-smoke",
@@ -216,6 +218,14 @@ def normalize_gate(value: str) -> str:
         "scripts/metacognition-scorecard.sh": "metacognition-scorecard",
         "scripts/metacognition-scorecard.sh --fixtures --json": "metacognition-scorecard",
         "bash scripts/metacognition-scorecard.sh --fixtures --json": "metacognition-scorecard",
+        "hive-scorecard": "hive-scorecard",
+        "scripts/hive-scorecard.sh": "hive-scorecard",
+        "scripts/hive-scorecard.sh --fixtures --json": "hive-scorecard",
+        "bash scripts/hive-scorecard.sh --fixtures --json": "hive-scorecard",
+        "hive-aggregate": "hive-aggregate",
+        "scripts/hive-aggregate.sh": "hive-aggregate",
+        "scripts/hive-aggregate.sh --fixtures": "hive-aggregate",
+        "bash scripts/hive-aggregate.sh --fixtures": "hive-aggregate",
         "artifact-lint": "artifact-lint",
         "scripts/artifact-lint.sh": "artifact-lint",
         "scripts/artifact-lint.sh --fixtures": "artifact-lint",
@@ -546,6 +556,14 @@ run_gate() {
     "metacognition-scorecard")
       require_gate_script "scripts/metacognition-scorecard.sh" || return $?
       bash "$ROOT_DIR/scripts/metacognition-scorecard.sh" --fixtures --json
+      ;;
+    "hive-scorecard")
+      require_gate_script "scripts/hive-scorecard.sh" || return $?
+      bash "$ROOT_DIR/scripts/hive-scorecard.sh" --fixtures --json
+      ;;
+    "hive-aggregate")
+      require_gate_script "scripts/hive-aggregate.sh" || return $?
+      bash "$ROOT_DIR/scripts/hive-aggregate.sh" --fixtures
       ;;
     "artifact-lint")
       require_gate_script "scripts/artifact-lint.sh" || return $?

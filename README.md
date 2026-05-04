@@ -92,7 +92,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 25 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 27 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -570,6 +570,8 @@ Now you can use any workflow pattern:
 | `/agentfactory` | Create governed runtime-bound Hermes agents with manifest, `hermes.runtime.json`, capability stack, memory seed, verification, registry, and tested kill switch |
 | `/parallel` | Run hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | `/metacognition` | Parallel-aware control plane for task routing, evidence-grounded reflection, confidence calibration, and verified learning |
+| `/hive` | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
+| `/hiveworkflow` | Full workflow mode for hive-coordinated planning, execution, aggregation, introspection, and verification |
 | `/sprint` | Run an ownership-safe parallel execution wave |
 | `/verify` | Check output against SPEC with an independent evidence pass |
 | `/review` | AI review + you decide |
@@ -597,9 +599,21 @@ not depend on raw hidden chain-of-thought and it rejects reflection without
 evidence. Use `bash scripts/metacognition-scorecard.sh --fixtures --json` to
 prove the static contract.
 
+**Hive coordination:** `/hive` adds governed multi-agent coordination above
+`/parallel`: a queen/supervisor, capability-based roles, visible blackboard,
+dissent/conflict log, evidence-backed synthesis, and verification. Use
+`/hiveworkflow` only when the whole file-changing lifecycle benefits from that
+coordination. Hive reuses `/parallel` packet DAGs, ownership matrices,
+sidecars, and aggregation for execution; hive runs also emit
+`.taste/hive/{run_id}/hive-run.json` validated by `artifact-lint` and
+`hive-aggregate`. Consensus never replaces
+`/introspect`, `/verify`, `/workflow`, or command evidence. Use
+`bash scripts/hive-scorecard.sh --fixtures --json` and
+`bash scripts/hive-aggregate.sh --fixtures` to prove the static contract.
+
 **Visualization approval:** `/workflow` stays autonomous. Use `/visualize` when you only want to see the model's understanding, and `/visualizeworkflow` when you want a draft spec plus visual or operational artifact to approve before implementation.
 
-**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, and linear lane-scaling claims. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
+**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, shallow hive consensus, and linear lane-scaling claims. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/hive-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
 
 **Artifact sidecars:** Markdown remains the human contract, but machine gates can consume minimal JSON sidecars for agent-native estimates, verification results, and worker results. Validate the local fixtures with `bash scripts/artifact-lint.sh --fixtures`.
 
@@ -777,7 +791,7 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 25 skills (system calls)
+│   ├── skills/                 # 27 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── visualize/          # Taste-to-artifact comprehension check
 │   │   ├── visualizeworkflow/  # Approval-first workflow route
@@ -788,6 +802,8 @@ minmaxing/
 │   │   ├── autoplan/           # SPEC.md generator
 │   │   ├── agentfactory/       # Governed Hermes agent generator
 │   │   ├── parallel/           # Hardware-aware workflow parallelizer
+│   │   ├── hive/               # Governed multi-agent coordination
+│   │   ├── hiveworkflow/       # Full hive-coordinated workflow
 │   │   ├── sprint/             # Ownership-safe parallel executor
 │   │   ├── verify/             # SPEC compliance checker
 │   │   ├── ship/               # Pre-ship checklist

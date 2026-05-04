@@ -16,6 +16,7 @@ Supported artifact_type values:
   agent-native-estimate
   verification-result
   worker-result
+  hive-run
 EOF
 }
 
@@ -216,6 +217,63 @@ def validate_worker(data: dict[str, Any], errors: list[str]) -> None:
             error(errors, "worker-result contains unverified worker claim")
 
 
+def validate_hive_run(data: dict[str, Any], errors: list[str]) -> None:
+    role_map = as_list(data.get("role_map"))
+    blackboard_claims = as_list(data.get("blackboard_claims"))
+    capacity = data.get("capacity") if isinstance(data.get("capacity"), dict) else {}
+    dissent_log = as_list(data.get("dissent_log"))
+    verification = data.get("verification") if isinstance(data.get("verification"), dict) else {}
+
+    if not role_map:
+        error(errors, "hive-run missing role_map")
+    if not any(isinstance(role, dict) and str(role.get("role", "")).lower() in {"queen", "supervisor"} for role in role_map):
+        error(errors, "hive-run role_map must include queen or supervisor")
+    for role in role_map:
+        if not isinstance(role, dict):
+            error(errors, "hive-run role_map entries must be objects")
+            continue
+        for field in ["role", "owner", "purpose", "inputs", "output", "stop_condition", "verification"]:
+            if not present(role.get(field)):
+                error(errors, f"hive-run role missing {field}")
+
+    if not blackboard_claims:
+        error(errors, "hive-run missing blackboard_claims")
+    for claim in blackboard_claims:
+        if not isinstance(claim, dict):
+            error(errors, "hive-run blackboard_claims entries must be objects")
+            continue
+        for field in ["claim_id", "owner", "claim", "evidence", "status", "conflicts", "lock_or_merge_barrier"]:
+            if not present(claim.get(field)):
+                error(errors, f"hive-run claim missing {field}")
+        status = str(claim.get("status", "")).strip().lower()
+        if status not in {"candidate", "verified", "rejected", "blocked"}:
+            error(errors, "hive-run claim status must be candidate, verified, rejected, or blocked")
+        if status == "verified" and not present(claim.get("evidence")):
+            error(errors, "hive-run verified claims require evidence")
+        if str(claim.get("lock_or_merge_barrier", "")).strip().lower() in AMBIGUOUS:
+            error(errors, "hive-run claims require lock_or_merge_barrier")
+
+    if not present(capacity.get("capacity_evidence")):
+        error(errors, "hive-run missing capacity.capacity_evidence")
+    effective_budget = capacity.get("effective_hive_budget")
+    if not isinstance(effective_budget, int) or effective_budget < 1:
+        error(errors, "hive-run capacity.effective_hive_budget must be a positive integer")
+    ceiling = capacity.get("ceiling")
+    if isinstance(ceiling, int) and isinstance(effective_budget, int) and effective_budget > ceiling:
+        error(errors, "hive-run effective_hive_budget exceeds capacity ceiling")
+
+    if not dissent_log:
+        error(errors, "hive-run missing dissent_log")
+    if not present(data.get("synthesis")):
+        error(errors, "hive-run missing synthesis")
+    if str(data.get("consensus_policy", "")).strip().lower() in {"majority-vote", "vote-only", "consensus-only"}:
+        error(errors, "hive-run consensus policy cannot replace evidence")
+    if not has_command_evidence(verification.get("commands_run")):
+        error(errors, "hive-run verification requires command evidence")
+    if verification.get("status") not in {"pass", "passed", "fail", "failed", "blocked"}:
+        error(errors, "hive-run verification.status must be pass, fail, or blocked")
+
+
 def confidence_level(value: Any) -> Any:
     if isinstance(value, dict):
         return value.get("level")
@@ -277,6 +335,20 @@ def normalize_artifact(data: dict[str, Any]) -> dict[str, Any]:
             "parent_verified": parent.get("verified") if "verified" in parent else worker_result.get("parent_verified"),
         }
 
+    if artifact_type == "hive_run" and isinstance(data.get("hive_run"), dict):
+        hive_run = data["hive_run"]
+        return {
+            **data,
+            "artifact_type": "hive-run",
+            "role_map": hive_run.get("role_map"),
+            "blackboard_claims": hive_run.get("blackboard_claims"),
+            "capacity": hive_run.get("capacity"),
+            "dissent_log": hive_run.get("dissent_log"),
+            "synthesis": hive_run.get("synthesis"),
+            "consensus_policy": hive_run.get("consensus_policy"),
+            "verification": hive_run.get("verification"),
+        }
+
     return data
 
 
@@ -298,8 +370,10 @@ def validate_artifact(path: pathlib.Path) -> list[str]:
         validate_verification(data, errors)
     elif artifact_type == "worker-result":
         validate_worker(data, errors)
+    elif artifact_type == "hive-run":
+        validate_hive_run(data, errors)
     else:
-        error(errors, "artifact_type must be agent-native-estimate, verification-result, or worker-result")
+        error(errors, "artifact_type must be agent-native-estimate, verification-result, worker-result, or hive-run")
 
     return errors
 
@@ -357,12 +431,12 @@ def run_fixtures() -> int:
             file=sys.stderr,
         )
 
-    if red_rejected < 9:
+    if red_rejected < 12:
         failures += 1
-        print(f"[artifact-lint] expected at least 9 red fixture rejections, got {red_rejected}", file=sys.stderr)
-    if green_passed < 3:
+        print(f"[artifact-lint] expected at least 12 red fixture rejections, got {red_rejected}", file=sys.stderr)
+    if green_passed < 4:
         failures += 1
-        print(f"[artifact-lint] expected at least 3 green fixture passes, got {green_passed}", file=sys.stderr)
+        print(f"[artifact-lint] expected at least 4 green fixture passes, got {green_passed}", file=sys.stderr)
 
     if failures:
         return 1

@@ -55,6 +55,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /agentfactory | Create governed runtime-bound Hermes agents with manifest, runtime contract, capability stack, memory seed, verification, registry, and kill switch |
 | /parallel | Hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | /metacognition | Parallel-aware routing and evidence-grounded self-calibration before execution |
+| /hive | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
+| /hiveworkflow | Full workflow mode that uses hive coordination before packet execution, aggregation, introspection, and verify |
 | /verify | Check output against SPEC |
 | /review | AI review + human sign-off |
 | /qa | Playwright E2E testing |
@@ -79,6 +81,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Visualization Approval**: `/workflow` remains autonomous. Use `/visualize` for standalone comprehension artifacts and `/visualizeworkflow` when the user wants to approve a visual or operational understanding before implementation.
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
 - **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile.
+- **Hive Coordination**: `/hive` and `/hiveworkflow` coordinate specialized agents through a queen/supervisor, role map, blackboard, dissent/conflict log, and evidence-backed synthesis. Hive reuses `/parallel` for packet execution and aggregation, writes `.taste/hive/{run_id}/hive-run.json` for durable runs, and validates with `artifact-lint` plus `hive-aggregate`; consensus never replaces `/introspect` or `/verify`.
 - **Runtime Effectiveness Hooks**: `.claude/settings.json` wires `.claude/hooks/govern-effectiveness.sh` into Claude Code `PreToolUse`, `Stop`, and `SubagentStop` events. Do not claim hook enforcement unless `bash scripts/hook-smoke.sh` passes.
 - **Artifact Lint**: Minimal sidecars for agent-native estimates, verification results, and worker results live under `schemas/` and are checked with `bash scripts/artifact-lint.sh --fixtures`.
 - **Harness Eval Pack**: `evals/harness/tasks` and `evals/harness/golden` define static no-network evals over the local gates; `bash scripts/harness-eval-report.sh --run` summarizes the score.

@@ -124,6 +124,7 @@ Choose the route from user intent:
 | fix, debug, investigate | research first, audit the relevant code path, then reproduce/fix/verify; create `SPEC.md` if files change |
 | audit, analyze, understand, deepresearch, webresearch | inspect deeply, report findings, make fixes only if the user asked for them |
 | parallel, mode parallel, dense workflow, orchestrate subagents, split across instances | run the `/parallel` eligibility audit; use `/parallel` only when capacity, ownership, and verification pass |
+| hive, hive mind, coordinated agents, swarm, multi-agent synthesis | route to `/hiveworkflow` only when roles, blackboard, dissent, ownership, capacity, and verification pass; otherwise downgrade to `/workflow` or `/parallel` |
 | explain | inspect and explain directly |
 | review | review directly |
 | qa | run focused validation directly |
@@ -686,7 +687,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/hive`, `/hiveworkflow`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers

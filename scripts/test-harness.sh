@@ -225,7 +225,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "25 skills" README.md 2>/dev/null && \
+   grep -Fq "27 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -309,7 +309,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 25 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 27 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -962,26 +962,79 @@ else
     test_fail "/visualize, /visualizeworkflow, visualization rules, or smoke gate are incomplete"
 fi
 
+# Test 3x: Hive Coordination Contract
+echo "[3x] Hive Coordination Contract"
+HIVE_OK=true
+for required_file in \
+    ".claude/skills/hive/SKILL.md" \
+    ".claude/skills/hiveworkflow/SKILL.md" \
+    ".claude/rules/hive.rules.md" \
+    "scripts/hive-scorecard.sh" \
+    "scripts/hive-aggregate.sh" \
+    "schemas/hive-run.schema.json" \
+    "evals/harness/tasks/m5-hive-scorecard.yaml" \
+    "evals/harness/golden/m5-hive-scorecard.json" \
+    "evals/harness/tasks/m5-hive-aggregate.yaml" \
+    "evals/harness/golden/m5-hive-aggregate.json"; do
+    if [ ! -e "$required_file" ]; then
+        HIVE_OK=false
+    fi
+done
+for pattern in \
+    "Role Map" \
+    "Blackboard" \
+    "Dissent And Conflict Log" \
+    "effective_hive_budget" \
+    "hive-run.json" \
+    "hive-aggregate" \
+    "Consensus is not evidence" \
+    "Hive consensus never replaces" \
+    'reuses `/parallel`'; do
+    if ! grep -Fq "$pattern" .claude/skills/hive/SKILL.md .claude/skills/hiveworkflow/SKILL.md .claude/rules/hive.rules.md README.md CLAUDE.md AGENTS.md 2>/dev/null; then
+        HIVE_OK=false
+    fi
+done
+for rule in \
+    "missing_role_map" \
+    "missing_blackboard" \
+    "missing_hive_budget" \
+    "consensus_without_dissent" \
+    "unverified_hive_claim" \
+    "shared_state_without_lock" \
+    "linear_hive_scaling" \
+    "hive_replaces_core_gate"; do
+    if ! grep -Fq "$rule" scripts/hive-scorecard.sh 2>/dev/null; then
+        HIVE_OK=false
+    fi
+done
+if [ "$HIVE_OK" = true ] && \
+   bash scripts/hive-scorecard.sh --fixtures --json >/dev/null 2>&1 && \
+   bash scripts/hive-aggregate.sh --fixtures >/dev/null 2>&1; then
+    test_pass "/hive and /hiveworkflow are governed coordination layers"
+else
+    test_fail "/hive contract, docs, fixtures, or scorecard are incomplete"
+fi
+
 # ========================================
-# Skills (25 Expected)
+# Skills (27 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 25 Expected]"
+echo "[Skills - 27 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 25 ]; then
+if [ "$SKILL_COUNT" -ge 27 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 25+ skills, found $SKILL_COUNT"
+    test_fail "Expected 27+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow visualize visualizeworkflow digestflow align audit autoplan agentfactory parallel metacognition deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow visualize visualizeworkflow digestflow align audit autoplan agentfactory parallel metacognition hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1013,7 +1066,7 @@ fi
 
 # Test 7: Individual Rules
 echo "[7] Individual Rules"
-for rule in quality context delegation parallelism spec verify estimation security memory visualization metacognition; do
+for rule in quality context delegation parallelism spec verify estimation security memory visualization metacognition hive; do
     if [ -f ".claude/rules/$rule.rules.md" ]; then
         LINES=$(wc -l < ".claude/rules/$rule.rules.md" | tr -d ' ')
         if [ "$LINES" -gt 10 ]; then
@@ -1051,7 +1104,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

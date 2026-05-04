@@ -1,0 +1,6 @@
+{
+  "id": "m5-hive-scorecard",
+  "expected_result": "reject",
+  "gate": "scripts/hive-scorecard.sh --fixtures --json",
+  "expected_evidence": ".taste/fixtures/hive/red/* fixtures trigger the hive scorecard rules"
+}

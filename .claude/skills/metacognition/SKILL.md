@@ -71,6 +71,7 @@ Choose exactly one:
 | `deepresearch` | landscape, architecture, due diligence, strategic research | `/deepresearch` |
 | `workflow` | repo-changing build/fix/refactor/docs/config work | `/workflow` |
 | `parallel` | dense independent packets with clear ownership and verification | `/parallel` |
+| `hive` | multi-agent coordination needs roles, blackboard, dissent, and synthesis | `/hive` or `/hiveworkflow` |
 | `agentfactory` | governed Hermes agent creation or runtime-bound agent design | `/agentfactory` |
 | `verify` | check an output against `SPEC.md` | `/verify` |
 | `introspect` | hard-gate self-audit or confidence challenge | `/introspect` |
@@ -111,7 +112,7 @@ as "10 agents means 10x faster."
 
 ```markdown
 ## Task Class
-[answer / webresearch / deepresearch / workflow / parallel / agentfactory / verify / introspect / blocked]
+[answer / webresearch / deepresearch / workflow / parallel / hive / agentfactory / verify / introspect / blocked]
 
 ## Capacity Evidence
 - Source: [`scripts/parallel-capacity.sh --json` output, repo config, or unavailable]
@@ -143,7 +144,7 @@ as "10 agents means 10x faster."
 - Estimate audit: ...
 
 ## Route Decision
-- Route: [/workflow, /deepresearch, /parallel, /agentfactory, /verify, /introspect, direct answer, or blocked]
+- Route: [/workflow, /deepresearch, /parallel, /hive, /hiveworkflow, /agentfactory, /verify, /introspect, direct answer, or blocked]
 - Reason: ...
 
 ## Confidence

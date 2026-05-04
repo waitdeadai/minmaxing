@@ -1,0 +1,25 @@
+{
+  "artifact_type": "hive-run",
+  "expected_result": "reject",
+  "role_map": [
+    {
+      "role": "queen",
+      "owner": "main",
+      "purpose": "supervise",
+      "inputs": ["task"],
+      "output": "decision",
+      "stop_condition": "blocker",
+      "verification": "command"
+    }
+  ],
+  "capacity": {
+    "capacity_evidence": "bash scripts/parallel-capacity.sh --json",
+    "effective_hive_budget": 1
+  },
+  "dissent_log": ["skeptic checked"],
+  "synthesis": "done",
+  "verification": {
+    "status": "pass",
+    "commands_run": ["bash scripts/hive-scorecard.sh --fixtures --json"]
+  }
+}

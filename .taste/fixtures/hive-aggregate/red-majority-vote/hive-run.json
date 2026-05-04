@@ -1,0 +1,58 @@
+{
+  "artifact_type": "hive_run",
+  "schema_version": "artifact-lint/v1",
+  "fixture_id": "green-valid-hive-run",
+  "expected_result": "pass",
+  "hive_run": {
+    "role_map": [
+      {
+        "role": "queen",
+        "owner": "main",
+        "purpose": "supervise route and final synthesis",
+        "inputs": ["SPEC.md"],
+        "output": "decision log",
+        "stop_condition": "unresolved blocker",
+        "verification": "parent command evidence"
+      },
+      {
+        "role": "reviewer",
+        "owner": "skeptic",
+        "purpose": "challenge consensus",
+        "inputs": ["blackboard"],
+        "output": "dissent log",
+        "stop_condition": "missing evidence",
+        "verification": "queen review"
+      }
+    ],
+    "blackboard_claims": [
+      {
+        "claim_id": "C1",
+        "owner": "reviewer",
+        "claim": "Consensus cannot replace verification.",
+        "evidence": "scripts/hive-scorecard.sh rejects hive_replaces_core_gate.",
+        "status": "verified",
+        "conflicts": "no conflicts",
+        "lock_or_merge_barrier": "B1"
+      }
+    ],
+    "capacity": {
+      "capacity_evidence": "bash scripts/parallel-capacity.sh --json",
+      "effective_hive_budget": 2,
+      "ceiling": 10
+    },
+    "dissent_log": [
+      "Reviewer challenged consensus without evidence."
+    ],
+    "synthesis": "Queen accepted only evidence-backed claims.",
+    "consensus_policy": "majority-vote",
+    "verification": {
+      "status": "pass",
+      "commands_run": [
+        {
+          "command": "bash scripts/hive-scorecard.sh --fixtures --json",
+          "exit_code": 0
+        }
+      ]
+    }
+  }
+}

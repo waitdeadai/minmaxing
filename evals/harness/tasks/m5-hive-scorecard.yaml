@@ -1,0 +1,6 @@
+id: m5-hive-scorecard
+title: Governed hive scorecard
+gate: scripts/hive-scorecard.sh --fixtures --json
+expected_result: reject
+golden: evals/harness/golden/m5-hive-scorecard.json
+evidence: rejects missing role maps missing blackboards missing hive budgets consensus without dissent unverified hive claims shared-state edits without locks linear hive scaling and hive replacing core gates

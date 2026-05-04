@@ -80,7 +80,7 @@ has_evidence_marker() {
 has_task_class() {
   local file="$1"
   grep -Eiq '^## Task Class[[:space:]]*$' "$file" && \
-    grep -Eiq '(answer|webresearch|deepresearch|workflow|parallel|agentfactory|verify|introspect|blocked)' "$file"
+    grep -Eiq '(answer|webresearch|deepresearch|workflow|parallel|hive|agentfactory|verify|introspect|blocked)' "$file"
 }
 
 has_parallel_budget() {

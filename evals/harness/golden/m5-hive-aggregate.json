@@ -1,0 +1,6 @@
+{
+  "id": "m5-hive-aggregate",
+  "expected_result": "reject",
+  "gate": "scripts/hive-aggregate.sh --fixtures",
+  "expected_evidence": ".taste/fixtures/hive-aggregate/red-* fixtures trigger hive aggregate validation"
+}

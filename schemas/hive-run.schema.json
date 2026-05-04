@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minmaxing.dev/schemas/hive-run.schema.json",
+  "title": "Hive Run Sidecar",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "role_map",
+    "blackboard_claims",
+    "capacity",
+    "dissent_log",
+    "synthesis",
+    "verification"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "hive-run"
+    },
+    "role_map": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "owner", "purpose", "inputs", "output", "stop_condition", "verification"],
+        "additionalProperties": true
+      }
+    },
+    "blackboard_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "owner", "claim", "evidence", "status", "conflicts", "lock_or_merge_barrier"],
+        "additionalProperties": true
+      }
+    },
+    "capacity": {
+      "type": "object",
+      "required": ["capacity_evidence", "effective_hive_budget"],
+      "additionalProperties": true
+    },
+    "dissent_log": {
+      "type": "array"
+    },
+    "synthesis": {
+      "type": ["string", "object", "array"]
+    },
+    "verification": {
+      "type": "object",
+      "required": ["status", "commands_run"],
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
