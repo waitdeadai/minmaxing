@@ -32,6 +32,28 @@ Use `/hive` when a task benefits from multiple independent perspectives,
 research branches, adversarial reviews, or role-specialized work packets.
 Downgrade to `/workflow` or local work when the task is tightly coupled.
 
+## Hive Vs Parallel
+
+Pick `/parallel` when the problem is mostly execution throughput:
+
+- independent packets
+- owned files or surfaces
+- sync barriers
+- worker sidecars
+- aggregate verification
+
+Pick `/hive` when the problem is mostly judgment breadth:
+
+- independent roles
+- blackboard claims
+- dissent or skeptic lanes
+- synthesis and arbitration
+- evidence-backed consensus checks
+
+Pick `/hiveworkflow` when the task needs both coordinated judgment and the full
+file-changing lifecycle. If the work only needs owned implementation packets,
+use `/parallel`. If it only needs one supervisor loop, use `/workflow`.
+
 ## Non-Negotiable Contract
 
 - The queen/supervisor owns route, scope, safety, final synthesis, and closeout.

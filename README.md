@@ -1,5 +1,13 @@
 # minmaxing
 
+## Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+```
+
+Get your key from [platform.minimax.io](https://platform.minimax.io).
+
 <h1 align="center">
   <img src="https://img.shields.io/badge/MiniMax-2.7%20Highspeed-FF6B35?style=for-the-badge&logo=lightning&logoColor=white" alt="MiniMax M2.7 Highspeed" />
   <img src="https://img.shields.io/badge/Claude%20Code-Harness-8B5CF6?style=for-the-badge&logo=claude&logoColor=white" alt="Claude Code" />
@@ -555,7 +563,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 25 Skills
+## The 27 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -589,15 +597,50 @@ Now you can use any workflow pattern:
 
 **Parallelism:** All skills that support parallelism treat `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and hardware capacity as ceilings, not targets. `/align` remains single-threaded by design because taste alignment is sequential judgment.
 
+## Smart Autorouting
+
+minmaxing has smart autorouting through `/metacognition` and `/workflow`.
+Before file-changing work, the harness classifies the task, reads capacity
+evidence, computes the smallest useful budget, and chooses the route with the
+least coordination overhead that can still improve correctness.
+
+The routing ladder is:
+
+```text
+local /workflow
+-> /parallel when independent execution packets are enough
+-> /hive or /hiveworkflow when coordinated roles, blackboard state, dissent,
+   and synthesis materially improve the outcome
+-> blocked when evidence, ownership, capacity, or verification is missing
+```
+
+Use this rule of thumb:
+
+| Pick | When | The Developer Should Expect |
+| --- | --- | --- |
+| local `/workflow` | One tight reasoning loop, one shared file, unclear ownership, or coordination would slow the work down. | One supervisor does the whole governed lifecycle. |
+| `/parallel` | The work splits into independent packets with clear owned files/surfaces and aggregate verification. | Packet DAG, ownership matrix, sync barriers, worker sidecars, `parallel-aggregate`. |
+| `/hive` | The task needs multiple perspectives but may not need a full file-changing workflow: research branches, adversarial review, planning alternatives, risk ranking, or synthesis. | Queen/supervisor, role map, blackboard, dissent/conflict log, evidence-backed synthesis. |
+| `/hiveworkflow` | The entire implementation lifecycle benefits from hive coordination and packet execution: broad audit plus implementation, multi-surface build, high-stakes verification, or agent/fleet design. | Full workflow plus hive artifact, `hive-run.json`, optional `/parallel` packets, `hive-aggregate`, `/introspect`, `/verify`. |
+
+Do not pick `/hive` because it sounds more powerful. Pick it when role
+specialization and dissent improve judgment. Do not pick `/parallel` because
+there are available lanes. Pick it when disjoint ownership and aggregation make
+the critical path shorter or the evidence better.
+
+If both seem possible, default to `/parallel` for execution throughput and to
+`/hive` for judgment breadth. Use `/hiveworkflow` only when the task needs both.
+
 **Metacognitive routing:** `/metacognition` steers work before execution by
 classifying the task, reading capacity evidence, computing the effective
 parallel budget, naming required evidence, and routing to `/workflow`,
-`/deepresearch`, `/parallel`, `/agentfactory`, `/verify`, `/introspect`, or a
-blocked state. It is upstream steering, not a substitute for `/introspect`;
-required introspection triggers still need explicit blocker decisions. It does
-not depend on raw hidden chain-of-thought and it rejects reflection without
-evidence. Use `bash scripts/metacognition-scorecard.sh --fixtures --json` to
-prove the static contract.
+`/deepresearch`, `/parallel`, `/hive`, `/hiveworkflow`, `/agentfactory`,
+`/verify`, `/introspect`, or a blocked state. It is upstream steering, not a
+substitute for `/introspect`; required introspection triggers still need
+explicit blocker decisions. It does not depend on raw hidden chain-of-thought
+and it rejects reflection without evidence. Use
+`bash scripts/metacognition-scorecard.sh --fixtures --json` to prove the static
+contract.
 
 **Hive coordination:** `/hive` adds governed multi-agent coordination above
 `/parallel`: a queen/supervisor, capability-based roles, visible blackboard,

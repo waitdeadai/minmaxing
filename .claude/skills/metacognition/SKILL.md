@@ -77,6 +77,23 @@ Choose exactly one:
 | `introspect` | hard-gate self-audit or confidence challenge | `/introspect` |
 | `blocked` | credentials, policy, source truth, safety, or approval is missing | stop and state blocker |
 
+## Smart Autorouting
+
+Route to the smallest mode that can improve correctness:
+
+| Route | Choose When | Downgrade When |
+| --- | --- | --- |
+| `/workflow` | the work is coupled, single-surface, or needs one supervisor loop | independent packets or role-based synthesis would materially help |
+| `/parallel` | independent execution or evidence packets have clear ownership and aggregate verification | the main need is judgment breadth, dissent, or synthesis rather than execution throughput |
+| `/hive` | independent roles, blackboard state, dissent, and synthesis improve planning, research, review, or risk judgment | no visible blackboard, no dissent path, or summaries would become unverified truth |
+| `/hiveworkflow` | file-changing work needs both hive coordination and workflow execution | roles/blackboard/ownership/capacity/verification cannot be written cleanly |
+
+Default to `/parallel` for disjoint execution throughput. Default to `/hive`
+for coordinated judgment breadth. Use `/hiveworkflow` only when the full
+implementation lifecycle needs both.
+
+Never route to hive just because more agents are available.
+
 ## Capacity Evidence
 
 Every metacognitive run must inspect or cite current capacity evidence:

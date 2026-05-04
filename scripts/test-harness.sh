@@ -987,6 +987,8 @@ for pattern in \
     "effective_hive_budget" \
     "hive-run.json" \
     "hive-aggregate" \
+    "Hive Vs Parallel" \
+    "judgment breadth" \
     "Consensus is not evidence" \
     "Hive consensus never replaces" \
     'reuses `/parallel`'; do
@@ -1013,6 +1015,23 @@ if [ "$HIVE_OK" = true ] && \
     test_pass "/hive and /hiveworkflow are governed coordination layers"
 else
     test_fail "/hive contract, docs, fixtures, or scorecard are incomplete"
+fi
+
+# Test 3y: Smart Autorouting UX
+echo "[3y] Smart Autorouting UX"
+if grep -Fq "## Install" README.md 2>/dev/null && \
+   awk 'NR <= 12 && /setup.sh \\| bash -s YOUR_TOKEN_PLAN_KEY/ { found=1 } END { exit found ? 0 : 1 }' README.md && \
+   grep -Fq "## Smart Autorouting" README.md 2>/dev/null && \
+   grep -Fq "local /workflow" README.md 2>/dev/null && \
+   grep -Fq "/parallel when independent execution packets are enough" README.md 2>/dev/null && \
+   grep -Fq "/hive or /hiveworkflow when coordinated roles" README.md 2>/dev/null && \
+   grep -Fq "Default to \`/parallel\` for disjoint execution throughput" .claude/skills/metacognition/SKILL.md 2>/dev/null && \
+   grep -Fq "Default to \`/hive\`" .claude/skills/metacognition/SKILL.md 2>/dev/null && \
+   grep -Fq "Prefer \`/parallel\` when disjoint execution packets are enough" .claude/skills/workflow/SKILL.md 2>/dev/null && \
+   grep -Fq "prefer \`/hiveworkflow\` only when judgment breadth" .claude/skills/workflow/SKILL.md 2>/dev/null; then
+    test_pass "README and skills explain smart autorouting and hive vs parallel"
+else
+    test_fail "smart autorouting or top-level install guidance is incomplete"
 fi
 
 # ========================================

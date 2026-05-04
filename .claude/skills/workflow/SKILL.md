@@ -141,6 +141,13 @@ name it. Use it only when the eligibility audit proves independent packets,
 clear ownership, host capacity, and a verification path. Downgrade to normal
 inline `/workflow` when those conditions fail.
 
+For hive-like work, automatically consider `/hiveworkflow` when the request
+needs coordinated roles, a blackboard, dissent/conflict handling, synthesis, and
+verified learning. Prefer `/parallel` when disjoint execution packets are enough;
+prefer `/hiveworkflow` only when judgment breadth and role coordination are part
+of the value. Downgrade to local `/workflow` if role map, blackboard,
+ownership/locks, capacity, or verification cannot be written clearly.
+
 Before freezing the route for file-changing work, perform a compact
 metacognitive route check. Use `scripts/parallel-capacity.sh --json` when
 available, treat `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and hardware
