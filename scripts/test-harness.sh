@@ -225,7 +225,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "28 skills" README.md 2>/dev/null && \
+   grep -Fq "29 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -413,7 +413,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 28 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 29 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -855,6 +855,25 @@ else
     test_fail "static harness eval pack metadata, goldens, scripts, or gates are failing"
 fi
 
+# Test 3q-demo: Governed Recorded Demo Contract
+echo "[3q-demo] Governed Recorded Demo Contract"
+if [ -f ".claude/skills/demo/SKILL.md" ] && \
+   [ -x "scripts/demo-smoke.sh" ] && \
+   [ -f "evals/harness/tasks/m7-demo-smoke.yaml" ] && \
+   [ -f "evals/harness/golden/m7-demo-smoke.json" ] && \
+   grep -Fq "page.screencast" .claude/skills/demo/SKILL.md 2>/dev/null && \
+   grep -Fq "gpt-4o-mini-tts" .claude/skills/demo/SKILL.md 2>/dev/null && \
+   grep -Fq "es-419" .claude/skills/demo/SKILL.md 2>/dev/null && \
+   grep -Fq "synthetic audio" .claude/skills/demo/SKILL.md 2>/dev/null && \
+   grep -Fq ".taste/demo-recordings/{run_id}/" .claude/skills/demo/SKILL.md 2>/dev/null && \
+   grep -Fq "demo-smoke" scripts/harness-eval.sh scripts/release-check.sh 2>/dev/null && \
+   for ignored_path in .taste/demo-recordings/sample.webm demo-recordings/sample.mp4 recordings/sample.wav sample.webm sample.mp4 sample.wav sample.trace.zip sample.har; do git check-ignore -q "$ignored_path" || exit 1; done && \
+   bash scripts/demo-smoke.sh --fixtures >/dev/null 2>&1; then
+    test_pass "/demo records governed bilingual demos with static safety and manifest gates"
+else
+    test_fail "/demo skill, smoke, fixtures, eval, or ignored media contract is incomplete"
+fi
+
 # Test 3r: Local Run Metrics And Session Insights
 echo "[3r] Local Run Metrics And Session Insights"
 RUN_INSIGHTS_OK=true
@@ -1139,25 +1158,25 @@ else
 fi
 
 # ========================================
-# Skills (28 Expected)
+# Skills (29 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 28 Expected]"
+echo "[Skills - 29 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 28 ]; then
+if [ "$SKILL_COUNT" -ge 29 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 28+ skills, found $SKILL_COUNT"
+    test_fail "Expected 29+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow visualize visualizeworkflow digestflow align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow visualize visualizeworkflow demo digestflow align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then

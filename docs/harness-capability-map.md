@@ -8,13 +8,13 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 28
+- Skills: 29
 - Rules: 15
-- Scripts: 45
-- Static eval tasks: 17
+- Scripts: 46
+- Static eval tasks: 18
 - Hook entries: 11
 - Codex config files: 4
-- Core routes: 11
+- Core routes: 12
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
   runtime secrets.
@@ -24,7 +24,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `agent-systems`: `/agentfactory`
 - `debugging`: `/codesearch`, `/investigate`
 - `design`: `/visualize`
-- `execution`: `/hiveworkflow`, `/visualizeworkflow`, `/workflow`
+- `execution`: `/demo`, `/hiveworkflow`, `/visualizeworkflow`, `/workflow`
 - `kernel`: `/align`, `/tastebootstrap`
 - `knowledge`: `/claudeproduct`
 - `memory`: `/memory`
@@ -49,6 +49,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/codesearch` | `debugging` | yes | no | `.claude/skills/codesearch/SKILL.md` | Search the local codebase for patterns, symbols, implementations, and references. Use when the user wants to find where code lives or understand how a pattern is implemented without invoking the OpenAI Codex plugin namespace. |
 | `/council` | `planning` | yes | no | `.claude/skills/council/SKILL.md` | /council |
 | `/deepresearch` | `research` | yes | yes | `.claude/skills/deepresearch/SKILL.md` | /deepresearch |
+| `/demo` | `execution` | manual | yes | `.claude/skills/demo/SKILL.md` | Produce governed recorded product demos with bilingual voiceover, captions, browser evidence, safety gates, and artifact manifests. |
 | `/digestflow` | `research` | manual | no | `.claude/skills/digestflow/SKILL.md` | Run the full minmaxing workflow from external AI research reports. Use when the task begins with Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, or similar reports that must be digested before the repo's own deepresearch and governed workflow. |
 | `/hive` | `parallelism` | manual | yes | `.claude/skills/hive/SKILL.md` | Coordinate a governed hive of specialized agents for broad research, planning, review, or implementation work when roles, blackboard state, dissent, synthesis, and verification materially improve the outcome. |
 | `/hiveworkflow` | `execution` | manual | yes | `.claude/skills/hiveworkflow/SKILL.md` | Run the full minmaxing workflow with governed hive coordination: metacognitive route, deepresearch, role map, blackboard, packet DAG, aggregation, introspection, verification, and closeout. |
@@ -95,6 +96,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | --- | --- | --- |
 | `artifact-lint` | machine sidecar validator | `scripts/artifact-lint.sh` |
 | `claudeproduct-scorecard` | Claude product answer scorecard | `scripts/claudeproduct-scorecard.sh` |
+| `demo-smoke` | recorded demo contract and manifest gate | `scripts/demo-smoke.sh` |
 | `harness-capability-map` | capability map freshness gate | `scripts/harness-capability-map.sh` |
 | `harness-eval` | static eval pack runner | `scripts/harness-eval.sh` |
 | `hive-aggregate` | hive run aggregate validator | `scripts/hive-aggregate.sh` |
@@ -128,6 +130,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `m5-hive-scorecard` | `scripts/hive-scorecard.sh --fixtures --json` | `reject` | `evals/harness/tasks/m5-hive-scorecard.yaml` | `evals/harness/golden/m5-hive-scorecard.json` |
 | `m6-claudeproduct-scorecard` | `scripts/claudeproduct-scorecard.sh --fixtures --json` | `reject` | `evals/harness/tasks/m6-claudeproduct-scorecard.yaml` | `evals/harness/golden/m6-claudeproduct-scorecard.json` |
 | `m6-harness-capability-map` | `scripts/harness-capability-map.sh --check --json` | `pass` | `evals/harness/tasks/m6-harness-capability-map.yaml` | `evals/harness/golden/m6-harness-capability-map.json` |
+| `m7-demo-smoke` | `scripts/demo-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m7-demo-smoke.yaml` | `evals/harness/golden/m7-demo-smoke.json` |
 
 ## Claude Code Settings And Hooks
 

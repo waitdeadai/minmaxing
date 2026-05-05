@@ -1,0 +1,43 @@
+{
+  "artifact_type": "demo-recording",
+  "demo_id": "20260505-red-missing-retention",
+  "run_dir": ".taste/demo-recordings/20260505-red-missing-retention",
+  "target": {
+    "route_or_path": "http://127.0.0.1:3000/demo",
+    "audience": "operator",
+    "objective": "prove the guided scheduling workflow"
+  },
+  "languages": [
+    {
+      "code": "en",
+      "script": "script.en.md",
+      "captions": "captions.en.vtt"
+    },
+    {
+      "code": "es-419",
+      "script": "script.es.md",
+      "captions": "captions.es.vtt"
+    }
+  ],
+  "artifacts": {
+    "video": "demo.webm",
+    "audio": [],
+    "captions": [
+      "captions.en.vtt",
+      "captions.es.vtt"
+    ]
+  },
+  "quality_gates": {
+    "route_load": "pass",
+    "workflow_truth": "pass",
+    "operator_comprehension": "pass",
+    "accessibility": "pass",
+    "media": "pass",
+    "safety": "pass"
+  },
+  "commands_run": [
+    "bash scripts/demo-smoke.sh --manifest fixture"
+  ],
+  "risk_flags": [],
+  "verdict": "pass"
+}

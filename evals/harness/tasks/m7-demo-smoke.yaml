@@ -1,0 +1,5 @@
+id: m7-demo-smoke
+title: Governed recorded demo contract smoke
+gate: scripts/demo-smoke.sh --fixtures
+expected_result: pass
+golden: evals/harness/golden/m7-demo-smoke.json

@@ -54,10 +54,10 @@
     "path": ".codex"
   },
   "counts": {
-    "eval_tasks": 17,
+    "eval_tasks": 18,
     "rules": 15,
-    "scripts": 45,
-    "skills": 28
+    "scripts": 46,
+    "skills": 29
   },
   "evals": [
     {
@@ -212,6 +212,15 @@
       "id": "m6-harness-capability-map",
       "task_path": "evals/harness/tasks/m6-harness-capability-map.yaml",
       "title": "Generated harness capability map"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/demo-smoke.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m7-demo-smoke.json",
+      "id": "m7-demo-smoke",
+      "task_path": "evals/harness/tasks/m7-demo-smoke.yaml",
+      "title": "Governed recorded demo contract smoke"
     }
   ],
   "generated_at": "static",
@@ -374,6 +383,14 @@
       "sha256": "45893ba7c1a467e774f725f3fb0697e49cbcb35943943c2449f309aed2e350e8"
     },
     {
+      "line_count": 442,
+      "name": "demo-smoke",
+      "path": "scripts/demo-smoke.sh",
+      "purpose": "recorded demo contract and manifest gate",
+      "required_gate": true,
+      "sha256": "6328e436ed7814bcdfa1fa911f4273c7d5ea032439ece8ebb58b44ee1afc0faa"
+    },
+    {
       "line_count": 28,
       "name": "detect-hardware",
       "path": "scripts/detect-hardware.sh",
@@ -406,12 +423,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 638,
+      "line_count": 642,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "aba063d657223559815c4d0667231116995e3ebac4d3af873aaa276ee737bc07"
+      "sha256": "7917e98811379cf83655a2fe59f8095e32a634ffc6cd47d02e445c5c4c43181f"
     },
     {
       "line_count": 640,
@@ -430,12 +447,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 758,
+      "line_count": 767,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "68cbfbda1c4cc65758be54d7127b80a1e4ffac93a184cdbe8d1959df07df67ff"
+      "sha256": "f13318556519980ab3807ab1bb3fc4e655c73cfbe4ce78a8ad6b33cf51bd9990"
     },
     {
       "line_count": 322,
@@ -558,12 +575,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 84,
+      "line_count": 85,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "d7f36604a456c2c009372cf5f1c29cfd0d3126f63f2dd982a05c2f0673e13637"
+      "sha256": "36d9a80e481a21153555bf0c0fab2dcf48bdfe4c8897578ac51621230afc9a03"
     },
     {
       "line_count": 144,
@@ -627,7 +644,7 @@
       "path": "scripts/start-session.sh",
       "purpose": "Ultimate MiniMax 2.7 Harness - Session Start",
       "required_gate": false,
-      "sha256": "25ef084624c8a50662b53734490818a652afd445a49cdbf5890174258fd02ab2"
+      "sha256": "886875f3cd914dd33b74453b1af9f69e7e9220c8b1b762ecad0a3eb73bd0b7ab"
     },
     {
       "line_count": 382,
@@ -646,12 +663,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1584,
+      "line_count": 1603,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "09967d10572d09c0b2b981df765079faf7f13e948d46c5970150c66712f885c7"
+      "sha256": "f622a1e92ef8912a59bb3198df95e54e8594c54464d586a42e90026fecc43b75"
     },
     {
       "line_count": 552,
@@ -667,7 +684,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "0fee7dd6de05196579664c420e8f20c90b73efad2879af6d695fd2ef4a19cea7"
+      "sha256": "2ea46238afb551bb4ffe56010911ce7df8660b920dcbd8899b7b8fbb91f93026"
     },
     {
       "line_count": 121,
@@ -1030,6 +1047,26 @@
       "related_scripts": [],
       "sha256": "656933f8c31be9044f07f9de334cf4a4feae9d9f973e8bb1ae67c4e1627306e1",
       "slash": "/deepresearch",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[product route, app path, or demo objective]",
+      "core_route": true,
+      "description": "Produce governed recorded product demos with bilingual voiceover, captions, browser evidence, safety gates, and artifact manifests.",
+      "group": "execution",
+      "line_count": 217,
+      "model_invocation": false,
+      "name": "demo",
+      "path": ".claude/skills/demo/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m7-demo-smoke.yaml"
+      ],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/demo-smoke.sh"
+      ],
+      "sha256": "67a2d8418f4a2570308e469abe8271ba9949382984949e18c66471d42f00fc65",
+      "slash": "/demo",
       "user_invocable": true
     },
     {
@@ -1425,8 +1462,8 @@
   },
   "summary": {
     "codex_file_count": 4,
-    "core_route_count": 11,
-    "eval_task_count": 17,
+    "core_route_count": 12,
+    "eval_task_count": 18,
     "groups": {
       "agent-systems": [
         "/agentfactory"
@@ -1439,6 +1476,7 @@
         "/visualize"
       ],
       "execution": [
+        "/demo",
         "/hiveworkflow",
         "/visualizeworkflow",
         "/workflow"
@@ -1487,7 +1525,7 @@
     },
     "hook_event_count": 11,
     "rule_count": 15,
-    "script_count": 45,
-    "skill_count": 28
+    "script_count": 46,
+    "skill_count": 29
   }
 }

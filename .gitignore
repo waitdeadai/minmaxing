@@ -35,6 +35,18 @@ memory/memory.db-*
 !.taste/codex-runs/
 !.taste/codex-runs/**
 
+# Generated demo media and recordings
+.taste/demo-recordings/
+demo-recordings/
+recordings/
+*.webm
+*.mp4
+*.mov
+*.wav
+*.mp3
+*.trace.zip
+*.har
+
 # Private commercial/customer artifacts
 .private/
 private/

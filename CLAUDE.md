@@ -48,6 +48,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /workflow | Central execution engine — taste-first, runs the full phases inline with Agent-Native Estimate gating |
 | /visualize | Taste-to-artifact comprehension check; creates ignored visual, diagram, or narrative artifacts without implementation |
 | /visualizeworkflow | Approval-first workflow; drafts SPEC + visualization, stops at WAITING_FOR_VISUAL_APPROVAL, then continues only with `--continue` |
+| /demo | Governed recorded product demos with Playwright evidence, bilingual voiceover, captions, manifests, and safety gates |
 | /digestflow | External-report-informed workflow with Report Intake before deepresearch |
 | /audit | Deep codebase audit with efficacy-first parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |

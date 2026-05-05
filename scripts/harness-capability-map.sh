@@ -74,6 +74,7 @@ ROUTE_GROUPS = {
     "workflow": "execution",
     "hiveworkflow": "execution",
     "visualizeworkflow": "execution",
+    "demo": "execution",
     "parallel": "parallelism",
     "sprint": "parallelism",
     "hive": "parallelism",
@@ -113,6 +114,7 @@ CORE_ROUTES = {
     "introspect",
     "verify",
     "agentfactory",
+    "demo",
 }
 
 REQUIRED_COMMANDS = {
@@ -120,6 +122,7 @@ REQUIRED_COMMANDS = {
     "test-harness": "full local harness regression suite",
     "harness-eval": "static eval pack runner",
     "harness-capability-map": "capability map freshness gate",
+    "demo-smoke": "recorded demo contract and manifest gate",
     "claudeproduct-scorecard": "Claude product answer scorecard",
     "metacognition-scorecard": "metacognition scorecard",
     "hive-scorecard": "hive coordination scorecard",
@@ -151,6 +154,7 @@ SCRIPT_OWNERS = {
     "hive-aggregate": ["hive", "hiveworkflow"],
     "visualize-smoke": ["visualize", "visualizeworkflow"],
     "agentfactory-smoke": ["agentfactory"],
+    "demo-smoke": ["demo"],
     "parallel-smoke": ["parallel"],
     "parallel-capacity": ["parallel", "metacognition", "workflow"],
     "parallel-plan-lint": ["parallel"],

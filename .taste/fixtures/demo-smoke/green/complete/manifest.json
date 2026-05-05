@@ -1,0 +1,68 @@
+{
+  "artifact_type": "demo-recording",
+  "demo_id": "20260505-green-complete",
+  "run_dir": ".taste/demo-recordings/20260505-green-complete",
+  "target": {
+    "route_or_path": "http://127.0.0.1:3000/demo",
+    "audience": "operator",
+    "objective": "prove the guided scheduling workflow"
+  },
+  "languages": [
+    {
+      "code": "en",
+      "script": "script.en.md",
+      "captions": "captions.en.vtt"
+    },
+    {
+      "code": "es-419",
+      "script": "script.es.md",
+      "captions": "captions.es.vtt"
+    }
+  ],
+  "voiceover": {
+    "tts_provider": "openai",
+    "tts_model_or_voice": "gpt-4o-mini-tts:marin",
+    "generation_time": "2026-05-05T00:00:00Z",
+    "input_script_path": "script.en.md",
+    "voice_kind": "stock"
+  },
+  "tts_disclosure": {
+    "synthetic_audio": true,
+    "end_user_disclosure": "Narration is AI-generated."
+  },
+  "artifacts": {
+    "video": "demo.webm",
+    "audio": [
+      "voiceover.en.wav",
+      "voiceover.es.wav"
+    ],
+    "captions": [
+      "captions.en.vtt",
+      "captions.es.vtt"
+    ],
+    "screenshots": [],
+    "trace": "trace.zip"
+  },
+  "quality_gates": {
+    "route_load": "pass",
+    "workflow_truth": "pass",
+    "operator_comprehension": "pass",
+    "accessibility": "pass",
+    "media": "pass",
+    "safety": "pass"
+  },
+  "retention": {
+    "created_at": "2026-05-05T00:00:00Z",
+    "expires_at": "2026-05-12T00:00:00Z",
+    "retention_policy": "default-7-days",
+    "cleanup_command": "rm -rf .taste/demo-recordings/20260505-green-complete"
+  },
+  "commands_run": [
+    {
+      "command": "bash scripts/demo-smoke.sh --runtime .taste/demo-recordings/20260505-green-complete/manifest.json",
+      "exit_code": 0
+    }
+  ],
+  "risk_flags": [],
+  "verdict": "pass"
+}

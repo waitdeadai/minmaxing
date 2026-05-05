@@ -1,0 +1,11 @@
+{
+  "id": "m7-demo-smoke",
+  "expected_result": "pass",
+  "gate": "demo-smoke",
+  "expected_evidence": "scripts/demo-smoke.sh --fixtures validates the /demo skill contract, ignored media paths, one green manifest, and red fixtures for missing Spanish, missing TTS disclosure, unignored output, missing retention, and failed media gates",
+  "requires": [
+    ".claude/skills/demo/SKILL.md",
+    "scripts/demo-smoke.sh",
+    ".taste/fixtures/demo-smoke"
+  ]
+}
