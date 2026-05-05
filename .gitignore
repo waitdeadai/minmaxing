@@ -15,10 +15,13 @@ Thumbs.db
 # Logs
 *.log
 audit-logs/
+.runtime/
 
 # Python
 __pycache__/
 *.pyc
+.venv/
+.deps/
 
 # Claude Code
 .claude/scheduled_tasks.lock
