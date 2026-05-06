@@ -5,7 +5,7 @@
   "gate_status": "pass",
   "evidence_summary": [
     "/opusworkflow skill exists and documents the cost-optimized Opus/MiniMax split",
-    "setup.sh accepts --mode opusworkflow",
+    "setup.sh defaults to opusworkflow while preserving --mode overrides",
     "the wrapper prepares workflow-mode opusminimax artifacts with provider_ceiling=1 and effective_concurrency=1",
     "docs and release/eval surfaces discover the route"
   ]

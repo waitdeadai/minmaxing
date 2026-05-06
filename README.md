@@ -7,13 +7,13 @@ Pick the command that matches the folder.
 Clean/new folder:
 
 ```bash
-MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'
+MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash && claude'
 ```
 
 Existing project or harness update:
 
 ```bash
-MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'
+MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing && claude'
 ```
 
 Get your key from [platform.minimax.io](https://platform.minimax.io).
@@ -117,13 +117,17 @@ There are two setup commands and they do different jobs.
   code, package files, and `.git`, and records imported file hashes in
   `.minimaxing/import-manifest.tsv` so future runs can update files it owns.
 
-Both commands configure the ignored local MiniMax executor profile, keep the
-Opus planner profile provider-clean, use the default trusted-local
-`bypassPermissions` posture, and open Claude when setup finishes.
+Both commands default to `/opusworkflow`: Claude/Opus is the planner,
+adversary, and final reviewer when runtime identity is proven;
+MiniMax-M2.7-highspeed is the bounded executor for bulk coding and repair. The installer
+configures the ignored local MiniMax executor profile, keeps the Opus planner
+profile provider-clean, uses the default trusted-local `bypassPermissions`
+posture, and opens Claude when setup finishes.
 
 Inline/env token commands can land in shell history. That is the intentional
-fast path for trusted solo work; advanced hidden-input and key-file forms still
-exist in `bash setup.sh --help`, but they are not the default path.
+fast path for trusted solo work; advanced hidden-input, key-file, and explicit
+`--mode minimax|opusworkflow|opusminimax` override forms still exist in
+`bash setup.sh --help`, but they are not the default path.
 
 That's it. Memory system, governed runtime profiles, and 34 skills are
 configured.
@@ -353,7 +357,7 @@ For REVCLI/Revis-style products, `/agentfactory` treats Hermes as the role-scope
 - **Project default:** provider-neutral trusted-local `bypassPermissions` with governance hooks and secret-read denies. Warning: this allows Claude Code to act without normal permission prompts, so use it only where you accept local operator risk.
 - **solo-fast option:** tracked example of the same trusted-local fast profile for personal repos where you want fewer prompts.
 - **Team-safe option:** copy [`.claude/settings.team-safe.example.json`](.claude/settings.team-safe.example.json) to your local settings and keep `defaultMode` at `acceptEdits`.
-- **OpusWorkflow option:** use `/opusworkflow` as the recommended daily mode so Opus is reserved for judgment checkpoints while MiniMax-M2.7-highspeed does bounded execution packets.
+- **OpusWorkflow default:** use `/opusworkflow` as the recommended daily mode so Opus is reserved for judgment checkpoints while MiniMax-M2.7-highspeed does bounded execution packets.
 - **OpusMiniMax option:** use `/opusminimax` directly when you need benchmark or repair mode, or lower-level packet control.
 - If you want even more guardrails, switch your local Claude session to `plan` before high-risk work.
 
@@ -423,8 +427,10 @@ Think of minmaxing as an operating system:
 
 ```
 ┌─────────────────────────────────────────────────────┐
+│                    /opusworkflow                    │
+│        (Default Claude judgment + MiniMax execution) │
 │                      /workflow                      │
-│                  (Central Execution Engine)          │
+│                  (Lifecycle Engine Underneath)       │
 ├─────────────────────────────────────────────────────┤
 │  PHASE 0: TASTE CHECK [GATE]  ← taste.md + vision │
 │  PHASE 1: ROUTE                                     │
@@ -441,8 +447,8 @@ Think of minmaxing as an operating system:
 │            taste.md + taste.vision                  │
 │                  (Kernel / OS)                     │
 ├─────────────────────────────────────────────────────┤
-│  /digestflow /autoplan /sprint /verify /ship      │
-│  /investigate /memory                             │
+│  /opusminimax /digestflow /autoplan /verify /ship │
+│  /sprint /investigate /memory                     │
 │  /audit /council /qa /review /deepresearch        │
 │  /webresearch /browse /introspect /codesearch     │
 │  /overnight /align /agentfactory                 │
@@ -452,9 +458,11 @@ Think of minmaxing as an operating system:
 
 **Taste is the kernel.** Every operation checks against your taste.md and taste.vision first. If the kernel is missing, stop and define it with `/tastebootstrap` before execution. Taste covers the full project philosophy — design principles, architecture, code style, intent, non-goals, and values.
 
-**Skills are system calls.** Each skill does one thing well. They are still useful directly, but `/workflow` is responsible for finishing the main end-to-end path itself.
+**Skills are system calls.** Each skill does one thing well. They are still useful directly, but `/opusworkflow` is the default daily entrypoint and `/workflow` is responsible for finishing the underlying end-to-end lifecycle itself.
 
-**/workflow is the shell.** It orchestrates everything. Routes tasks to the right phase, performs live research, audits the repo, synthesizes the plan, writes `SPEC.md`, executes the work, verifies output, and gates progression.
+**/opusworkflow is the daily shell.** It is the default top-level route for normal build/plan work: Claude/Opus handles judgment checkpoints when proven available, and MiniMax-M2.7-highspeed handles bounded execution packets.
+
+**/workflow is the lifecycle underneath.** It routes tasks to the right phase, performs live research, audits the repo, synthesizes the plan, writes `SPEC.md`, executes the work, verifies output, and gates progression. Use it directly when you explicitly want one local supervisor loop or the provider split is unavailable.
 
 Inside Phase 2, `/workflow` now follows the repo’s effectiveness-first `deepresearch` protocol instead of a generic search fan-out: it drafts a collaborative research plan, launches only the discovery tracks that matter, reads and refines in loops, records a source ledger including reviewed but not cited sources, pressure-tests conflicting evidence, and runs follow-up research before locking the plan.
 
@@ -654,10 +662,10 @@ least coordination overhead that can still improve correctness.
 The routing ladder is:
 
 ```text
-local /workflow
+/opusworkflow as the daily default for build/plan work
+-> local /workflow when the hybrid provider split is unavailable or explicitly bypassed
 -> /deepretaste when product intent, ICP, and taste kernel need a SOTA-2026 research-backed bootstrap or retaste
 -> /defineicp when the product kernel needs ICP research before taste changes
--> /opusworkflow when the $20 Claude + $40 MiniMax budget should be optimized end to end
 -> /opusminimax when Opus should plan/review and MiniMax should execute packets in workflow/benchmark/repair mode
 -> /parallel when independent execution packets are enough
 -> /claudeproduct for Claude, Claude Code, Claude.ai, API, connector, plugin,
@@ -671,10 +679,10 @@ Use this rule of thumb:
 
 | Pick | When | The Developer Should Expect |
 | --- | --- | --- |
+| `/opusworkflow` | You want the daily default for a Claude subscription plus MiniMax Plus-Highspeed: Opus only at plan/review/ship gates and MiniMax for bulk implementation. | One-command split setup, provider doctor, default executor concurrency 1, bounded packets, parent verification, and no silent PAYG. |
 | local `/workflow` | One tight reasoning loop, one shared file, unclear ownership, or coordination would slow the work down. | One supervisor does the whole governed lifecycle. |
 | `/deepretaste` | You need to detect product intent, define ICPs, and bootstrap or retaste the project kernel from research-backed customer evidence. | `/deepresearch` remains general-purpose; `/deepretaste` uses it only for taste-driving evidence, then routes fresh kernels through `/tastebootstrap` and existing kernels through `/defineicp` proposal/apply semantics. |
 | `/defineicp` | You need to define the ICP or ICPs and tailor `taste.md` / `taste.vision` to that customer profile. | Deepresearch plan, primary/secondary/anti-ICPs, source and claim ledgers, taste patch proposal, explicit apply approval, backups, hashes, validation, and rollback evidence. |
-| `/opusworkflow` | You want the daily default for a Claude subscription plus MiniMax Plus-Highspeed: Opus only at plan/review/ship gates and MiniMax for bulk implementation. | One-command split setup, provider doctor, default executor concurrency 1, bounded packets, parent verification, and no silent PAYG. |
 | `/opusminimax` | You want to squeeze a Claude subscription by using Opus only for planning, adversarial review, and final judgment while MiniMax does speed/bulk execution. | Provider split doctor, Opus planner artifact, MiniMax executor packets, quota-aware concurrency, parent verification, and no benchmark overclaims. |
 | `/claudeproduct` | The question is about Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, availability, limits, models, or setup. | Official Anthropic/Claude docs first, surface separation, source ledger, connector permission/trust caveats, confidence downgrade when current docs are missing. |
 | `/parallel` | The work splits into independent packets with clear owned files/surfaces and aggregate verification. | Packet DAG, ownership matrix, sync barriers, worker sidecars, `parallel-aggregate`. |

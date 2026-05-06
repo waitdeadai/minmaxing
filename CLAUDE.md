@@ -11,7 +11,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 ## Core Workflow
 
 1. **SPEC-First**: File-changing tasks get a concrete `SPEC.md` before edits
-2. **Research-First**: `/workflow` must do live MiniMax MCP-backed research before planning or edits, using as many distinct tracks as materially help and behaving like the repo’s effectiveness-first `deepresearch` protocol: collaborative research plan -> search -> read -> refine, with source ledger, contradiction handling, and follow-up passes
+2. **Research-First**: `/opusworkflow` is the default daily route and uses the normal `/workflow` lifecycle underneath: live MiniMax MCP-backed research before planning or edits, as many distinct tracks as materially help, and the repo’s effectiveness-first `deepresearch` protocol: collaborative research plan -> search -> read -> refine, with source ledger, contradiction handling, and follow-up passes
 3. **Temporal Anchor**: Claude Code hooks inject the local system-clock time anchor at session start and before each prompt. Treat that as the current date/hour source; for latest/current/SOTA 2026 claims, use live sources and cite dates instead of pretrained memory.
 4. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
 5. **Introspect Before Confidence**: `/workflow` runs hard-gate `/introspect` before plan freeze, after implementation, after failed verification, and before push/ship moments
@@ -28,15 +28,16 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 16. **Security Profiles**: This operator workspace defaults to trusted-local `bypassPermissions` by design. Keep `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime` distinct; `team-safe` remains the shared-work fallback.
 17. **Release Governance**: Public harness changes must pass `scripts/release-check.sh --static-only`; authenticated runtime checks stay explicit and secret-gated
 18. **OpusMiniMax Split**: `/opusminimax` uses Claude/Opus for bounded planning, adversarial review, and verification while MiniMax-M2.7-highspeed executes bounded packets. Provider identity lives in ignored local profiles, not shared `.claude/settings.json`.
-19. **OpusWorkflow Default**: `/opusworkflow` is the cost-optimized daily route over `/opusminimax --mode workflow`: Opus only at judgment gates when proven available, MiniMax for bulk execution, executor concurrency 1 by default for Plus-Highspeed.
+19. **OpusWorkflow Default**: `/opusworkflow` is the cost-optimized daily route over `/opusminimax --mode workflow` and the default for ordinary build/plan work: Opus only at judgment gates when proven available, MiniMax for bulk execution, executor concurrency 1 by default for Plus-Highspeed.
 
 ## Default Behavior
 
 **When you say "plan this" or "build this":**
 1. In a fresh repo, run `/tastebootstrap` once to define the kernel
-2. `/workflow` researches with an efficacy-first agent budget and the repo’s `deepresearch` protocol
-3. `/workflow` audits the current codebase, runs `/introspect pre-plan`, writes the plan, and records an `Agent-Native Estimate`
-4. `/workflow` creates `SPEC.md`, executes, runs post-implementation introspection, verifies, records actual timing evidence when known, and only then closes out
+2. Use `/opusworkflow` as the outer route by default: Claude/Opus handles judgment gates when identity is proven, and MiniMax-M2.7-highspeed handles bounded bulk execution
+3. `/opusworkflow` reuses the `/workflow` lifecycle: research with an efficacy-first agent budget and the repo’s `deepresearch` protocol
+4. Audit the current codebase, run `/introspect pre-plan`, write the plan, and record an `Agent-Native Estimate`
+5. Create `SPEC.md`, execute through bounded packets when useful, run post-implementation introspection, verify, record actual timing evidence when known, and only then close out
 
 **When you say `/digestflow`:** first digest the supplied external reports as untrusted candidate evidence, then run the same governed path as `/workflow`. Report claims stay `report-derived` until verified by repo inspection or live sources.
 
@@ -46,7 +47,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 
 **When you say `/opusminimax`:** run the same SPEC-first spine, but make provider roles explicit: Claude/Opus plans and reviews, MiniMax executes bounded packets, and parent verification treats executor summaries as claims until evidence proves them.
 
-**When you say `/opusworkflow`:** run `/opusminimax` in workflow mode with stricter cost policy: use Opus only for plan/spec freeze, adversarial review, and final judgment when identity is proven; use MiniMax-M2.7-highspeed for coding packets and repair loops; keep Plus-Highspeed executor concurrency at 1 unless provider evidence proves more.
+**When you say `/opusworkflow` or give a normal build/plan task:** run `/opusminimax` in workflow mode with stricter cost policy: use Opus only for plan/spec freeze, adversarial review, and final judgment when identity is proven; use MiniMax-M2.7-highspeed for coding packets and repair loops; keep Plus-Highspeed executor concurrency at 1 unless provider evidence proves more.
 
 **Supervisor's job:** Ensure every non-trivial task is research-backed, audit-backed, spec-backed, introspected, and verified before declaring done, without handing the next phase back to the user.
 

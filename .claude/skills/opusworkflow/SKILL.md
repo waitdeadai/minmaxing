@@ -22,7 +22,7 @@ Default executor concurrency is 1 until provider evidence proves otherwise.
 ## Contract
 
 - Treat `/opusworkflow` as `/opusminimax --mode workflow` with stricter budget
-  defaults.
+  defaults and as the normal daily build/plan route for this harness.
 - Do not claim Opus planned, reviewed, or verified unless auth/model evidence or
   the run artifact proves it.
 - Do not read `.env`, `.env.*`, `.claude/settings.local.json`,

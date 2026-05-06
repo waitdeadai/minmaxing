@@ -1,134 +1,156 @@
-# SPEC: Claude Code Time Anchor For Current Research
+# SPEC: Hybrid Claude Plus MiniMax Default
 
 ## Problem Statement
 
-The model running inside Claude Code can answer from pretrained memory unless
-the harness gives it a fresh temporal anchor. This creates hallucination risk
-when the user asks for "today", "latest", "current", "SOTA 2026", recent model
-behavior, pricing, provider docs, benchmarks, laws, or any fast-moving fact.
+The harness now has a strong provider-split route, `/opusworkflow`, where
+Claude/Opus is reserved for planning, adversarial review, and final judgment,
+while MiniMax-M2.7-highspeed handles bounded bulk execution. However the audit
+found several remaining defaults that still implied either plain `/workflow` or
+legacy MiniMax-only setup.
 
-The harness needs a small, deterministic time source that uses the local system
-clock and is injected into Claude Code context at session start and before each
-user prompt. The model must know the exact current local date, hour, timezone,
-UTC time, and the rule: current/SOTA claims require live verification, not
-pretraining.
+The default operator experience should be unambiguous:
+
+- install defaults to the hybrid `/opusworkflow` mode
+- Claude Code guidance treats `/opusworkflow` as the daily route for build/plan
+  requests
+- provider identity stays in ignored local planner/executor profiles
+- shared settings remain provider-neutral and trusted-local
+- MiniMax execution remains bounded, concurrency-limited, and parent-verified
 
 ## Success Criteria
 
-- [x] Add a committed `scripts/time-anchor.sh` tool that emits a local-system
-  clock anchor in text, JSON, and Claude Code hook-context forms.
-- [x] Add `.claude/hooks/time-anchor.sh` as the Claude Code hook wrapper.
-- [x] Wire the time anchor into `.claude/settings.json` through
-  `SessionStart` and `UserPromptSubmit`.
-- [x] Wire the same anchor into `solo-fast`, `team-safe`, planner, and executor
-  example profiles so local profile users keep the guard.
-- [x] Include the anchor in `.minimaxing/state/CURRENT.md` snapshots so
-  compaction/resume artifacts preserve the time context that was used.
-- [x] Update `/deepresearch`, `/webresearch`, `/claudeproduct`, `/deepretaste`,
-  and `/defineicp` docs so current/SOTA research must cite the time anchor and
-  live-source access dates.
-- [x] Update README/CLAUDE/AGENTS docs to explain that model memory is not a
-  current-date source and that time-sensitive claims must refresh from the
-  system clock plus live evidence.
-- [x] Add static tests proving the hook emits valid `additionalContext`,
-  includes local/UTC timestamps, and contains the SOTA/current verification
-  warning.
-- [x] No `.env`, local profile, credential file, or secret is read or printed.
+- [x] `setup.sh` defaults to `opusworkflow` even when `--mode` is omitted.
+- [x] README install commands show the default hybrid path without requiring
+  `--mode opusworkflow`, while preserving `--mode` as an advanced override.
+- [x] `setup.sh --help` and final next steps name `/opusworkflow` as the
+  default route.
+- [x] `setup.ps1` no longer implies the old MiniMax-only/shared-settings path;
+  it must configure ignored local split profiles or point users to the Bash
+  hybrid installer.
+- [x] `CLAUDE.md`, `AGENTS.md`, `scripts/start-session.sh`, and relevant docs
+  describe `/opusworkflow` as the default daily route, with plain `/workflow`
+  remaining the underlying lifecycle/manual fallback.
+- [x] Static gates enforce the new default instead of only checking that
+  `--mode opusworkflow` exists.
+- [x] The harness capability map is regenerated and fresh.
+- [x] No `.env`, key files, committed local profiles, or secret values are
+  printed, committed, or used as evidence. Runtime credential profiles remain
+  ignored local state.
+- [x] Static release verification passes and the result is pushed.
 
-## Research Brief
+## Audit Findings
 
-- Official Claude Code hook docs say `SessionStart` can add
-  `hookSpecificOutput.additionalContext` to load development context at startup,
-  resume, clear, or compact.
-- Official Claude Code hook docs say `UserPromptSubmit` can add additional
-  context before Claude processes a prompt.
-- The current repo already wires `SessionStart` to
-  `.claude/hooks/state-sessionstart.sh`, which calls `scripts/state.sh hydrate`.
-  That is the right lifecycle surface for startup/resume/compact context.
-- The current repo does not wire `UserPromptSubmit`, so it does not refresh
-  time on every user prompt.
-- `scripts/state.sh` records `updated_at`, but it does not label that timestamp
-  as a temporal authority or enforce current-fact verification behavior.
+- Current time anchor: `2026-05-06T16:45:12-03:00` from
+  `scripts/time-anchor.sh`; this task is local harness work and does not depend
+  on fast-moving external facts.
+- `setup.sh` still had `MODE="minimax"`, so a no-`--mode` install did not mean
+  the hybrid Claude+MiniMax route.
+- README top commands used `--mode opusworkflow`, which worked but hid the
+  desired default behind an option.
+- `CLAUDE.md` already called `/opusworkflow` the daily default, but its
+  "When you say plan/build" path still described plain `/workflow` first.
+- `scripts/start-session.sh` said `/opusworkflow` was available, not that it was
+  the default.
+- `setup.ps1` was stale: it edited `.claude/settings.json` and user-scope MCP
+  paths instead of the ignored planner/executor split. That conflicts with the
+  current provider-neutral settings contract.
+- Static gates checked for `--mode opusworkflow`, but not for `MODE="opusworkflow"`
+  as the default.
+- While validating help output, the old parser bug was exposed: a single
+  `--help` or `-h` argument was treated like a positional MiniMax key. The new
+  parser treats any leading-dash argument as an option, and the smoke gate
+  verifies help exits before installer steps run.
 
 ## Source Ledger
 
-- Cited:
-  - Claude Code hooks reference:
-    https://code.claude.com/docs/en/hooks
-  - Anthropic Claude Code hooks reference mirror:
-    https://docs.anthropic.com/en/docs/claude-code/hooks
 - Repo evidence:
-  - `.claude/settings.json`
-  - `.claude/hooks/state-sessionstart.sh`
-  - `scripts/state.sh`
-  - `.claude/skills/deepresearch/SKILL.md`
-  - `.claude/skills/webresearch/SKILL.md`
-  - `.claude/skills/claudeproduct/SKILL.md`
+  - `setup.sh`
+  - `setup.ps1`
+  - `README.md`
+  - `CLAUDE.md`
+  - `AGENTS.md`
+  - `scripts/start-session.sh`
+  - `scripts/opusworkflow-smoke.sh`
+  - `scripts/test-harness.sh`
+  - `scripts/security-smoke.sh`
+  - `.claude/skills/opusworkflow/SKILL.md`
+  - `.claude/skills/workflow/SKILL.md`
+- External sources: none needed for this local default-routing change.
 
 ## Plan
 
-1. Add `scripts/time-anchor.sh` with `text`, `json`, and `hook` commands.
-2. Add `.claude/hooks/time-anchor.sh` wrapper.
-3. Wire `SessionStart` plus `UserPromptSubmit` in project and profile settings.
-4. Add time anchor fields and research warning to `scripts/state.sh` snapshots.
-5. Update research and product-doc skills to require a time anchor for current
-   or SOTA claims.
-6. Update README/CLAUDE/AGENTS and static tests.
-7. Regenerate capability map, run static gates, commit, push, and refresh
-   `holan8n2`.
+1. Change `setup.sh` fallback mode from legacy `minimax` to `opusworkflow`.
+2. Simplify README and setup help commands so the no-option command is the
+   hybrid default; keep `--mode` documented as an advanced override.
+3. Update Claude-facing guidance so build/plan defaults to `/opusworkflow`,
+   with `/workflow` as the lifecycle underneath or explicit local fallback.
+4. Fix `setup.ps1` so it does not mutate shared settings with MiniMax secrets
+   and points to/configures split local profiles.
+5. Harden static tests to check default mode and split PowerShell behavior.
+6. Regenerate capability map, run static verification, commit, and push.
 
 ## Agent-Native Estimate
 
 - Estimate type: agent-native.
-- Critical path: hook script -> settings wiring -> state integration -> docs and
-  skill contracts -> tests -> static gates -> push.
-- Agent wall-clock: 45-90 minutes.
+- Critical path: audit surfaces -> settings/docs/script edits -> smoke tests ->
+  capability map -> release gate -> commit/push.
+- Agent wall-clock: 45-75 minutes.
 - Agent-hours: 1-2.
-- Human touch time later: none.
+- Human touch time later: none for static install behavior; runtime Claude auth
+  still requires `claude auth login` when not already authenticated.
 - Calendar blockers: none.
-- Confidence: medium-high; hook surfaces are documented, but exact Claude Code
-  runtime behavior remains a static contract unless the user opts into runtime
-  Claude checks.
+- Confidence: medium-high. The main path is Bash and well-tested; PowerShell is
+  static-reviewed here because the current Linux environment does not provide a
+  Windows PowerShell runtime.
 
 ## Introspection: Pre-Implementation
 
-- Likely mistake: injecting time only at startup. Guard: also wire
-  `UserPromptSubmit` so every prompt gets a fresh anchor.
-- Likely mistake: treating the clock as enough for "latest" facts. Guard:
-  anchor text must explicitly require live source verification for current,
-  latest, SOTA, pricing, benchmarks, providers, laws, and docs.
-- Likely mistake: breaking local profiles by wiring only project settings.
-  Guard: update committed example profiles too.
-- Likely mistake: runtime hook claims without proof. Guard: static tests prove
-  valid hook JSON; runtime Claude checks remain opt-in.
-- Likely mistake: secret leakage. Guard: the time anchor reads only the system
-  clock and hook metadata, never `.env` or local profiles.
+- Likely mistake: making `/opusworkflow` sound like it proves Opus runtime
+  identity. Guard: keep runtime proof explicit and opt-in.
+- Likely mistake: collapsing planner and executor provider identities into one
+  settings file. Guard: keep shared settings provider-neutral and use ignored
+  planner/executor local profiles only.
+- Likely mistake: overselling MiniMax concurrency. Guard: keep default executor
+  concurrency at 1 until provider evidence proves a higher safe ceiling.
+- Likely mistake: breaking existing users who still need legacy MiniMax-only.
+  Guard: keep `--mode minimax` as an explicit override.
+- Likely mistake: claiming PowerShell runtime proof without exercising Windows.
+  Guard: only claim static lint/readiness for `setup.ps1` in this turn.
 
 ## Verified 2026-05-06
 
-- `python3 -m json.tool` on project settings and all profile examples: pass.
-- `bash -n scripts/time-anchor.sh .claude/hooks/time-anchor.sh scripts/state.sh setup.sh scripts/test-harness.sh scripts/security-smoke.sh`: pass.
-- `printf '{"hook_event_name":"UserPromptSubmit","prompt":"latest SOTA 2026"}' | CLAUDE_PROJECT_DIR=/home/fer/Music/holan8n bash scripts/time-anchor.sh hook`: emits valid JSON with `hookSpecificOutput.hookEventName=UserPromptSubmit`, local/UTC timestamps, and current/SOTA/pretrained-memory warning.
+- `env -u MINIMAX_TOKEN_KEY -u TOKEN_KEY bash setup.sh --help`: pass; shows
+  `(default: opusworkflow)` and does not execute installer steps.
+- `env -u MINIMAX_TOKEN_KEY -u TOKEN_KEY bash setup.sh -h`: pass; same help
+  behavior.
+- `bash -n setup.sh scripts/start-session.sh scripts/opusworkflow-smoke.sh scripts/test-harness.sh scripts/security-smoke.sh scripts/release-check.sh`: pass.
+- `python3 -m json.tool evals/harness/golden/m9-opusworkflow-cost-budget.json`: pass.
+- `bash scripts/opusworkflow-smoke.sh`: pass.
 - `bash scripts/security-smoke.sh`: pass.
-- `bash scripts/harness-capability-map.sh --write`: regenerated generated map docs/JSON after hook/script/settings changes.
+- `bash scripts/harness-capability-map.sh --write`: regenerated generated map
+  JSON after route/default script changes.
 - `bash scripts/harness-capability-map.sh --check`: pass.
+- `bash scripts/harness-eval.sh --json`: pass (`22 tasks`, `19 gates`,
+  `0 mismatches`).
+- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`138 passed`,
+  `0 failed`).
 - `git diff --check`: pass.
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`138 passed`, `0 failed`).
-- `bash scripts/harness-eval.sh --json`: pass (`22 tasks`, `19 gates`, `0 mismatches`).
-- `bash scripts/release-check.sh --static-only`: pass (`138 passed`, `0 failed`; static-only release gate passed).
+- `bash scripts/release-check.sh --static-only`: pass (`138 passed`,
+  `0 failed`; static-only release gate passed).
 
 ## Introspection: Pre-Closeout
 
-- Likely mistake: claiming runtime Claude Code proof from static tests.
-  Mitigation: the gates prove committed hook wiring and valid hook JSON; actual
-  Claude Code runtime behavior remains opt-in to test in an authenticated CLI
-  session.
-- Likely mistake: making the time anchor replace web research. Mitigation:
-  script, skills, README, CLAUDE, and AGENTS all state that current/SOTA claims
-  require live verification and access dates.
-- Likely mistake: local profiles losing the hook. Mitigation: project,
-  solo-fast, team-safe, Opus planner, and MiniMax executor settings examples
-  all include `SessionStart`/`UserPromptSubmit` time-anchor wiring.
-- Likely mistake: secret exposure. Mitigation: implementation reads only stdin
-  hook metadata and the system clock; verification did not read `.env` or local
-  profile files.
+- Likely mistake: claiming runtime provider proof from static checks.
+  Mitigation: this change only claims default wiring and static install
+  behavior. Claude and MiniMax runtime identity checks remain explicit opt-in.
+- Likely mistake: making the default install less clear by hiding the mode.
+  Mitigation: README says both commands default to `/opusworkflow`, setup help
+  labels `(default: opusworkflow)`, and tests verify `MODE="opusworkflow"`.
+- Likely mistake: breaking explicit legacy users. Mitigation: `--mode minimax`
+  and `--mode opusminimax` remain supported overrides.
+- Likely mistake: leaving PowerShell as an unsafe stale path. Mitigation:
+  `setup.ps1` now defaults to `opusworkflow`, writes MiniMax credentials only to
+  ignored executor local settings, keeps planner settings provider-clean, and
+  does not mutate user-scope MCP automatically in split mode.
+- Remaining verification risk: PowerShell syntax/runtime was static-reviewed
+  only because this Linux environment has no `pwsh`/Windows runtime.

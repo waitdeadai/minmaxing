@@ -248,7 +248,8 @@ for pattern in \
     fi
 done
 for pattern in \
-    "--mode opusworkflow" \
+    "--mode minimax|opusworkflow|opusminimax" \
+    'MODE="opusworkflow"' \
     "--import-existing" \
     "MINIMAX_TOKEN_KEY" \
     "TOKEN_KEY" \
@@ -1381,10 +1382,15 @@ echo "[3y] Smart Autorouting UX"
 if grep -Fq "## Install" README.md 2>/dev/null && \
    grep -Fq "Clean/new folder:" README.md 2>/dev/null && \
    grep -Fq "Existing project or harness update:" README.md 2>/dev/null && \
-   grep -Fq "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'" README.md 2>/dev/null && \
-   grep -Fq "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'" README.md 2>/dev/null && \
+   grep -Fq "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash && claude'" README.md 2>/dev/null && \
+   grep -Fq "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing && claude'" README.md 2>/dev/null && \
+   grep -Fq 'MODE="opusworkflow"' setup.sh 2>/dev/null && \
+   grep -Fq '$Mode = "opusworkflow"' setup.ps1 2>/dev/null && \
+   grep -Fq "settings.minimax-executor.local.json" setup.ps1 2>/dev/null && \
+   grep -Fq "settings.opusminimax-planner.local.json" setup.ps1 2>/dev/null && \
    grep -Fq "## Smart Autorouting" README.md 2>/dev/null && \
-   grep -Fq "local /workflow" README.md 2>/dev/null && \
+   grep -Fq "/opusworkflow as the daily default" README.md 2>/dev/null && \
+   grep -Fq "local /workflow when the hybrid provider split is unavailable" README.md 2>/dev/null && \
    grep -Fq "/parallel when independent execution packets are enough" README.md 2>/dev/null && \
    grep -Fq "/hive or /hiveworkflow when coordinated roles" README.md 2>/dev/null && \
    grep -Fq "Default to \`/parallel\` for disjoint execution throughput" .claude/skills/metacognition/SKILL.md 2>/dev/null && \

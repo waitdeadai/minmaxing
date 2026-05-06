@@ -45,7 +45,8 @@ for file in README.md CLAUDE.md AGENTS.md scripts/start-session.sh; do
   require_text "/opusworkflow" "$file"
 done
 
-require_text "--mode opusworkflow" setup.sh
+require_text "--mode minimax|opusworkflow|opusminimax" setup.sh
+require_text 'MODE="opusworkflow"' setup.sh
 require_text "--import-existing" setup.sh
 require_text "MINIMAX_TOKEN_KEY" setup.sh
 require_text "TOKEN_KEY" setup.sh
@@ -53,12 +54,24 @@ require_text "--minimax-key" setup.sh
 require_text "--prompt-minimax-key" setup.sh
 require_text "import-manifest.tsv" setup.sh
 require_text "skipped_conflicts" setup.sh
-require_text "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'" README.md
-require_text "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'" README.md
+require_text "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash && claude'" README.md
+require_text "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing && claude'" README.md
 require_text "Existing project or harness update" README.md
+require_text "Both commands default to \`/opusworkflow\`" README.md
+require_text 'Default route: /opusworkflow' setup.sh
+require_text '$Mode = "opusworkflow"' setup.ps1
+require_text "settings.minimax-executor.local.json" setup.ps1
+require_text "settings.opusminimax-planner.local.json" setup.ps1
+require_text "Split mode does not mutate user-scope MCP automatically" setup.ps1
 require_text "opusworkflow-smoke" scripts/harness-eval.sh
 require_text "opusworkflow-smoke" scripts/release-check.sh
 require_text "opusworkflow" scripts/harness-capability-map.sh
+
+HELP_OUTPUT="$(env -u MINIMAX_TOKEN_KEY -u TOKEN_KEY bash setup.sh --help)"
+printf '%s' "$HELP_OUTPUT" | grep -Fq "(default: opusworkflow)" || fail "setup --help must show opusworkflow as the default"
+if printf '%s' "$HELP_OUTPUT" | grep -Fq "[0/7]"; then
+  fail "setup --help must not execute the installer"
+fi
 
 RUN_ID="opusworkflow-smoke"
 RUN_DIR=".taste/opusminimax/$RUN_ID"

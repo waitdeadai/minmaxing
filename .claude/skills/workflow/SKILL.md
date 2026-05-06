@@ -13,6 +13,12 @@ $ARGUMENTS
 
 This command is the end-to-end executor.
 
+`/opusworkflow` is the default daily outer route for normal build/plan work in
+this harness. It reuses this `/workflow` lifecycle while adding the
+Claude/Opus planner-reviewer plus MiniMax-M2.7-highspeed executor split. Use
+plain `/workflow` when the user invokes it explicitly, the provider split is
+unavailable, or the work should stay in one local supervisor loop.
+
 `/digestflow` is a sibling route that reuses this same inline lifecycle after an external report-intake prelude. Normal `/workflow` behavior stays unchanged when no external research reports are supplied.
 
 ## Non-Negotiable Contract

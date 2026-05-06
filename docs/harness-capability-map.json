@@ -619,12 +619,12 @@
       "sha256": "e7f70033e91b300b1450180ddaecefb09026672d9ae2bd5f5f83ce239a012f95"
     },
     {
-      "line_count": 97,
+      "line_count": 110,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "e93cfe06962be1a6e755da4195e318c049ff6c3d8bf67451e2c5b9a5092cd8e1"
+      "sha256": "37abaf2cd640b22dd1257dd8125a0823870be65b917b19e568dca7774a21f126"
     },
     {
       "line_count": 38,
@@ -707,12 +707,12 @@
       "sha256": "9c3e0a29b441fdffeb0e280f3960bfc2cc6bf7c1f18fc752316a83f632dd8b42"
     },
     {
-      "line_count": 145,
+      "line_count": 149,
       "name": "security-smoke",
       "path": "scripts/security-smoke.sh",
       "purpose": "Static security smoke for Claude Code profile examples and governance hooks.",
       "required_gate": false,
-      "sha256": "602e8bd0465dbd8e0346d239b3850be7b159c2e1b5b3257719303625f9bae871"
+      "sha256": "0d63e1ad02e8139b0355cb62ca7dc192091ead19f96c4d8640fb6600dd18f1b5"
     },
     {
       "line_count": 130,
@@ -744,7 +744,7 @@
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "0e5d13ac0fe2c64132a221593c368282e4320621351ad43fa404804cb2eb9eb6"
+      "sha256": "a1b216e3853b665dd9ec1fbdaaf096f5db705d6ceb39415d552c5b7343feebab"
     },
     {
       "line_count": 400,
@@ -763,12 +763,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1854,
+      "line_count": 1860,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "95683dec7ded26beb46d508de7ccbd1bd85a0b6596596fb4664bf7bdd848b908"
+      "sha256": "377db61a7630213c7c144a9e26f59b431c3d2f2eeb41479ef5dd22c85baf6d5a"
     },
     {
       "line_count": 127,
@@ -1418,7 +1418,7 @@
         "scripts/opusworkflow.sh",
         "scripts/opusworkflow-smoke.sh"
       ],
-      "sha256": "0a7310257b0e957c23df36c97cfa85f930b60dce72d7e1325e9e259ed2b8494c",
+      "sha256": "8978ebef64406710e7d8384a4a22b326f9611c03f0ddc335a2de255306eda9b5",
       "slash": "/opusworkflow",
       "user_invocable": true
     },
@@ -1632,7 +1632,7 @@
       "core_route": true,
       "description": "Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.",
       "group": "execution",
-      "line_count": 773,
+      "line_count": 779,
       "model_invocation": false,
       "name": "workflow",
       "path": ".claude/skills/workflow/SKILL.md",
@@ -1654,7 +1654,7 @@
         "scripts/test-harness.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "b8d4940f1cd746299e8eb3d168b06b6f0337608896cbf72c6199a96c206fb8ff",
+      "sha256": "73fa4924382643c385c8c4af404fb04575e8514a81047543f362190ab6144077",
       "slash": "/workflow",
       "user_invocable": true
     }

@@ -128,6 +128,10 @@ require_text "$ROOT_DIR/.claude/rules/security.rules.md" "ci-runtime"
 require_text "$ROOT_DIR/SECURITY.md" "Runtime Policy Matrix"
 require_text "$ROOT_DIR/SECURITY.md" "trusted-local default"
 require_text "$ROOT_DIR/SECURITY.md" "bypassPermissions is not the recommended team default"
+require_text "$ROOT_DIR/setup.ps1" '$Mode = "opusworkflow"'
+require_text "$ROOT_DIR/setup.ps1" "settings.minimax-executor.local.json"
+require_text "$ROOT_DIR/setup.ps1" "settings.opusminimax-planner.local.json"
+require_text "$ROOT_DIR/setup.ps1" "Split mode does not mutate user-scope MCP automatically"
 
 expect_hook_block "destructive Bash" '{
   "hook_event_name": "PreToolUse",
