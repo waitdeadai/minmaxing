@@ -39,7 +39,7 @@ echo ""
 # Step 3: Version Check
 echo "[3/5] Version information..."
 echo "Claude Code: $(claude --version 2>/dev/null || echo 'not found')"
-echo "Mode: /opusminimax available (Opus planner + MiniMax-M2.7-highspeed executor)"
+echo "Mode: /opusworkflow available (cost-optimized Opus planner + MiniMax-M2.7-highspeed executor)"
 echo "Provider profiles: shared settings are provider-neutral; planner/executor use ignored local profiles"
 if [ -f "$SCRIPT_DIR/parallel-capacity.sh" ]; then
     bash "$SCRIPT_DIR/parallel-capacity.sh" --summary 2>/dev/null || true
@@ -53,11 +53,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 31 ]; then
+if [ "$SKILL_COUNT" -ge 32 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 31 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 32 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -103,7 +103,7 @@ echo "[5/5] Ready"
 echo "Philosophy: governed autonomy — delegate execution, keep judgment, require evidence"
 echo "Planning: Agent-Native Estimate before non-trivial plan or SPEC freeze"
 echo "Fresh repos: run /tastebootstrap before /workflow"
-echo "Skills: /tastebootstrap, /workflow, /opusminimax, /digestflow, /align, /autoplan, /verify,"
+echo "Skills: /tastebootstrap, /workflow, /opusworkflow, /opusminimax, /digestflow, /align, /autoplan, /verify,"
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
 echo "        /audit, /deepresearch, /icpweek, /webresearch, /browse, /introspect, /codesearch,"
 echo "        /memory, /agentfactory, /parallel, /metacognition, /claudeproduct,"

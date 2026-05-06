@@ -2,11 +2,12 @@
 # minmaxing - One-Command Setup
 # Usage: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
 # Legacy MiniMax key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
-# OpusMiniMax: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file ./minimax.token
+# OpusWorkflow: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key-file ./minimax.token
 
 set -e
 
 MODE="minimax"
+SPLIT_EXECUTION_MODE=0
 API_KEY=""
 MINIMAX_KEY_FILE=""
 PLANNER_MODEL="claude-opus-4-7"
@@ -52,6 +53,7 @@ else
 Usage:
   ./setup.sh
   ./setup.sh YOUR_TOKEN_PLAN_KEY
+  ./setup.sh --mode opusworkflow --minimax-key-file PATH [--planner-model claude-opus-4-7] [--executor-model MiniMax-M2.7-highspeed] [--profile solo-fast|team-safe]
   ./setup.sh --mode opusminimax --minimax-key-file PATH [--planner-model claude-opus-4-7] [--executor-model MiniMax-M2.7-highspeed] [--profile solo-fast|team-safe]
 EOF
                 exit 0
@@ -65,11 +67,15 @@ EOF
 fi
 
 case "$MODE" in
-    "minimax"|"opusminimax") ;;
+    "minimax"|"opusminimax"|"opusworkflow") ;;
     *)
         echo "Unsupported --mode: $MODE" >&2
         exit 2
         ;;
+esac
+
+case "$MODE" in
+    "opusminimax"|"opusworkflow") SPLIT_EXECUTION_MODE=1 ;;
 esac
 
 case "$PROFILE" in
@@ -187,7 +193,7 @@ echo ""
 if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
     mkdir -p .claude
 
-    if [ "$MODE" = "opusminimax" ]; then
+    if [ "$SPLIT_EXECUTION_MODE" -eq 1 ]; then
         if [ ! -f ".claude/settings.minimax-executor.local.json" ] && [ -f ".claude/settings.minimax-executor.example.json" ]; then
             cp .claude/settings.minimax-executor.example.json .claude/settings.minimax-executor.local.json
         fi
@@ -285,7 +291,7 @@ EOF
     fi
 
     TARGET_SETTINGS=".claude/settings.local.json"
-    if [ "$MODE" = "opusminimax" ]; then
+    if [ "$SPLIT_EXECUTION_MODE" -eq 1 ]; then
         TARGET_SETTINGS=".claude/settings.minimax-executor.local.json"
     fi
 
@@ -315,7 +321,7 @@ PY
 
     echo "  [PASS] API key configured in $TARGET_SETTINGS"
 
-    if [ "$MODE" = "opusminimax" ] && [ -f ".claude/settings.opusminimax-planner.local.json" ]; then
+    if [ "$SPLIT_EXECUTION_MODE" -eq 1 ] && [ -f ".claude/settings.opusminimax-planner.local.json" ]; then
         python3 - ".claude/settings.opusminimax-planner.local.json" "$PLANNER_MODEL" <<'PY'
 import json
 import pathlib
@@ -355,8 +361,8 @@ PY
 
     if [ -n "$UVX_PATH" ]; then
         echo "  [INFO] Using uvx at: $UVX_PATH"
-        if [ "$MODE" = "opusminimax" ]; then
-            echo "  [INFO] OpusMiniMax mode does not mutate user-scope MCP automatically"
+        if [ "$SPLIT_EXECUTION_MODE" -eq 1 ]; then
+            echo "  [INFO] Opus split-execution mode does not mutate user-scope MCP automatically"
             echo "  [INFO] Use Claude Code project/local MCP config if you want MiniMax MCP tools"
         else
             # Remove existing MiniMax MCP if present
@@ -378,6 +384,7 @@ else
     echo "To complete setup, run with your API key:"
     echo ""
     echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY"
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key-file /path/to/minimax.token"
     echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file /path/to/minimax.token"
     echo ""
     echo "Get your key from: platform.minimax.io"
@@ -475,6 +482,12 @@ echo ""
 echo "Next steps:"
 echo "  1. Run: claude"
 echo "  2. If this is a fresh repo, run: /tastebootstrap"
-echo "  3. Then try: /workflow 'build a REST API'"
+if [ "$MODE" = "opusworkflow" ]; then
+    echo "  3. Then try: /opusworkflow 'build a REST API'"
+elif [ "$MODE" = "opusminimax" ]; then
+    echo "  3. Then try: /opusminimax 'build a REST API'"
+else
+    echo "  3. Then try: /workflow 'build a REST API'"
+fi
 echo "  4. Check memory: bash scripts/memory.sh stats"
 echo ""

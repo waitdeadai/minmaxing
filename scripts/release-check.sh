@@ -63,6 +63,7 @@ run bash scripts/harness-capability-map.sh --check --json >/dev/null
 run bash scripts/demo-smoke.sh --fixtures
 run bash scripts/opusminimax-doctor.sh --static >/dev/null
 run bash scripts/opusminimax-benchmark-smoke.sh --fixtures
+run bash scripts/opusworkflow-smoke.sh
 run bash scripts/artifact-lint.sh --fixtures
 run bash scripts/harness-eval.sh --json >/dev/null
 run bash scripts/security-smoke.sh

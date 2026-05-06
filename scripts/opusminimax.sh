@@ -102,7 +102,7 @@ packet = {
     "commands_allowed": ["bash scripts/opusminimax-doctor.sh --static"],
     "acceptance_checks": ["packet is refined before execution", "parent verification checks evidence"],
     "risk_notes": ["Initial packet is a placeholder until the planner writes exact ownership."],
-    "rollback_plan": "Do not execute until planner replaces placeholder ownership with a task-specific packet.",
+    "rollback_plan": "Do not execute until planner replaces placeholder ownership with a task scoped packet.",
     "expected_outputs": ["refined packet", "diff evidence", "command evidence"],
     "stop_conditions": ["ambiguous ownership", "secret requested", "provider identity unverified"],
 }

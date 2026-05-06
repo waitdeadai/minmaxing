@@ -8,13 +8,13 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 31
+- Skills: 32
 - Rules: 15
-- Scripts: 50
-- Static eval tasks: 19
+- Scripts: 52
+- Static eval tasks: 20
 - Hook entries: 11
 - Codex config files: 4
-- Core routes: 13
+- Core routes: 14
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
   runtime secrets.
@@ -24,7 +24,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `agent-systems`: `/agentfactory`
 - `debugging`: `/codesearch`, `/investigate`
 - `design`: `/visualize`
-- `execution`: `/demo`, `/hiveworkflow`, `/opusminimax`, `/visualizeworkflow`, `/workflow`
+- `execution`: `/demo`, `/hiveworkflow`, `/opusminimax`, `/opusworkflow`, `/visualizeworkflow`, `/workflow`
 - `kernel`: `/align`, `/tastebootstrap`
 - `knowledge`: `/claudeproduct`
 - `memory`: `/memory`
@@ -59,6 +59,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/memory` | `memory` | yes | no | `.claude/skills/memory/SKILL.md` | minmaxing 5-tier memory system management |
 | `/metacognition` | `routing` | manual | yes | `.claude/skills/metacognition/SKILL.md` | Route and calibrate work with model-agnostic metacognitive control. Use when the user asks for thinking-about-thinking, harness effectiveness, task routing, self-correction, confidence calibration, or strategy improvement before execution. |
 | `/opusminimax` | `execution` | manual | yes | `.claude/skills/opusminimax/SKILL.md` | Run the Opus planner plus MiniMax-M2.7-highspeed executor workflow. Use when the user invokes /opusminimax or wants Claude/Opus to plan, adversarially review, and verify while MiniMax executes bounded coding packets. |
+| `/opusworkflow` | `execution` | manual | yes | `.claude/skills/opusworkflow/SKILL.md` | Run the cost-optimized Opus planner plus MiniMax-M2.7-highspeed executor workflow end to end. Use when the user invokes /opusworkflow or wants the recommended daily mode for a Claude subscription plus MiniMax Plus-Highspeed Token Plan. |
 | `/overnight` | `operations` | yes | no | `.claude/skills/overnight/SKILL.md` | /overnight |
 | `/parallel` | `parallelism` | manual | yes | `.claude/skills/parallel/SKILL.md` | Run dense minmaxing work as a hardware-aware, main-orchestrated parallel workflow with bounded packets, explicit ownership, sync barriers, aggregation, and independent verification. |
 | `/qa` | `quality` | yes | no | `.claude/skills/qa/SKILL.md` | /qa |
@@ -107,6 +108,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `metacognition-scorecard` | metacognition scorecard | `scripts/metacognition-scorecard.sh` |
 | `opusminimax-benchmark-smoke` | OpusMiniMax benchmark honesty gate | `scripts/opusminimax-benchmark-smoke.sh` |
 | `opusminimax-doctor` | OpusMiniMax provider split doctor | `scripts/opusminimax-doctor.sh` |
+| `opusworkflow-smoke` | OpusWorkflow cost-optimized route gate | `scripts/opusworkflow-smoke.sh` |
 | `parallel-aggregate` | parallel worker aggregate validator | `scripts/parallel-aggregate.sh` |
 | `parallel-capacity` | local parallel capacity profile | `scripts/parallel-capacity.sh` |
 | `parallel-plan-lint` | parallel plan fixture lint | `scripts/parallel-plan-lint.sh` |
@@ -136,6 +138,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `m6-harness-capability-map` | `scripts/harness-capability-map.sh --check --json` | `pass` | `evals/harness/tasks/m6-harness-capability-map.yaml` | `evals/harness/golden/m6-harness-capability-map.json` |
 | `m7-demo-smoke` | `scripts/demo-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m7-demo-smoke.yaml` | `evals/harness/golden/m7-demo-smoke.json` |
 | `m8-opusminimax-benchmark` | `scripts/opusminimax-benchmark-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m8-opusminimax-benchmark.yaml` | `evals/harness/golden/m8-opusminimax-benchmark.json` |
+| `m9-opusworkflow-cost-budget` | `scripts/opusworkflow-smoke.sh` | `pass` | `evals/harness/tasks/m9-opusworkflow-cost-budget.yaml` | `evals/harness/golden/m9-opusworkflow-cost-budget.json` |
 
 ## Claude Code Settings And Hooks
 

@@ -1,0 +1,12 @@
+{
+  "id": "m9-opusworkflow-cost-budget",
+  "gate": "scripts/opusworkflow-smoke.sh",
+  "status": "pass",
+  "gate_status": "pass",
+  "evidence_summary": [
+    "/opusworkflow skill exists and documents the cost-optimized Opus/MiniMax split",
+    "setup.sh accepts --mode opusworkflow",
+    "the wrapper prepares workflow-mode opusminimax artifacts with provider_ceiling=1 and effective_concurrency=1",
+    "docs and release/eval surfaces discover the route"
+  ]
+}

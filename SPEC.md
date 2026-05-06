@@ -1,243 +1,246 @@
-# SPEC: `/opusminimax` Opus Planner + MiniMax Executor System
+# SPEC: `/opusworkflow` Cost-Optimized Opus + MiniMax Workflow
 
 ## Problem Statement
 
-The harness currently works as a MiniMax-backed Claude Code setup, but it does
-not provide a trustworthy Opus-planner plus MiniMax-executor split. Mapping
-Claude model aliases to MiniMax is fast, but it makes claims such as "Opus
-planned this" unprovable and turns `/opusminimax` into a model switch rather
-than a governed execution system.
+`/opusminimax` now provides the provider split, but the user's main daily mode
+needs a sharper operating contract: squeeze a $20 Claude subscription plus a
+$40 MiniMax Token Plan Plus-Highspeed subscription without pretending either
+plan is unlimited.
 
-The repo needs a first-class `/opusminimax` mode where Claude Code/Opus is used
-sparingly for planning, adversarial review, and final judgment, while
-MiniMax-M2.7-highspeed handles bounded execution packets. The system must be
-quota-aware, evidence-backed, and compatible with the existing `/deepresearch`,
-`/parallel`, `/workflow`, `/verify`, and `/introspect` contracts.
+The effective mode is not "Opus does everything" and not "MiniMax swarm at the
+hardware ceiling." It is `/opusworkflow`: a workflow-first command where
+Claude/Opus is used only for bounded judgment checkpoints, and
+MiniMax-M2.7-highspeed does the bulk coding and repair work through the existing
+`/opusminimax` packet system.
 
 ## Success Criteria
 
-- [x] `.claude/skills/opusminimax/SKILL.md` exists with manual-only Claude Code
-  skill frontmatter and an explicit planner/adversary/reviewer versus executor
-  banner.
-- [x] Shared `.claude/settings.json` is provider-neutral and no longer maps
-  Opus/Sonnet/Haiku aliases to MiniMax.
-- [x] Committed example profiles separate the Opus planner from the MiniMax
-  executor without committing credentials.
-- [x] `.gitignore` covers local OpusMiniMax profile files and run artifacts.
-- [x] `setup.sh --mode opusminimax` supports `--minimax-key-file`,
-  `--minimax-key`, `--planner-model`, `--executor-model`, and
-  `--profile solo-fast|team-safe`.
-- [x] `scripts/opusminimax.sh`, `scripts/minimax-exec.sh`,
-  `scripts/opusminimax-doctor.sh`, and
-  `scripts/opusminimax-benchmark-smoke.sh` exist and are executable.
-- [x] Artifact schemas and `scripts/artifact-lint.sh` support
-  `opusminimax-packet`, `opusminimax-run`, and
-  `opusminimax-benchmark-result`.
-- [x] Static fixtures reject fake Opus claims, planner profiles using a
-  MiniMax base URL, executor profiles missing MiniMax, secret-bearing configs,
-  concurrency above provider ceiling, failed-verification positive closeout,
-  and benchmark aggregates without per-task evidence.
-- [x] Harness capability map, README, CLAUDE.md, AGENTS.md, and session startup
-  surfaces discover `/opusminimax` as a core execution mode.
-- [x] Static gates pass without running authenticated Claude or MiniMax smoke
-  tests.
+- [x] Add `.claude/skills/opusworkflow/SKILL.md` as a concise, manual
+  end-to-end skill that wraps `/opusminimax --mode workflow`.
+- [x] Add `scripts/opusworkflow.sh` as the script entrypoint for preparing or
+  explicitly launching workflow-mode OpusMiniMax runs.
+- [x] Extend `setup.sh --mode opusworkflow` as a one-command install alias for
+  the same planner/executor profile split.
+- [x] Add a static `scripts/opusworkflow-smoke.sh` gate and register it in the
+  harness eval pack.
+- [x] Update README, CLAUDE.md, AGENTS.md, session startup, release gate, test
+  harness, and generated capability map so `/opusworkflow` is discoverable as
+  the recommended daily mode.
+- [x] Preserve the provider-split contract: shared settings stay neutral,
+  planner profiles do not inherit MiniMax base URL, executor model remains
+  `MiniMax-M2.7-highspeed`, and executor concurrency defaults to 1 unless
+  runtime provider evidence proves otherwise.
+- [x] Static gates pass without reading `.env`, local profile secrets, or
+  MiniMax key files, and without running authenticated provider smoke tests.
 
 ## Research Brief
 
 ### Collaborative Research Plan
 
-- Deliverable: a repo-native `/opusminimax` mode, not a prompt-only workflow.
-- Branches:
-  - Repo integration: existing skills, route groups, static gates, settings,
-    setup, and artifact linting.
-  - Claude Code product behavior: model aliases, `opusplan`, settings priority,
-    Pro subscription caveats, skills, hooks, and subagents.
-  - MiniMax compatibility: Anthropic-compatible endpoint, exact highspeed model,
-    Token Plan limits, cache behavior, and unsupported content/params.
-  - Benchmark discipline: SWE-bench, SWE-agent, Agentless, Terminal-Bench, and
-    fresh/private benchmark caveats.
-  - Adversarial review: quota footguns, false provider claims, security profile
-    leakage, runtime bridge proof, and benchmark overclaims.
-- Stop condition: enough evidence to implement a static, no-secret v1 with
-  explicit runtime opt-in and no false model-identity claims.
+- Local repo branch:
+  - inspect `/opusminimax`, `/workflow`, setup, capability map, release gates,
+    evals, and test harness surfaces.
+  - implement `/opusworkflow` with the smallest sufficient additions and reuse
+    existing packet/artifact schemas.
+- Current provider branch:
+  - keep the recent source-ledger conclusions current in the spec: Claude
+    subscription usage is shared, `ANTHROPIC_API_KEY` overrides subscription
+    billing, Opus 4.7 access on Pro may require extra usage, MiniMax
+    Plus-Highspeed is request-capped and traffic-shaped.
+- Adversarial branch:
+  - block false cost claims, false Opus claims, linear parallelism claims, and
+    "one command means secrets/auth are magically solved" wording.
 
 ### Source Ledger
 
-- Cited local truth:
-  - `AGENTS.md`: research-first, `/parallel`, `/introspect`, open-core,
-    capacity, SPEC archive, and release-gate rules.
-  - `CLAUDE.md`: existing skill list, workflow lifecycle, artifact sidecars,
-    security profiles, and capability-map gate.
-  - `scripts/harness-capability-map.sh`: generated skill/script/eval map.
-  - `scripts/artifact-lint.sh`: existing sidecar validation pattern.
-  - `scripts/security-smoke.sh`: existing profile and hook smoke pattern.
-  - `setup.sh`: current one-command installer and MiniMax credential path.
-- Cited external sources from the investigation:
-  - `https://code.claude.com/docs/en/model-config`
-  - `https://code.claude.com/docs/en/cli-reference`
-  - `https://code.claude.com/docs/en/settings`
-  - `https://code.claude.com/docs/en/skills`
-  - `https://code.claude.com/docs/en/sub-agents`
-  - `https://code.claude.com/docs/en/hooks`
+- Local truth:
+  - `AGENTS.md`: `/opusminimax`, `/workflow`, `/parallel`, `/introspect`,
+    active spec lifecycle, release gate, and security rules.
+  - `CLAUDE.md`: slash route list, default behavior, OpusMiniMax profiles, and
+    release gate.
+  - `.claude/skills/opusminimax/SKILL.md`: provider split and packet contract.
+  - `.claude/skills/workflow/SKILL.md`: workflow artifact, metacognitive route,
+    SPEC-first lifecycle, and verification requirements.
+  - `setup.sh`: one-command install and provider-profile setup flow.
+  - `scripts/harness-capability-map.sh`: canonical route/script/eval map.
+  - `scripts/test-harness.sh` and `scripts/release-check.sh`: static public
+    verification surfaces.
+- External sources checked in the prior provider research turn:
   - `https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan`
-  - `https://support.claude.com/en/articles/14552983-models-usage-and-limits-in-claude-code`
-  - `https://platform.minimax.io/docs/api-reference/text-anthropic-api`
-  - `https://platform.minimax.io/docs/guides/text-ai-coding-tools`
+  - `https://code.claude.com/docs/en/model-config`
+  - `https://support.claude.com/en/articles/8606394-how-large-is-the-context-window-on-paid-claude-plans`
+  - `https://claude.com/blog/best-practices-for-using-claude-opus-4-7-with-claude-code`
   - `https://platform.minimax.io/docs/token-plan/intro`
-  - `https://arxiv.org/abs/2310.06770`
-  - `https://github.com/SWE-bench/SWE-bench`
-  - `https://www.swebench.com/SWE-bench/api/harness/`
-  - `https://arxiv.org/abs/2405.15793`
-  - `https://arxiv.org/abs/2407.01489`
-  - `https://github.com/harbor-framework/terminal-bench`
-  - `https://www.tbench.ai/`
-  - `https://arxiv.org/abs/2509.16941`
-- Conflicts:
-  - `opusplan` matches Anthropic's Opus-plan/Sonnet-execute pattern, but not an
-    external MiniMax executor. This spec uses explicit Opus planner artifacts
-    instead.
-  - Local hardware capacity reports a 10-lane ceiling, while MiniMax Token Plan
-    continuous-agent limits may be lower. This spec defaults executor
-    concurrency to 1 until provider tier evidence exists.
+  - `https://platform.minimax.io/docs/guides/pricing-tokenplan`
+  - `https://platform.minimax.io/docs/token-plan/faq`
+  - `https://platform.minimax.io/docs/token-plan/other-tools`
+- Conflicts and caveats:
+  - Claude Pro subscription does not guarantee free/unlimited Opus 4.7 use in
+    Claude Code. Runtime model identity and billing path must be proven before
+    saying "Opus planned this."
+  - MiniMax Plus-Highspeed has a large request quota, but provider traffic rules
+    still make 1 continuous executor lane the honest default.
+  - Local hardware capacity reports 10 as a ceiling. Provider quota and
+    supervisor verification capacity lower the effective executor budget.
 
 ## Scope
 
 ### In Scope
 
-- Add the `/opusminimax` skill and static bridge commands.
-- Split shared provider-neutral settings from planner/executor profile examples.
-- Extend setup for OpusMiniMax mode without reading `.env` or local secrets.
-- Add sidecar schemas, lint validation, fixtures, and eval metadata.
-- Add a static benchmark contract gate that does not run real SWE-bench.
-- Update docs, generated capability map, release gate, and test harness.
+- New `/opusworkflow` skill, wrapper script, smoke gate, eval metadata, setup
+  alias, docs, generated map, and static tests.
+- Cost policy for the default $20 Claude + $40 MiniMax configuration.
+- No-secret, no-provider-runtime static verification.
 
 ### Out Of Scope
 
-- Running authenticated Claude or MiniMax runtime smoke tests in this turn.
-- Downloading or executing real SWE-bench, Terminal-Bench, or paid provider
-  workloads.
-- Claiming benchmark performance or production readiness.
-- Reading `.env`, `.env.*`, `.claude/settings.local.json`, local private
-  profile secrets, or customer artifacts.
-- Implementing PAYG or production fleet orchestration.
+- Authenticated Claude or MiniMax runtime calls.
+- Pay-as-you-go fallback implementation.
+- Real benchmark execution or benchmark score claims.
+- Reading `.env`, `.env.*`, `.claude/*.local.json`, key files, or customer
+  private artifacts.
 
 ## Agent-Native Estimate
 
-- Estimate type: agent-native wall-clock.
-- Execution topology: parent implementation with local static verification.
-- Capacity evidence: `bash scripts/parallel-capacity.sh --json` reported
+- Estimate type: agent-native.
+- Capacity evidence: `bash scripts/parallel-capacity.sh --json` returned
   `recommended_ceiling=10`, `codex_max_threads=10`, `cores=16`, `ram_gb=32`,
-  `hardware_class=workstation`, and `default_substrate=subagents`.
-- Effective lanes: 1 implementation lane. The plan already had parallel
-  research; this implementation touches coupled harness files where parent
-  integration and verification are the critical path.
-- Critical path: archive old SPEC -> write new SPEC -> settings/profile split
-  -> skill -> scripts -> schemas/fixtures/lint -> eval/docs/test wiring ->
-  generated capability map -> static verification.
-- Agent wall-clock: optimistic 2 hours / likely 4 hours / pessimistic 7 hours.
-- Agent-hours: approximately 8-14 across research already completed,
-  implementation, debugging, and static verification.
-- Human touch time: 1-3 hours later for Claude login, MiniMax key placement,
-  runtime opt-in, and benchmark approvals.
-- Calendar blockers: Opus availability under the user's Claude subscription,
-  MiniMax Token Plan tier limits, and any paid/large benchmark runs.
-- Confidence: medium. Static contracts are straightforward; runtime provider
-  behavior must be verified later by opt-in commands.
+  `hardware_class=workstation`, and `agent_teams_available=false`.
+- Effective lanes: 1 local implementation lane. The changes are coupled across
+  route registration, setup, docs, tests, and generated maps; parallelizing the
+  edits would increase integration risk.
+- Critical path: spec -> skill/script -> setup alias -> smoke/eval/release/test
+  wiring -> docs -> generated capability map -> static release gate.
+- Agent wall-clock: optimistic 45 minutes / likely 90 minutes / pessimistic 3
+  hours.
+- Agent-hours: 1-3.
+- Human touch time later: 10-30 minutes for Claude login, MiniMax key placement,
+  and optional runtime provider doctor.
+- Calendar blockers: account-specific Opus access and MiniMax peak traffic.
+- Confidence: medium-high for static harness behavior, medium for provider
+  runtime effectiveness until runtime checks prove the actual account state.
 
 ## Implementation Plan
 
-### Task 1: Provider Profile Foundation
+### Task 1: Route Contract
 
-- Make `.claude/settings.json` provider-neutral: governance hooks, deny rules,
-  allowed public tools, and `acceptEdits` default only.
-- Add planner and executor example profiles:
-  - planner: no `ANTHROPIC_BASE_URL`, planner model `claude-opus-4-7`, effort
-    `xhigh`, and no MiniMax alias collapse.
-  - executor: `ANTHROPIC_BASE_URL=https://api.minimax.io/anthropic`, model
-    `MiniMax-M2.7-highspeed`, and placeholder token fields only.
-- Ignore local profile files and `.taste/opusminimax/` run artifacts.
+- Add `/opusworkflow` skill with:
+  - mode banner
+  - cost-optimized budget policy
+  - Opus judgment checkpoints
+  - MiniMax executor duties
+  - default executor concurrency 1
+  - refusal to claim Opus if model identity is unproven
+  - final verification requirements
 
-### Task 2: Skill And Runtime Interface
+### Task 2: Script Interface
 
-- Add `/opusminimax` as a manual skill.
-- Add `scripts/opusminimax.sh` to create run directories, packet templates, and
-  optionally launch Claude planner runtime only when explicitly requested.
-- Add `scripts/minimax-exec.sh` to validate executor packets and optionally run
-  a MiniMax-backed Claude Code process only when explicitly requested.
-- Add `scripts/opusminimax-doctor.sh` with a no-secret `--static` default and an
-  explicit `--runtime` mode for future auth/model checks.
+- Add `scripts/opusworkflow.sh` as a workflow-mode wrapper over
+  `scripts/opusminimax.sh`.
+- Keep runtime execution opt-in through `--execute-planner`.
+- Pass through planner/executor model overrides and run IDs.
 
-### Task 3: Artifact Contracts
+### Task 3: Setup Alias
 
-- Add JSON schemas for `opusminimax-packet`, `opusminimax-run`, and
-  `opusminimax-benchmark-result`.
-- Extend artifact lint validation and fixtures for green/red cases.
-- Treat model identity, provider separation, command evidence, quota ceilings,
-  and benchmark per-task evidence as lintable contract surfaces.
+- Extend `setup.sh --mode opusworkflow` to prepare the same local planner and
+  executor profiles as `/opusminimax`.
+- Make final setup guidance point to `/opusworkflow` when that mode is selected.
 
-### Task 4: Benchmark Repair Lab Contract
+### Task 4: Static Gate And Eval
 
-- Add a static `opusminimax-benchmark-smoke` gate.
-- Add a harness eval task/golden for benchmark honesty.
-- Document the task pipeline:
-  intake -> gold quarantine -> localization -> repro test -> MiniMax candidate
-  patches -> validation -> Claude adversarial selection -> final prediction.
+- Add `scripts/opusworkflow-smoke.sh`.
+- Add `evals/harness/tasks/m9-opusworkflow-cost-budget.yaml` and matching
+  golden JSON.
+- Register the new gate in `scripts/harness-eval.sh`,
+  `scripts/harness-capability-map.sh`, `scripts/release-check.sh`, and
+  `scripts/test-harness.sh`.
 
-### Task 5: Docs, Discovery, And Release Wiring
+### Task 5: Docs And Discovery
 
-- Register `/opusminimax` in the capability map as a core execution route.
-- Update README, CLAUDE.md, AGENTS.md, start-session, test-harness,
-  release-check, and generated map docs.
-- Keep all runtime provider checks opt-in; static release remains no-secret and
-  no-network where existing gates permit.
+- Update README, CLAUDE.md, AGENTS.md, and `scripts/start-session.sh`.
+- Regenerate `docs/harness-capability-map.md` and
+  `docs/harness-capability-map.json`.
 
-## Verification
+## Verification Plan
 
+- `bash -n scripts/*.sh`
+- `bash scripts/opusworkflow-smoke.sh`
 - `bash scripts/opusminimax-doctor.sh --static`
 - `bash scripts/opusminimax-benchmark-smoke.sh --fixtures`
-- `bash scripts/harness-capability-map.sh --check`
+- `bash scripts/harness-capability-map.sh --check --json`
 - `bash scripts/artifact-lint.sh --fixtures`
 - `bash scripts/harness-eval.sh --json`
 - `bash scripts/security-smoke.sh`
+- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`
 - `bash scripts/release-check.sh --static-only`
 - `git diff --check`
 
-### Verified 2026-05-06
+## Verified 2026-05-06
 
 - `bash -n scripts/*.sh`: pass.
-- JSON profile/schema validation with `python3 -m json.tool`: pass.
-- `bash scripts/artifact-lint.sh --fixtures`: pass (`7 green`, `21 red`).
+- `bash scripts/opusworkflow-smoke.sh`: pass.
 - `bash scripts/opusminimax-doctor.sh --static`: pass-with-warning. The warning
-  is limited to existing candidate secret strings in test/smoke scripts; no
-  local secret files were read.
+  is limited to obvious candidate secret strings in existing test/smoke scripts;
+  no `.env` or local profile secrets were read.
 - `bash scripts/opusminimax-benchmark-smoke.sh --fixtures`: pass.
-- `bash scripts/security-smoke.sh`: pass.
 - `bash scripts/harness-capability-map.sh --check --json`: pass
-  (`skills=31`, `/opusminimax` group=`execution`, core route enabled).
-- `bash scripts/harness-eval.sh --json`: pass (`19 tasks`, `16 gates`,
+  (`skills=32`, `eval_tasks=20`, `/opusworkflow` core route present).
+- `bash scripts/artifact-lint.sh --fixtures`: pass (`7 green`, `21 red`).
+- `bash scripts/harness-eval.sh --json`: pass (`20 tasks`, `17 gates`,
   `0 mismatches`).
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass
-  (`128 passed`, `0 failed`; runtime workflow smoke intentionally skipped).
+- `bash scripts/security-smoke.sh`: pass.
+- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`131 passed`,
+  `0 failed`; runtime workflow smoke intentionally skipped).
 - `bash scripts/release-check.sh --static-only`: pass, including
   `git diff --check`.
+- `bash scripts/opusminimax-doctor.sh --runtime`: pass-with-warning after
+  operator Claude login. Runtime doctor confirmed Claude Code `2.1.118`, Claude
+  Pro subscription auth, provider-neutral shared settings, Opus planner request,
+  and MiniMax executor profile separation. It made no model calls and read no
+  `.env` or local profile secrets.
+- `claude --model claude-opus-4-7 --settings .claude/settings.opusminimax-planner.local.json -p 'Reply exactly: OPUSWORKFLOW_AUTH_OK'`:
+  operator-reported pass. The sentinel response printed
+  `OPUSWORKFLOW_AUTH_OK`, proving the Claude/Opus planner path for this local
+  account state.
 
-Runtime Claude/MiniMax smoke tests were not run.
+MiniMax live executor packet runtime remains untested.
 
-## Runtime Opt-In Verification Later
+## Introspection Pre-Plan
 
-These commands are not part of static closeout:
+- Likely mistake: overbuilding a second implementation stack instead of an alias
+  over `/opusminimax`. Mitigation: make `/opusworkflow` a thin workflow-mode
+  route and reuse existing schemas.
+- Likely mistake: claiming the $20 Claude plan gives guaranteed Opus 4.7.
+  Mitigation: docs and skill must say Opus is only claimed when identity is
+  proven.
+- Likely mistake: using local 10-lane capacity as MiniMax executor capacity.
+  Mitigation: skill and smoke gate require default provider ceiling 1.
+- Missing verification: MiniMax live executor behavior remains untested by
+  design. Static closeout must keep that proof pending until a tiny executor
+  packet is run with explicit operator approval.
 
-- `bash scripts/opusminimax-doctor.sh --runtime`
-- `bash scripts/opusminimax.sh --task "say hi only" --execute-planner`
-- `bash scripts/minimax-exec.sh --packet PATH --run-dir PATH --execute`
-- A tiny isolated benchmark fixture before any real SWE-bench or Terminal-Bench
-  run.
+## Introspection Post-Implementation
+
+- Checked for overbuild: `/opusworkflow` is a wrapper and skill over the
+  existing `/opusminimax` artifacts, not a second provider bridge.
+- Checked for false cost claims: docs and skill say Opus must be proven and
+  Plus-Highspeed executor concurrency defaults to 1.
+- Checked for provider leakage: static doctor still confirms shared settings are
+  provider-neutral, planner has no MiniMax base URL, and executor requests
+  `MiniMax-M2.7-highspeed`.
+- Checked for verification gap: Claude auth and Opus planner identity are now
+  proven by runtime doctor plus operator-reported sentinel output; MiniMax live
+  executor runtime remains pending and opt-in.
+- Changed-line trace: every meaningful edit maps to this spec's route contract,
+  script interface, setup alias, static gate/eval, docs/discovery, or verification
+  cleanup.
 
 ## Rollback Plan
 
-1. Restore the prior provider-specific `.claude/settings.json`.
-2. Remove `/opusminimax` skill, scripts, schemas, fixtures, and eval task.
-3. Remove `opusminimax` from capability-map route/script/eval wiring.
-4. Restore docs and skill counts to the previous baseline.
-5. Regenerate capability-map docs.
-6. Re-run static release checks.
+1. Remove `/opusworkflow` skill, script, smoke gate, eval task/golden, and setup
+   alias.
+2. Remove route/script/eval registrations from capability map generator,
+   harness eval, release-check, test-harness, and docs.
+3. Regenerate capability map.
+4. Restore README/CLAUDE/AGENTS/start-session wording to `/opusminimax` only.
+5. Re-run static release checks.

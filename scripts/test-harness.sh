@@ -212,6 +212,48 @@ else
     test_fail "/opusminimax skill, profiles, scripts, schemas, fixtures, or static gates are incomplete"
 fi
 
+# Test 3d-opusworkflow: Cost-Optimized Opus + MiniMax Workflow Mode
+echo "[3d-opusworkflow] OpusWorkflow Cost Budget"
+OPUSWORKFLOW_OK=true
+for required_file in \
+    ".claude/skills/opusworkflow/SKILL.md" \
+    "scripts/opusworkflow.sh" \
+    "scripts/opusworkflow-smoke.sh" \
+    "evals/harness/tasks/m9-opusworkflow-cost-budget.yaml" \
+    "evals/harness/golden/m9-opusworkflow-cost-budget.json"; do
+    if [ ! -e "$required_file" ]; then
+        OPUSWORKFLOW_OK=false
+    fi
+done
+for script in opusworkflow opusworkflow-smoke; do
+    if [ ! -x "scripts/$script.sh" ]; then
+        OPUSWORKFLOW_OK=false
+    fi
+done
+for pattern in \
+    "cost-optimized" \
+    "Default executor concurrency is 1" \
+    "Do not claim Opus planned" \
+    "80-90% mechanical work" \
+    "ANTHROPIC_API_KEY"; do
+    if ! grep -Fq "$pattern" .claude/skills/opusworkflow/SKILL.md 2>/dev/null; then
+        OPUSWORKFLOW_OK=false
+    fi
+done
+for pattern in \
+    "--mode opusworkflow" \
+    "opusworkflow-smoke"; do
+    if ! grep -Fq -- "$pattern" setup.sh scripts/harness-eval.sh scripts/release-check.sh scripts/harness-capability-map.sh 2>/dev/null; then
+        OPUSWORKFLOW_OK=false
+    fi
+done
+if [ "$OPUSWORKFLOW_OK" = true ] && \
+   bash scripts/opusworkflow-smoke.sh >/dev/null 2>&1; then
+    test_pass "/opusworkflow exposes cost-optimized daily Opus/MiniMax workflow with static budget gate"
+else
+    test_fail "/opusworkflow skill, setup alias, scripts, docs, eval, or static gate is incomplete"
+fi
+
 # Test 3e: Efficacy-First Parallelism Contract
 echo "[3e] Efficacy-First Parallelism"
 PARALLEL_OK=true
@@ -284,7 +326,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "31 skills" README.md 2>/dev/null && \
+   grep -Fq "32 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -472,7 +514,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 31 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 32 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -1230,11 +1272,11 @@ else
 fi
 
 # ========================================
-# Skills (31 Expected)
+# Skills (32 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 31 Expected]"
+echo "[Skills - 32 Expected]"
 echo ""
 
 # Test 4: Skills Count
@@ -1243,7 +1285,7 @@ SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d '
 if [ "$SKILL_COUNT" -ge 30 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 31+ skills, found $SKILL_COUNT"
+    test_fail "Expected 32+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
@@ -1318,7 +1360,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

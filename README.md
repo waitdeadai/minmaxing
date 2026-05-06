@@ -8,6 +8,12 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io).
 
+Recommended split mode:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key-file /path/to/minimax.token
+```
+
 <h1 align="center">
   <img src="https://img.shields.io/badge/MiniMax-2.7%20Highspeed-FF6B35?style=for-the-badge&logo=lightning&logoColor=white" alt="MiniMax M2.7 Highspeed" />
   <img src="https://img.shields.io/badge/Claude%20Code-Harness-8B5CF6?style=for-the-badge&logo=claude&logoColor=white" alt="Claude Code" />
@@ -100,13 +106,19 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-For the Opus planner + MiniMax executor mode:
+For the recommended OpusWorkflow daily mode:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key-file /path/to/minimax.token
+```
+
+For the lower-level Opus planner + MiniMax executor mode:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file /path/to/minimax.token
 ```
 
-That's it. Memory system, governed runtime profiles, and 31 skills — all configured.
+That's it. Memory system, governed runtime profiles, and 32 skills — all configured.
 
 **Shared settings are committed on purpose, but they are provider-neutral.** `.claude/settings.json` contains governance hooks, deny rules, and project defaults. Real credentials and provider identity belong in ignored local files such as `.claude/settings.opusminimax-planner.local.json` and `.claude/settings.minimax-executor.local.json`.
 
@@ -337,7 +349,8 @@ For REVCLI/Revis-style products, `/agentfactory` treats Hermes as the role-scope
 - **Project default:** provider-neutral `acceptEdits` with governance hooks and secret-read denies.
 - **solo-fast option:** trusted-local fast profile for personal repos where you want fewer prompts.
 - **Team-safe option:** copy [`.claude/settings.team-safe.example.json`](.claude/settings.team-safe.example.json) to your local settings and keep `defaultMode` at `acceptEdits`.
-- **OpusMiniMax option:** copy the planner and executor examples to ignored local profiles, then use `/opusminimax` so Claude/Opus plans and reviews while MiniMax-M2.7-highspeed executes bounded packets.
+- **OpusWorkflow option:** use `/opusworkflow` as the recommended daily mode so Opus is reserved for judgment checkpoints while MiniMax-M2.7-highspeed does bounded execution packets.
+- **OpusMiniMax option:** use `/opusminimax` directly when you need benchmark or repair mode, or lower-level packet control.
 - If you want even more guardrails, switch your local Claude session to `plan` before high-risk work.
 
 ### OpenAI Codex Plugin
@@ -571,12 +584,13 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 31 Skills
+## The 32 Skills
 
 | Skill | What It Does |
 |-------|-------------|
 | `/tastebootstrap` | **Fresh-repo bootstrap** — asks the 10 kernel questions and writes `taste.md` + `taste.vision` |
 | `/workflow` | **Central execution engine** — drives research → code audit → plan → Agent-Native Estimate → `SPEC.md` → implement → verify → closeout (supervises an efficacy-first agent budget) |
+| `/opusworkflow` | **Recommended cost-optimized daily mode** — runs `/opusminimax --mode workflow` with Opus reserved for judgment and MiniMax-M2.7-highspeed as the executor |
 | `/opusminimax` | **Primary split-execution mode** — Claude/Opus plans, adversarially reviews, and verifies while MiniMax-M2.7-highspeed executes bounded coding packets |
 | `/visualize` | **Taste-to-artifact comprehension check** — creates ignored visual, diagram, prompt, or narrative artifacts without implementation |
 | `/visualizeworkflow` | **Approval-first workflow** — drafts SPEC + visualization, stops at `WAITING_FOR_VISUAL_APPROVAL`, then continues only with `--continue` |
@@ -620,7 +634,8 @@ The routing ladder is:
 
 ```text
 local /workflow
--> /opusminimax when Opus should plan/review and MiniMax should execute packets
+-> /opusworkflow when the $20 Claude + $40 MiniMax budget should be optimized end to end
+-> /opusminimax when Opus should plan/review and MiniMax should execute packets in workflow/benchmark/repair mode
 -> /parallel when independent execution packets are enough
 -> /claudeproduct for Claude, Claude Code, Claude.ai, API, connector, plugin,
    skill, hook, MCP, subagent, availability, limit, model, or setup questions
@@ -634,6 +649,7 @@ Use this rule of thumb:
 | Pick | When | The Developer Should Expect |
 | --- | --- | --- |
 | local `/workflow` | One tight reasoning loop, one shared file, unclear ownership, or coordination would slow the work down. | One supervisor does the whole governed lifecycle. |
+| `/opusworkflow` | You want the daily default for a Claude subscription plus MiniMax Plus-Highspeed: Opus only at plan/review/ship gates and MiniMax for bulk implementation. | One-command split setup, provider doctor, default executor concurrency 1, bounded packets, parent verification, and no silent PAYG. |
 | `/opusminimax` | You want to squeeze a Claude subscription by using Opus only for planning, adversarial review, and final judgment while MiniMax does speed/bulk execution. | Provider split doctor, Opus planner artifact, MiniMax executor packets, quota-aware concurrency, parent verification, and no benchmark overclaims. |
 | `/claudeproduct` | The question is about Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, availability, limits, models, or setup. | Official Anthropic/Claude docs first, surface separation, source ledger, connector permission/trust caveats, confidence downgrade when current docs are missing. |
 | `/parallel` | The work splits into independent packets with clear owned files/surfaces and aggregate verification. | Packet DAG, ownership matrix, sync barriers, worker sidecars, `parallel-aggregate`. |
@@ -755,6 +771,20 @@ The smoke test validates the real `/workflow` path in a temporary repo and accep
 - a justified local-only research brief for a purely local task
 - or positive MiniMax MCP research when the task depends on current external facts
 
+For `/opusworkflow`, prove the planner side separately before claiming Opus
+runtime identity:
+
+```bash
+unset ANTHROPIC_API_KEY ANTHROPIC_BASE_URL ANTHROPIC_AUTH_TOKEN
+claude auth login
+bash scripts/opusminimax-doctor.sh --runtime
+claude --model claude-opus-4-7 --settings .claude/settings.opusminimax-planner.local.json -p 'Reply exactly: OPUSWORKFLOW_AUTH_OK'
+```
+
+Current local runtime evidence recorded on 2026-05-06: Claude Pro auth and the
+Opus 4.7 planner sentinel were proven by operator test. MiniMax live executor
+packet runtime remains pending until an explicit tiny executor packet is run.
+
 ## Codex in Claude Code
 
 `/codesearch` is the local repo skill for searching code. `/codex:*` is the official OpenAI plugin namespace.
@@ -822,7 +852,7 @@ Notes:
 | Claude Code | 2.1+ (`npm install -g @anthropic-ai/claude-code`); Opus 4.7 planner mode expects 2.1.111+ |
 | Python | 3.11+ |
 | MiniMax API Key | [platform.minimax.io](https://platform.minimax.io) |
-| Claude Subscription | Required for subscription-backed Opus planner usage; verify with `claude auth status` |
+| Claude Subscription | Required for subscription-backed Opus planner usage; verify with `claude auth status --text` plus the `OPUSWORKFLOW_AUTH_OK` sentinel |
 | Node.js | 18.18+ if you want the optional OpenAI Codex plugin |
 | Codex Auth | ChatGPT sign-in or OpenAI API key if you want the optional OpenAI Codex plugin |
 
@@ -873,8 +903,9 @@ minmaxing/
 │   ├── settings.opusminimax-planner.example.json
 │   ├── settings.minimax-executor.example.json
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 31 skills (system calls)
+│   ├── skills/                 # 32 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
+│   │   ├── opusworkflow/       # Cost-optimized daily Opus + MiniMax route
 │   │   ├── opusminimax/        # Opus planner + MiniMax executor mode
 │   │   ├── visualize/          # Taste-to-artifact comprehension check
 │   │   ├── visualizeworkflow/  # Approval-first workflow route

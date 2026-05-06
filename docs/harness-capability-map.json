@@ -54,10 +54,10 @@
     "path": ".codex"
   },
   "counts": {
-    "eval_tasks": 19,
+    "eval_tasks": 20,
     "rules": 15,
-    "scripts": 50,
-    "skills": 31
+    "scripts": 52,
+    "skills": 32
   },
   "evals": [
     {
@@ -230,6 +230,15 @@
       "id": "m8-opusminimax-benchmark",
       "task_path": "evals/harness/tasks/m8-opusminimax-benchmark.yaml",
       "title": "OpusMiniMax benchmark honesty contract"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/opusworkflow-smoke.sh",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m9-opusworkflow-cost-budget.json",
+      "id": "m9-opusworkflow-cost-budget",
+      "task_path": "evals/harness/tasks/m9-opusworkflow-cost-budget.yaml",
+      "title": "/opusworkflow cost-optimized budget route"
     }
   ],
   "generated_at": "static",
@@ -432,12 +441,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 651,
+      "line_count": 656,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "9ce9be5baee68bfc3a39e060d19d9dd84e98eec6002dd806ff4dff105172372f"
+      "sha256": "81a511d831cf37acdc7b7f3f463118145f1759c5ec7709f820abf0bd45277e42"
     },
     {
       "line_count": 640,
@@ -456,12 +465,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 776,
+      "line_count": 784,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "adbc3bbd99ded2f5ba8378429c5a223e2a97acea5a4fb62452417899e5f50c84"
+      "sha256": "02f35f935fa72ca4f2025ecdb877c861a82ee617d71da3023fb5a08265b1d62f"
     },
     {
       "line_count": 322,
@@ -573,7 +582,23 @@
       "path": "scripts/opusminimax.sh",
       "purpose": "Prepare or explicitly launch the /opusminimax planner workflow.",
       "required_gate": false,
-      "sha256": "0afe821da982b963784aa3e77043a13add4ba79fd967b3efcad2809597ef0f5b"
+      "sha256": "e7f70033e91b300b1450180ddaecefb09026672d9ae2bd5f5f83ce239a012f95"
+    },
+    {
+      "line_count": 87,
+      "name": "opusworkflow-smoke",
+      "path": "scripts/opusworkflow-smoke.sh",
+      "purpose": "OpusWorkflow cost-optimized route gate",
+      "required_gate": true,
+      "sha256": "9037f60b5a7491a9d1e837f77f6a729c545b6fb8ce7bfbfc6bc47d7db6486342"
+    },
+    {
+      "line_count": 38,
+      "name": "opusworkflow",
+      "path": "scripts/opusworkflow.sh",
+      "purpose": "Prepare or explicitly launch the cost-optimized /opusworkflow route.",
+      "required_gate": false,
+      "sha256": "74d980f3bee2217e955204564cfe112dceeb06ddc388580adbfa7a9dde4587db"
     },
     {
       "line_count": 113,
@@ -616,12 +641,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 89,
+      "line_count": 90,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "34d177985c4359f177b51f96b7fdfa0fb34c91fae3374ce6a00e372a6cfd9419"
+      "sha256": "162669d6d9658cc77c32e07a51980dc508ec0604dd032090d2c87027e6416bc9"
     },
     {
       "line_count": 144,
@@ -685,7 +710,7 @@
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "5c908279ea9c7ac8e7b4d20352885c04f71380bf0f566e38cb319ec7ad07d9ba"
+      "sha256": "5a896cdf13c67267fadcbc52abd494d60651ffacf4b18cf51221aa8330553411"
     },
     {
       "line_count": 382,
@@ -704,12 +729,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1675,
+      "line_count": 1717,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "fdbc1106832adc7459f35e7636c524a805d765cac077b52b7f6c131e47edafce"
+      "sha256": "d65cfd14b393c42a838307c45aad5a85c11236edf102b15c99f76f5079141755"
     },
     {
       "line_count": 552,
@@ -725,7 +750,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "bab0b33e9aa1f85ec7e2e1ff5f26a0be294aeec16542fc012ceaaa41fd9c7113"
+      "sha256": "660b741033bb189d8f05d6f6bc271b7552ed286396d66345e1bcd869a4b4f727"
     },
     {
       "line_count": 117,
@@ -1277,6 +1302,29 @@
       "user_invocable": true
     },
     {
+      "argument_hint": "[task]",
+      "core_route": true,
+      "description": "Run the cost-optimized Opus planner plus MiniMax-M2.7-highspeed executor workflow end to end. Use when the user invokes /opusworkflow or wants the recommended daily mode for a Claude subscription plus MiniMax Plus-Highspeed Token Plan.",
+      "group": "execution",
+      "line_count": 128,
+      "model_invocation": false,
+      "name": "opusworkflow",
+      "path": ".claude/skills/opusworkflow/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m9-opusworkflow-cost-budget.yaml"
+      ],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/minimax-exec.sh",
+        "scripts/opusminimax-doctor.sh",
+        "scripts/opusworkflow.sh",
+        "scripts/opusworkflow-smoke.sh"
+      ],
+      "sha256": "0a7310257b0e957c23df36c97cfa85f930b60dce72d7e1325e9e259ed2b8494c",
+      "slash": "/opusworkflow",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "",
       "core_route": false,
       "description": "/overnight",
@@ -1490,7 +1538,9 @@
       "model_invocation": false,
       "name": "workflow",
       "path": ".claude/skills/workflow/SKILL.md",
-      "related_eval_tasks": [],
+      "related_eval_tasks": [
+        "evals/harness/tasks/m9-opusworkflow-cost-budget.yaml"
+      ],
       "related_rules": [
         ".claude/rules/estimation.rules.md",
         ".claude/rules/verify.rules.md",
@@ -1529,8 +1579,8 @@
   },
   "summary": {
     "codex_file_count": 4,
-    "core_route_count": 13,
-    "eval_task_count": 19,
+    "core_route_count": 14,
+    "eval_task_count": 20,
     "groups": {
       "agent-systems": [
         "/agentfactory"
@@ -1546,6 +1596,7 @@
         "/demo",
         "/hiveworkflow",
         "/opusminimax",
+        "/opusworkflow",
         "/visualizeworkflow",
         "/workflow"
       ],
@@ -1594,7 +1645,7 @@
     },
     "hook_event_count": 11,
     "rule_count": 15,
-    "script_count": 50,
-    "skill_count": 31
+    "script_count": 52,
+    "skill_count": 32
   }
 }

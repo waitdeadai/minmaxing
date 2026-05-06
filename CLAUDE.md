@@ -1,4 +1,4 @@
-# minmaxing - OpusMiniMax + MiniMax 2.7 Harness
+# minmaxing - OpusWorkflow + MiniMax 2.7 Harness
 
 ## Philosophy: Effectiveness Over Efficiency
 
@@ -27,6 +27,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 15. **Security Profiles**: Keep `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime` distinct. `bypassPermissions` is trusted-local only, not the recommended team default.
 16. **Release Governance**: Public harness changes must pass `scripts/release-check.sh --static-only`; authenticated runtime checks stay explicit and secret-gated
 17. **OpusMiniMax Split**: `/opusminimax` uses Claude/Opus for bounded planning, adversarial review, and verification while MiniMax-M2.7-highspeed executes bounded packets. Provider identity lives in ignored local profiles, not shared `.claude/settings.json`.
+18. **OpusWorkflow Default**: `/opusworkflow` is the cost-optimized daily route over `/opusminimax --mode workflow`: Opus only at judgment gates when proven available, MiniMax for bulk execution, executor concurrency 1 by default for Plus-Highspeed.
 
 ## Default Behavior
 
@@ -40,6 +41,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 
 **When you say `/opusminimax`:** run the same SPEC-first spine, but make provider roles explicit: Claude/Opus plans and reviews, MiniMax executes bounded packets, and parent verification treats executor summaries as claims until evidence proves them.
 
+**When you say `/opusworkflow`:** run `/opusminimax` in workflow mode with stricter cost policy: use Opus only for plan/spec freeze, adversarial review, and final judgment when identity is proven; use MiniMax-M2.7-highspeed for coding packets and repair loops; keep Plus-Highspeed executor concurrency at 1 unless provider evidence proves more.
+
 **Supervisor's job:** Ensure every non-trivial task is research-backed, audit-backed, spec-backed, introspected, and verified before declaring done, without handing the next phase back to the user.
 
 **Taste alignment uses Socratic questions.** When taste is unclear or a proposal conflicts with the project kernel in `taste.md` and `taste.vision`, `/align` asks focused questions before `/workflow` proceeds.
@@ -49,6 +52,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 |-------|---------|
 | /tastebootstrap | Fresh-repo kernel interview that writes taste.md + taste.vision |
 | /workflow | Central execution engine — taste-first, runs the full phases inline with Agent-Native Estimate gating |
+| /opusworkflow | Recommended cost-optimized end-to-end route: Opus judgment checkpoints plus MiniMax-M2.7-highspeed execution through `/opusminimax --mode workflow` |
 | /opusminimax | Opus planner + MiniMax-M2.7-highspeed executor mode with provider split, packet artifacts, quota-aware concurrency, and parent verification |
 | /visualize | Taste-to-artifact comprehension check; creates ignored visual, diagram, or narrative artifacts without implementation |
 | /visualizeworkflow | Approval-first workflow; drafts SPEC + visualization, stops at WAITING_FOR_VISUAL_APPROVAL, then continues only with `--continue` |
@@ -110,6 +114,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Session Insights**: `bash scripts/session-insights.sh --json` flags missing estimates, missing verification evidence, evidence-free closeout risk, missing eval score, and high rework indicators from local artifacts.
 - **Security Profiles**: Validate profile examples with `bash scripts/security-smoke.sh`; use `team-safe` for shared work and keep `solo-fast` as a trusted-local speed profile.
 - **OpusMiniMax Profiles**: `.claude/settings.json` is provider-neutral. Use ignored planner/executor local profiles copied from `.claude/settings.opusminimax-planner.example.json` and `.claude/settings.minimax-executor.example.json`; never claim Opus involvement unless runtime identity is proven.
+- **OpusWorkflow Budget**: `/opusworkflow` is the daily default for the $20 Claude + $40 MiniMax strategy. It must not run Opus as a bulk executor, must not silently use PAYG, and must record `provider_ceiling=1` until runtime MiniMax tier evidence proves a higher safe executor budget.
+- **Opus Runtime Proof**: A Claude subscription login plus exact `OPUSWORKFLOW_AUTH_OK` sentinel from `claude --model claude-opus-4-7` proves the planner side for the current account state. MiniMax executor runtime is a separate proof and must not be implied by the Opus check.
 - **Release Gate**: `bash scripts/release-check.sh --static-only` runs the no-secret public harness gate. Runtime checks belong to the manual/scheduled workflow.
 - **Surgical Changes**: Vague requests become verifiable contracts; every meaningful diff should trace to `SPEC.md`, generated output, or cleanup caused by the current change
 - **Agent Factory**: `/agentfactory` creates Hermes agents as bounded enterprise operating units, not generic prompts; it keeps its own workflow artifact, deepresearch brief, manifest, `hermes.runtime.json`, explicit capabilities, memory coherence, verification, registry evidence, tested kill switch, `development_host_profile`, `target_runtime_profile`, `host_capacity_profile`, `capacity_binding`, `concurrency_budget`, and `degrade_policy`. Local dev capacity is not production capacity unless the target runtime is explicitly local. REVCLI/Revis-facing agents must route side effects through the runtime control plane instead of direct system-of-record writes.
