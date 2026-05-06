@@ -2,8 +2,18 @@
 
 ## Install
 
+Pick the command that matches the folder.
+
+Clean/new folder:
+
 ```bash
 MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'
+```
+
+Existing project or harness update:
+
+```bash
+MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'
 ```
 
 Get your key from [platform.minimax.io](https://platform.minimax.io).
@@ -17,7 +27,7 @@ Get your key from [platform.minimax.io](https://platform.minimax.io).
 
 **Delegate execution. Keep judgment. Require evidence.**
 
-One command sets up a governed Claude Code harness where AI researches with an efficacy-first agent budget, audits the codebase, writes a concrete plan and `SPEC.md`, implements with clear ownership, and produces evidence before you trust the result.
+Setup adds a governed Claude Code harness where AI researches with an efficacy-first agent budget, audits the codebase, writes a concrete plan and `SPEC.md`, implements with clear ownership, and produces evidence before you trust the result.
 
 <p align="center">
   <a href="https://github.com/waitdeadai/minmaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Stars"></a>
@@ -95,16 +105,21 @@ The harness is effective when its gates produce evidence: `SPEC.md`,
 Agent-Native Estimates, parent-verified worker outputs, aggregate verification,
 memory health/freshness checks, and command-backed closeout.
 
-## One-Command Setup
+## Setup Commands
 
-There is one official setup command: the command at the top of this README.
-Run it from the folder where you want to work, replacing
-`YOUR_TOKEN_PLAN_KEY` with your MiniMax Token Plan key.
+There are two setup commands and they do different jobs.
 
-That single command installs the harness into the current folder, configures
-the ignored local MiniMax executor profile, keeps the Opus planner profile
-provider-clean, uses the default trusted-local `bypassPermissions` posture, and
-opens Claude when setup finishes.
+- **Clean/new folder:** use this only in an empty folder where minmaxing can
+  become the project scaffold.
+- **Existing project or harness update:** use this inside a real app/repo. It
+  imports or updates harness-owned files only, skips project-file conflicts,
+  preserves `.env`, `README.md`, `SPEC.md`, `taste.md`, `taste.vision`, app
+  code, package files, and `.git`, and records imported file hashes in
+  `.minimaxing/import-manifest.tsv` so future runs can update files it owns.
+
+Both commands configure the ignored local MiniMax executor profile, keep the
+Opus planner profile provider-clean, use the default trusted-local
+`bypassPermissions` posture, and open Claude when setup finishes.
 
 Inline/env token commands can land in shell history. That is the intentional
 fast path for trusted solo work; advanced hidden-input and key-file forms still
@@ -147,7 +162,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 ```
 
 3. Move into your project directory inside WSL.
-4. Run the one official minmaxing setup command from the top of this README.
+4. Run the clean/new-folder command or the existing-project/updater command from the top of this README.
 
 If you use the optional OpenAI Codex plugin in WSL, the same Linux flow applies there too.
 
@@ -175,7 +190,7 @@ winget install Python.Python.3.11
 winget install --id=astral-sh.uv -e
 ```
 
-4. Open **Git Bash** and run the one official minmaxing setup command from the top of this README.
+4. Open **Git Bash** and run the clean/new-folder command or the existing-project/updater command from the top of this README.
 
 5. Verify Claude Code:
 
@@ -470,7 +485,7 @@ SQLite memory is the durable layer for reusable lessons. When a decision, patter
 
 ### Step 1: Install
 
-Run the one official install command from the top of this README.
+Run the clean/new-folder command from the top of this README.
 
 ### Step 2: Define Your Taste
 
@@ -524,9 +539,11 @@ Drop minmaxing into any codebase:
 cd your-existing-project
 ```
 
-Then run the one official install command from the top of this README.
+Then run the existing-project/updater command from the top of this README.
 
-This copies minmaxing files without touching your existing code.
+This imports or updates minmaxing harness files without overwriting your
+existing code. If a harness file path already exists and was not previously
+imported by minmaxing, setup leaves it untouched and prints a conflict warning.
 
 ### Step 2: Define Taste for This Project
 

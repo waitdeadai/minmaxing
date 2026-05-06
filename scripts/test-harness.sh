@@ -200,6 +200,7 @@ done
 for pattern in \
     "--mode minimax|opusworkflow|opusminimax" \
     "MINIMAX_TOKEN_KEY" \
+    "--import-existing" \
     "--minimax-key" \
     "--minimax-key-file" \
     "--prompt-minimax-key" \
@@ -248,6 +249,7 @@ for pattern in \
 done
 for pattern in \
     "--mode opusworkflow" \
+    "--import-existing" \
     "MINIMAX_TOKEN_KEY" \
     "TOKEN_KEY" \
     "--minimax-key" \
@@ -1377,7 +1379,10 @@ fi
 # Test 3y: Smart Autorouting UX
 echo "[3y] Smart Autorouting UX"
 if grep -Fq "## Install" README.md 2>/dev/null && \
-   awk 'NR <= 8 && /MINIMAX_TOKEN_KEY='\''YOUR_TOKEN_PLAN_KEY'\'' bash -lc '\''curl -fsSL https:\/\/raw.githubusercontent.com\/waitdeadai\/minmaxing\/main\/setup.sh \| bash -s -- --mode opusworkflow && claude'\''/ { found=1 } END { exit found ? 0 : 1 }' README.md && \
+   grep -Fq "Clean/new folder:" README.md 2>/dev/null && \
+   grep -Fq "Existing project or harness update:" README.md 2>/dev/null && \
+   grep -Fq "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'" README.md 2>/dev/null && \
+   grep -Fq "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'" README.md 2>/dev/null && \
    grep -Fq "## Smart Autorouting" README.md 2>/dev/null && \
    grep -Fq "local /workflow" README.md 2>/dev/null && \
    grep -Fq "/parallel when independent execution packets are enough" README.md 2>/dev/null && \

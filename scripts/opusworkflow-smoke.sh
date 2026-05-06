@@ -46,11 +46,16 @@ for file in README.md CLAUDE.md AGENTS.md scripts/start-session.sh; do
 done
 
 require_text "--mode opusworkflow" setup.sh
+require_text "--import-existing" setup.sh
 require_text "MINIMAX_TOKEN_KEY" setup.sh
 require_text "TOKEN_KEY" setup.sh
 require_text "--minimax-key" setup.sh
 require_text "--prompt-minimax-key" setup.sh
+require_text "import-manifest.tsv" setup.sh
+require_text "skipped_conflicts" setup.sh
 require_text "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'" README.md
+require_text "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'" README.md
+require_text "Existing project or harness update" README.md
 require_text "opusworkflow-smoke" scripts/harness-eval.sh
 require_text "opusworkflow-smoke" scripts/release-check.sh
 require_text "opusworkflow" scripts/harness-capability-map.sh

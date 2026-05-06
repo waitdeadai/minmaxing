@@ -619,12 +619,12 @@
       "sha256": "e7f70033e91b300b1450180ddaecefb09026672d9ae2bd5f5f83ce239a012f95"
     },
     {
-      "line_count": 92,
+      "line_count": 97,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "b36fd815e35f9ab8ad3e7c8b0beff227a9bbd43d590ff814014b25f2ebbbee10"
+      "sha256": "e93cfe06962be1a6e755da4195e318c049ff6c3d8bf67451e2c5b9a5092cd8e1"
     },
     {
       "line_count": 38,
@@ -763,12 +763,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1837,
+      "line_count": 1842,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "18339f01435bd6bc35f8687c5e85b687b6835afa7d7b3ed8aab0756116c75c94"
+      "sha256": "f567898232748770375d46ddfa06847538d4e1ff2e44f271be388a390d4eaf6c"
     },
     {
       "line_count": 552,

@@ -1,15 +1,19 @@
 #!/bin/bash
 # minmaxing - One-Command Setup
-# Official install:
+# Clean/new folder:
 # MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'
+# Existing project / updater:
+# MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'
 
 set -e
 
+MINMAXING_REPO_URL="${MINMAXING_REPO_URL:-https://github.com/waitdeadai/minmaxing.git}"
 MODE="minimax"
 SPLIT_EXECUTION_MODE=0
 API_KEY="${MINIMAX_TOKEN_KEY:-${TOKEN_KEY:-}}"
 MINIMAX_KEY_FILE=""
 PROMPT_MINIMAX_KEY=0
+IMPORT_EXISTING=0
 PLANNER_MODEL="claude-opus-4-7"
 EXECUTOR_MODEL="MiniMax-M2.7-highspeed"
 PROFILE="solo-fast"
@@ -40,6 +44,10 @@ else
                 PROMPT_MINIMAX_KEY=1
                 shift
                 ;;
+            "--import-existing")
+                IMPORT_EXISTING=1
+                shift
+                ;;
             "--planner-model")
                 PLANNER_MODEL="${2:-}"
                 shift 2
@@ -54,11 +62,15 @@ else
                 ;;
             "-h"|"--help")
                 cat <<'EOF'
-Official one-command install:
+Clean/new folder:
   MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'
+
+Existing project / updater:
+  MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'
 
 Options:
   --mode minimax|opusworkflow|opusminimax
+  --import-existing
   --minimax-key KEY
   --minimax-key-file PATH
   --prompt-minimax-key
@@ -107,6 +119,7 @@ fi
 prompt_for_minimax_key() {
     [ -z "$API_KEY" ] || return 0
     [ "$PROMPT_MINIMAX_KEY" -eq 1 ] || [ "$SPLIT_EXECUTION_MODE" -eq 1 ] || return 0
+    [ -t 1 ] || return 0
     [ -r /dev/tty ] || return 0
 
     echo "MiniMax Token Plan key not provided." > /dev/tty
@@ -117,6 +130,204 @@ prompt_for_minimax_key() {
 }
 
 prompt_for_minimax_key
+
+dir_is_empty() {
+    [ -z "$(find . -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]
+}
+
+has_minmaxing_harness() {
+    [ -f ".claude/skills/workflow/SKILL.md" ] && [ -f "scripts/test-harness.sh" ]
+}
+
+append_minmaxing_gitignore_block() {
+    touch .gitignore
+    if ! grep -Fq "# minmaxing local state and secrets" .gitignore 2>/dev/null; then
+        cat >> .gitignore <<'EOF'
+
+# minmaxing local state and secrets
+.claude/settings.local.json
+.claude/*.local.json
+.minimaxing/
+memory/memory.db
+memory/memory.db-*
+.taste/*
+!.taste/fixtures/
+!.taste/fixtures/**
+!.taste/codex-runs/
+!.taste/codex-runs/**
+.env
+.env.*
+EOF
+    fi
+}
+
+clone_minmaxing_to_temp() {
+    TEMP_DIR=$(mktemp -d)
+    git clone --depth 1 "$MINMAXING_REPO_URL" "$TEMP_DIR"
+}
+
+import_or_update_harness() {
+    local source_dir="$1"
+
+    append_minmaxing_gitignore_block
+
+    python3 - "$source_dir" <<'PY'
+import hashlib
+import pathlib
+import shutil
+import sys
+
+source = pathlib.Path(sys.argv[1]).resolve()
+target_root = pathlib.Path.cwd()
+manifest_path = target_root / ".minimaxing" / "import-manifest.tsv"
+manifest_path.parent.mkdir(parents=True, exist_ok=True)
+
+allowed_roots = [
+    ".claude/hooks",
+    ".claude/rules",
+    ".claude/skills",
+    ".claude/settings.json",
+    ".claude/settings.minimax-executor.example.json",
+    ".claude/settings.opusminimax-planner.example.json",
+    ".claude/settings.solo-fast.example.json",
+    ".claude/settings.team-safe.example.json",
+    ".codex",
+    ".github/workflows/harness-runtime.yml",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "COMMERCIAL.md",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "NOTICE",
+    "OPEN_CORE_STRATEGY.md",
+    "SECURITY.md",
+    "TRADEMARKS.md",
+    "docs/harness-capability-map.md",
+    "docs/harness-capability-map.json",
+    "docs/metacognition-harness-moat-research-2026-05-03.md",
+    "docs/runtime-governance-quickstart.md",
+    "docs/runtime-hardening.md",
+    "evals",
+    "examples/dummy-harness-run",
+    "memory",
+    "schemas",
+    "scripts",
+    "setup.sh",
+    "setup.ps1",
+    "settings.json",
+]
+
+never = {
+    ".git",
+    ".gitignore",
+    "README.md",
+    "SPEC.md",
+    "taste.md",
+    "taste.vision",
+}
+
+def digest(path: pathlib.Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+def iter_allowed_files():
+    seen = set()
+    for root in allowed_roots:
+        path = source / root
+        if not path.exists():
+            continue
+        if path.is_file():
+            candidates = [path]
+        else:
+            candidates = sorted(p for p in path.rglob("*") if p.is_file())
+        for item in candidates:
+            rel = item.relative_to(source).as_posix()
+            if rel in seen:
+                continue
+            seen.add(rel)
+            parts = rel.split("/")
+            if rel in never:
+                continue
+            if rel.endswith(".pyc") or "__pycache__" in parts:
+                continue
+            if len(parts) >= 2 and parts[0] == ".claude" and parts[1] == "projects":
+                continue
+            if len(parts) == 2 and parts[0] == ".claude" and parts[1].endswith(".local.json"):
+                continue
+            yield rel, item
+
+previous = {}
+if manifest_path.exists():
+    for line in manifest_path.read_text(encoding="utf-8").splitlines():
+        if not line.strip() or "\t" not in line:
+            continue
+        rel, old_hash = line.split("\t", 1)
+        previous[rel] = old_hash
+
+next_manifest = {}
+copied = updated = unchanged = skipped = 0
+conflicts = []
+
+for rel, src in iter_allowed_files():
+    dst = target_root / rel
+    src_hash = digest(src)
+    old_hash = previous.get(rel)
+
+    if dst.exists():
+        if not dst.is_file():
+            skipped += 1
+            conflicts.append(rel)
+            continue
+        dst_hash = digest(dst)
+        if dst_hash == src_hash:
+            unchanged += 1
+            next_manifest[rel] = src_hash
+            continue
+        if old_hash and dst_hash == old_hash:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            updated += 1
+            next_manifest[rel] = src_hash
+            continue
+        skipped += 1
+        conflicts.append(rel)
+        continue
+
+    if dst.parent.exists() and not dst.parent.is_dir():
+        skipped += 1
+        conflicts.append(rel)
+        continue
+
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dst)
+    copied += 1
+    next_manifest[rel] = src_hash
+
+for rel, old_hash in previous.items():
+    if rel not in next_manifest and (target_root / rel).exists():
+        next_manifest[rel] = old_hash
+
+manifest_path.write_text(
+    "".join(f"{rel}\t{hash_}\n" for rel, hash_ in sorted(next_manifest.items())),
+    encoding="utf-8",
+)
+
+print(
+    f"  [PASS] Harness import/update complete: copied={copied}, "
+    f"updated={updated}, unchanged={unchanged}, skipped_conflicts={skipped}"
+)
+if conflicts:
+    print("  [WARN] Existing non-minmaxing files were left untouched:")
+    for rel in conflicts[:20]:
+        print(f"    - {rel}")
+    if len(conflicts) > 20:
+        print(f"    ... {len(conflicts) - 20} more")
+    print("  [INFO] Re-run after resolving conflicts; tracked imports update via .minimaxing/import-manifest.tsv")
+PY
+}
 
 if [ -f "taste.md" ]; then
     PREEXISTING_TASTE_MD=1
@@ -137,11 +348,22 @@ echo "Mode: $MODE"
 echo ""
 
 # Step 0: Clone repository to temp, then move to current directory
-if [ ! -d ".git" ]; then
+if [ "$IMPORT_EXISTING" -eq 1 ]; then
+    echo "[0/7] Importing/updating minmaxing harness into existing project..."
+    clone_minmaxing_to_temp
+    import_or_update_harness "$TEMP_DIR"
+    rm -rf "$TEMP_DIR"
+elif [ ! -d ".git" ]; then
+    if ! dir_is_empty; then
+        echo "[0/7] Existing non-empty folder detected."
+        echo "  [FAIL] Clean install refuses to copy the template into a non-empty folder."
+        echo "  Use the existing-project/updater command instead:"
+        echo "  MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'"
+        exit 2
+    fi
     echo "[0/7] Cloning minmaxing repository..."
     COPIED_TEMPLATE_REPO=1
-    TEMP_DIR=$(mktemp -d)
-    git clone https://github.com/waitdeadai/minmaxing.git "$TEMP_DIR"
+    clone_minmaxing_to_temp
     cp -r "$TEMP_DIR"/* .
     cp -r "$TEMP_DIR"/.[!.]* . 2>/dev/null || true
     rm -rf "$TEMP_DIR"
@@ -165,7 +387,15 @@ if [ ! -d ".git" ]; then
         echo "  [INFO] Removed bundled taste.vision so /tastebootstrap can define this repo's kernel"
     fi
 else
-    echo "[0/7] Using existing minmaxing directory"
+    if has_minmaxing_harness; then
+        echo "[0/7] Using existing minmaxing harness directory"
+    else
+        echo "[0/7] Existing git project detected."
+        echo "  [FAIL] Clean install will not import into an existing project."
+        echo "  Use the existing-project/updater command instead:"
+        echo "  MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'"
+        exit 2
+    fi
 fi
 
 if [ -n "$TASTE_MD_BACKUP" ] && [ -f "$TASTE_MD_BACKUP" ]; then
@@ -221,8 +451,28 @@ if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
         if [ ! -f ".claude/settings.minimax-executor.local.json" ] && [ -f ".claude/settings.minimax-executor.example.json" ]; then
             cp .claude/settings.minimax-executor.example.json .claude/settings.minimax-executor.local.json
         fi
+        if [ ! -f ".claude/settings.minimax-executor.local.json" ]; then
+            cat > .claude/settings.minimax-executor.local.json <<'EOF'
+{
+  "env": {},
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  }
+}
+EOF
+        fi
         if [ ! -f ".claude/settings.opusminimax-planner.local.json" ] && [ -f ".claude/settings.opusminimax-planner.example.json" ]; then
             cp .claude/settings.opusminimax-planner.example.json .claude/settings.opusminimax-planner.local.json 2>/dev/null || true
+        fi
+        if [ ! -f ".claude/settings.opusminimax-planner.local.json" ]; then
+            cat > .claude/settings.opusminimax-planner.local.json <<'EOF'
+{
+  "env": {},
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  }
+}
+EOF
         fi
     elif [ ! -f ".claude/settings.local.json" ]; then
         if [ -f ".claude/settings.minimax-executor.example.json" ]; then
@@ -405,9 +655,13 @@ PY
         echo "    2. Then run: claude mcp add -s user MiniMax --env MINIMAX_API_KEY=$API_KEY -- uvx minimax-coding-plan-mcp -y"
     fi
 else
-    echo "To complete setup, run this one command with your MiniMax Token Plan key:"
+    echo "To complete setup, rerun with your MiniMax Token Plan key:"
     echo ""
+    echo "Clean/new folder:"
     echo "  MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'"
+    echo ""
+    echo "Existing project / updater:"
+    echo "  MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'"
     echo ""
     echo "Get your key from: platform.minimax.io"
 fi

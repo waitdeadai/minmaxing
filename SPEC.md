@@ -1,12 +1,15 @@
-# SPEC: Direct MiniMax Token One-Command Setup
+# SPEC: Direct MiniMax Token Setup And Safe Import/Update
 
 ## Problem Statement
 
-The installer supports `--minimax-key`, `--prompt-minimax-key`, and
-`--minimax-key-file`, but the operator wants one clear copy-paste form: put the
-MiniMax Token Plan key in one command, install the harness into the current
-folder, and open Claude. The README should not present multiple competing
-recommended setup commands.
+The installer supports direct MiniMax Token Plan key setup, but there are two
+different operator jobs that must be clearly separated:
+
+- clean/new-folder install, where minmaxing can scaffold the folder;
+- existing-project import/update, where minmaxing must not overwrite app files.
+
+The README should make the split obvious, and the updater path must copy only
+harness-owned files while preserving project files and secrets.
 
 ## Success Criteria
 
@@ -15,44 +18,61 @@ recommended setup commands.
 - [x] `setup.sh` accepts `TOKEN_KEY=...` as a short operator alias when
   `MINIMAX_TOKEN_KEY` is not set.
 - [x] CLI `--minimax-key` and `--minimax-key-file` continue to work.
-- [x] README shows one canonical setup command:
+- [x] README shows the clean/new-folder setup command:
   `MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'`.
-- [x] README removes duplicate "recommended" install variants and legacy
-  MiniMax key install examples.
+- [x] README shows a separate existing-project/updater command:
+  `MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --import-existing && claude'`.
+- [x] Clean install refuses to copy the template into a non-empty non-git
+  folder or an existing non-minmaxing git project.
+- [x] Existing-project/updater mode copies or updates harness-owned files only.
+- [x] Existing-project/updater mode preserves `.env`, `README.md`, `SPEC.md`,
+  `taste.md`, `taste.vision`, `.git`, and app/package files.
+- [x] Existing-project/updater mode records managed hashes in
+  `.minimaxing/import-manifest.tsv` so future runs update files it previously
+  installed but skip user-modified conflicts.
+- [x] README removes duplicate "recommended" install variants and legacy MiniMax
+  key install examples.
 - [x] README keeps a concise warning that inline/env token commands can land in
   shell history and points advanced operators to `bash setup.sh --help` instead
   of listing alternate recommended commands.
-- [x] `setup.sh` no-key closeout prints the same single canonical command.
+- [x] `setup.sh` help/no-key closeout prints the clean/new-folder and
+  existing-project/updater commands with different labels.
 - [x] Static smoke gates validate the env-var route.
 - [x] No real token, `.env`, or ignored local settings file is read, printed, or
   committed.
 
 ## Local Research Brief
 
-- `setup.sh` currently initializes `API_KEY=""` and fills it from the legacy
-  positional arg, `--minimax-key`, or `--minimax-key-file`.
+- `setup.sh` initializes `API_KEY` from env aliases, the legacy positional arg,
+  `--minimax-key`, or `--minimax-key-file`.
 - README already shows the direct `--minimax-key` path but not an env-var token
   assignment, which is the more natural copy-paste shape for "one command".
-- `scripts/opusworkflow-smoke.sh` and `scripts/test-harness.sh` already assert
-  setup affordances and should include the new env-var route.
+- The clean install path previously copied the cloned template into non-git
+  folders with broad `cp -r`; that is acceptable only for empty folders.
+- Existing git folders were treated as already-minmaxing directories, which is
+  wrong for normal app repos and made import/update unclear.
+- `scripts/opusworkflow-smoke.sh` and `scripts/test-harness.sh` assert setup
+  affordances and should include the import/update route.
 
 ## Plan
 
 1. Initialize `API_KEY` from `MINIMAX_TOKEN_KEY` or `TOKEN_KEY`.
-2. Update setup usage/help and no-key closeout examples.
-3. Collapse README one-command setup, Windows notes, fresh-folder, and
-   existing-folder instructions onto the single canonical command.
-4. Update setup help/no-key output so the normal operator path remains singular.
-5. Extend static gates for the canonical route.
+2. Add `--import-existing` as a safe import/update route with a managed-file
+   manifest.
+3. Collapse README setup, Windows notes, fresh-folder, and
+   existing-folder instructions onto labeled clean vs existing commands.
+4. Update setup help/no-key output so the operator path is explicit by folder
+   type.
+5. Extend static gates for both routes.
 6. Run static verification and push.
 
 ## Agent-Native Estimate
 
 - Estimate type: agent-native.
-- Critical path: setup env alias -> README examples -> smoke/test patterns ->
-  static gates -> commit/push.
-- Agent wall-clock: likely 15-30 minutes.
-- Agent-hours: under 1.
+- Critical path: safe import/update mode -> README examples -> smoke/test
+  patterns -> static gates -> commit/push.
+- Agent wall-clock: likely 45-75 minutes.
+- Agent-hours: 1-2.
 - Human touch time later: none.
 - Confidence: high; narrow installer/docs/test update.
 
@@ -63,6 +83,9 @@ recommended setup commands.
   to `bash setup.sh --help` without making alternate commands look recommended.
 - Likely mistake: breaking existing `--minimax-key` users. Guard: leave the
   current arg parser intact and only use env vars as defaults.
+- Likely mistake: import overwrites project files. Guard: `--import-existing`
+  uses a manifest, skips non-managed conflicts, and never copies `README.md`,
+  `SPEC.md`, `taste.md`, `taste.vision`, `.git`, or `.env`.
 - Likely mistake: accidentally committing a real token. Guard: use placeholder
   strings only and do not inspect secret files.
 
@@ -79,9 +102,20 @@ recommended setup commands.
   `0 mismatches`).
 - `bash scripts/release-check.sh --static-only`: pass (`137 passed`,
   `0 failed`; static-only release gate passed).
-- One-command clarity update: README now contains only one MiniMax install
-  command, setup no-key output prints the same command, and the static gates
-  expect that canonical command.
+- Setup clarity update: README separates the clean/new-folder command from the
+  existing-project/updater command, setup no-key output prints both labels, and
+  the static gates expect both commands.
+- Safe import/update update:
+  - `bash -n setup.sh scripts/opusworkflow-smoke.sh scripts/test-harness.sh scripts/release-check.sh`: pass.
+  - `bash scripts/opusworkflow-smoke.sh`: pass.
+  - Temp non-empty non-git folder test: clean install exits `2` and preserves
+    app file.
+  - Temp existing non-minmaxing git repo test: clean install exits `2` and
+    preserves `README.md`.
+  - Temp `--import-existing` test with fake `uvx` and temp `HOME`: preserves
+    `README.md` and `.env`, imports `.claude/skills/workflow/SKILL.md`, writes
+    `.minimaxing/import-manifest.tsv`, and appends the minmaxing `.gitignore`
+    block.
 
 ## Introspection: Pre-Closeout
 
@@ -91,5 +125,8 @@ recommended setup commands.
 - Likely mistake: hidden regression for existing setup paths. Mitigation:
   `--minimax-key`, `--minimax-key-file`, and `--prompt-minimax-key` remain in
   setup help and smoke assertions.
+- Likely mistake: import/update overwrites real app files. Mitigation: temp
+  tests covered non-empty clean-install refusal, existing git clean-install
+  refusal, and `--import-existing` preservation of `README.md` and `.env`.
 - Likely mistake: over-testing by using a real key. Mitigation: verification
   stayed static/no-secret and used placeholder strings only.
