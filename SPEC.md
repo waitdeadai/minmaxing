@@ -126,6 +126,8 @@ The default operator experience should be unambiguous:
 - `bash -n setup.sh scripts/start-session.sh scripts/opusworkflow-smoke.sh scripts/test-harness.sh scripts/security-smoke.sh scripts/release-check.sh`: pass.
 - `python3 -m json.tool evals/harness/golden/m9-opusworkflow-cost-budget.json`: pass.
 - `bash scripts/opusworkflow-smoke.sh`: pass.
+- Stale default-facing phrase check for `Then try: /workflow` in setup/docs:
+  pass; legacy MiniMax-only override is labeled explicitly.
 - `bash scripts/security-smoke.sh`: pass.
 - `bash scripts/harness-capability-map.sh --write`: regenerated generated map
   JSON after route/default script changes.

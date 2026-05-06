@@ -72,6 +72,9 @@ printf '%s' "$HELP_OUTPUT" | grep -Fq "(default: opusworkflow)" || fail "setup -
 if printf '%s' "$HELP_OUTPUT" | grep -Fq "[0/7]"; then
   fail "setup --help must not execute the installer"
 fi
+if grep -Fq "Then try: /workflow" setup.sh setup.ps1 README.md 2>/dev/null; then
+  fail "default-facing setup/docs must not suggest /workflow as the normal next route"
+fi
 
 RUN_ID="opusworkflow-smoke"
 RUN_DIR=".taste/opusminimax/$RUN_ID"

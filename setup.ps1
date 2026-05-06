@@ -190,7 +190,7 @@ Write-Host "  2. If this is a fresh repo, run: /tastebootstrap" -ForegroundColor
 if ($Mode -eq "opusminimax") {
     Write-Host "  3. Then try: /opusminimax 'build a REST API'" -ForegroundColor Gray
 } elseif ($Mode -eq "minimax") {
-    Write-Host "  3. Then try: /workflow 'build a REST API'" -ForegroundColor Gray
+    Write-Host "  3. Legacy MiniMax-only override: /workflow 'build a REST API'" -ForegroundColor Gray
 } else {
     Write-Host "  3. Then try: /opusworkflow 'build a REST API'" -ForegroundColor Gray
 }

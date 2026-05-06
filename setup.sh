@@ -783,7 +783,7 @@ if [ "$MODE" = "opusworkflow" ]; then
 elif [ "$MODE" = "opusminimax" ]; then
     echo "  3. Then try: /opusminimax 'build a REST API'"
 else
-    echo "  3. Then try: /workflow 'build a REST API'"
+    echo "  3. Legacy MiniMax-only override: /workflow 'build a REST API'"
 fi
 echo "  4. Check memory: bash scripts/memory.sh stats"
 echo ""
