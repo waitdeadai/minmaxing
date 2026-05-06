@@ -36,6 +36,10 @@ the research is feeding intent, ICP, or taste-kernel decisions.
 - Do not claim "SOTA 2026", "state of the art", "best current practice", or
   "research-backed" unless the claim is backed by a current source ledger or is
   labeled as a stable foundation.
+- Use the current `minmaxing temporal anchor` injected by hooks, or run
+  `bash scripts/time-anchor.sh text`, before any SOTA 2026, current market,
+  competitor, workflow, model, tooling, or benchmark claim. Record the anchor
+  date and live-source access dates in the evidence ledger.
 - Treat `MAX_PARALLEL_AGENTS`, Codex `max_threads`, and hardware capacity as
   ceilings, not quotas. More lanes are useful only when they reduce
   decision-relevant uncertainty.

@@ -108,10 +108,26 @@
                 ]
             }
         ],
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh\"",
+                        "timeout": 3
+                    }
+                ]
+            }
+        ],
         "SessionStart": [
             {
                 "matcher": "startup|resume|compact",
                 "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh\"",
+                        "timeout": 3
+                    },
                     {
                         "type": "command",
                         "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-sessionstart.sh\"",

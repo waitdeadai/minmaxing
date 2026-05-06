@@ -27,12 +27,24 @@ backwards compatibility, `/browse` should route to this protocol or the
 Deep research is not a search dump.
 
 It must:
+- start from the current minmaxing time anchor when claims depend on "today",
+  "latest", "recent", "current", "SOTA 2026", or another relative date
 - start with a collaborative research plan
 - choose an effective budget up to `MAX_PARALLEL_AGENTS`
 - run an iterative `search -> read -> refine` loop
 - maintain a source ledger
 - surface conflicting evidence
 - do follow-up research when key unknowns remain
+
+Temporal guard:
+- Use the `minmaxing temporal anchor` injected by Claude Code hooks, or run
+  `bash scripts/time-anchor.sh text`, before making time-sensitive claims.
+- Record the anchor date in the research output when the work concerns SOTA
+  2026, current providers/models/APIs, pricing, laws, benchmarks, docs,
+  schedules, or news.
+- Do not use pretrained memory as evidence for current or "best latest" claims.
+  If live verification is unavailable, mark the claim `insufficient_data`,
+  stale, or unverified.
 
 This protocol is effectiveness-first:
 - more tracks only when they reduce uncertainty
@@ -160,6 +172,8 @@ If the introspection pass finds unresolved blockers, do follow-up research befor
 - Cited: ...
 - Reviewed but not cited: ...
 - Rejected / downweighted: ...
+- Time Anchor: [local_time from hook or scripts/time-anchor.sh]
+- Access Date: [YYYY-MM-DD for live sources]
 
 ### Conflicting Evidence
 - Claim A: ...

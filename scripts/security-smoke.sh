@@ -10,6 +10,7 @@ TEAM="$ROOT_DIR/.claude/settings.team-safe.example.json"
 OPUS_PLANNER="$ROOT_DIR/.claude/settings.opusminimax-planner.example.json"
 MINIMAX_EXECUTOR="$ROOT_DIR/.claude/settings.minimax-executor.example.json"
 HOOK="$ROOT_DIR/.claude/hooks/govern-effectiveness.sh"
+TIME_ANCHOR_HOOK="$ROOT_DIR/.claude/hooks/time-anchor.sh"
 
 fail() {
   echo "[FAIL] $1" >&2
@@ -68,6 +69,7 @@ require_text "$MINIMAX_EXECUTOR" '"profile": "minimax-executor"'
 [ "$(json_value "$TEAM" "permissions.defaultMode")" = "acceptEdits" ] || fail "team-safe must use acceptEdits"
 require_text "$PROJECT" "TRUSTED-LOCAL WARNING"
 require_text "$PROJECT" "settings.team-safe.example.json"
+[ -x "$TIME_ANCHOR_HOOK" ] || fail "time-anchor hook must be executable"
 
 python3 - "$OPUS_PLANNER" <<'PY' || fail "opusminimax planner example must not route through MiniMax"
 import json
@@ -87,8 +89,11 @@ for file in "$PROJECT" "$SOLO" "$TEAM"; do
     "Read(./.env.*)" \
     "Read(./secrets/**)" \
 	    "govern-effectiveness.sh" \
+	    "time-anchor.sh" \
 	    '"PreToolUse"' \
 	    '"PostToolUse"' \
+	    '"UserPromptSubmit"' \
+	    '"SessionStart"' \
 	    '"TaskCreated"' \
 	    '"TaskCompleted"' \
 	    '"Stop"' \
@@ -105,8 +110,11 @@ for file in "$OPUS_PLANNER" "$MINIMAX_EXECUTOR"; do
     "Read(./.env.*)" \
     "Read(./secrets/**)" \
     "govern-effectiveness.sh" \
+    "time-anchor.sh" \
     '"PreToolUse"' \
     '"PostToolUse"' \
+    '"UserPromptSubmit"' \
+    '"SessionStart"' \
     '"Stop"' \
     '"SubagentStop"'; do
     require_text "$file" "$pattern"

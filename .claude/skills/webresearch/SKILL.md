@@ -27,10 +27,20 @@ If the task becomes multi-branch, strategic, adversarial, or investigation-heavy
 `/webresearch` is the focused current-facts sibling of `/deepresearch`.
 
 It still requires:
+- the current minmaxing time anchor for relative-date or current-fact claims
 - a concise collaborative research plan
 - an effective budget up to `MAX_PARALLEL_AGENTS`
 - at least one `search -> read -> refine` cycle when external facts matter
 - a source ledger when the result will drive implementation or decision-making
+
+Temporal guard:
+- Use the `minmaxing temporal anchor` injected by hooks, or run
+  `bash scripts/time-anchor.sh text`, before answering current-fact questions.
+- For "latest", "today", "current", "recent", "SOTA 2026", model/provider
+  behavior, pricing, docs, laws, standards, benchmarks, schedules, or news,
+  cite live sources and include source publish/update dates plus access date.
+- If current verification cannot be completed, say so explicitly instead of
+  filling gaps from pretrained memory.
 
 ## When To Escalate To `/deepresearch`
 
@@ -102,6 +112,8 @@ When the result materially affects implementation, record:
 ### Source Ledger
 - Cited: ...
 - Reviewed but not cited: ...
+- Time Anchor: ...
+- Access Date: ...
 
 ### Coverage
 - Research Tracks Used: [completed] / [effective budget]

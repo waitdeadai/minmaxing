@@ -56,7 +56,7 @@
   "counts": {
     "eval_tasks": 22,
     "rules": 15,
-    "scripts": 54,
+    "scripts": 55,
     "skills": 34
   },
   "evals": [
@@ -707,12 +707,12 @@
       "sha256": "9c3e0a29b441fdffeb0e280f3960bfc2cc6bf7c1f18fc752316a83f632dd8b42"
     },
     {
-      "line_count": 137,
+      "line_count": 145,
       "name": "security-smoke",
       "path": "scripts/security-smoke.sh",
       "purpose": "Static security smoke for Claude Code profile examples and governance hooks.",
       "required_gate": false,
-      "sha256": "537c159a4124f9e674f1d387231d274999af56df3db4ff34c6c048efe046edc4"
+      "sha256": "602e8bd0465dbd8e0346d239b3850be7b159c2e1b5b3257719303625f9bae871"
     },
     {
       "line_count": 130,
@@ -747,12 +747,12 @@
       "sha256": "0e5d13ac0fe2c64132a221593c368282e4320621351ad43fa404804cb2eb9eb6"
     },
     {
-      "line_count": 382,
+      "line_count": 400,
       "name": "state",
       "path": "scripts/state.sh",
       "purpose": "minmaxing working state CLI",
       "required_gate": false,
-      "sha256": "bd76e3123044f88a4f504534b9c78ab7e2596a47c80fa4251fcf745c257ce17a"
+      "sha256": "d068a80ca518b3bf05be718d50d4213e28a574d47f646cd78128f9aa1ff65d79"
     },
     {
       "line_count": 273,
@@ -763,12 +763,20 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1842,
+      "line_count": 1854,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "f567898232748770375d46ddfa06847538d4e1ff2e44f271be388a390d4eaf6c"
+      "sha256": "95683dec7ded26beb46d508de7ccbd1bd85a0b6596596fb4664bf7bdd848b908"
+    },
+    {
+      "line_count": 127,
+      "name": "time-anchor",
+      "path": "scripts/time-anchor.sh",
+      "purpose": "minmaxing time anchor",
+      "required_gate": false,
+      "sha256": "da6ed84fba71c0203be47aaf7560f82c07a367c776979329f954c993062c395a"
     },
     {
       "line_count": 552,
@@ -896,6 +904,11 @@
       {
         "commands": [
           {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh\"",
+            "timeout": 3,
+            "type": "command"
+          },
+          {
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-sessionstart.sh\"",
             "timeout": 5,
             "type": "command"
@@ -951,6 +964,17 @@
           }
         ],
         "event": "TaskCreated",
+        "matcher": ""
+      },
+      {
+        "commands": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh\"",
+            "timeout": 3,
+            "type": "command"
+          }
+        ],
+        "event": "UserPromptSubmit",
         "matcher": ""
       }
     ],
@@ -1070,7 +1094,7 @@
       "core_route": true,
       "description": "Answer Claude, Claude Code, Anthropic API, skills, connectors, plugins, and Claude product questions using official current docs.",
       "group": "knowledge",
-      "line_count": 187,
+      "line_count": 191,
       "model_invocation": true,
       "name": "claudeproduct",
       "path": ".claude/skills/claudeproduct/SKILL.md",
@@ -1084,7 +1108,7 @@
         "scripts/claudeproduct-scorecard.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "bb967ca43b53c40023f738585ee5e72bd3139282bbfff58084fca326fc197171",
+      "sha256": "9eeed7c989fd6d4e747d171b83877dfe064d8393d622956e90be48d42c51e916",
       "slash": "/claudeproduct",
       "user_invocable": true
     },
@@ -1125,14 +1149,14 @@
       "core_route": true,
       "description": "/deepresearch",
       "group": "research",
-      "line_count": 195,
+      "line_count": 209,
       "model_invocation": true,
       "name": "deepresearch",
       "path": ".claude/skills/deepresearch/SKILL.md",
       "related_eval_tasks": [],
       "related_rules": [],
       "related_scripts": [],
-      "sha256": "656933f8c31be9044f07f9de334cf4a4feae9d9f973e8bb1ae67c4e1627306e1",
+      "sha256": "d4471ef8f03f7d97062dd72221839690eb23c65699d688825e46166502b48a4f",
       "slash": "/deepresearch",
       "user_invocable": true
     },
@@ -1141,7 +1165,7 @@
       "core_route": true,
       "description": "Detect product intent, run SOTA-2026 deepresearch with a capacity-bound parallel or hive budget, define ICPs, and bootstrap or propose/apply taste.md, taste.vision, and ICP artifacts. Use when the user invokes /deepretaste or asks to retaste a product from intent and customer research.",
       "group": "kernel",
-      "line_count": 346,
+      "line_count": 350,
       "model_invocation": false,
       "name": "deepretaste",
       "path": ".claude/skills/deepretaste/SKILL.md",
@@ -1152,7 +1176,7 @@
       "related_scripts": [
         "scripts/deepretaste-smoke.sh"
       ],
-      "sha256": "cfb9186c7d5e75ed6165c3a9dfbbccee8fc90ee16209d9a568c3a4793a393a78",
+      "sha256": "3682ec8a4447bcc308de167baccd05d162d987c76b056782e1051ad340d7ed39",
       "slash": "/deepretaste",
       "user_invocable": true
     },
@@ -1161,7 +1185,7 @@
       "core_route": false,
       "description": "Define the ICP or ICPs for the current product with deepresearch, then draft or apply ICP-driven updates to taste.md and taste.vision. Use when the user invokes /defineicp or asks to tailor the product kernel to ideal customer profiles.",
       "group": "research",
-      "line_count": 361,
+      "line_count": 365,
       "model_invocation": false,
       "name": "defineicp",
       "path": ".claude/skills/defineicp/SKILL.md",
@@ -1172,7 +1196,7 @@
       "related_scripts": [
         "scripts/defineicp-smoke.sh"
       ],
-      "sha256": "78e95b021055e3a32c7368ad60232cde3ce4900d280e05fe2b6ffb4febd1a82e",
+      "sha256": "c73f7e2540fe59aee7bc4187909bd33c28aed91603faf5efb46749eebb8b716a",
       "slash": "/defineicp",
       "user_invocable": true
     },
@@ -1592,14 +1616,14 @@
       "core_route": true,
       "description": "/webresearch",
       "group": "research",
-      "line_count": 123,
+      "line_count": 135,
       "model_invocation": true,
       "name": "webresearch",
       "path": ".claude/skills/webresearch/SKILL.md",
       "related_eval_tasks": [],
       "related_rules": [],
       "related_scripts": [],
-      "sha256": "62fca465c720d228ea16c867f33b2d22167f341d8236c0dcea4ff03b44dc1e5e",
+      "sha256": "a5658008a69ec02cfb9beb3f5f89117d471252db3993743089e121c1f17a2697",
       "slash": "/webresearch",
       "user_invocable": true
     },
@@ -1719,9 +1743,9 @@
         "/metacognition"
       ]
     },
-    "hook_event_count": 11,
+    "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 54,
+    "script_count": 55,
     "skill_count": 34
   }
 }

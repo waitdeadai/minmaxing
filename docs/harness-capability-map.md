@@ -10,9 +10,9 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 - Skills: 34
 - Rules: 15
-- Scripts: 54
+- Scripts: 55
 - Static eval tasks: 22
-- Hook entries: 11
+- Hook entries: 12
 - Codex config files: 4
 - Core routes: 15
 - Secret policy: generated from committed repo truth only; never reads `.env`,
@@ -161,11 +161,12 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `PreCompact` | `manual|auto` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/state-precompact.sh"` |
 | `PreToolUse` | `Bash` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
 | `PreToolUse` | `Edit|Write|MultiEdit|NotebookEdit` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
-| `SessionStart` | `startup|resume|compact` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/state-sessionstart.sh"` |
+| `SessionStart` | `startup|resume|compact` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/state-sessionstart.sh"` |
 | `Stop` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/state-stop.sh"` |
 | `SubagentStop` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
 | `TaskCompleted` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
 | `TaskCreated` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
+| `UserPromptSubmit` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh"` |
 
 ## Codex Surfaces
 

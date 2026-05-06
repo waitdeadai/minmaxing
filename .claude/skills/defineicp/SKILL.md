@@ -49,6 +49,10 @@ and file rewrite only with explicit apply approval.
 - Use `/deepresearch` discipline before final ICP decisions when market,
   customer, competitor, buyer, workflow, pricing, technical-context, or current
   behavior facts materially affect the outcome.
+- Use the current `minmaxing temporal anchor` injected by hooks, or run
+  `bash scripts/time-anchor.sh text`, before any current market, pricing,
+  competitor, SOTA 2026, tooling, benchmark, or buyer-behavior claim. Record the
+  anchor date and live-source access dates in the ICP evidence ledger.
 - Use `/webresearch` only for narrow current-fact checks. Escalate to
   `/deepresearch` when more than three branches matter, evidence conflicts, or
   the findings will drive taste rewrites.

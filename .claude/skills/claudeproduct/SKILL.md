@@ -87,12 +87,16 @@ feature is not automatically available through the Anthropic API.
 
 ## Freshness Rules
 
+- Start from the current `minmaxing temporal anchor` injected by hooks, or run
+  `bash scripts/time-anchor.sh text`, before answering time-sensitive Claude
+  product questions.
 - For current product behavior, plan gating, pricing, availability, commands,
   model names, API fields, or installation instructions, run current research
   or cite official docs already opened in the current turn.
 - Do not answer from memory alone when there is a meaningful chance the product
   changed.
-- State the evidence date when available.
+- State the time anchor date, source publish/update date when available, and
+  access date for official docs used.
 - If official docs conflict, cite both and mark the answer as uncertain.
 - If docs are unavailable, answer conservatively and say what could not be
   verified.

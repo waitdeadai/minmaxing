@@ -199,7 +199,9 @@ def rel_paths_from_status(status: str) -> list[str]:
 
 
 def state_payload(input_data: dict) -> dict:
-    now = dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")
+    now_local_dt = dt.datetime.now(dt.timezone.utc).astimezone()
+    now_utc_dt = now_local_dt.astimezone(dt.timezone.utc)
+    now = now_local_dt.isoformat(timespec="seconds")
     status = run_git(["status", "--short"])
     branch = run_git(["branch", "--show-current"]) or "unknown"
     head = run_git(["rev-parse", "--short", "HEAD"]) or "unknown"
@@ -214,6 +216,11 @@ def state_payload(input_data: dict) -> dict:
 
     return {
         "updated_at": now,
+        "current_local_time": now_local_dt.isoformat(timespec="seconds"),
+        "current_utc_time": now_utc_dt.isoformat(timespec="seconds"),
+        "current_timezone": f"{now_local_dt.tzname() or 'unknown'} ({now_local_dt.strftime('%z')})",
+        "current_local_date": now_local_dt.date().isoformat(),
+        "current_local_hour": now_local_dt.strftime("%H:%M:%S"),
         "event": event,
         "command": COMMAND,
         "trigger": redact(trigger),
@@ -252,6 +259,17 @@ session_id: {payload['session_id']}
 git_branch: {payload['git_branch']}
 git_head: {payload['git_head']}
 git_status_count: {payload['git_status_count']}
+
+## Temporal Anchor
+- Local system-clock time: {payload['current_local_time']}
+- UTC time: {payload['current_utc_time']}
+- Timezone: {payload['current_timezone']}
+- Local date: {payload['current_local_date']}
+- Local hour: {payload['current_local_hour']}
+- Research rule: resolve relative dates against this anchor. For current,
+  latest, recent, SOTA 2026, pricing, models, APIs, docs, benchmarks, laws,
+  schedules, or news, verify live sources and cite source dates/access date
+  instead of relying on pretrained memory.
 
 ## Source Of Truth
 - SPEC.md: {payload['spec_status']}

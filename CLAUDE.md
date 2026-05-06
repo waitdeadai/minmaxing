@@ -12,22 +12,23 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 
 1. **SPEC-First**: File-changing tasks get a concrete `SPEC.md` before edits
 2. **Research-First**: `/workflow` must do live MiniMax MCP-backed research before planning or edits, using as many distinct tracks as materially help and behaving like the repo’s effectiveness-first `deepresearch` protocol: collaborative research plan -> search -> read -> refine, with source ledger, contradiction handling, and follow-up passes
-3. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
-4. **Introspect Before Confidence**: `/workflow` runs hard-gate `/introspect` before plan freeze, after implementation, after failed verification, and before push/ship moments
-5. **Plan Before Spec**: `/workflow` synthesizes research + audit + introspection into a concrete plan before edits
-6. **Planning Time Awareness**: Before a plan or `SPEC.md` is frozen, record an `Agent-Native Estimate` with agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence
-7. **Supervisor Pattern**: AI supervises workers, not the other way around
-8. **PEV Loop**: Plan → Execute → Verify. Verification is an independent evidence pass; claim separate executor/verifier isolation only when metadata proves it.
-9. **Quality Gates**: /verify must pass; tests must pass; unresolved introspection blockers stop closeout
-10. **Surgical Diff Discipline**: choose the smallest sufficient implementation, allow no speculative abstractions, allow no drive-by refactors, and require a changed-line trace to `SPEC.md`
-11. **Effectiveness Gates**: Claude Code hooks and harness smokes must reject lazy completion patterns: destructive Bash, evidence-free closeout, failed-verification positive closeout, worker success without parent verification, fake source ledgers, missing command evidence, and linear lane-scaling claims
-12. **Artifact Sidecars**: When estimates, verification results, or worker results are machine-consumed, validate the minimal JSON sidecar with `scripts/artifact-lint.sh`; Markdown remains for humans, sidecars exist for gates
-13. **Static Harness Evals**: Use `scripts/harness-eval.sh` to score local harness behavior against the static task/golden pack before claiming the harness improved
-14. **Run Metrics Honesty**: `scripts/run-metrics.sh` and `scripts/session-insights.sh` summarize local artifacts, flag unhealthy runs, and report unavailable provider/cost/token data as `insufficient_data`
-15. **Security Profiles**: This operator workspace defaults to trusted-local `bypassPermissions` by design. Keep `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime` distinct; `team-safe` remains the shared-work fallback.
-16. **Release Governance**: Public harness changes must pass `scripts/release-check.sh --static-only`; authenticated runtime checks stay explicit and secret-gated
-17. **OpusMiniMax Split**: `/opusminimax` uses Claude/Opus for bounded planning, adversarial review, and verification while MiniMax-M2.7-highspeed executes bounded packets. Provider identity lives in ignored local profiles, not shared `.claude/settings.json`.
-18. **OpusWorkflow Default**: `/opusworkflow` is the cost-optimized daily route over `/opusminimax --mode workflow`: Opus only at judgment gates when proven available, MiniMax for bulk execution, executor concurrency 1 by default for Plus-Highspeed.
+3. **Temporal Anchor**: Claude Code hooks inject the local system-clock time anchor at session start and before each prompt. Treat that as the current date/hour source; for latest/current/SOTA 2026 claims, use live sources and cite dates instead of pretrained memory.
+4. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
+5. **Introspect Before Confidence**: `/workflow` runs hard-gate `/introspect` before plan freeze, after implementation, after failed verification, and before push/ship moments
+6. **Plan Before Spec**: `/workflow` synthesizes research + audit + introspection into a concrete plan before edits
+7. **Planning Time Awareness**: Before a plan or `SPEC.md` is frozen, record an `Agent-Native Estimate` with agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence
+8. **Supervisor Pattern**: AI supervises workers, not the other way around
+9. **PEV Loop**: Plan → Execute → Verify. Verification is an independent evidence pass; claim separate executor/verifier isolation only when metadata proves it.
+10. **Quality Gates**: /verify must pass; tests must pass; unresolved introspection blockers stop closeout
+11. **Surgical Diff Discipline**: choose the smallest sufficient implementation, allow no speculative abstractions, allow no drive-by refactors, and require a changed-line trace to `SPEC.md`
+12. **Effectiveness Gates**: Claude Code hooks and harness smokes must reject lazy completion patterns: destructive Bash, evidence-free closeout, failed-verification positive closeout, worker success without parent verification, fake source ledgers, missing command evidence, and linear lane-scaling claims
+13. **Artifact Sidecars**: When estimates, verification results, or worker results are machine-consumed, validate the minimal JSON sidecar with `scripts/artifact-lint.sh`; Markdown remains for humans, sidecars exist for gates
+14. **Static Harness Evals**: Use `scripts/harness-eval.sh` to score local harness behavior against the static task/golden pack before claiming the harness improved
+15. **Run Metrics Honesty**: `scripts/run-metrics.sh` and `scripts/session-insights.sh` summarize local artifacts, flag unhealthy runs, and report unavailable provider/cost/token data as `insufficient_data`
+16. **Security Profiles**: This operator workspace defaults to trusted-local `bypassPermissions` by design. Keep `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime` distinct; `team-safe` remains the shared-work fallback.
+17. **Release Governance**: Public harness changes must pass `scripts/release-check.sh --static-only`; authenticated runtime checks stay explicit and secret-gated
+18. **OpusMiniMax Split**: `/opusminimax` uses Claude/Opus for bounded planning, adversarial review, and verification while MiniMax-M2.7-highspeed executes bounded packets. Provider identity lives in ignored local profiles, not shared `.claude/settings.json`.
+19. **OpusWorkflow Default**: `/opusworkflow` is the cost-optimized daily route over `/opusminimax --mode workflow`: Opus only at judgment gates when proven available, MiniMax for bulk execution, executor concurrency 1 by default for Plus-Highspeed.
 
 ## Default Behavior
 
@@ -111,6 +112,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile.
 - **Hive Coordination**: `/hive` and `/hiveworkflow` coordinate specialized agents through a queen/supervisor, role map, blackboard, dissent/conflict log, and evidence-backed synthesis. Hive reuses `/parallel` for packet execution and aggregation, writes `.taste/hive/{run_id}/hive-run.json` for durable runs, and validates with `artifact-lint` plus `hive-aggregate`; consensus never replaces `/introspect` or `/verify`.
 - **Runtime Effectiveness Hooks**: `.claude/settings.json` wires `.claude/hooks/govern-effectiveness.sh` into Claude Code `PreToolUse`, `Stop`, and `SubagentStop` events. Do not claim hook enforcement unless `bash scripts/hook-smoke.sh` passes.
+- **Temporal Anchor Hooks**: `.claude/settings.json` wires `.claude/hooks/time-anchor.sh` into `SessionStart` and `UserPromptSubmit`. The anchor comes from the local system clock and is the current date/hour source for research. For SOTA 2026 and current-fact claims, cite live sources and access dates.
 - **Artifact Lint**: Minimal sidecars for agent-native estimates, verification results, and worker results live under `schemas/` and are checked with `bash scripts/artifact-lint.sh --fixtures`.
 - **Harness Eval Pack**: `evals/harness/tasks` and `evals/harness/golden` define static no-network evals over the local gates; `bash scripts/harness-eval-report.sh --run` summarizes the score.
 - **Metacognition Scorecard**: `bash scripts/metacognition-scorecard.sh --fixtures --json` rejects missing route classification, missing parallel budgets, raw-CoT dependency, unsupported confidence, unverified self-report promotion, and linear parallel claims.

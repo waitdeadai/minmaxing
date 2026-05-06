@@ -390,6 +390,24 @@ LLMs forget because live conversation context is lossy. minmaxing now keeps a co
 
 Claude Code hooks refresh it after each turn, snapshot it before `/compact` or auto-compact, record the compact summary, and rehydrate it on startup, resume, and post-compact. Durable lessons still go to SQLite memory; `CURRENT.md` is only for the active task: files in play, current phase, latest `SPEC.md`, workflow artifact, verification status, and next steps.
 
+### Temporal Anchor
+Claude Code models do not know the present date from pretraining. minmaxing
+injects a fresh local-system-clock anchor through `.claude/hooks/time-anchor.sh`
+at session start and before each user prompt. The same anchor is written into
+`.minimaxing/state/CURRENT.md` snapshots.
+
+Use it directly when needed:
+
+```bash
+bash scripts/time-anchor.sh text
+```
+
+For "today", "latest", "current", "recent", "SOTA 2026", pricing, models,
+provider behavior, laws, docs, benchmarks, schedules, or news, research must
+resolve dates against that anchor and verify live sources. If live verification
+is not available, the correct answer is `insufficient_data`, stale, or
+unverified, not a confident pretrained-memory claim.
+
 ### Central Orchestrator
 `/workflow` owns the full lifecycle inline: taste gate, deep research, code audit, hard-gate introspection, plan, `SPEC.md`, implementation, verification, and closeout. For file-changing tasks it also leaves a workflow artifact under `.taste/workflow-runs/` and archived specs under `.taste/specs/` so the research plan, loop log, source ledger, audit, introspection, plan, and spec trail stay inspectable. Specialist skills still exist, but `/workflow` no longer depends on nested custom-skill chaining to finish the job.
 

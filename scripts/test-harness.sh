@@ -1485,7 +1485,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else
@@ -1498,6 +1498,8 @@ echo "[9a] Compaction-Safe Working State"
 STATE_OK=true
 for file in \
     "scripts/state.sh" \
+    "scripts/time-anchor.sh" \
+    ".claude/hooks/time-anchor.sh" \
     ".claude/hooks/state-sessionstart.sh" \
     ".claude/hooks/state-precompact.sh" \
     ".claude/hooks/state-postcompact.sh" \
@@ -1512,10 +1514,12 @@ if ! python3 -m json.tool .claude/settings.json >/dev/null 2>&1; then
 fi
 
 for pattern in \
+    '"UserPromptSubmit"' \
     '"SessionStart"' \
     '"PreCompact"' \
     '"PostCompact"' \
     '"Stop"' \
+    'time-anchor.sh' \
     'state-sessionstart.sh' \
     'state-precompact.sh' \
     'state-postcompact.sh' \
@@ -1549,10 +1553,18 @@ else
 fi
 rm -rf "$TMP_STATE_DIR"
 
+TIME_ANCHOR_OUTPUT="$(CLAUDE_PROJECT_DIR="$ROOT_DIR" bash scripts/time-anchor.sh hook <<'EOF'
+{"hook_event_name":"UserPromptSubmit","prompt":"latest SOTA 2026 model docs"}
+EOF
+)"
+if ! printf '%s' "$TIME_ANCHOR_OUTPUT" | python3 -c 'import json,sys; data=json.load(sys.stdin); out=data["hookSpecificOutput"]; ctx=out["additionalContext"]; assert out["hookEventName"] == "UserPromptSubmit"; assert "local_time:" in ctx; assert "utc_time:" in ctx; assert "SOTA 2026" in ctx; assert "pretrained memory" in ctx' >/dev/null 2>&1; then
+    STATE_OK=false
+fi
+
 if [ "$STATE_OK" = true ]; then
-    test_pass "working state hooks create redacted state and hydrate context"
+    test_pass "working state and time-anchor hooks create redacted current context"
 else
-    test_fail "working state hooks or state.sh are not wired correctly"
+    test_fail "working state, time-anchor hooks, or state.sh are not wired correctly"
 fi
 
 # Test 9b: SPEC Archive Lifecycle
