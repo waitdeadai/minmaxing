@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
 ```
 
 Get your key from [platform.minimax.io](https://platform.minimax.io).
@@ -11,7 +11,7 @@ Get your key from [platform.minimax.io](https://platform.minimax.io).
 Recommended split mode:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key YOUR_TOKEN_PLAN_KEY
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
 ```
 
 <h1 align="center">
@@ -103,8 +103,16 @@ memory health/freshness checks, and command-backed closeout.
 
 ## One-Command Setup
 
+Already inside a cloned folder like `holan8n2`, use this and start working:
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash setup.sh --mode opusworkflow && claude
+```
+
+For a remote fresh install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
 ```
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
@@ -112,14 +120,17 @@ Get your key from [platform.minimax.io](https://platform.minimax.io)
 For the recommended OpusWorkflow daily mode:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key YOUR_TOKEN_PLAN_KEY
+MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash setup.sh --mode opusworkflow && claude
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
 ```
 
 That single command configures the ignored local MiniMax executor profile and
-the ignored local Opus planner profile. If you do not want the MiniMax token in
-shell history, use the secure prompt or key-file form:
+the ignored local Opus planner profile. `TOKEN_KEY=YOUR_TOKEN_PLAN_KEY` also
+works as a short local alias. Inline/env token commands can land in shell
+history; if you want the token hidden, use the secure prompt or key-file form:
 
 ```bash
+bash setup.sh --mode opusworkflow --prompt-minimax-key && claude
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --prompt-minimax-key
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key-file /path/to/minimax.token
 ```
@@ -127,6 +138,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 For the lower-level Opus planner + MiniMax executor mode:
 
 ```bash
+MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash setup.sh --mode opusminimax
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key YOUR_TOKEN_PLAN_KEY
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file /path/to/minimax.token
 ```
@@ -170,7 +182,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 4. Run minmaxing setup:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
 ```
 
 If you use the optional OpenAI Codex plugin in WSL, the same Linux flow applies there too.

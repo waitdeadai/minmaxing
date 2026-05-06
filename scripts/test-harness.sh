@@ -199,6 +199,7 @@ for pattern in \
 done
 for pattern in \
     "--mode opusminimax" \
+    "MINIMAX_TOKEN_KEY" \
     "--minimax-key" \
     "--minimax-key-file" \
     "--prompt-minimax-key" \
@@ -247,6 +248,8 @@ for pattern in \
 done
 for pattern in \
     "--mode opusworkflow" \
+    "MINIMAX_TOKEN_KEY" \
+    "TOKEN_KEY" \
     "--minimax-key" \
     "--prompt-minimax-key" \
     "opusworkflow-smoke"; do
@@ -1374,7 +1377,7 @@ fi
 # Test 3y: Smart Autorouting UX
 echo "[3y] Smart Autorouting UX"
 if grep -Fq "## Install" README.md 2>/dev/null && \
-   awk 'NR <= 12 && /setup.sh \\| bash -s YOUR_TOKEN_PLAN_KEY/ { found=1 } END { exit found ? 0 : 1 }' README.md && \
+   awk 'NR <= 12 && /setup.sh \\| MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow/ { found=1 } END { exit found ? 0 : 1 }' README.md && \
    grep -Fq "## Smart Autorouting" README.md 2>/dev/null && \
    grep -Fq "local /workflow" README.md 2>/dev/null && \
    grep -Fq "/parallel when independent execution packets are enough" README.md 2>/dev/null && \

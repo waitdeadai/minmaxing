@@ -3,12 +3,13 @@
 # Usage: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
 # Legacy MiniMax key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
 # OpusWorkflow: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key YOUR_TOKEN_PLAN_KEY
+# Direct env key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
 
 set -e
 
 MODE="minimax"
 SPLIT_EXECUTION_MODE=0
-API_KEY=""
+API_KEY="${MINIMAX_TOKEN_KEY:-${TOKEN_KEY:-}}"
 MINIMAX_KEY_FILE=""
 PROMPT_MINIMAX_KEY=0
 PLANNER_MODEL="claude-opus-4-7"
@@ -58,6 +59,8 @@ else
 Usage:
   ./setup.sh
   ./setup.sh YOUR_TOKEN_PLAN_KEY
+  MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY ./setup.sh --mode opusworkflow
+  TOKEN_KEY=YOUR_TOKEN_PLAN_KEY ./setup.sh --mode opusworkflow
   ./setup.sh --mode opusworkflow --minimax-key YOUR_TOKEN_PLAN_KEY [--planner-model claude-opus-4-7] [--executor-model MiniMax-M2.7-highspeed] [--profile solo-fast|team-safe]
   ./setup.sh --mode opusworkflow --minimax-key-file PATH [--planner-model claude-opus-4-7] [--executor-model MiniMax-M2.7-highspeed] [--profile solo-fast|team-safe]
   ./setup.sh --mode opusminimax --minimax-key YOUR_TOKEN_PLAN_KEY [--planner-model claude-opus-4-7] [--executor-model MiniMax-M2.7-highspeed] [--profile solo-fast|team-safe]
@@ -405,7 +408,9 @@ PY
 else
     echo "To complete setup, run with your API key:"
     echo ""
+    echo "  MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash setup.sh --mode opusworkflow && claude"
     echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY"
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow"
     echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key YOUR_TOKEN_PLAN_KEY"
     echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key-file /path/to/minimax.token"
     echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key YOUR_TOKEN_PLAN_KEY"
