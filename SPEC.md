@@ -3,9 +3,10 @@
 ## Problem Statement
 
 The installer supports `--minimax-key`, `--prompt-minimax-key`, and
-`--minimax-key-file`, but the operator wants the most direct copy-paste form:
-put the MiniMax Token Plan key in the same command and start working. The README
-should show that path clearly without hiding the safer prompt/key-file options.
+`--minimax-key-file`, but the operator wants one clear copy-paste form: put the
+MiniMax Token Plan key in one command, install the harness into the current
+folder, and open Claude. The README should not present multiple competing
+recommended setup commands.
 
 ## Success Criteria
 
@@ -14,11 +15,14 @@ should show that path clearly without hiding the safer prompt/key-file options.
 - [x] `setup.sh` accepts `TOKEN_KEY=...` as a short operator alias when
   `MINIMAX_TOKEN_KEY` is not set.
 - [x] CLI `--minimax-key` and `--minimax-key-file` continue to work.
-- [x] README shows the direct one-command local path:
-  `MINIMAX_TOKEN_KEY=... bash setup.sh --mode opusworkflow && claude`.
-- [x] README shows the direct remote pipe path with `MINIMAX_TOKEN_KEY=...`.
-- [x] README keeps the warning that inline/env token commands can land in shell
-  history, and keeps `--prompt-minimax-key` as the safer option.
+- [x] README shows one canonical setup command:
+  `MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'`.
+- [x] README removes duplicate "recommended" install variants and legacy
+  MiniMax key install examples.
+- [x] README keeps a concise warning that inline/env token commands can land in
+  shell history and points advanced operators to `bash setup.sh --help` instead
+  of listing alternate recommended commands.
+- [x] `setup.sh` no-key closeout prints the same single canonical command.
 - [x] Static smoke gates validate the env-var route.
 - [x] No real token, `.env`, or ignored local settings file is read, printed, or
   committed.
@@ -36,9 +40,11 @@ should show that path clearly without hiding the safer prompt/key-file options.
 
 1. Initialize `API_KEY` from `MINIMAX_TOKEN_KEY` or `TOKEN_KEY`.
 2. Update setup usage/help and no-key closeout examples.
-3. Update README one-command setup section and quickstart examples.
-4. Extend static gates for the new route.
-5. Run static verification and push.
+3. Collapse README one-command setup, Windows notes, fresh-folder, and
+   existing-folder instructions onto the single canonical command.
+4. Update setup help/no-key output so the normal operator path remains singular.
+5. Extend static gates for the canonical route.
+6. Run static verification and push.
 
 ## Agent-Native Estimate
 
@@ -53,8 +59,8 @@ should show that path clearly without hiding the safer prompt/key-file options.
 ## Introspection: Pre-Implementation
 
 - Likely mistake: making the inline env route look safer than it is. Guard:
-  README must explicitly mention shell history risk and keep the hidden prompt
-  path.
+  README must explicitly mention shell history risk and point advanced operators
+  to `bash setup.sh --help` without making alternate commands look recommended.
 - Likely mistake: breaking existing `--minimax-key` users. Guard: leave the
   current arg parser intact and only use env vars as defaults.
 - Likely mistake: accidentally committing a real token. Guard: use placeholder
@@ -73,12 +79,15 @@ should show that path clearly without hiding the safer prompt/key-file options.
   `0 mismatches`).
 - `bash scripts/release-check.sh --static-only`: pass (`137 passed`,
   `0 failed`; static-only release gate passed).
+- One-command clarity update: README now contains only one MiniMax install
+  command, setup no-key output prints the same command, and the static gates
+  expect that canonical command.
 
 ## Introspection: Pre-Closeout
 
 - Likely mistake: encouraging unsafe key exposure. Mitigation: README shows the
-  direct env route but explicitly warns it can land in shell history and keeps
-  `--prompt-minimax-key` as the hidden-input route.
+  direct env route but explicitly warns it can land in shell history; hidden
+  prompt and key-file routes remain available only as advanced setup help.
 - Likely mistake: hidden regression for existing setup paths. Mitigation:
   `--minimax-key`, `--minimax-key-file`, and `--prompt-minimax-key` remain in
   setup help and smoke assertions.

@@ -3,16 +3,10 @@
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
+MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow && claude'
 ```
 
 Get your key from [platform.minimax.io](https://platform.minimax.io).
-
-Recommended split mode:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
-```
 
 <h1 align="center">
   <img src="https://img.shields.io/badge/MiniMax-2.7%20Highspeed-FF6B35?style=for-the-badge&logo=lightning&logoColor=white" alt="MiniMax M2.7 Highspeed" />
@@ -103,47 +97,21 @@ memory health/freshness checks, and command-backed closeout.
 
 ## One-Command Setup
 
-Already inside a cloned folder like `holan8n2`, use this and start working:
+There is one official setup command: the command at the top of this README.
+Run it from the folder where you want to work, replacing
+`YOUR_TOKEN_PLAN_KEY` with your MiniMax Token Plan key.
 
-```bash
-MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash setup.sh --mode opusworkflow && claude
-```
+That single command installs the harness into the current folder, configures
+the ignored local MiniMax executor profile, keeps the Opus planner profile
+provider-clean, uses the default trusted-local `bypassPermissions` posture, and
+opens Claude when setup finishes.
 
-For a remote fresh install:
+Inline/env token commands can land in shell history. That is the intentional
+fast path for trusted solo work; advanced hidden-input and key-file forms still
+exist in `bash setup.sh --help`, but they are not the default path.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
-```
-
-Get your key from [platform.minimax.io](https://platform.minimax.io)
-
-For the recommended OpusWorkflow daily mode:
-
-```bash
-MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash setup.sh --mode opusworkflow && claude
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
-```
-
-That single command configures the ignored local MiniMax executor profile and
-the ignored local Opus planner profile. `TOKEN_KEY=YOUR_TOKEN_PLAN_KEY` also
-works as a short local alias. Inline/env token commands can land in shell
-history; if you want the token hidden, use the secure prompt or key-file form:
-
-```bash
-bash setup.sh --mode opusworkflow --prompt-minimax-key && claude
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --prompt-minimax-key
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key-file /path/to/minimax.token
-```
-
-For the lower-level Opus planner + MiniMax executor mode:
-
-```bash
-MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash setup.sh --mode opusminimax
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key YOUR_TOKEN_PLAN_KEY
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file /path/to/minimax.token
-```
-
-That's it. Memory system, governed runtime profiles, and 34 skills — all configured.
+That's it. Memory system, governed runtime profiles, and 34 skills are
+configured.
 
 Claude subscription auth is separate account auth. Run `claude auth login` once
 if this machine is not already logged in; the setup command does not store or
@@ -179,11 +147,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 ```
 
 3. Move into your project directory inside WSL.
-4. Run minmaxing setup:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | MINIMAX_TOKEN_KEY=YOUR_TOKEN_PLAN_KEY bash -s -- --mode opusworkflow
-```
+4. Run the one official minmaxing setup command from the top of this README.
 
 If you use the optional OpenAI Codex plugin in WSL, the same Linux flow applies there too.
 
@@ -211,11 +175,7 @@ winget install Python.Python.3.11
 winget install --id=astral-sh.uv -e
 ```
 
-4. Open **Git Bash** and run minmaxing setup there:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
-```
+4. Open **Git Bash** and run the one official minmaxing setup command from the top of this README.
 
 5. Verify Claude Code:
 
@@ -510,15 +470,11 @@ SQLite memory is the durable layer for reusable lessons. When a decision, patter
 
 ### Step 1: Install
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
-```
+Run the one official install command from the top of this README.
 
 ### Step 2: Define Your Taste
 
-```bash
-claude
-```
+Claude opens at the end of setup. If you closed it, run `claude`.
 
 Then bootstrap the repo kernel:
 
@@ -566,16 +522,15 @@ Drop minmaxing into any codebase:
 
 ```bash
 cd your-existing-project
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
 ```
+
+Then run the one official install command from the top of this README.
 
 This copies minmaxing files without touching your existing code.
 
 ### Step 2: Define Taste for This Project
 
-```bash
-claude
-```
+Claude opens at the end of setup. If you closed it, run `claude`.
 
 ```
 /tastebootstrap
