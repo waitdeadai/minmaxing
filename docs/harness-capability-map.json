@@ -57,7 +57,7 @@
     "eval_tasks": 18,
     "rules": 15,
     "scripts": 46,
-    "skills": 29
+    "skills": 30
   },
   "evals": [
     {
@@ -423,12 +423,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 642,
+      "line_count": 643,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "7917e98811379cf83655a2fe59f8095e32a634ffc6cd47d02e445c5c4c43181f"
+      "sha256": "c3cae221da31935346e7348e1ff23c88f1c1fc2b4b9dc87d7a47e9a3ad61d39a"
     },
     {
       "line_count": 640,
@@ -644,7 +644,7 @@
       "path": "scripts/start-session.sh",
       "purpose": "Ultimate MiniMax 2.7 Harness - Session Start",
       "required_gate": false,
-      "sha256": "886875f3cd914dd33b74453b1af9f69e7e9220c8b1b762ecad0a3eb73bd0b7ab"
+      "sha256": "15925cf0d4c64add623a5bcc91ef428bec9cd026a9262ba9ef528a176309cd53"
     },
     {
       "line_count": 382,
@@ -668,7 +668,7 @@
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "f622a1e92ef8912a59bb3198df95e54e8594c54464d586a42e90026fecc43b75"
+      "sha256": "f4d43d8f296e35143e85df268e08cf0af41b3d8fbf3b5429e251b8975e48374b"
     },
     {
       "line_count": 552,
@@ -684,7 +684,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "2ea46238afb551bb4ffe56010911ce7df8660b920dcbd8899b7b8fbb91f93026"
+      "sha256": "507f763a90a5d5587f8f7cf303729cb21ef675c74bcdd63f56ced6a05e12a73b"
     },
     {
       "line_count": 121,
@@ -1137,6 +1137,22 @@
       "user_invocable": true
     },
     {
+      "argument_hint": "[product/context, mode: full|plan|research|report]",
+      "core_route": false,
+      "description": "Run a research-backed ICP week-in-the-life product stress test. Use when the user invokes /icpweek or asks to simulate a full week of real-world product usage by an ideal customer and diagnose product, UX, automation, and technical gaps.",
+      "group": "research",
+      "line_count": 229,
+      "model_invocation": false,
+      "name": "icpweek",
+      "path": ".claude/skills/icpweek/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "209a8466391056854425f31e895b798dc31728a25eed1036a185038a4da6440d",
+      "slash": "/icpweek",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "",
       "core_route": true,
       "description": "/introspect",
@@ -1517,6 +1533,7 @@
         "/browse",
         "/deepresearch",
         "/digestflow",
+        "/icpweek",
         "/webresearch"
       ],
       "routing": [
@@ -1526,6 +1543,6 @@
     "hook_event_count": 11,
     "rule_count": 15,
     "script_count": 46,
-    "skill_count": 29
+    "skill_count": 30
   }
 }

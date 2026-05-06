@@ -225,7 +225,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "29 skills" README.md 2>/dev/null && \
+   grep -Fq "30 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -413,7 +413,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 29 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 30 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -1158,25 +1158,25 @@ else
 fi
 
 # ========================================
-# Skills (29 Expected)
+# Skills (30 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 29 Expected]"
+echo "[Skills - 30 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 29 ]; then
+if [ "$SKILL_COUNT" -ge 30 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 29+ skills, found $SKILL_COUNT"
+    test_fail "Expected 30+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow visualize visualizeworkflow demo digestflow align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow visualize visualizeworkflow demo digestflow icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then

@@ -50,6 +50,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /visualizeworkflow | Approval-first workflow; drafts SPEC + visualization, stops at WAITING_FOR_VISUAL_APPROVAL, then continues only with `--continue` |
 | /demo | Governed recorded product demos with Playwright evidence, bilingual voiceover, captions, manifests, and safety gates |
 | /digestflow | External-report-informed workflow with Report Intake before deepresearch |
+| /icpweek | Research-backed ICP week-in-the-life product stress test with parallel lenses and A-J diagnosis |
 | /audit | Deep codebase audit with efficacy-first parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
 | /autoplan | Create SPEC.md with efficacy-first parallel planning and Agent-Native Estimate |

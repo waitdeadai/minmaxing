@@ -80,6 +80,7 @@ ROUTE_GROUPS = {
     "hive": "parallelism",
     "metacognition": "routing",
     "claudeproduct": "knowledge",
+    "icpweek": "research",
     "deepresearch": "research",
     "webresearch": "research",
     "browse": "research",

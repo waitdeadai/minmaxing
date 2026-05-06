@@ -52,11 +52,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 29 ]; then
+if [ "$SKILL_COUNT" -ge 30 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 29 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 30 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -100,7 +100,7 @@ echo "Planning: Agent-Native Estimate before non-trivial plan or SPEC freeze"
 echo "Fresh repos: run /tastebootstrap before /workflow"
 echo "Skills: /tastebootstrap, /workflow, /digestflow, /align, /autoplan, /verify,"
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
-echo "        /audit, /deepresearch, /webresearch, /browse, /introspect, /codesearch,"
+echo "        /audit, /deepresearch, /icpweek, /webresearch, /browse, /introspect, /codesearch,"
 echo "        /memory, /agentfactory, /parallel, /metacognition, /claudeproduct,"
 echo "        /hive,"
 echo "        /hiveworkflow, /visualize, /visualizeworkflow, /demo"

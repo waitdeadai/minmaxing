@@ -8,7 +8,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 29
+- Skills: 30
 - Rules: 15
 - Scripts: 46
 - Static eval tasks: 18
@@ -33,7 +33,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `planning`: `/autoplan`, `/council`
 - `quality`: `/audit`, `/introspect`, `/qa`, `/review`, `/verify`
 - `release`: `/ship`
-- `research`: `/browse`, `/deepresearch`, `/digestflow`, `/webresearch`
+- `research`: `/browse`, `/deepresearch`, `/digestflow`, `/icpweek`, `/webresearch`
 - `routing`: `/metacognition`
 
 ## Skills
@@ -53,6 +53,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/digestflow` | `research` | manual | no | `.claude/skills/digestflow/SKILL.md` | Run the full minmaxing workflow from external AI research reports. Use when the task begins with Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, or similar reports that must be digested before the repo's own deepresearch and governed workflow. |
 | `/hive` | `parallelism` | manual | yes | `.claude/skills/hive/SKILL.md` | Coordinate a governed hive of specialized agents for broad research, planning, review, or implementation work when roles, blackboard state, dissent, synthesis, and verification materially improve the outcome. |
 | `/hiveworkflow` | `execution` | manual | yes | `.claude/skills/hiveworkflow/SKILL.md` | Run the full minmaxing workflow with governed hive coordination: metacognitive route, deepresearch, role map, blackboard, packet DAG, aggregation, introspection, verification, and closeout. |
+| `/icpweek` | `research` | manual | no | `.claude/skills/icpweek/SKILL.md` | Run a research-backed ICP week-in-the-life product stress test. Use when the user invokes /icpweek or asks to simulate a full week of real-world product usage by an ideal customer and diagnose product, UX, automation, and technical gaps. |
 | `/introspect` | `quality` | yes | yes | `.claude/skills/introspect/SKILL.md` | /introspect |
 | `/investigate` | `debugging` | yes | no | `.claude/skills/investigate/SKILL.md` | /investigate |
 | `/memory` | `memory` | yes | no | `.claude/skills/memory/SKILL.md` | minmaxing 5-tier memory system management |

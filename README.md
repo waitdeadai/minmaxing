@@ -100,7 +100,7 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 29 skills — all configured.
+That's it. Memory system, MiniMax MCP, and 30 skills — all configured.
 
 **Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
 
@@ -563,7 +563,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 29 Skills
+## The 30 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -573,6 +573,7 @@ Now you can use any workflow pattern:
 | `/visualizeworkflow` | **Approval-first workflow** — drafts SPEC + visualization, stops at `WAITING_FOR_VISUAL_APPROVAL`, then continues only with `--continue` |
 | `/demo` | **Governed recorded demo pipeline** — produces product recordings with Playwright evidence, bilingual voiceover, captions, manifests, and safety gates |
 | `/digestflow` | **External-report-informed workflow** — digests 1-10 AI research reports as untrusted candidate evidence, then runs the full governed workflow |
+| `/icpweek` | **ICP week-in-the-life stress test** — simulates Monday-Sunday real usage with ideal-user, CTO, and senior product-engineer lenses, then delivers the A-J product diagnosis |
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
 | `/audit` | Deep codebase audit with risk-based parallelism |
 | `/autoplan` | Generate SPEC.md with parallel execution and Agent-Native Estimate in mind |
@@ -858,12 +859,13 @@ minmaxing/
 ├── .claude/
 │   ├── settings.json           # MiniMax API config
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 29 skills (system calls)
+│   ├── skills/                 # 30 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── visualize/          # Taste-to-artifact comprehension check
 │   │   ├── visualizeworkflow/  # Approval-first workflow route
 │   │   ├── demo/               # Recorded product demo route
 │   │   ├── digestflow/         # External report intake + governed workflow
+│   │   ├── icpweek/            # ICP week-in-the-life product stress test
 │   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap
 │   │   ├── align/              # Taste gate
 │   │   ├── audit/              # Deep codebase analysis
