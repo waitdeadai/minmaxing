@@ -11,7 +11,7 @@ Get your key from [platform.minimax.io](https://platform.minimax.io).
 Recommended split mode:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key-file /path/to/minimax.token
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key YOUR_TOKEN_PLAN_KEY
 ```
 
 <h1 align="center">
@@ -109,16 +109,30 @@ Get your key from [platform.minimax.io](https://platform.minimax.io)
 For the recommended OpusWorkflow daily mode:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key YOUR_TOKEN_PLAN_KEY
+```
+
+That single command configures the ignored local MiniMax executor profile and
+the ignored local Opus planner profile. If you do not want the MiniMax token in
+shell history, use the secure prompt or key-file form:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --prompt-minimax-key
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusworkflow --minimax-key-file /path/to/minimax.token
 ```
 
 For the lower-level Opus planner + MiniMax executor mode:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key YOUR_TOKEN_PLAN_KEY
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file /path/to/minimax.token
 ```
 
 That's it. Memory system, governed runtime profiles, and 34 skills — all configured.
+
+Claude subscription auth is separate account auth. Run `claude auth login` once
+if this machine is not already logged in; the setup command does not store or
+fake your Claude subscription session.
 
 **Shared settings are committed on purpose, but they are provider-neutral.** `.claude/settings.json` contains governance hooks, deny rules, and project defaults. Real credentials and provider identity belong in ignored local files such as `.claude/settings.opusminimax-planner.local.json` and `.claude/settings.minimax-executor.local.json`.
 

@@ -196,7 +196,9 @@ for pattern in \
 done
 for pattern in \
     "--mode opusminimax" \
+    "--minimax-key" \
     "--minimax-key-file" \
+    "--prompt-minimax-key" \
     "--planner-model" \
     "--executor-model" \
     "--profile"; do
@@ -242,6 +244,8 @@ for pattern in \
 done
 for pattern in \
     "--mode opusworkflow" \
+    "--minimax-key" \
+    "--prompt-minimax-key" \
     "opusworkflow-smoke"; do
     if ! grep -Fq -- "$pattern" setup.sh scripts/harness-eval.sh scripts/release-check.sh scripts/harness-capability-map.sh 2>/dev/null; then
         OPUSWORKFLOW_OK=false
