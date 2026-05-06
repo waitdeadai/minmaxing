@@ -66,6 +66,7 @@ KNOWN_GATES = {
     "codex-run-smoke",
     "agentfactory-smoke",
     "digestflow-static",
+    "defineicp-smoke",
     "opusminimax-benchmark-smoke",
     "opusworkflow-smoke",
     "spec-archive-smoke",
@@ -259,6 +260,10 @@ def normalize_gate(value: str) -> str:
         "digestflow-smoke": "digestflow-static",
         "scripts/digestflow-smoke.sh": "digestflow-static",
         "bash scripts/digestflow-smoke.sh": "digestflow-static",
+        "defineicp-smoke": "defineicp-smoke",
+        "scripts/defineicp-smoke.sh": "defineicp-smoke",
+        "scripts/defineicp-smoke.sh --fixtures": "defineicp-smoke",
+        "bash scripts/defineicp-smoke.sh --fixtures": "defineicp-smoke",
         "opusminimax-benchmark-smoke": "opusminimax-benchmark-smoke",
         "scripts/opusminimax-benchmark-smoke.sh": "opusminimax-benchmark-smoke",
         "scripts/opusminimax-benchmark-smoke.sh --fixtures": "opusminimax-benchmark-smoke",
@@ -617,6 +622,10 @@ run_gate() {
       ;;
     "digestflow-static")
       run_digestflow_static_smoke
+      ;;
+    "defineicp-smoke")
+      require_gate_script "scripts/defineicp-smoke.sh" || return $?
+      bash "$ROOT_DIR/scripts/defineicp-smoke.sh" --fixtures
       ;;
     "opusminimax-benchmark-smoke")
       require_gate_script "scripts/opusminimax-benchmark-smoke.sh" || return $?

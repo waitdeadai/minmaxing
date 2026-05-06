@@ -39,6 +39,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 
 **When you say `/digestflow`:** first digest the supplied external reports as untrusted candidate evidence, then run the same governed path as `/workflow`. Report claims stay `report-derived` until verified by repo inspection or live sources.
 
+**When you say `/defineicp`:** define primary, secondary, and anti-ICPs with deepresearch discipline, then draft ICP-driven updates to `taste.md` and `taste.vision`; apply those rewrites only with explicit approval, backups, hashes, changed-line trace, validation, and rollback evidence.
+
 **When you say `/opusminimax`:** run the same SPEC-first spine, but make provider roles explicit: Claude/Opus plans and reviews, MiniMax executes bounded packets, and parent verification treats executor summaries as claims until evidence proves them.
 
 **When you say `/opusworkflow`:** run `/opusminimax` in workflow mode with stricter cost policy: use Opus only for plan/spec freeze, adversarial review, and final judgment when identity is proven; use MiniMax-M2.7-highspeed for coding packets and repair loops; keep Plus-Highspeed executor concurrency at 1 unless provider evidence proves more.
@@ -58,6 +60,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /visualizeworkflow | Approval-first workflow; drafts SPEC + visualization, stops at WAITING_FOR_VISUAL_APPROVAL, then continues only with `--continue` |
 | /demo | Governed recorded product demos with Playwright evidence, bilingual voiceover, captions, manifests, and safety gates |
 | /digestflow | External-report-informed workflow with Report Intake before deepresearch |
+| /defineicp | Define primary, secondary, and anti-ICPs with deepresearch, then draft or explicitly apply ICP-driven updates to taste.md and taste.vision |
 | /icpweek | Research-backed ICP week-in-the-life product stress test with parallel lenses and A-J diagnosis |
 | /audit | Deep codebase audit with efficacy-first parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |

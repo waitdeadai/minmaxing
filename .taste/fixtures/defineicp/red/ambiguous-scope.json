@@ -1,0 +1,105 @@
+{
+  "artifact_type": "defineicp-run",
+  "run_id": "red-ambiguous-scope",
+  "mode": "proposal",
+  "status": "ICP_DRAFTED",
+  "product_scope": "current product",
+  "approval": {
+    "explicit": false
+  },
+  "research": {
+    "deepresearch_plan": {
+      "branches": [
+        "generic user"
+      ]
+    },
+    "source_ledger": {
+      "cited": [
+        {
+          "source": "README",
+          "claim_supported": "generic product"
+        }
+      ]
+    },
+    "claim_ledger": [
+      {
+        "claim": "The current product has users.",
+        "label": "inference"
+      }
+    ]
+  },
+  "icp": {
+    "primary": {
+      "segment": "builders",
+      "job_to_be_done": "build things",
+      "pain_points": [
+        "slow work"
+      ],
+      "trigger_events": [
+        "need software"
+      ],
+      "buyer_context": "unknown",
+      "adoption_channel": "unknown",
+      "objections": [
+        "unknown"
+      ],
+      "proof_needed": [
+        "unknown"
+      ],
+      "disqualifiers": [
+        "unknown"
+      ]
+    },
+    "anti_icp": [
+      "unknown"
+    ]
+  },
+  "taste_evolution": {
+    "protected_kernel_checklist": {
+      "SPEC-first": true,
+      "research-first": true,
+      "evidence-backed verification": true,
+      "explicit contracts": true,
+      "single-owner state": true,
+      "structured errors": true,
+      "observability": true,
+      "least privilege": true,
+      "rollback": true,
+      "separate verifier": true,
+      "no silent destructive behavior": true
+    },
+    "taste_md_changes": [
+      "generic"
+    ],
+    "taste_vision_changes": [
+      "generic"
+    ],
+    "changed_line_trace": [
+      "generic"
+    ],
+    "what_not_to_change": [
+      "kernel"
+    ]
+  },
+  "taste_mutation": {
+    "applied": false
+  },
+  "verification": {
+    "status": "pass",
+    "commands": [
+      {
+        "command": "echo checked",
+        "exit_code": 0
+      }
+    ]
+  },
+  "introspection": {
+    "likely_mistakes": [
+      "scope"
+    ],
+    "evidence_checked": [
+      "README"
+    ],
+    "confidence": "low"
+  }
+}

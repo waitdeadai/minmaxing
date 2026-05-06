@@ -1,0 +1,121 @@
+{
+  "artifact_type": "defineicp-run",
+  "run_id": "red-positive-closeout-after-failed-verification",
+  "mode": "apply",
+  "status": "ICP_APPLIED",
+  "product_scope": "repo-level governed AI coding harness",
+  "approval": {
+    "explicit": true,
+    "approved_proposal_id": "proposal-red"
+  },
+  "research": {
+    "deepresearch_plan": {
+      "branches": [
+        "repo"
+      ]
+    },
+    "source_ledger": {
+      "cited": [
+        {
+          "source": "README",
+          "claim_supported": "audience"
+        }
+      ]
+    },
+    "claim_ledger": [
+      {
+        "claim": "Apply approved.",
+        "label": "user-stated",
+        "evidence": "proposal-red",
+        "taste_impact": "apply"
+      }
+    ]
+  },
+  "icp": {
+    "primary": {
+      "segment": "technical founders",
+      "job_to_be_done": "ship verified changes",
+      "pain_points": [
+        "untrusted agents"
+      ],
+      "trigger_events": [
+        "pre-sale"
+      ],
+      "buyer_context": "owner",
+      "adoption_channel": "CLI",
+      "objections": [
+        "ceremony"
+      ],
+      "proof_needed": [
+        "tests"
+      ],
+      "disqualifiers": [
+        "throwaway scripts"
+      ]
+    },
+    "anti_icp": [
+      "unverified prompt users"
+    ]
+  },
+  "taste_evolution": {
+    "protected_kernel_checklist": {
+      "SPEC-first": true,
+      "research-first": true,
+      "evidence-backed verification": true,
+      "explicit contracts": true,
+      "single-owner state": true,
+      "structured errors": true,
+      "observability": true,
+      "least privilege": true,
+      "rollback": true,
+      "separate verifier": true,
+      "no silent destructive behavior": true
+    },
+    "taste_md_changes": [
+      "apply"
+    ],
+    "taste_vision_changes": [
+      "apply"
+    ],
+    "changed_line_trace": [
+      "C1"
+    ],
+    "what_not_to_change": [
+      "kernel"
+    ]
+  },
+  "taste_mutation": {
+    "applied": true,
+    "backup_paths": [
+      ".taste/defineicp/red/backups/taste.md",
+      ".taste/defineicp/red/backups/taste.vision"
+    ],
+    "pre_change_hashes": {
+      "taste.md": "1111",
+      "taste.vision": "2222"
+    },
+    "post_change_hashes": {
+      "taste.md": "3333",
+      "taste.vision": "4444"
+    },
+    "rollback_plan": "restore both"
+  },
+  "verification": {
+    "status": "fail",
+    "commands": [
+      {
+        "command": "bash scripts/test-harness.sh",
+        "exit_code": 1
+      }
+    ]
+  },
+  "introspection": {
+    "likely_mistakes": [
+      "failed verification"
+    ],
+    "evidence_checked": [
+      "test output"
+    ],
+    "confidence": "low"
+  }
+}

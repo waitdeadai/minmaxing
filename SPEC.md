@@ -1,175 +1,229 @@
-# SPEC: `/opusworkflow` Cost-Optimized Opus + MiniMax Workflow
+# SPEC: `/defineicp` ICP-to-Taste Evolution Workflow
 
 ## Problem Statement
 
-`/opusminimax` now provides the provider split, but the user's main daily mode
-needs a sharper operating contract: squeeze a $20 Claude subscription plus a
-$40 MiniMax Token Plan Plus-Highspeed subscription without pretending either
-plan is unlimited.
+The harness already has `taste.md` and `taste.vision` as the project operating
+kernel, and `/icpweek` can stress-test a product from an ideal-user lens. What is
+missing is a governed workflow that defines the real ICP or ICPs for the current
+product and feeds those findings back into the kernel so future product work is
+tailored to the right customer profile.
 
-The effective mode is not "Opus does everything" and not "MiniMax swarm at the
-hardware ceiling." It is `/opusworkflow`: a workflow-first command where
-Claude/Opus is used only for bounded judgment checkpoints, and
-MiniMax-M2.7-highspeed does the bulk coding and repair work through the existing
-`/opusminimax` packet system.
+The dangerous version of this feature would overwrite `taste.md` and
+`taste.vision` with market persona fluff. The useful version is
+`/defineicp`: a deepresearch-backed ICP discovery and taste-evolution command
+that preserves the protected kernel, produces a source-backed ICP artifact, then
+drafts and optionally applies a rollbackable rewrite of both taste files.
 
 ## Success Criteria
 
-- [x] Add `.claude/skills/opusworkflow/SKILL.md` as a concise, manual
-  end-to-end skill that wraps `/opusminimax --mode workflow`.
-- [x] Add `scripts/opusworkflow.sh` as the script entrypoint for preparing or
-  explicitly launching workflow-mode OpusMiniMax runs.
-- [x] Extend `setup.sh --mode opusworkflow` as a one-command install alias for
-  the same planner/executor profile split.
-- [x] Add a static `scripts/opusworkflow-smoke.sh` gate and register it in the
-  harness eval pack.
-- [x] Update README, CLAUDE.md, AGENTS.md, session startup, release gate, test
-  harness, and generated capability map so `/opusworkflow` is discoverable as
-  the recommended daily mode.
-- [x] Preserve the provider-split contract: shared settings stay neutral,
-  planner profiles do not inherit MiniMax base URL, executor model remains
-  `MiniMax-M2.7-highspeed`, and executor concurrency defaults to 1 unless
-  runtime provider evidence proves otherwise.
-- [x] Static gates pass without reading `.env`, local profile secrets, or
-  MiniMax key files, and without running authenticated provider smoke tests.
+- [x] Add `.claude/skills/defineicp/SKILL.md` as a manual slash skill.
+- [x] The skill must use the repo's `/deepresearch` discipline for market,
+  customer, competitor, workflow, buying, or current-behavior claims.
+- [x] The skill must infer or intake product scope before research: repo-level
+  product, feature, customer vertical, or target distribution.
+- [x] The skill must define primary ICP, secondary ICPs where warranted, and
+  anti-ICP/disqualified segments.
+- [x] The skill must default to proposal mode: it writes an ICP artifact and
+  taste patch proposal, but does not mutate `taste.md` or `taste.vision`
+  without explicit apply approval.
+- [x] Apply mode must preserve pre-change hashes, backup both taste files,
+  update both files as one unit, and validate semantic kernel preservation.
+- [x] Add a no-secret static gate `scripts/defineicp-smoke.sh --fixtures`.
+- [x] Add green/red fixtures that prove proposal-first behavior, source-ledger
+  discipline, protected-kernel preservation, apply approval, and secret
+  rejection.
+- [x] Register the smoke gate in the static eval pack, release gate, capability
+  map, startup surface, and test harness.
+- [x] Update README, CLAUDE.md, and AGENTS.md so `/defineicp` is visible and
+  distinct from `/icpweek` and `/tastebootstrap`.
+- [x] Regenerate `docs/harness-capability-map.md` and
+  `docs/harness-capability-map.json`.
+- [x] Static release gates pass without reading `.env`, local Claude settings,
+  MiniMax key files, private customer artifacts, or production logs.
 
 ## Research Brief
 
 ### Collaborative Research Plan
 
-- Local repo branch:
-  - inspect `/opusminimax`, `/workflow`, setup, capability map, release gates,
-    evals, and test harness surfaces.
-  - implement `/opusworkflow` with the smallest sufficient additions and reuse
-    existing packet/artifact schemas.
-- Current provider branch:
-  - keep the recent source-ledger conclusions current in the spec: Claude
-    subscription usage is shared, `ANTHROPIC_API_KEY` overrides subscription
-    billing, Opus 4.7 access on Pro may require extra usage, MiniMax
-    Plus-Highspeed is request-capped and traffic-shaped.
-- Adversarial branch:
-  - block false cost claims, false Opus claims, linear parallelism claims, and
-    "one command means secrets/auth are magically solved" wording.
+- Deliverable: a safe `/defineicp` route that can define ICPs and evolve the
+  taste kernel without destructive or evidence-free rewrites.
+- Local branches:
+  - skill/frontmatter conventions and route discovery
+  - taste creation, validation, and evolution contracts
+  - harness registration, eval, release, and docs surfaces
+  - adversarial overwrite and semantic-loss risks
+- External branches:
+  - current Claude Code skill and settings behavior
+  - stable ICP/persona/JTBD principles that justify the output structure
+- Effective research budget:
+  - capacity evidence: `scripts/parallel-capacity.sh --json` returned
+    `recommended_ceiling=10`, `codex_max_threads=10`, `cores=16`,
+    `ram_gb=32`, `hardware_class=workstation`.
+  - used lanes: 5 distinct lanes plus parent synthesis, not the full ceiling.
+- Stop condition:
+  - identify exact files to edit, safety contract for taste mutation, static
+    fixtures, and release gates.
 
 ### Source Ledger
 
-- Local truth:
-  - `AGENTS.md`: `/opusminimax`, `/workflow`, `/parallel`, `/introspect`,
-    active spec lifecycle, release gate, and security rules.
-  - `CLAUDE.md`: slash route list, default behavior, OpusMiniMax profiles, and
-    release gate.
-  - `.claude/skills/opusminimax/SKILL.md`: provider split and packet contract.
-  - `.claude/skills/workflow/SKILL.md`: workflow artifact, metacognitive route,
-    SPEC-first lifecycle, and verification requirements.
-  - `setup.sh`: one-command install and provider-profile setup flow.
-  - `scripts/harness-capability-map.sh`: canonical route/script/eval map.
-  - `scripts/test-harness.sh` and `scripts/release-check.sh`: static public
-    verification surfaces.
-- External sources checked in the prior provider research turn:
-  - `https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan`
-  - `https://code.claude.com/docs/en/model-config`
-  - `https://support.claude.com/en/articles/8606394-how-large-is-the-context-window-on-paid-claude-plans`
-  - `https://claude.com/blog/best-practices-for-using-claude-opus-4-7-with-claude-code`
-  - `https://platform.minimax.io/docs/token-plan/intro`
-  - `https://platform.minimax.io/docs/guides/pricing-tokenplan`
-  - `https://platform.minimax.io/docs/token-plan/faq`
-  - `https://platform.minimax.io/docs/token-plan/other-tools`
-- Conflicts and caveats:
-  - Claude Pro subscription does not guarantee free/unlimited Opus 4.7 use in
-    Claude Code. Runtime model identity and billing path must be proven before
-    saying "Opus planned this."
-  - MiniMax Plus-Highspeed has a large request quota, but provider traffic rules
-    still make 1 continuous executor lane the honest default.
-  - Local hardware capacity reports 10 as a ceiling. Provider quota and
-    supervisor verification capacity lower the effective executor budget.
+- Local source surfaces:
+  - `AGENTS.md`: deepresearch, `/icpweek`, `/introspect`, spec lifecycle,
+    release-check, surgical diff, and taste/kernel rules.
+  - `.claude/skills/icpweek/SKILL.md`: closest ICP-style research route.
+  - `.claude/skills/deepresearch/SKILL.md`: collaborative plan, iterative
+    search/read/refine, source ledger, conflict handling, and introspection.
+  - `.claude/skills/tastebootstrap/SKILL.md`: fresh taste creation contract.
+  - `.claude/skills/align/SKILL.md`: taste evolution precedent and approval
+    boundary.
+  - `.claude/skills/workflow/SKILL.md`: taste gate and route lifecycle.
+  - `scripts/taste.sh`: non-overwrite init behavior and required taste
+    structure.
+  - `scripts/harness-capability-map.sh`, `scripts/harness-eval.sh`,
+    `scripts/release-check.sh`, `scripts/test-harness.sh`: registration,
+    eval, release, and regression surfaces.
+- External sources:
+  - Claude Code skills docs: `https://code.claude.com/docs/en/skills`
+    confirmed project skills live under `.claude/skills/<name>/SKILL.md`,
+    can be invoked as `/name`, and `disable-model-invocation: true` makes a
+    workflow manual.
+  - Claude Code settings docs: `https://code.claude.com/docs/en/settings`
+    confirmed shared project settings and ignored local settings boundaries.
+  - Claude Code hooks docs: `https://code.claude.com/docs/en/hooks`
+    confirmed hook decisions can block actions, reinforcing that safety gates
+    should be deterministic when needed.
+  - Yale UX archetypes/personas:
+    `https://usability.yale.edu/ux/discovery/create-user-representations/archetypes-and-personas`
+    confirmed personas/archetypes should be grounded in user research and
+    focus on behavior, goals, and pain points.
+  - Shopify ICP guide:
+    `https://www.shopify.com/blog/ideal-customer-profile` confirmed ICPs
+    should be data-driven, focus on highest-value customers, include buyer
+    attributes, pains, budget, technology, goals, and can be multiple by
+    product/service.
+  - Harvard Business Review JTBD article:
+    `https://hbr.org/2016/09/know-your-customers-jobs-to-be-done` supported
+    using the job customers are trying to accomplish as the center of product
+    definition.
+
+### Reviewed But Not Cited
+
+- Secondary ICP blog posts and Reddit discussions were useful for vocabulary
+  but downweighted because official/product-neutral sources and repo contracts
+  were stronger.
+
+### Conflicts And Resolutions
+
+- User requested rewrite of `taste.md` and `taste.vision`; repo contracts treat
+  those files as protected kernel surfaces. Resolution: `/defineicp` may apply
+  rewrites, but default mode is proposal-first and apply requires explicit
+  approval, backups, changed-line trace, and validation.
+- ICP/persona sources sometimes emphasize sales/marketing; this harness needs
+  product behavior and engineering taste. Resolution: the skill maps ICP
+  findings into product experience, contracts, operations, verification, and
+  non-goals, not just positioning copy.
 
 ## Scope
 
 ### In Scope
 
-- New `/opusworkflow` skill, wrapper script, smoke gate, eval metadata, setup
-  alias, docs, generated map, and static tests.
-- Cost policy for the default $20 Claude + $40 MiniMax configuration.
-- No-secret, no-provider-runtime static verification.
+- New `/defineicp` skill and no-secret smoke gate.
+- Static fixtures for valid and invalid ICP/taste-evolution artifacts.
+- Eval, release, test harness, capability map, startup, and docs wiring.
+- A guarded contract for rewriting `taste.md` and `taste.vision` when invoked
+  later by an operator with explicit apply approval.
 
 ### Out Of Scope
 
-- Authenticated Claude or MiniMax runtime calls.
-- Pay-as-you-go fallback implementation.
-- Real benchmark execution or benchmark score claims.
-- Reading `.env`, `.env.*`, `.claude/*.local.json`, key files, or customer
-  private artifacts.
+- Running `/defineicp` against this repo's own ICP and rewriting the live
+  `taste.md` / `taste.vision` during this implementation.
+- Authenticated provider calls, customer-data imports, CRM scraping, outreach,
+  analytics ingestion, or production-log access.
+- Guaranteeing that market research is true when external sources are absent or
+  blocked. The skill must label assumptions and downgrade confidence.
 
 ## Agent-Native Estimate
 
 - Estimate type: agent-native.
-- Capacity evidence: `bash scripts/parallel-capacity.sh --json` returned
-  `recommended_ceiling=10`, `codex_max_threads=10`, `cores=16`, `ram_gb=32`,
-  `hardware_class=workstation`, and `agent_teams_available=false`.
-- Effective lanes: 1 local implementation lane. The changes are coupled across
-  route registration, setup, docs, tests, and generated maps; parallelizing the
-  edits would increase integration risk.
-- Critical path: spec -> skill/script -> setup alias -> smoke/eval/release/test
-  wiring -> docs -> generated capability map -> static release gate.
-- Agent wall-clock: optimistic 45 minutes / likely 90 minutes / pessimistic 3
-  hours.
-- Agent-hours: 1-3.
-- Human touch time later: 10-30 minutes for Claude login, MiniMax key placement,
-  and optional runtime provider doctor.
-- Calendar blockers: account-specific Opus access and MiniMax peak traffic.
-- Confidence: medium-high for static harness behavior, medium for provider
-  runtime effectiveness until runtime checks prove the actual account state.
+- Execution topology: parent orchestrator plus bounded read-only research lanes.
+- Capacity evidence: `recommended_ceiling=10`, `codex_max_threads=10`,
+  `agent_teams_available=false`.
+- Effective lanes: 5 research/review lanes plus one local implementation lane.
+  Edits are coupled across skill, script, fixtures, evals, docs, and generated
+  maps, so implementation stays local to avoid integration churn.
+- Critical path: spec -> skill -> smoke/fixtures -> eval/release/test wiring ->
+  docs/startup -> capability map regeneration -> static verification -> commit
+  and push.
+- Agent wall-clock: optimistic 1 hour / likely 2 hours / pessimistic 4 hours.
+- Agent-hours: 3-6 including research/review lanes.
+- Human touch time later: 5-20 minutes to approve an actual ICP-to-taste apply
+  patch in a downstream repo.
+- Calendar blockers: none for static route implementation; external market
+  research can be blocked later by source availability.
+- Confidence: medium-high for static harness implementation, medium for future
+  ICP quality because each product's evidence quality will vary.
 
 ## Implementation Plan
 
-### Task 1: Route Contract
+### Task 1: Skill Contract
 
-- Add `/opusworkflow` skill with:
-  - mode banner
-  - cost-optimized budget policy
-  - Opus judgment checkpoints
-  - MiniMax executor duties
-  - default executor concurrency 1
-  - refusal to claim Opus if model identity is unproven
-  - final verification requirements
+- Add `/defineicp` with phases:
+  - taste gate and product scope
+  - ICP intake
+  - deepresearch plan
+  - parallel lenses
+  - ICP synthesis
+  - taste evolution proposal
+  - optional apply
+  - verification and introspection
+- Require claim labels: `source-backed`, `repo-derived`, `user-stated`,
+  `inference`, `assumption`, `unknown`.
+- Require protected-kernel preservation:
+  - SPEC-first
+  - research-first
+  - evidence-backed verification
+  - explicit contracts
+  - single-owner validated state
+  - structured/explainable errors
+  - observability
+  - least privilege
+  - rollbackability
+  - separate verifier
+  - no silent destructive behavior
 
-### Task 2: Script Interface
+### Task 2: Static Gate
 
-- Add `scripts/opusworkflow.sh` as a workflow-mode wrapper over
-  `scripts/opusminimax.sh`.
-- Keep runtime execution opt-in through `--execute-planner`.
-- Pass through planner/executor model overrides and run IDs.
+- Add `scripts/defineicp-smoke.sh`.
+- Validate:
+  - skill/frontmatter/doc patterns
+  - docs/route visibility
+  - fixture artifacts
+  - positive proposal/apply artifacts
+  - negative artifacts for missing source ledger, generic persona fluff,
+    kernel loss, apply without approval, failed verification positive closeout,
+    and secret-bearing artifacts.
 
-### Task 3: Setup Alias
+### Task 3: Eval And Release Wiring
 
-- Extend `setup.sh --mode opusworkflow` to prepare the same local planner and
-  executor profiles as `/opusminimax`.
-- Make final setup guidance point to `/opusworkflow` when that mode is selected.
+- Add `evals/harness/tasks/m10-defineicp-taste-evolution.yaml`.
+- Add `evals/harness/golden/m10-defineicp-taste-evolution.json`.
+- Register `defineicp-smoke` in `scripts/harness-eval.sh`.
+- Add the smoke to `scripts/release-check.sh`.
+- Add focused assertions to `scripts/test-harness.sh`.
 
-### Task 4: Static Gate And Eval
+### Task 4: Discovery And Docs
 
-- Add `scripts/opusworkflow-smoke.sh`.
-- Add `evals/harness/tasks/m9-opusworkflow-cost-budget.yaml` and matching
-  golden JSON.
-- Register the new gate in `scripts/harness-eval.sh`,
-  `scripts/harness-capability-map.sh`, `scripts/release-check.sh`, and
-  `scripts/test-harness.sh`.
-
-### Task 5: Docs And Discovery
-
+- Add `defineicp` to the capability-map route group and script owner maps.
 - Update README, CLAUDE.md, AGENTS.md, and `scripts/start-session.sh`.
-- Regenerate `docs/harness-capability-map.md` and
-  `docs/harness-capability-map.json`.
+- Update skill counts from 32 to 33 where exact text is asserted.
+- Regenerate generated capability map files.
 
 ## Verification Plan
 
 - `bash -n scripts/*.sh`
-- `bash scripts/opusworkflow-smoke.sh`
-- `bash scripts/opusminimax-doctor.sh --static`
-- `bash scripts/opusminimax-benchmark-smoke.sh --fixtures`
+- `bash scripts/defineicp-smoke.sh --fixtures`
 - `bash scripts/harness-capability-map.sh --check --json`
-- `bash scripts/artifact-lint.sh --fixtures`
 - `bash scripts/harness-eval.sh --json`
+- `bash scripts/artifact-lint.sh --fixtures`
 - `bash scripts/security-smoke.sh`
 - `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`
 - `bash scripts/release-check.sh --static-only`
@@ -177,70 +231,67 @@ MiniMax-M2.7-highspeed does the bulk coding and repair work through the existing
 
 ## Verified 2026-05-06
 
-- `bash -n scripts/*.sh`: pass.
-- `bash scripts/opusworkflow-smoke.sh`: pass.
-- `bash scripts/opusminimax-doctor.sh --static`: pass-with-warning. The warning
-  is limited to obvious candidate secret strings in existing test/smoke scripts;
-  no `.env` or local profile secrets were read.
-- `bash scripts/opusminimax-benchmark-smoke.sh --fixtures`: pass.
-- `bash scripts/harness-capability-map.sh --check --json`: pass
-  (`skills=32`, `eval_tasks=20`, `/opusworkflow` core route present).
+- `bash -n scripts/defineicp-smoke.sh scripts/harness-eval.sh scripts/harness-capability-map.sh scripts/release-check.sh scripts/test-harness.sh scripts/start-session.sh scripts/visualize-smoke.sh`: pass.
+- `bash scripts/defineicp-smoke.sh --fixtures`: pass.
+- `bash scripts/harness-capability-map.sh --check --json`: pass; generated map reports `skills=33`, `scripts=53`, `eval_tasks=21`, and includes `/defineicp`.
 - `bash scripts/artifact-lint.sh --fixtures`: pass (`7 green`, `21 red`).
-- `bash scripts/harness-eval.sh --json`: pass (`20 tasks`, `17 gates`,
-  `0 mismatches`).
 - `bash scripts/security-smoke.sh`: pass.
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`131 passed`,
-  `0 failed`; runtime workflow smoke intentionally skipped).
-- `bash scripts/release-check.sh --static-only`: pass, including
-  `git diff --check`.
-- `bash scripts/opusminimax-doctor.sh --runtime`: pass-with-warning after
-  operator Claude login. Runtime doctor confirmed Claude Code `2.1.118`, Claude
-  Pro subscription auth, provider-neutral shared settings, Opus planner request,
-  and MiniMax executor profile separation. It made no model calls and read no
-  `.env` or local profile secrets.
-- `claude --model claude-opus-4-7 --settings .claude/settings.opusminimax-planner.local.json -p 'Reply exactly: OPUSWORKFLOW_AUTH_OK'`:
-  operator-reported pass. The sentinel response printed
-  `OPUSWORKFLOW_AUTH_OK`, proving the Claude/Opus planner path for this local
-  account state.
+- `bash scripts/harness-eval.sh --json`: pass (`21 tasks`, `18 gates`, `0 mismatches`).
+- `git diff --check`: pass.
+- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`134 passed`, `0 failed`; runtime Claude integration intentionally skipped).
+- `bash scripts/release-check.sh --static-only`: pass, including `git diff --check`.
 
-MiniMax live executor packet runtime remains untested.
+No runtime provider smoke, customer-data import, `.env` read, local Claude
+settings read, or actual live `taste.md` / `taste.vision` ICP rewrite was
+performed.
 
 ## Introspection Pre-Plan
 
-- Likely mistake: overbuilding a second implementation stack instead of an alias
-  over `/opusminimax`. Mitigation: make `/opusworkflow` a thin workflow-mode
-  route and reuse existing schemas.
-- Likely mistake: claiming the $20 Claude plan gives guaranteed Opus 4.7.
-  Mitigation: docs and skill must say Opus is only claimed when identity is
-  proven.
-- Likely mistake: using local 10-lane capacity as MiniMax executor capacity.
-  Mitigation: skill and smoke gate require default provider ceiling 1.
-- Missing verification: MiniMax live executor behavior remains untested by
-  design. Static closeout must keep that proof pending until a tiny executor
-  packet is run with explicit operator approval.
+- Likely mistake: honoring the user's "rewrite taste" wording too literally and
+  creating a destructive overwrite path. Mitigation: proposal-first default,
+  apply-only with explicit approval, backups, hashes, and validation.
+- Likely mistake: duplicating `/icpweek`. Mitigation: `/defineicp` owns ICP
+  definition and taste evolution; `/icpweek` owns seven-day product stress
+  simulation.
+- Likely mistake: turning ICP into a marketing persona instead of product taste.
+  Mitigation: require JTBD, buying context, disqualifiers, proof needed, and
+  mapping into experience, contracts, system behavior, and non-goals.
+- Likely mistake: relying on structural tests only. Mitigation: smoke fixtures
+  reject semantic kernel loss and evidence-free ICP claims.
+- Missing verification before implementation: docs researcher lane may return
+  additional Claude Code source details later, but parent web research already
+  verified the needed official skill/settings behavior.
+- Blocker decision: PASS.
 
 ## Introspection Post-Implementation
 
-- Checked for overbuild: `/opusworkflow` is a wrapper and skill over the
-  existing `/opusminimax` artifacts, not a second provider bridge.
-- Checked for false cost claims: docs and skill say Opus must be proven and
-  Plus-Highspeed executor concurrency defaults to 1.
-- Checked for provider leakage: static doctor still confirms shared settings are
-  provider-neutral, planner has no MiniMax base URL, and executor requests
-  `MiniMax-M2.7-highspeed`.
-- Checked for verification gap: Claude auth and Opus planner identity are now
-  proven by runtime doctor plus operator-reported sentinel output; MiniMax live
-  executor runtime remains pending and opt-in.
-- Changed-line trace: every meaningful edit maps to this spec's route contract,
-  script interface, setup alias, static gate/eval, docs/discovery, or verification
-  cleanup.
+- Checked destructive-overwrite risk: `/defineicp` defaults to proposal mode and
+  requires explicit approval, backups, hashes, changed-line trace, validation,
+  and rollback evidence before `ICP_APPLIED`.
+- Checked semantic kernel preservation: the skill and smoke fixtures require
+  protected invariants for spec-first, research-first, verification, explicit
+  contracts, state boundaries, errors, observability, least privilege, rollback,
+  separate verifier, and no silent destructive behavior.
+- Checked `/icpweek` overlap: `/defineicp` owns ICP definition and taste
+  evolution, while `/icpweek` remains the Monday-Sunday product stress test.
+- Checked evidence quality: source ledger, claim ledger, claim labels,
+  anti-ICP, disqualifiers, and missing-evidence handling are mandatory in the
+  skill and in fixture validation.
+- Checked docs and generated truth: README, CLAUDE.md, AGENTS.md,
+  `scripts/start-session.sh`, generated capability maps, harness eval,
+  release-check, and test-harness all include the new route.
+- Changed-line trace: every meaningful edit maps to this spec's skill contract,
+  static gate, fixtures, eval/release/test wiring, docs/discovery, or generated
+  capability map.
+- Confidence: high for static route behavior; medium for future ICP quality
+  because real product evidence will vary by repo.
+- Blocker decision: PASS.
 
 ## Rollback Plan
 
-1. Remove `/opusworkflow` skill, script, smoke gate, eval task/golden, and setup
-   alias.
-2. Remove route/script/eval registrations from capability map generator,
-   harness eval, release-check, test-harness, and docs.
-3. Regenerate capability map.
-4. Restore README/CLAUDE/AGENTS/start-session wording to `/opusminimax` only.
-5. Re-run static release checks.
+1. Remove `.claude/skills/defineicp/`.
+2. Remove `scripts/defineicp-smoke.sh` and `.taste/fixtures/defineicp/`.
+3. Remove the defineicp eval task/golden and harness-eval registration.
+4. Remove route/script mappings from `scripts/harness-capability-map.sh`.
+5. Remove docs/startup/test-harness/release-check references.
+6. Regenerate capability map and rerun static release checks.

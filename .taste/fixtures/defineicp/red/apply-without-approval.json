@@ -1,0 +1,118 @@
+{
+  "artifact_type": "defineicp-run",
+  "run_id": "red-apply-without-approval",
+  "mode": "apply",
+  "status": "ICP_APPLIED",
+  "product_scope": "repo-level governed AI coding harness",
+  "approval": {
+    "explicit": false,
+    "approved_proposal_id": ""
+  },
+  "research": {
+    "deepresearch_plan": {
+      "branches": [
+        "repo"
+      ]
+    },
+    "source_ledger": {
+      "cited": [
+        {
+          "source": "README",
+          "claim_supported": "target audience"
+        }
+      ]
+    },
+    "claim_ledger": [
+      {
+        "claim": "Audience should be sharpened.",
+        "label": "repo-derived",
+        "evidence": "README",
+        "taste_impact": "audience"
+      }
+    ]
+  },
+  "icp": {
+    "primary": {
+      "segment": "technical founders",
+      "job_to_be_done": "ship verified changes",
+      "pain_points": [
+        "unverified agents"
+      ],
+      "trigger_events": [
+        "pre-sale"
+      ],
+      "buyer_context": "owner",
+      "adoption_channel": "CLI",
+      "objections": [
+        "ceremony"
+      ],
+      "proof_needed": [
+        "tests"
+      ],
+      "disqualifiers": [
+        "throwaway scripts"
+      ]
+    },
+    "anti_icp": [
+      "unverified prompt users"
+    ]
+  },
+  "taste_evolution": {
+    "protected_kernel_checklist": {
+      "SPEC-first": true,
+      "research-first": true,
+      "evidence-backed verification": true,
+      "explicit contracts": true,
+      "single-owner state": true,
+      "structured errors": true,
+      "observability": true,
+      "least privilege": true,
+      "rollback": true,
+      "separate verifier": true,
+      "no silent destructive behavior": true
+    },
+    "taste_md_changes": [
+      "approved-looking edit"
+    ],
+    "taste_vision_changes": [
+      "approved-looking edit"
+    ],
+    "changed_line_trace": [
+      "trace"
+    ],
+    "what_not_to_change": [
+      "kernel"
+    ]
+  },
+  "taste_mutation": {
+    "applied": true,
+    "backup_paths": [
+      ".taste/defineicp/red/backups/taste.md"
+    ],
+    "pre_change_hashes": {
+      "taste.md": "1111"
+    },
+    "post_change_hashes": {
+      "taste.md": "2222"
+    },
+    "rollback_plan": "restore"
+  },
+  "verification": {
+    "status": "pass",
+    "commands": [
+      {
+        "command": "echo checked",
+        "exit_code": 0
+      }
+    ]
+  },
+  "introspection": {
+    "likely_mistakes": [
+      "approval missing"
+    ],
+    "evidence_checked": [
+      "proposal"
+    ],
+    "confidence": "low"
+  }
+}

@@ -8,10 +8,10 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 32
+- Skills: 33
 - Rules: 15
-- Scripts: 52
-- Static eval tasks: 20
+- Scripts: 53
+- Static eval tasks: 21
 - Hook entries: 11
 - Codex config files: 4
 - Core routes: 14
@@ -33,7 +33,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `planning`: `/autoplan`, `/council`
 - `quality`: `/audit`, `/introspect`, `/qa`, `/review`, `/verify`
 - `release`: `/ship`
-- `research`: `/browse`, `/deepresearch`, `/digestflow`, `/icpweek`, `/webresearch`
+- `research`: `/browse`, `/deepresearch`, `/defineicp`, `/digestflow`, `/icpweek`, `/webresearch`
 - `routing`: `/metacognition`
 
 ## Skills
@@ -49,6 +49,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/codesearch` | `debugging` | yes | no | `.claude/skills/codesearch/SKILL.md` | Search the local codebase for patterns, symbols, implementations, and references. Use when the user wants to find where code lives or understand how a pattern is implemented without invoking the OpenAI Codex plugin namespace. |
 | `/council` | `planning` | yes | no | `.claude/skills/council/SKILL.md` | /council |
 | `/deepresearch` | `research` | yes | yes | `.claude/skills/deepresearch/SKILL.md` | /deepresearch |
+| `/defineicp` | `research` | manual | no | `.claude/skills/defineicp/SKILL.md` | Define the ICP or ICPs for the current product with deepresearch, then draft or apply ICP-driven updates to taste.md and taste.vision. Use when the user invokes /defineicp or asks to tailor the product kernel to ideal customer profiles. |
 | `/demo` | `execution` | manual | yes | `.claude/skills/demo/SKILL.md` | Produce governed recorded product demos with bilingual voiceover, captions, browser evidence, safety gates, and artifact manifests. |
 | `/digestflow` | `research` | manual | no | `.claude/skills/digestflow/SKILL.md` | Run the full minmaxing workflow from external AI research reports. Use when the task begins with Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, or similar reports that must be digested before the repo's own deepresearch and governed workflow. |
 | `/hive` | `parallelism` | manual | yes | `.claude/skills/hive/SKILL.md` | Coordinate a governed hive of specialized agents for broad research, planning, review, or implementation work when roles, blackboard state, dissent, synthesis, and verification materially improve the outcome. |
@@ -99,6 +100,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | --- | --- | --- |
 | `artifact-lint` | machine sidecar validator | `scripts/artifact-lint.sh` |
 | `claudeproduct-scorecard` | Claude product answer scorecard | `scripts/claudeproduct-scorecard.sh` |
+| `defineicp-smoke` | ICP-to-taste evolution contract gate | `scripts/defineicp-smoke.sh` |
 | `demo-smoke` | recorded demo contract and manifest gate | `scripts/demo-smoke.sh` |
 | `harness-capability-map` | capability map freshness gate | `scripts/harness-capability-map.sh` |
 | `harness-eval` | static eval pack runner | `scripts/harness-eval.sh` |
@@ -119,6 +121,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 | Eval | Gate | Expected | Task | Golden |
 | --- | --- | --- | --- | --- |
+| `m10-defineicp-taste-evolution` | `scripts/defineicp-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m10-defineicp-taste-evolution.yaml` | `evals/harness/golden/m10-defineicp-taste-evolution.json` |
 | `m4-agentfactory-kill-switch-evidence` | `scripts/agentfactory-smoke.sh` | `pass` | `evals/harness/tasks/m4-agentfactory-kill-switch-evidence.yaml` | `evals/harness/golden/m4-agentfactory-kill-switch-evidence.json` |
 | `m4-artifact-sidecar-lint` | `scripts/artifact-lint.sh --fixtures` | `pass` | `evals/harness/tasks/m4-artifact-sidecar-lint.yaml` | `evals/harness/golden/m4-artifact-sidecar-lint.json` |
 | `m4-codex-run-artifact-proof` | `scripts/codex-run-smoke.sh` | `pass` | `evals/harness/tasks/m4-codex-run-artifact-proof.yaml` | `evals/harness/golden/m4-codex-run-artifact-proof.json` |

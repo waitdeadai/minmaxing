@@ -1,0 +1,159 @@
+{
+  "artifact_type": "defineicp-run",
+  "run_id": "defineicp-green-proposal",
+  "mode": "proposal",
+  "status": "ICP_DRAFTED",
+  "product_scope": "repo-level governed AI coding harness",
+  "approval": {
+    "explicit": false,
+    "approved_proposal_id": ""
+  },
+  "research": {
+    "deepresearch_plan": {
+      "product": "minmaxing harness",
+      "branches": [
+        "highest-value user",
+        "economic buyer",
+        "technical fit",
+        "adversarial ICP rejection"
+      ],
+      "effective_parallel_budget": 4,
+      "stop_condition": "primary ICP, anti-ICP, claim ledger, and taste proposal are specific enough to review"
+    },
+    "source_ledger": {
+      "cited": [
+        {
+          "source": "repo README",
+          "claim_supported": "the product targets governed AI coding workflows"
+        }
+      ],
+      "reviewed_but_not_cited": [],
+      "rejected": [],
+      "conflicts": []
+    },
+    "claim_ledger": [
+      {
+        "id": "C1",
+        "claim": "Best-fit users need inspectable AI coding work rather than fast unverified output.",
+        "label": "repo-derived",
+        "evidence": "README and taste.vision emphasize research-backed, spec-backed, verifiable work.",
+        "taste_impact": "Preserve correctness, verification, and traceability as dominant product taste."
+      },
+      {
+        "id": "C2",
+        "claim": "The ICP is likely technical enough to review artifacts but wants the harness to reduce coordination burden.",
+        "label": "inference",
+        "evidence": "Derived from repo command surfaces and workflow artifacts.",
+        "taste_impact": "Use provisional language in audience and experience sections."
+      }
+    ]
+  },
+  "icp": {
+    "primary": {
+      "segment": "solo or small-team builders shipping real software with AI agents",
+      "job_to_be_done": "turn ambiguous coding work into researched, planned, implemented, verified changes with an audit trail",
+      "pain_points": [
+        "agents skip planning",
+        "tests are claimed without evidence",
+        "parallel work creates merge and trust risk"
+      ],
+      "trigger_events": [
+        "starting a new repo",
+        "recovering a messy harness run",
+        "preparing to sell or demo a product"
+      ],
+      "buyer_context": "technical founder, CTO, or senior builder with authority over local tooling",
+      "adoption_channel": "Claude Code CLI project skills and one-command install",
+      "objections": [
+        "too much ceremony",
+        "unclear runtime proof",
+        "fear of secret leakage"
+      ],
+      "proof_needed": [
+        "static release gates",
+        "artifact evidence",
+        "clear rollback"
+      ],
+      "disqualifiers": [
+        "throwaway scripts",
+        "teams that prefer unreviewed generation",
+        "projects that cannot tolerate local agent tooling"
+      ]
+    },
+    "secondary": [
+      {
+        "segment": "consultants packaging governed AI workflows for clients",
+        "difference": "needs clearer operator-facing docs and proof artifacts"
+      }
+    ],
+    "anti_icp": [
+      "users seeking the shortest possible prompt-to-code path with no audit trail"
+    ]
+  },
+  "taste_evolution": {
+    "protected_kernel_checklist": {
+      "SPEC-first": true,
+      "research-first": true,
+      "evidence-backed verification": true,
+      "explicit contracts": true,
+      "single-owner state": true,
+      "structured errors": true,
+      "observability": true,
+      "least privilege": true,
+      "rollback": true,
+      "separate verifier": true,
+      "no silent destructive behavior": true
+    },
+    "taste_md_changes": [
+      {
+        "section": "Experience & Interaction",
+        "change": "Make operator confidence and low-friction evidence review explicit for technical founders."
+      }
+    ],
+    "taste_vision_changes": [
+      {
+        "section": "Audience",
+        "change": "Name solo builders, CTOs, and consultants using AI agents on real repos."
+      }
+    ],
+    "changed_line_trace": [
+      {
+        "file": "taste.vision",
+        "section": "Audience",
+        "source_claim": "C1",
+        "label": "repo-derived",
+        "rationale": "Audience copy should reflect the highest-value users already implied by repo behavior."
+      }
+    ],
+    "what_not_to_change": [
+      "correctness over speed",
+      "least privilege",
+      "rollback",
+      "separate verification"
+    ]
+  },
+  "taste_mutation": {
+    "applied": false
+  },
+  "verification": {
+    "status": "pass_with_notes",
+    "commands": [
+      {
+        "command": "bash scripts/defineicp-smoke.sh --artifact proposal.json",
+        "exit_code": 0
+      }
+    ]
+  },
+  "introspection": {
+    "likely_mistakes": [
+      "overfitting the whole kernel to a temporary feature",
+      "treating inferred buyer context as fact"
+    ],
+    "evidence_checked": [
+      "taste.md",
+      "taste.vision",
+      "README.md"
+    ],
+    "confidence": "medium"
+  }
+}

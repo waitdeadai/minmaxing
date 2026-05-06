@@ -1,0 +1,107 @@
+{
+  "artifact_type": "defineicp-run",
+  "run_id": "red-kernel-loss",
+  "mode": "proposal",
+  "status": "ICP_DRAFTED",
+  "product_scope": "repo-level governed AI coding harness",
+  "approval": {
+    "explicit": false
+  },
+  "research": {
+    "deepresearch_plan": {
+      "branches": [
+        "repo"
+      ]
+    },
+    "source_ledger": {
+      "cited": [
+        {
+          "source": "README",
+          "claim_supported": "audience"
+        }
+      ]
+    },
+    "claim_ledger": [
+      {
+        "claim": "The audience wants faster workflow.",
+        "label": "repo-derived",
+        "evidence": "README",
+        "taste_impact": "speed"
+      }
+    ]
+  },
+  "icp": {
+    "primary": {
+      "segment": "builders",
+      "job_to_be_done": "ship changes",
+      "pain_points": [
+        "slow verification"
+      ],
+      "trigger_events": [
+        "deadline"
+      ],
+      "buyer_context": "technical owner",
+      "adoption_channel": "CLI",
+      "objections": [
+        "too much process"
+      ],
+      "proof_needed": [
+        "speed"
+      ],
+      "disqualifiers": [
+        "regulated work"
+      ]
+    },
+    "anti_icp": [
+      "compliance-heavy teams"
+    ]
+  },
+  "taste_evolution": {
+    "protected_kernel_checklist": {
+      "SPEC-first": true,
+      "research-first": true,
+      "evidence-backed verification": false,
+      "explicit contracts": true,
+      "single-owner state": true,
+      "structured errors": true,
+      "observability": true,
+      "least privilege": false,
+      "rollback": true,
+      "separate verifier": false,
+      "no silent destructive behavior": true
+    },
+    "taste_md_changes": [
+      "remove heavy verification"
+    ],
+    "taste_vision_changes": [
+      "speed over evidence"
+    ],
+    "changed_line_trace": [
+      "C1"
+    ],
+    "what_not_to_change": [
+      "none"
+    ]
+  },
+  "taste_mutation": {
+    "applied": false
+  },
+  "verification": {
+    "status": "pass",
+    "commands": [
+      {
+        "command": "echo checked",
+        "exit_code": 0
+      }
+    ]
+  },
+  "introspection": {
+    "likely_mistakes": [
+      "kernel loss"
+    ],
+    "evidence_checked": [
+      "README"
+    ],
+    "confidence": "low"
+  }
+}

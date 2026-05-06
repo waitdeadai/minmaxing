@@ -1,0 +1,12 @@
+{
+  "id": "m10-defineicp-taste-evolution",
+  "gate": "scripts/defineicp-smoke.sh --fixtures",
+  "status": "reject",
+  "gate_status": "pass",
+  "evidence_summary": [
+    "/defineicp exists as a manual ICP-to-taste evolution skill",
+    "the route defaults to proposal mode and requires explicit approval before taste mutation",
+    "the smoke gate accepts valid proposal/apply artifacts and rejects unsafe red fixtures",
+    "docs, capability map, release, and eval surfaces discover the route"
+  ]
+}

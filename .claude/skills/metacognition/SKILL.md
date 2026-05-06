@@ -70,6 +70,7 @@ Choose exactly one:
 | `claudeproduct` | Claude, Claude Code, Claude.ai, Anthropic API, connector, plugin, skill, or subagent product question | `/claudeproduct` |
 | `webresearch` | narrow current fact check | `/webresearch` |
 | `deepresearch` | landscape, architecture, due diligence, strategic research | `/deepresearch` |
+| `defineicp` | define ICPs or tailor `taste.md` / `taste.vision` to an ideal customer profile | `/defineicp` |
 | `workflow` | repo-changing build/fix/refactor/docs/config work | `/workflow` |
 | `parallel` | dense independent packets with clear ownership and verification | `/parallel` |
 | `hive` | multi-agent coordination needs roles, blackboard, dissent, and synthesis | `/hive` or `/hiveworkflow` |

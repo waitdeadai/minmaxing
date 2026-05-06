@@ -1,0 +1,6 @@
+id: m10-defineicp-taste-evolution
+title: /defineicp ICP-to-taste evolution gate
+gate: scripts/defineicp-smoke.sh --fixtures
+expected_result: reject
+golden: evals/harness/golden/m10-defineicp-taste-evolution.json
+evidence: accepts valid ICP proposal and apply artifacts while rejecting missing ledgers generic persona fluff kernel loss unapproved apply failed verification and secret-bearing artifacts

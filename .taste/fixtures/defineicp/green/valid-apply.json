@@ -1,0 +1,164 @@
+{
+  "artifact_type": "defineicp-run",
+  "run_id": "defineicp-green-apply",
+  "mode": "apply",
+  "status": "ICP_APPLIED",
+  "product_scope": "repo-level governed AI coding harness",
+  "approval": {
+    "explicit": true,
+    "approved_proposal_id": "proposal-20260506-a"
+  },
+  "research": {
+    "deepresearch_plan": {
+      "product": "minmaxing harness",
+      "branches": [
+        "repo-derived ICP",
+        "buyer context",
+        "taste preservation"
+      ],
+      "effective_parallel_budget": 3,
+      "stop_condition": "accepted proposal is traceable to claim ledger"
+    },
+    "source_ledger": {
+      "cited": [
+        {
+          "source": "accepted proposal",
+          "claim_supported": "operator approved the exact taste rewrite"
+        }
+      ],
+      "reviewed_but_not_cited": [],
+      "rejected": [],
+      "conflicts": []
+    },
+    "claim_ledger": [
+      {
+        "id": "C1",
+        "claim": "The accepted ICP prioritizes technical operators who need evidence-backed AI work.",
+        "label": "user-stated",
+        "evidence": "approved_proposal_id proposal-20260506-a",
+        "taste_impact": "Audience and experience language become more operator-specific."
+      }
+    ]
+  },
+  "icp": {
+    "primary": {
+      "segment": "technical founders and senior builders using AI coding agents on production-bound repos",
+      "job_to_be_done": "convert messy product intent into verified, rollbackable implementation",
+      "pain_points": [
+        "untrusted agent claims",
+        "lost context",
+        "unclear customer fit"
+      ],
+      "trigger_events": [
+        "new product build",
+        "pre-sale demo",
+        "repo recovery"
+      ],
+      "buyer_context": "owner-operator with direct tooling authority",
+      "adoption_channel": "local Claude Code CLI harness install",
+      "objections": [
+        "ceremony",
+        "provider cost",
+        "verification time"
+      ],
+      "proof_needed": [
+        "release gates",
+        "hashes",
+        "rollback path"
+      ],
+      "disqualifiers": [
+        "no tolerance for local tooling",
+        "no need for auditability"
+      ]
+    },
+    "secondary": [],
+    "anti_icp": [
+      "pure prompt-to-code users who do not value audit trails"
+    ]
+  },
+  "taste_evolution": {
+    "protected_kernel_checklist": {
+      "SPEC-first": true,
+      "research-first": true,
+      "evidence-backed verification": true,
+      "explicit contracts": true,
+      "single-owner state": true,
+      "structured errors": true,
+      "observability": true,
+      "least privilege": true,
+      "rollback": true,
+      "separate verifier": true,
+      "no silent destructive behavior": true
+    },
+    "taste_md_changes": [
+      {
+        "section": "Experience & Interaction",
+        "change": "Add operator proof review as a first-class experience goal."
+      }
+    ],
+    "taste_vision_changes": [
+      {
+        "section": "Audience",
+        "change": "Sharpen audience around technical owner-operators."
+      }
+    ],
+    "changed_line_trace": [
+      {
+        "file": "taste.md",
+        "section": "Experience & Interaction",
+        "source_claim": "C1",
+        "label": "user-stated",
+        "rationale": "Approved ICP requires visible evidence review."
+      }
+    ],
+    "what_not_to_change": [
+      "spec-first",
+      "research-first",
+      "security",
+      "rollback",
+      "verification"
+    ]
+  },
+  "taste_mutation": {
+    "applied": true,
+    "backup_paths": [
+      ".taste/defineicp/defineicp-green-apply/backups/taste.md",
+      ".taste/defineicp/defineicp-green-apply/backups/taste.vision"
+    ],
+    "pre_change_hashes": {
+      "taste.md": "1111111111111111111111111111111111111111111111111111111111111111",
+      "taste.vision": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "post_change_hashes": {
+      "taste.md": "3333333333333333333333333333333333333333333333333333333333333333",
+      "taste.vision": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "rollback_plan": "restore both files from backups and rerun taste structure checks"
+  },
+  "verification": {
+    "status": "pass",
+    "commands": [
+      {
+        "command": "bash scripts/defineicp-smoke.sh --artifact apply.json",
+        "exit_code": 0
+      },
+      {
+        "command": "env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh",
+        "exit_code": 0
+      }
+    ]
+  },
+  "introspection": {
+    "likely_mistakes": [
+      "approved patch could still be too narrow",
+      "semantic preservation might miss softened wording"
+    ],
+    "evidence_checked": [
+      "approved proposal",
+      "pre-change hashes",
+      "post-change hashes",
+      "verification commands"
+    ],
+    "confidence": "medium-high"
+  }
+}
