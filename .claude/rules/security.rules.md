@@ -9,6 +9,8 @@ context.
 |---|---|---|---|---|
 | `solo-fast` | Trusted single-operator local loop | `bypassPermissions` | allowed by local settings | blocks secrets and catastrophic commands |
 | `team-safe` | Shared project work | `acceptEdits` | narrower allowlist | governance hooks enabled; bypass mode not recommended |
+| `opusminimax-planner` | Claude subscription planner/reviewer | `acceptEdits` | no MiniMax base URL | Opus model request only; no executor credentials |
+| `minimax-executor` | Bounded MiniMax execution packets | `acceptEdits` | MiniMax Anthropic-compatible endpoint | exact `MiniMax-M2.7-highspeed`; packet-only authority |
 | `ci-static` | Public static CI | no secrets | no external network | shell syntax, static smokes, evals, diff hygiene |
 | `ci-runtime` | Authenticated runtime checks | dedicated test secrets only | isolated temp workspace | runtime smoke, redacted logs, no production credentials |
 
@@ -22,6 +24,8 @@ context.
 - Never expose real credentials in fixtures, logs, examples, or generated
   Hermes memory seeds.
 - Never treat static CI as proof of authenticated Claude runtime behavior.
+- Never claim `/opusminimax` used Opus unless model identity is verified by
+  runtime evidence; planner profiles must not inherit MiniMax base URLs.
 
 ## Required Proof
 

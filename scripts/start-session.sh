@@ -1,11 +1,11 @@
 #!/bin/bash
-# Ultimate MiniMax 2.7 Harness - Session Start
+# minmaxing Harness - Session Start
 # Initializes everything for an effective session
 
 set -e
 
 echo "=========================================="
-echo "  Ultimate MiniMax Session Start"
+echo "  minmaxing Session Start"
 echo "  $(date)"
 echo "=========================================="
 echo ""
@@ -39,7 +39,8 @@ echo ""
 # Step 3: Version Check
 echo "[3/5] Version information..."
 echo "Claude Code: $(claude --version 2>/dev/null || echo 'not found')"
-echo "Model: MiniMax M2.7 Highspeed (provider capability: 100 TPS, 204K context)"
+echo "Mode: /opusminimax available (Opus planner + MiniMax-M2.7-highspeed executor)"
+echo "Provider profiles: shared settings are provider-neutral; planner/executor use ignored local profiles"
 if [ -f "$SCRIPT_DIR/parallel-capacity.sh" ]; then
     bash "$SCRIPT_DIR/parallel-capacity.sh" --summary 2>/dev/null || true
 fi
@@ -52,11 +53,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 30 ]; then
+if [ "$SKILL_COUNT" -ge 31 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 30 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 31 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -80,11 +81,15 @@ else
 fi
 
 # Check settings
-if grep -q "MiniMax-M2.7-highspeed" .claude/settings.json 2>/dev/null; then
-    echo "  [PASS] MiniMax model configured"
+if [ -f ".claude/settings.json" ] && \
+   [ -f ".claude/settings.opusminimax-planner.example.json" ] && \
+   [ -f ".claude/settings.minimax-executor.example.json" ] && \
+   ! grep -q "MiniMax-M2.7-highspeed" .claude/settings.json 2>/dev/null && \
+   grep -q "MiniMax-M2.7-highspeed" .claude/settings.minimax-executor.example.json 2>/dev/null; then
+    echo "  [PASS] Provider split configured"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] MiniMax model not configured"
+    echo "  [FAIL] Provider split not configured"
     FAIL=$((FAIL+1))
 fi
 
@@ -98,7 +103,7 @@ echo "[5/5] Ready"
 echo "Philosophy: governed autonomy — delegate execution, keep judgment, require evidence"
 echo "Planning: Agent-Native Estimate before non-trivial plan or SPEC freeze"
 echo "Fresh repos: run /tastebootstrap before /workflow"
-echo "Skills: /tastebootstrap, /workflow, /digestflow, /align, /autoplan, /verify,"
+echo "Skills: /tastebootstrap, /workflow, /opusminimax, /digestflow, /align, /autoplan, /verify,"
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
 echo "        /audit, /deepresearch, /icpweek, /webresearch, /browse, /introspect, /codesearch,"
 echo "        /memory, /agentfactory, /parallel, /metacognition, /claudeproduct,"

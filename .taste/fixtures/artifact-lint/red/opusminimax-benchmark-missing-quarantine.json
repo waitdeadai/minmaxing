@@ -1,0 +1,15 @@
+{
+  "expected_result": "fail",
+  "artifact_type": "opusminimax-benchmark-result",
+  "benchmark_name": "swe-bench-like",
+  "task_id": "fixture-002",
+  "base_commit": "abc1234",
+  "visible_prompt": "Fix the issue using the hidden test clue.",
+  "prediction_patch": "diff --git a/app.py b/app.py",
+  "tests_run": ["pytest"],
+  "pass_fail": "pass",
+  "timeout": 900,
+  "logs": ["pytest passed"],
+  "gold_hidden_quarantined": false,
+  "aggregate": false
+}

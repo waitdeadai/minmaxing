@@ -54,10 +54,10 @@
     "path": ".codex"
   },
   "counts": {
-    "eval_tasks": 18,
+    "eval_tasks": 19,
     "rules": 15,
-    "scripts": 46,
-    "skills": 30
+    "scripts": 50,
+    "skills": 31
   },
   "evals": [
     {
@@ -221,6 +221,15 @@
       "id": "m7-demo-smoke",
       "task_path": "evals/harness/tasks/m7-demo-smoke.yaml",
       "title": "Governed recorded demo contract smoke"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/opusminimax-benchmark-smoke.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m8-opusminimax-benchmark.json",
+      "id": "m8-opusminimax-benchmark",
+      "task_path": "evals/harness/tasks/m8-opusminimax-benchmark.yaml",
+      "title": "OpusMiniMax benchmark honesty contract"
     }
   ],
   "generated_at": "static",
@@ -297,10 +306,10 @@
       "title": "Quality Rules"
     },
     {
-      "line_count": 33,
+      "line_count": 37,
       "name": "security",
       "path": ".claude/rules/security.rules.md",
-      "sha256": "3c71799da2324a77bf089e5aaa6afaeaa316d96153df4899d160466d0822b83d",
+      "sha256": "3fe8577c9c5df0ffe77ccbc2d3e00d9624eecf0c5cde0c60c2f6d4e45dcd2cba",
       "title": "Security Rules"
     },
     {
@@ -343,12 +352,12 @@
       "sha256": "4dcbd22f5493e69884e2918455ca1aa0964bd31490681ef49d80e9c5a4069742"
     },
     {
-      "line_count": 468,
+      "line_count": 625,
       "name": "artifact-lint",
       "path": "scripts/artifact-lint.sh",
       "purpose": "machine sidecar validator",
       "required_gate": true,
-      "sha256": "efbcc22998f8b506f2580b773ad28eb8c28bf07d2e01071b0aa2b16bd2cac477"
+      "sha256": "b685f5246134e073f21874ecca4a16d1668841592d2350ae76b08089cf22f974"
     },
     {
       "line_count": 189,
@@ -399,12 +408,12 @@
       "sha256": "566b7dc26e1bc33874c57dbbad028efac66f8ccef7d02fcaec79b676b6fd1ccf"
     },
     {
-      "line_count": 121,
+      "line_count": 117,
       "name": "digestflow-smoke",
       "path": "scripts/digestflow-smoke.sh",
       "purpose": "Runtime smoke test for /digestflow.",
       "required_gate": false,
-      "sha256": "519c07b1ea4eddd48169009fa0d92f82d252bbac035ebb9dc14e0b0dac1f7e1d"
+      "sha256": "966c283b4de473567740a04b3565df94fd7fe115002f89a3d13706c1a299cdf0"
     },
     {
       "line_count": 125,
@@ -423,12 +432,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 643,
+      "line_count": 651,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "c3cae221da31935346e7348e1ff23c88f1c1fc2b4b9dc87d7a47e9a3ad61d39a"
+      "sha256": "9ce9be5baee68bfc3a39e060d19d9dd84e98eec6002dd806ff4dff105172372f"
     },
     {
       "line_count": 640,
@@ -447,12 +456,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 767,
+      "line_count": 776,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "f13318556519980ab3807ab1bb3fc4e655c73cfbe4ce78a8ad6b33cf51bd9990"
+      "sha256": "adbc3bbd99ded2f5ba8378429c5a223e2a97acea5a4fb62452417899e5f50c84"
     },
     {
       "line_count": 322,
@@ -535,6 +544,38 @@
       "sha256": "b71ba12d0edf762fd62ca1f48cb754ec2b683eb2dc4af47464bc3b435bbd910b"
     },
     {
+      "line_count": 124,
+      "name": "minimax-exec",
+      "path": "scripts/minimax-exec.sh",
+      "purpose": "Validate and optionally execute a bounded MiniMax executor packet.",
+      "required_gate": false,
+      "sha256": "73bace5e544a3adee29ba0e3ab69efb3295aa44f059ec1bd1fe8f7804b4dd104"
+    },
+    {
+      "line_count": 84,
+      "name": "opusminimax-benchmark-smoke",
+      "path": "scripts/opusminimax-benchmark-smoke.sh",
+      "purpose": "OpusMiniMax benchmark honesty gate",
+      "required_gate": true,
+      "sha256": "814fdc31e20687d24b8efbb2b44d67a3ec932aaef5be9a730d791c66bfc2ff03"
+    },
+    {
+      "line_count": 258,
+      "name": "opusminimax-doctor",
+      "path": "scripts/opusminimax-doctor.sh",
+      "purpose": "OpusMiniMax provider split doctor",
+      "required_gate": true,
+      "sha256": "5df851186625756c16cfb334ad168d4252242c175a8bfd278af13b569877ecd3"
+    },
+    {
+      "line_count": 174,
+      "name": "opusminimax",
+      "path": "scripts/opusminimax.sh",
+      "purpose": "Prepare or explicitly launch the /opusminimax planner workflow.",
+      "required_gate": false,
+      "sha256": "0afe821da982b963784aa3e77043a13add4ba79fd967b3efcad2809597ef0f5b"
+    },
+    {
       "line_count": 113,
       "name": "overnight-loop",
       "path": "scripts/overnight-loop.sh",
@@ -575,12 +616,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 85,
+      "line_count": 89,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "36d9a80e481a21153555bf0c0fab2dcf48bdfe4c8897578ac51621230afc9a03"
+      "sha256": "34d177985c4359f177b51f96b7fdfa0fb34c91fae3374ce6a00e372a6cfd9419"
     },
     {
       "line_count": 144,
@@ -607,12 +648,12 @@
       "sha256": "9c3e0a29b441fdffeb0e280f3960bfc2cc6bf7c1f18fc752316a83f632dd8b42"
     },
     {
-      "line_count": 98,
+      "line_count": 131,
       "name": "security-smoke",
       "path": "scripts/security-smoke.sh",
       "purpose": "Static security smoke for Claude Code profile examples and governance hooks.",
       "required_gate": false,
-      "sha256": "69dd55fa4df2ce232516d61fcc726ea5a1b769fd93e1a57f67eb810eca2b8d3d"
+      "sha256": "b9d97cbcb36b57c3fd7ba8eed72c22319b265c98da3961c91aba4584dac63a56"
     },
     {
       "line_count": 130,
@@ -639,12 +680,12 @@
       "sha256": "3e80abf5a2f2a5dc3532dbb294cf6f554c4acfa39189baaee2e46fcc3ff3a5f4"
     },
     {
-      "line_count": 110,
+      "line_count": 115,
       "name": "start-session",
       "path": "scripts/start-session.sh",
-      "purpose": "Ultimate MiniMax 2.7 Harness - Session Start",
+      "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "15925cf0d4c64add623a5bcc91ef428bec9cd026a9262ba9ef528a176309cd53"
+      "sha256": "5c908279ea9c7ac8e7b4d20352885c04f71380bf0f566e38cb319ec7ad07d9ba"
     },
     {
       "line_count": 382,
@@ -663,12 +704,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1603,
+      "line_count": 1675,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "f4d43d8f296e35143e85df268e08cf0af41b3d8fbf3b5429e251b8975e48374b"
+      "sha256": "fdbc1106832adc7459f35e7636c524a805d765cac077b52b7f6c131e47edafce"
     },
     {
       "line_count": 552,
@@ -684,15 +725,15 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "507f763a90a5d5587f8f7cf303729cb21ef675c74bcdd63f56ced6a05e12a73b"
+      "sha256": "bab0b33e9aa1f85ec7e2e1ff5f26a0be294aeec16542fc012ceaaa41fd9c7113"
     },
     {
-      "line_count": 121,
+      "line_count": 117,
       "name": "workflow-smoke",
       "path": "scripts/workflow-smoke.sh",
       "purpose": "Runtime smoke test for /workflow.",
       "required_gate": false,
-      "sha256": "0b8484ec7edf3efb5415d66049a9ebefa6a6cd1579af1aff2851b7a0ba06c786"
+      "sha256": "954b3e841944807c766c46b046a09089ec91ab7cb22f296c632af9f79c0a87b3"
     },
     {
       "line_count": 537,
@@ -721,22 +762,9 @@
   },
   "settings": {
     "env_keys": [
-      "ANTHROPIC_AUTH_TOKEN",
-      "ANTHROPIC_BASE_URL",
-      "ANTHROPIC_DEFAULT_HAIKU_MODEL",
-      "ANTHROPIC_DEFAULT_OPUS_MODEL",
-      "ANTHROPIC_DEFAULT_SONNET_MODEL",
-      "ANTHROPIC_MODEL",
-      "ANTHROPIC_SMALL_FAST_MODEL",
-      "API_TIMEOUT_MS",
       "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC",
-      "CLAUDE_CODE_EFFORT_LEVEL",
       "CLAUDE_CODE_NO_FLICKER",
-      "CLAUDE_CODE_SUBAGENT_MODEL",
-      "DISABLE_AUTO_COMPACT",
-      "MAX_THINKING_TOKENS",
-      "MINIMAX_API_HOST",
-      "MINIMAX_API_KEY"
+      "DISABLE_AUTO_COMPACT"
     ],
     "exists": true,
     "hooks": [
@@ -871,14 +899,14 @@
     "permissions": {
       "allow": [
         "WebFetch(domain:github.com)",
-        "Bash(forgegod *)",
         "WebSearch",
         "mcp__MiniMax__web_search",
         "Bash(bash *.sh)"
       ],
-      "defaultMode": "bypassPermissions",
+      "defaultMode": "acceptEdits",
       "deny": [
         "Read(./.claude/settings.local.json)",
+        "Read(./.claude/*.local.json)",
         "Read(./.env)",
         "Read(./.env.*)",
         "Read(./secrets/**)"
@@ -1226,6 +1254,29 @@
       "user_invocable": true
     },
     {
+      "argument_hint": "[task, mode: workflow|benchmark|repair]",
+      "core_route": true,
+      "description": "Run the Opus planner plus MiniMax-M2.7-highspeed executor workflow. Use when the user invokes /opusminimax or wants Claude/Opus to plan, adversarially review, and verify while MiniMax executes bounded coding packets.",
+      "group": "execution",
+      "line_count": 233,
+      "model_invocation": false,
+      "name": "opusminimax",
+      "path": ".claude/skills/opusminimax/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m8-opusminimax-benchmark.yaml"
+      ],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/minimax-exec.sh",
+        "scripts/opusminimax.sh",
+        "scripts/opusminimax-benchmark-smoke.sh",
+        "scripts/opusminimax-doctor.sh"
+      ],
+      "sha256": "4af29440833bc1ca75393116d6613c6ba5633b3d8d473f2b42d7738198c53736",
+      "slash": "/opusminimax",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "",
       "core_route": false,
       "description": "/overnight",
@@ -1478,8 +1529,8 @@
   },
   "summary": {
     "codex_file_count": 4,
-    "core_route_count": 12,
-    "eval_task_count": 18,
+    "core_route_count": 13,
+    "eval_task_count": 19,
     "groups": {
       "agent-systems": [
         "/agentfactory"
@@ -1494,6 +1545,7 @@
       "execution": [
         "/demo",
         "/hiveworkflow",
+        "/opusminimax",
         "/visualizeworkflow",
         "/workflow"
       ],
@@ -1542,7 +1594,7 @@
     },
     "hook_event_count": 11,
     "rule_count": 15,
-    "script_count": 46,
-    "skill_count": 30
+    "script_count": 50,
+    "skill_count": 31
   }
 }

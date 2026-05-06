@@ -17,6 +17,9 @@ Supported artifact_type values:
   verification-result
   worker-result
   hive-run
+  opusminimax-packet
+  opusminimax-run
+  opusminimax-benchmark-result
 EOF
 }
 
@@ -274,6 +277,154 @@ def validate_hive_run(data: dict[str, Any], errors: list[str]) -> None:
         error(errors, "hive-run verification.status must be pass, fail, or blocked")
 
 
+def validate_opusminimax_packet(data: dict[str, Any], errors: list[str]) -> None:
+    required = [
+        "run_id",
+        "packet_id",
+        "objective",
+        "context_summary",
+        "owned_paths",
+        "forbidden_paths",
+        "commands_allowed",
+        "acceptance_checks",
+        "risk_notes",
+        "rollback_plan",
+        "expected_outputs",
+        "stop_conditions",
+    ]
+    for field in required:
+        if not present(data.get(field)):
+            error(errors, f"opusminimax-packet missing {field}")
+    for field in ["owned_paths", "forbidden_paths", "commands_allowed", "acceptance_checks", "risk_notes", "expected_outputs", "stop_conditions"]:
+        if not list_has_entries(data.get(field)):
+            error(errors, f"opusminimax-packet {field} must be a non-empty list")
+    forbidden = {str(item).strip() for item in as_list(data.get("forbidden_paths"))}
+    for required_forbidden in [".env", ".env.*", ".claude/*.local.json", "secrets/**"]:
+        if required_forbidden not in forbidden:
+            error(errors, f"opusminimax-packet forbidden_paths missing {required_forbidden}")
+    objective_blob = json.dumps(data, sort_keys=True).lower()
+    if "sk-" in objective_blob or "minimax_api_key" in objective_blob and "your_minimax_api_key" not in objective_blob:
+        error(errors, "opusminimax-packet appears to contain secret material")
+
+
+def profile_blob(profile: Any) -> str:
+    if isinstance(profile, dict):
+        return json.dumps(profile, sort_keys=True)
+    return str(profile or "")
+
+
+def profile_value(profile: Any, key: str) -> str:
+    if isinstance(profile, dict):
+        value = profile.get(key)
+        if value is None and isinstance(profile.get("env"), dict):
+            value = profile["env"].get(key)
+        return str(value or "")
+    return ""
+
+
+def validate_opusminimax_run(data: dict[str, Any], errors: list[str]) -> None:
+    for field in ["run_id", "provider_profiles", "model_ids", "capacity", "packets", "verification", "retries", "final_confidence"]:
+        if not present(data.get(field)):
+            error(errors, f"opusminimax-run missing {field}")
+    if "failures" not in data or not isinstance(data.get("failures"), list):
+        error(errors, "opusminimax-run failures must be a list")
+
+    profiles = data.get("provider_profiles") if isinstance(data.get("provider_profiles"), dict) else {}
+    planner = profiles.get("planner") if isinstance(profiles, dict) else {}
+    executor = profiles.get("executor") if isinstance(profiles, dict) else {}
+    planner_blob = profile_blob(planner).lower()
+    executor_blob = profile_blob(executor)
+
+    if not planner:
+        error(errors, "opusminimax-run missing planner profile")
+    if not executor:
+        error(errors, "opusminimax-run missing executor profile")
+    if "api.minimax.io/anthropic" in planner_blob or "minimax-m2.7-highspeed" in planner_blob:
+        error(errors, "opusminimax-run planner profile must not route through MiniMax")
+    if "https://api.minimax.io/anthropic" not in executor_blob:
+        error(errors, "opusminimax-run executor profile must use MiniMax base URL")
+    if "MiniMax-M2.7-highspeed" not in executor_blob:
+        error(errors, "opusminimax-run executor profile must request MiniMax-M2.7-highspeed")
+
+    model_ids = data.get("model_ids") if isinstance(data.get("model_ids"), dict) else {}
+    planner_model = str(model_ids.get("planner_requested", "")).lower()
+    executor_model = str(model_ids.get("executor_requested", ""))
+    if planner_model and "opus" not in planner_model:
+        error(errors, "opusminimax-run planner_requested must be an Opus model or alias")
+    if executor_model != "MiniMax-M2.7-highspeed":
+        error(errors, "opusminimax-run executor_requested must be MiniMax-M2.7-highspeed")
+
+    capacity = data.get("capacity") if isinstance(data.get("capacity"), dict) else {}
+    effective = capacity.get("effective_concurrency")
+    for field in ["local_ceiling", "provider_ceiling", "task_packet_count", "safety_cap", "effective_concurrency"]:
+        if not isinstance(capacity.get(field), int) or capacity.get(field) < 1:
+            error(errors, f"opusminimax-run capacity.{field} must be a positive integer")
+    if isinstance(effective, int):
+        for field in ["local_ceiling", "provider_ceiling", "task_packet_count", "safety_cap"]:
+            limit = capacity.get(field)
+            if isinstance(limit, int) and effective > limit:
+                error(errors, f"opusminimax-run effective_concurrency exceeds capacity.{field}")
+
+    if not list_has_entries(data.get("packets")):
+        error(errors, "opusminimax-run packets must be non-empty")
+    confidence = str(data.get("final_confidence", "")).strip().lower()
+    if confidence and confidence not in CONFIDENCE:
+        error(errors, "opusminimax-run final_confidence must be high, medium, or low")
+
+    claims = data.get("claims") if isinstance(data.get("claims"), dict) else {}
+    if claims.get("opus_planned") is True and data.get("model_identity_confirmed") is not True:
+        error(errors, "opusminimax-run cannot claim Opus planned without model_identity_confirmed true")
+
+    verification = data.get("verification") if isinstance(data.get("verification"), dict) else {}
+    status = str(verification.get("status", "")).strip().lower()
+    if status and status not in {"pass", "passed", "fail", "failed", "blocked", "partial", "runtime-pending"}:
+        error(errors, "opusminimax-run verification.status is unsupported")
+    failed = status in {"fail", "failed"} or bool(verification.get("failed_verification"))
+    positive = closeout_positive(verification.get("closeout_status") or data.get("closeout_status"))
+    if failed and positive and not verification.get("remediated_by_later_pass"):
+        error(errors, "opusminimax-run failed verification cannot have positive closeout")
+
+    blob = json.dumps(data, sort_keys=True)
+    if "sk-" in blob or ("MINIMAX_API_KEY" in blob and "YOUR_MINIMAX_API_KEY" not in blob):
+        error(errors, "opusminimax-run appears to contain secret material")
+
+
+def validate_opusminimax_benchmark_result(data: dict[str, Any], errors: list[str]) -> None:
+    required = [
+        "benchmark_name",
+        "task_id",
+        "base_commit",
+        "visible_prompt",
+        "prediction_patch",
+        "tests_run",
+        "pass_fail",
+        "timeout",
+        "logs",
+        "gold_hidden_quarantined",
+    ]
+    for field in required:
+        if not present(data.get(field)):
+            error(errors, f"opusminimax-benchmark-result missing {field}")
+    if data.get("gold_hidden_quarantined") is not True:
+        error(errors, "opusminimax-benchmark-result requires gold_hidden_quarantined true")
+    if not list_has_entries(data.get("tests_run")):
+        error(errors, "opusminimax-benchmark-result tests_run must be non-empty")
+    if not list_has_entries(data.get("logs")):
+        error(errors, "opusminimax-benchmark-result logs must be non-empty")
+    if str(data.get("pass_fail", "")).strip().lower() not in {"pass", "fail", "blocked", "timeout"}:
+        error(errors, "opusminimax-benchmark-result pass_fail must be pass, fail, blocked, or timeout")
+    timeout = data.get("timeout")
+    if not isinstance(timeout, int) or timeout < 1:
+        error(errors, "opusminimax-benchmark-result timeout must be a positive integer")
+    if data.get("aggregate") is True and not list_has_entries(data.get("per_task_results")):
+        error(errors, "opusminimax-benchmark-result aggregate scores require per_task_results")
+    if data.get("benchmark_claim_verified") is True and not list_has_entries(data.get("per_task_results")):
+        error(errors, "opusminimax-benchmark-result benchmark claims require per-task evidence")
+    prompt_blob = str(data.get("visible_prompt", "")).lower()
+    if "gold patch" in prompt_blob or "hidden test" in prompt_blob:
+        error(errors, "opusminimax-benchmark-result visible_prompt appears to expose quarantined data")
+
+
 def confidence_level(value: Any) -> Any:
     if isinstance(value, dict):
         return value.get("level")
@@ -372,8 +523,14 @@ def validate_artifact(path: pathlib.Path) -> list[str]:
         validate_worker(data, errors)
     elif artifact_type == "hive-run":
         validate_hive_run(data, errors)
+    elif artifact_type == "opusminimax-packet":
+        validate_opusminimax_packet(data, errors)
+    elif artifact_type == "opusminimax-run":
+        validate_opusminimax_run(data, errors)
+    elif artifact_type == "opusminimax-benchmark-result":
+        validate_opusminimax_benchmark_result(data, errors)
     else:
-        error(errors, "artifact_type must be agent-native-estimate, verification-result, worker-result, or hive-run")
+        error(errors, "artifact_type must be agent-native-estimate, verification-result, worker-result, hive-run, opusminimax-packet, opusminimax-run, or opusminimax-benchmark-result")
 
     return errors
 

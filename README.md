@@ -100,9 +100,15 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io)
 
-That's it. Memory system, MiniMax MCP, and 30 skills — all configured.
+For the Opus planner + MiniMax executor mode:
 
-**Shared settings are committed on purpose.** `.claude/settings.json` is the repo template and default shared configuration. Setup still writes your real API key to `.claude/settings.local.json` so secrets do not get committed by accident.
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file /path/to/minimax.token
+```
+
+That's it. Memory system, governed runtime profiles, and 31 skills — all configured.
+
+**Shared settings are committed on purpose, but they are provider-neutral.** `.claude/settings.json` contains governance hooks, deny rules, and project defaults. Real credentials and provider identity belong in ignored local files such as `.claude/settings.opusminimax-planner.local.json` and `.claude/settings.minimax-executor.local.json`.
 
 **Fresh repos should start with `/tastebootstrap`.** It asks the 10 kernel questions, writes `taste.md` + `taste.vision`, and gives `/workflow` explicit taste to follow before anything is built.
 
@@ -328,8 +334,10 @@ Agent Factory writes its own run artifact under `.taste/workflow-runs/*-agentfac
 For REVCLI/Revis-style products, `/agentfactory` treats Hermes as the role-scoped interaction/runtime shell, REVCLI/Revis as the policy and audit control plane, and Odoo or the configured database as the system of record. The repo includes `REVCLI_HERMES_AGENT_MAP.md` so generated agents map to concrete roles, approval gates, runtime evidence, kill switches, and closed-loop outcomes instead of broad “run the company” authority.
 
 ### Permission Mode
-- **bypassPermissions** (shared-project default by design): trusted-local fast profile for personal repos where you want fewer prompts.
+- **Project default:** provider-neutral `acceptEdits` with governance hooks and secret-read denies.
+- **solo-fast option:** trusted-local fast profile for personal repos where you want fewer prompts.
 - **Team-safe option:** copy [`.claude/settings.team-safe.example.json`](.claude/settings.team-safe.example.json) to your local settings and keep `defaultMode` at `acceptEdits`.
+- **OpusMiniMax option:** copy the planner and executor examples to ignored local profiles, then use `/opusminimax` so Claude/Opus plans and reviews while MiniMax-M2.7-highspeed executes bounded packets.
 - If you want even more guardrails, switch your local Claude session to `plan` before high-risk work.
 
 ### OpenAI Codex Plugin
@@ -563,12 +571,13 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 30 Skills
+## The 31 Skills
 
 | Skill | What It Does |
 |-------|-------------|
 | `/tastebootstrap` | **Fresh-repo bootstrap** — asks the 10 kernel questions and writes `taste.md` + `taste.vision` |
 | `/workflow` | **Central execution engine** — drives research → code audit → plan → Agent-Native Estimate → `SPEC.md` → implement → verify → closeout (supervises an efficacy-first agent budget) |
+| `/opusminimax` | **Primary split-execution mode** — Claude/Opus plans, adversarially reviews, and verifies while MiniMax-M2.7-highspeed executes bounded coding packets |
 | `/visualize` | **Taste-to-artifact comprehension check** — creates ignored visual, diagram, prompt, or narrative artifacts without implementation |
 | `/visualizeworkflow` | **Approval-first workflow** — drafts SPEC + visualization, stops at `WAITING_FOR_VISUAL_APPROVAL`, then continues only with `--continue` |
 | `/demo` | **Governed recorded demo pipeline** — produces product recordings with Playwright evidence, bilingual voiceover, captions, manifests, and safety gates |
@@ -611,6 +620,7 @@ The routing ladder is:
 
 ```text
 local /workflow
+-> /opusminimax when Opus should plan/review and MiniMax should execute packets
 -> /parallel when independent execution packets are enough
 -> /claudeproduct for Claude, Claude Code, Claude.ai, API, connector, plugin,
    skill, hook, MCP, subagent, availability, limit, model, or setup questions
@@ -624,6 +634,7 @@ Use this rule of thumb:
 | Pick | When | The Developer Should Expect |
 | --- | --- | --- |
 | local `/workflow` | One tight reasoning loop, one shared file, unclear ownership, or coordination would slow the work down. | One supervisor does the whole governed lifecycle. |
+| `/opusminimax` | You want to squeeze a Claude subscription by using Opus only for planning, adversarial review, and final judgment while MiniMax does speed/bulk execution. | Provider split doctor, Opus planner artifact, MiniMax executor packets, quota-aware concurrency, parent verification, and no benchmark overclaims. |
 | `/claudeproduct` | The question is about Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, availability, limits, models, or setup. | Official Anthropic/Claude docs first, surface separation, source ledger, connector permission/trust caveats, confidence downgrade when current docs are missing. |
 | `/parallel` | The work splits into independent packets with clear owned files/surfaces and aggregate verification. | Packet DAG, ownership matrix, sync barriers, worker sidecars, `parallel-aggregate`. |
 | `/hive` | The task needs multiple perspectives but may not need a full file-changing workflow: research branches, adversarial review, planning alternatives, risk ranking, or synthesis. | Queen/supervisor, role map, blackboard, dissent/conflict log, evidence-backed synthesis. |
@@ -808,9 +819,10 @@ Notes:
 
 | | |
 |---|---|
-| Claude Code | 2.1+ (`npm install -g @anthropic-ai/claude-code`) |
+| Claude Code | 2.1+ (`npm install -g @anthropic-ai/claude-code`); Opus 4.7 planner mode expects 2.1.111+ |
 | Python | 3.11+ |
 | MiniMax API Key | [platform.minimax.io](https://platform.minimax.io) |
+| Claude Subscription | Required for subscription-backed Opus planner usage; verify with `claude auth status` |
 | Node.js | 18.18+ if you want the optional OpenAI Codex plugin |
 | Codex Auth | ChatGPT sign-in or OpenAI API key if you want the optional OpenAI Codex plugin |
 
@@ -826,7 +838,7 @@ Harness auto-detects your hardware and sets agent pool:
 | 16GB | 4+ | 6 |
 | 8GB | 2+ | 3 |
 
-Override in `.claude/settings.json`:
+Override in your shell or ignored local profile:
 ```json
 {
   "env": {
@@ -857,10 +869,13 @@ minmaxing/
 │   ├── config.toml             # Project-scoped Codex defaults
 │   └── agents/                 # Codex custom agents for research/review
 ├── .claude/
-│   ├── settings.json           # MiniMax API config
+│   ├── settings.json           # Provider-neutral governance config
+│   ├── settings.opusminimax-planner.example.json
+│   ├── settings.minimax-executor.example.json
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 30 skills (system calls)
+│   ├── skills/                 # 31 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
+│   │   ├── opusminimax/        # Opus planner + MiniMax executor mode
 │   │   ├── visualize/          # Taste-to-artifact comprehension check
 │   │   ├── visualizeworkflow/  # Approval-first workflow route
 │   │   ├── demo/               # Recorded product demo route

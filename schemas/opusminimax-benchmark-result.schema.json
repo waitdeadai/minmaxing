@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minmaxing.dev/schemas/opusminimax-benchmark-result.schema.json",
+  "title": "OpusMiniMax benchmark task result",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "benchmark_name",
+    "task_id",
+    "base_commit",
+    "visible_prompt",
+    "prediction_patch",
+    "tests_run",
+    "pass_fail",
+    "timeout",
+    "logs",
+    "gold_hidden_quarantined"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "opusminimax-benchmark-result"
+    },
+    "benchmark_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_commit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "visible_prompt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prediction_patch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tests_run": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "pass_fail": {
+      "enum": ["pass", "fail", "blocked", "timeout"]
+    },
+    "timeout": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "logs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "gold_hidden_quarantined": {
+      "type": "boolean",
+      "const": true
+    },
+    "aggregate": {
+      "type": "boolean"
+    },
+    "per_task_results": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "additionalProperties": true
+}

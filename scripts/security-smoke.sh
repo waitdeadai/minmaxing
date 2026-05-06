@@ -6,6 +6,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOLO="$ROOT_DIR/.claude/settings.solo-fast.example.json"
 TEAM="$ROOT_DIR/.claude/settings.team-safe.example.json"
+OPUS_PLANNER="$ROOT_DIR/.claude/settings.opusminimax-planner.example.json"
+MINIMAX_EXECUTOR="$ROOT_DIR/.claude/settings.minimax-executor.example.json"
 HOOK="$ROOT_DIR/.claude/hooks/govern-effectiveness.sh"
 
 fail() {
@@ -52,11 +54,26 @@ expect_hook_block() {
 
 require_json "$SOLO"
 require_json "$TEAM"
+require_json "$OPUS_PLANNER"
+require_json "$MINIMAX_EXECUTOR"
 require_text "$SOLO" '"profile": "solo-fast"'
 require_text "$TEAM" '"profile": "team-safe"'
+require_text "$OPUS_PLANNER" '"profile": "opusminimax-planner"'
+require_text "$MINIMAX_EXECUTOR" '"profile": "minimax-executor"'
 
 [ "$(json_value "$SOLO" "permissions.defaultMode")" = "bypassPermissions" ] || fail "solo-fast must use bypassPermissions"
 [ "$(json_value "$TEAM" "permissions.defaultMode")" = "acceptEdits" ] || fail "team-safe must use acceptEdits"
+
+python3 - "$OPUS_PLANNER" <<'PY' || fail "opusminimax planner example must not route through MiniMax"
+import json
+import sys
+data = json.load(open(sys.argv[1], encoding="utf-8"))
+env = data.get("env", {})
+assert "ANTHROPIC_BASE_URL" not in env
+assert "MiniMax-M2.7-highspeed" not in json.dumps(env)
+PY
+grep -Fq '"ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic"' "$MINIMAX_EXECUTOR" || fail "minimax executor example must set MiniMax base URL"
+grep -Fq '"ANTHROPIC_MODEL": "MiniMax-M2.7-highspeed"' "$MINIMAX_EXECUTOR" || fail "minimax executor example must set MiniMax-M2.7-highspeed"
 
 for file in "$SOLO" "$TEAM"; do
   for pattern in \
@@ -71,6 +88,22 @@ for file in "$SOLO" "$TEAM"; do
 	    '"TaskCompleted"' \
 	    '"Stop"' \
 	    '"SubagentStop"'; do
+    require_text "$file" "$pattern"
+  done
+done
+
+for file in "$OPUS_PLANNER" "$MINIMAX_EXECUTOR"; do
+  for pattern in \
+    "Read(./.claude/settings.local.json)" \
+    "Read(./.claude/*.local.json)" \
+    "Read(./.env)" \
+    "Read(./.env.*)" \
+    "Read(./secrets/**)" \
+    "govern-effectiveness.sh" \
+    '"PreToolUse"' \
+    '"PostToolUse"' \
+    '"Stop"' \
+    '"SubagentStop"'; do
     require_text "$file" "$pattern"
   done
 done

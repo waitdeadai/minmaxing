@@ -1,16 +1,92 @@
 #!/bin/bash
 # minmaxing - One-Command Setup
 # Usage: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash
-# Or with API key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+# Legacy MiniMax key: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY
+# OpusMiniMax: curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file ./minimax.token
 
 set -e
 
-API_KEY="${1:-}"
+MODE="minimax"
+API_KEY=""
+MINIMAX_KEY_FILE=""
+PLANNER_MODEL="claude-opus-4-7"
+EXECUTOR_MODEL="MiniMax-M2.7-highspeed"
+PROFILE="solo-fast"
 PREEXISTING_TASTE_MD=0
 PREEXISTING_TASTE_VISION=0
 COPIED_TEMPLATE_REPO=0
 TASTE_MD_BACKUP=""
 TASTE_VISION_BACKUP=""
+
+if [ "$#" -eq 1 ] && [ "${1:-}" != "--"* ]; then
+    API_KEY="$1"
+else
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            "--mode")
+                MODE="${2:-}"
+                shift 2
+                ;;
+            "--minimax-key")
+                API_KEY="${2:-}"
+                shift 2
+                ;;
+            "--minimax-key-file")
+                MINIMAX_KEY_FILE="${2:-}"
+                shift 2
+                ;;
+            "--planner-model")
+                PLANNER_MODEL="${2:-}"
+                shift 2
+                ;;
+            "--executor-model")
+                EXECUTOR_MODEL="${2:-}"
+                shift 2
+                ;;
+            "--profile")
+                PROFILE="${2:-}"
+                shift 2
+                ;;
+            "-h"|"--help")
+                cat <<'EOF'
+Usage:
+  ./setup.sh
+  ./setup.sh YOUR_TOKEN_PLAN_KEY
+  ./setup.sh --mode opusminimax --minimax-key-file PATH [--planner-model claude-opus-4-7] [--executor-model MiniMax-M2.7-highspeed] [--profile solo-fast|team-safe]
+EOF
+                exit 0
+                ;;
+            *)
+                echo "Unknown setup option: $1" >&2
+                exit 2
+                ;;
+        esac
+    done
+fi
+
+case "$MODE" in
+    "minimax"|"opusminimax") ;;
+    *)
+        echo "Unsupported --mode: $MODE" >&2
+        exit 2
+        ;;
+esac
+
+case "$PROFILE" in
+    "solo-fast"|"team-safe") ;;
+    *)
+        echo "Unsupported --profile: $PROFILE" >&2
+        exit 2
+        ;;
+esac
+
+if [ -n "$MINIMAX_KEY_FILE" ]; then
+    if [ ! -f "$MINIMAX_KEY_FILE" ]; then
+        echo "MiniMax key file not found: $MINIMAX_KEY_FILE" >&2
+        exit 2
+    fi
+    API_KEY="$(tr -d '\r\n' < "$MINIMAX_KEY_FILE")"
+fi
 
 if [ -f "taste.md" ]; then
     PREEXISTING_TASTE_MD=1
@@ -27,6 +103,7 @@ fi
 echo "=========================================="
 echo "  minmaxing Setup"
 echo "=========================================="
+echo "Mode: $MODE"
 echo ""
 
 # Step 0: Clone repository to temp, then move to current directory
@@ -110,8 +187,17 @@ echo ""
 if [ -n "$API_KEY" ] && [ "$API_KEY" != "YOUR_MINIMAX_API_KEY" ]; then
     mkdir -p .claude
 
-    if [ ! -f ".claude/settings.local.json" ]; then
-        if [ -f ".claude/settings.json" ]; then
+    if [ "$MODE" = "opusminimax" ]; then
+        if [ ! -f ".claude/settings.minimax-executor.local.json" ] && [ -f ".claude/settings.minimax-executor.example.json" ]; then
+            cp .claude/settings.minimax-executor.example.json .claude/settings.minimax-executor.local.json
+        fi
+        if [ ! -f ".claude/settings.opusminimax-planner.local.json" ] && [ -f ".claude/settings.opusminimax-planner.example.json" ]; then
+            cp .claude/settings.opusminimax-planner.example.json .claude/settings.opusminimax-planner.local.json 2>/dev/null || true
+        fi
+    elif [ ! -f ".claude/settings.local.json" ]; then
+        if [ -f ".claude/settings.minimax-executor.example.json" ]; then
+            cp .claude/settings.minimax-executor.example.json .claude/settings.local.json
+        elif [ -f ".claude/settings.json" ]; then
             cp .claude/settings.json .claude/settings.local.json
         else
             cat > .claude/settings.local.json <<'EOF'
@@ -198,25 +284,53 @@ EOF
         fi
     fi
 
-    python3 - "$API_KEY" <<'PY'
+    TARGET_SETTINGS=".claude/settings.local.json"
+    if [ "$MODE" = "opusminimax" ]; then
+        TARGET_SETTINGS=".claude/settings.minimax-executor.local.json"
+    fi
+
+    python3 - "$API_KEY" "$TARGET_SETTINGS" "$EXECUTOR_MODEL" <<'PY'
 import json
 import pathlib
 import sys
 
-path = pathlib.Path(".claude/settings.local.json")
+path = pathlib.Path(sys.argv[2])
 data = json.loads(path.read_text())
 env = data.setdefault("env", {})
 key = sys.argv[1]
+executor_model = sys.argv[3]
 
 env["ANTHROPIC_BASE_URL"] = "https://api.minimax.io/anthropic"
 env["ANTHROPIC_AUTH_TOKEN"] = key
 env["MINIMAX_API_KEY"] = key
 env["MINIMAX_API_HOST"] = "https://api.minimax.io"
+env["ANTHROPIC_MODEL"] = executor_model
+env["ANTHROPIC_SMALL_FAST_MODEL"] = executor_model
+env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = executor_model
+env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = executor_model
+env["CLAUDE_CODE_SUBAGENT_MODEL"] = executor_model
 
 path.write_text(json.dumps(data, indent=2) + "\n")
 PY
 
-    echo "  [PASS] API key configured in .claude/settings.local.json"
+    echo "  [PASS] API key configured in $TARGET_SETTINGS"
+
+    if [ "$MODE" = "opusminimax" ] && [ -f ".claude/settings.opusminimax-planner.local.json" ]; then
+        python3 - ".claude/settings.opusminimax-planner.local.json" "$PLANNER_MODEL" <<'PY'
+import json
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+data = json.loads(path.read_text())
+env = data.setdefault("env", {})
+env.pop("ANTHROPIC_BASE_URL", None)
+env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = sys.argv[2]
+env["CLAUDE_CODE_EFFORT_LEVEL"] = "xhigh"
+path.write_text(json.dumps(data, indent=2) + "\n")
+PY
+        echo "  [PASS] Planner profile prepared in .claude/settings.opusminimax-planner.local.json"
+    fi
 
     # Configure MCP server
     echo "Configuring MiniMax MCP server..."
@@ -241,14 +355,19 @@ PY
 
     if [ -n "$UVX_PATH" ]; then
         echo "  [INFO] Using uvx at: $UVX_PATH"
-        # Remove existing MiniMax MCP if present
-        claude mcp remove -s user MiniMax 2>/dev/null || true
-        # Add with explicit path and verify
-        claude mcp add -s user MiniMax \
-          --env MINIMAX_API_KEY="$API_KEY" \
-          --env MINIMAX_API_HOST=https://api.minimax.io \
-          -- "$UVX_PATH" minimax-coding-plan-mcp -y
-        echo "  [PASS] MiniMax MCP configured with $UVX_PATH"
+        if [ "$MODE" = "opusminimax" ]; then
+            echo "  [INFO] OpusMiniMax mode does not mutate user-scope MCP automatically"
+            echo "  [INFO] Use Claude Code project/local MCP config if you want MiniMax MCP tools"
+        else
+            # Remove existing MiniMax MCP if present
+            claude mcp remove -s user MiniMax 2>/dev/null || true
+            # Add with explicit path and verify
+            claude mcp add -s user MiniMax \
+              --env MINIMAX_API_KEY="$API_KEY" \
+              --env MINIMAX_API_HOST=https://api.minimax.io \
+              -- "$UVX_PATH" minimax-coding-plan-mcp -y
+            echo "  [PASS] MiniMax MCP configured with $UVX_PATH"
+        fi
     else
         echo "  [FAIL] Could not find or install uvx"
         echo "  Manual setup:"
@@ -259,6 +378,7 @@ else
     echo "To complete setup, run with your API key:"
     echo ""
     echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s YOUR_TOKEN_PLAN_KEY"
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file /path/to/minimax.token"
     echo ""
     echo "Get your key from: platform.minimax.io"
 fi

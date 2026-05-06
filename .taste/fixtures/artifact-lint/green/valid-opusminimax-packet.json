@@ -1,0 +1,34 @@
+{
+  "artifact_type": "opusminimax-packet",
+  "run_id": "20260506-093000-opusminimax",
+  "packet_id": "P1",
+  "objective": "Update one bounded documentation section.",
+  "context_summary": "Planner-approved bounded packet with no hidden reasoning or secrets.",
+  "owned_paths": [
+    "README.md"
+  ],
+  "forbidden_paths": [
+    ".env",
+    ".env.*",
+    ".claude/*.local.json",
+    "secrets/**"
+  ],
+  "commands_allowed": [
+    "git diff --check"
+  ],
+  "acceptance_checks": [
+    "README documents the exact command"
+  ],
+  "risk_notes": [
+    "Do not edit provider profile files."
+  ],
+  "rollback_plan": "Revert the README section only.",
+  "expected_outputs": [
+    "diff",
+    "command evidence"
+  ],
+  "stop_conditions": [
+    "secret requested",
+    "ownership unclear"
+  ]
+}

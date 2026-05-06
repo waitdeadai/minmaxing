@@ -1,0 +1,33 @@
+{
+  "expected_result": "fail",
+  "artifact_type": "opusminimax-run",
+  "run_id": "over-capacity",
+  "provider_profiles": {
+    "planner": {
+      "path": ".claude/settings.opusminimax-planner.example.json",
+      "anthropic_base_url": "",
+      "model": "claude-opus-4-7"
+    },
+    "executor": {
+      "path": ".claude/settings.minimax-executor.example.json",
+      "anthropic_base_url": "https://api.minimax.io/anthropic",
+      "model": "MiniMax-M2.7-highspeed"
+    }
+  },
+  "model_ids": {
+    "planner_requested": "claude-opus-4-7",
+    "executor_requested": "MiniMax-M2.7-highspeed"
+  },
+  "capacity": {
+    "local_ceiling": 10,
+    "provider_ceiling": 1,
+    "task_packet_count": 5,
+    "safety_cap": 5,
+    "effective_concurrency": 5
+  },
+  "packets": ["P1", "P2", "P3", "P4", "P5"],
+  "verification": {"status": "blocked", "closeout_status": "blocked"},
+  "failures": ["effective concurrency exceeds provider ceiling"],
+  "retries": 0,
+  "final_confidence": "low"
+}

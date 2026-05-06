@@ -11,10 +11,6 @@ if [ -z "$SETTINGS_PATH" ] && [ -f "$ROOT_DIR/.claude/settings.local.json" ]; th
     SETTINGS_PATH="$ROOT_DIR/.claude/settings.local.json"
 fi
 
-if [ -z "$SETTINGS_PATH" ] && [ -f "$ROOT_DIR/.claude/settings.json" ] && ! grep -q "YOUR_MINIMAX_API_KEY" "$ROOT_DIR/.claude/settings.json"; then
-    SETTINGS_PATH="$ROOT_DIR/.claude/settings.json"
-fi
-
 if [ -z "$SETTINGS_PATH" ]; then
     echo "[digestflow-smoke] SKIP: no authenticated Claude settings file found"
     exit 0

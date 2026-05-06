@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minmaxing.dev/schemas/opusminimax-packet.schema.json",
+  "title": "OpusMiniMax executor packet",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "run_id",
+    "packet_id",
+    "objective",
+    "context_summary",
+    "owned_paths",
+    "forbidden_paths",
+    "commands_allowed",
+    "acceptance_checks",
+    "risk_notes",
+    "rollback_plan",
+    "expected_outputs",
+    "stop_conditions"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "opusminimax-packet"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packet_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owned_paths": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "forbidden_paths": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "commands_allowed": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "acceptance_checks": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "risk_notes": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "rollback_plan": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_outputs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    }
+  },
+  "additionalProperties": true
+}

@@ -8,13 +8,13 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 30
+- Skills: 31
 - Rules: 15
-- Scripts: 46
-- Static eval tasks: 18
+- Scripts: 50
+- Static eval tasks: 19
 - Hook entries: 11
 - Codex config files: 4
-- Core routes: 12
+- Core routes: 13
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
   runtime secrets.
@@ -24,7 +24,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `agent-systems`: `/agentfactory`
 - `debugging`: `/codesearch`, `/investigate`
 - `design`: `/visualize`
-- `execution`: `/demo`, `/hiveworkflow`, `/visualizeworkflow`, `/workflow`
+- `execution`: `/demo`, `/hiveworkflow`, `/opusminimax`, `/visualizeworkflow`, `/workflow`
 - `kernel`: `/align`, `/tastebootstrap`
 - `knowledge`: `/claudeproduct`
 - `memory`: `/memory`
@@ -58,6 +58,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/investigate` | `debugging` | yes | no | `.claude/skills/investigate/SKILL.md` | /investigate |
 | `/memory` | `memory` | yes | no | `.claude/skills/memory/SKILL.md` | minmaxing 5-tier memory system management |
 | `/metacognition` | `routing` | manual | yes | `.claude/skills/metacognition/SKILL.md` | Route and calibrate work with model-agnostic metacognitive control. Use when the user asks for thinking-about-thinking, harness effectiveness, task routing, self-correction, confidence calibration, or strategy improvement before execution. |
+| `/opusminimax` | `execution` | manual | yes | `.claude/skills/opusminimax/SKILL.md` | Run the Opus planner plus MiniMax-M2.7-highspeed executor workflow. Use when the user invokes /opusminimax or wants Claude/Opus to plan, adversarially review, and verify while MiniMax executes bounded coding packets. |
 | `/overnight` | `operations` | yes | no | `.claude/skills/overnight/SKILL.md` | /overnight |
 | `/parallel` | `parallelism` | manual | yes | `.claude/skills/parallel/SKILL.md` | Run dense minmaxing work as a hardware-aware, main-orchestrated parallel workflow with bounded packets, explicit ownership, sync barriers, aggregation, and independent verification. |
 | `/qa` | `quality` | yes | no | `.claude/skills/qa/SKILL.md` | /qa |
@@ -85,7 +86,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `parallelism` | `.claude/rules/parallelism.rules.md` | 114 |
 | `pev-loop` | `.claude/rules/pev-loop.rules.md` | 2 |
 | `quality` | `.claude/rules/quality.rules.md` | 65 |
-| `security` | `.claude/rules/security.rules.md` | 33 |
+| `security` | `.claude/rules/security.rules.md` | 37 |
 | `spec` | `.claude/rules/spec.rules.md` | 123 |
 | `speed` | `.claude/rules/speed.rules.md` | 3 |
 | `verify` | `.claude/rules/verify.rules.md` | 127 |
@@ -104,6 +105,8 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `hive-scorecard` | hive coordination scorecard | `scripts/hive-scorecard.sh` |
 | `hook-smoke` | Claude Code hook enforcement smoke | `scripts/hook-smoke.sh` |
 | `metacognition-scorecard` | metacognition scorecard | `scripts/metacognition-scorecard.sh` |
+| `opusminimax-benchmark-smoke` | OpusMiniMax benchmark honesty gate | `scripts/opusminimax-benchmark-smoke.sh` |
+| `opusminimax-doctor` | OpusMiniMax provider split doctor | `scripts/opusminimax-doctor.sh` |
 | `parallel-aggregate` | parallel worker aggregate validator | `scripts/parallel-aggregate.sh` |
 | `parallel-capacity` | local parallel capacity profile | `scripts/parallel-capacity.sh` |
 | `parallel-plan-lint` | parallel plan fixture lint | `scripts/parallel-plan-lint.sh` |
@@ -132,13 +135,14 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `m6-claudeproduct-scorecard` | `scripts/claudeproduct-scorecard.sh --fixtures --json` | `reject` | `evals/harness/tasks/m6-claudeproduct-scorecard.yaml` | `evals/harness/golden/m6-claudeproduct-scorecard.json` |
 | `m6-harness-capability-map` | `scripts/harness-capability-map.sh --check --json` | `pass` | `evals/harness/tasks/m6-harness-capability-map.yaml` | `evals/harness/golden/m6-harness-capability-map.json` |
 | `m7-demo-smoke` | `scripts/demo-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m7-demo-smoke.yaml` | `evals/harness/golden/m7-demo-smoke.json` |
+| `m8-opusminimax-benchmark` | `scripts/opusminimax-benchmark-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m8-opusminimax-benchmark.yaml` | `evals/harness/golden/m8-opusminimax-benchmark.json` |
 
 ## Claude Code Settings And Hooks
 
 - Settings path: `.claude/settings.json`
 - Secret values redacted: `true`
-- Default permission mode: `bypassPermissions`
-- Deny rules: `Read(./.claude/settings.local.json)`, `Read(./.env)`, `Read(./.env.*)`, `Read(./secrets/**)`
+- Default permission mode: `acceptEdits`
+- Deny rules: `Read(./.claude/settings.local.json)`, `Read(./.claude/*.local.json)`, `Read(./.env)`, `Read(./.env.*)`, `Read(./secrets/**)`
 
 | Event | Matcher | Commands |
 | --- | --- | --- |

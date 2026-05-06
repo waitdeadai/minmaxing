@@ -1,0 +1,22 @@
+{
+  "artifact_type": "opusminimax-benchmark-result",
+  "benchmark_name": "private-fixture-repair",
+  "task_id": "fixture-001",
+  "base_commit": "abc1234",
+  "visible_prompt": "Fix the visible failing behavior described by the issue.",
+  "prediction_patch": "diff --git a/app.py b/app.py\n--- a/app.py\n+++ b/app.py\n@@ -1 +1 @@\n-old\n+new\n",
+  "tests_run": [
+    "pytest tests/test_fixture.py"
+  ],
+  "pass_fail": "pass",
+  "timeout": 900,
+  "logs": [
+    "pytest tests/test_fixture.py: passed"
+  ],
+  "gold_hidden_quarantined": true,
+  "aggregate": false,
+  "per_task_results": [
+    "fixture-001"
+  ],
+  "benchmark_claim_verified": true
+}

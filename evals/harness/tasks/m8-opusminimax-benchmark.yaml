@@ -1,0 +1,6 @@
+id: m8-opusminimax-benchmark
+title: OpusMiniMax benchmark honesty contract
+gate: scripts/opusminimax-benchmark-smoke.sh --fixtures
+expected_result: pass
+golden: evals/harness/golden/m8-opusminimax-benchmark.json
+evidence: validates provider split artifacts and rejects benchmark aggregates without per-task evidence

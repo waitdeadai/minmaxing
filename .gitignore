@@ -1,5 +1,6 @@
 # API keys and secrets
 .claude/settings.local.json
+.claude/*.local.json
 .env
 .env.*
 
@@ -37,6 +38,7 @@ memory/memory.db-*
 !.taste/fixtures/**
 !.taste/codex-runs/
 !.taste/codex-runs/**
+.taste/opusminimax/
 
 # Generated demo media and recordings
 .taste/demo-recordings/

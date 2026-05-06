@@ -1,0 +1,11 @@
+{
+  "id": "m8-opusminimax-benchmark",
+  "gate": "scripts/opusminimax-benchmark-smoke.sh --fixtures",
+  "status": "pass",
+  "gate_status": "pass",
+  "evidence_summary": [
+    "opusminimax skill documents gold/hidden quarantine and per-task benchmark evidence",
+    "artifact-lint accepts a valid opusminimax-benchmark-result sidecar",
+    "artifact-lint rejects aggregate benchmark claims without per-task results"
+  ]
+}

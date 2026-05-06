@@ -1,0 +1,16 @@
+{
+  "expected_result": "fail",
+  "artifact_type": "opusminimax-benchmark-result",
+  "benchmark_name": "swe-bench-like",
+  "task_id": "aggregate",
+  "base_commit": "abc1234",
+  "visible_prompt": "Aggregate result over a benchmark suite.",
+  "prediction_patch": "aggregate summary",
+  "tests_run": ["aggregate"],
+  "pass_fail": "pass",
+  "timeout": 900,
+  "logs": ["aggregate score produced"],
+  "gold_hidden_quarantined": true,
+  "aggregate": true,
+  "benchmark_claim_verified": true
+}

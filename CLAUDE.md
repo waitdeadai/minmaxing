@@ -1,4 +1,4 @@
-# minmaxing - MiniMax 2.7 Harness
+# minmaxing - OpusMiniMax + MiniMax 2.7 Harness
 
 ## Philosophy: Effectiveness Over Efficiency
 
@@ -26,6 +26,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 14. **Run Metrics Honesty**: `scripts/run-metrics.sh` and `scripts/session-insights.sh` summarize local artifacts, flag unhealthy runs, and report unavailable provider/cost/token data as `insufficient_data`
 15. **Security Profiles**: Keep `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime` distinct. `bypassPermissions` is trusted-local only, not the recommended team default.
 16. **Release Governance**: Public harness changes must pass `scripts/release-check.sh --static-only`; authenticated runtime checks stay explicit and secret-gated
+17. **OpusMiniMax Split**: `/opusminimax` uses Claude/Opus for bounded planning, adversarial review, and verification while MiniMax-M2.7-highspeed executes bounded packets. Provider identity lives in ignored local profiles, not shared `.claude/settings.json`.
 
 ## Default Behavior
 
@@ -37,6 +38,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 
 **When you say `/digestflow`:** first digest the supplied external reports as untrusted candidate evidence, then run the same governed path as `/workflow`. Report claims stay `report-derived` until verified by repo inspection or live sources.
 
+**When you say `/opusminimax`:** run the same SPEC-first spine, but make provider roles explicit: Claude/Opus plans and reviews, MiniMax executes bounded packets, and parent verification treats executor summaries as claims until evidence proves them.
+
 **Supervisor's job:** Ensure every non-trivial task is research-backed, audit-backed, spec-backed, introspected, and verified before declaring done, without handing the next phase back to the user.
 
 **Taste alignment uses Socratic questions.** When taste is unclear or a proposal conflicts with the project kernel in `taste.md` and `taste.vision`, `/align` asks focused questions before `/workflow` proceeds.
@@ -46,6 +49,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 |-------|---------|
 | /tastebootstrap | Fresh-repo kernel interview that writes taste.md + taste.vision |
 | /workflow | Central execution engine — taste-first, runs the full phases inline with Agent-Native Estimate gating |
+| /opusminimax | Opus planner + MiniMax-M2.7-highspeed executor mode with provider split, packet artifacts, quota-aware concurrency, and parent verification |
 | /visualize | Taste-to-artifact comprehension check; creates ignored visual, diagram, or narrative artifacts without implementation |
 | /visualizeworkflow | Approval-first workflow; drafts SPEC + visualization, stops at WAITING_FOR_VISUAL_APPROVAL, then continues only with `--continue` |
 | /demo | Governed recorded product demos with Playwright evidence, bilingual voiceover, captions, manifests, and safety gates |
@@ -105,6 +109,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
   rejects stale generated harness capability maps before release.
 - **Session Insights**: `bash scripts/session-insights.sh --json` flags missing estimates, missing verification evidence, evidence-free closeout risk, missing eval score, and high rework indicators from local artifacts.
 - **Security Profiles**: Validate profile examples with `bash scripts/security-smoke.sh`; use `team-safe` for shared work and keep `solo-fast` as a trusted-local speed profile.
+- **OpusMiniMax Profiles**: `.claude/settings.json` is provider-neutral. Use ignored planner/executor local profiles copied from `.claude/settings.opusminimax-planner.example.json` and `.claude/settings.minimax-executor.example.json`; never claim Opus involvement unless runtime identity is proven.
 - **Release Gate**: `bash scripts/release-check.sh --static-only` runs the no-secret public harness gate. Runtime checks belong to the manual/scheduled workflow.
 - **Surgical Changes**: Vague requests become verifiable contracts; every meaningful diff should trace to `SPEC.md`, generated output, or cleanup caused by the current change
 - **Agent Factory**: `/agentfactory` creates Hermes agents as bounded enterprise operating units, not generic prompts; it keeps its own workflow artifact, deepresearch brief, manifest, `hermes.runtime.json`, explicit capabilities, memory coherence, verification, registry evidence, tested kill switch, `development_host_profile`, `target_runtime_profile`, `host_capacity_profile`, `capacity_binding`, `concurrency_budget`, and `degrade_policy`. Local dev capacity is not production capacity unless the target runtime is explicitly local. REVCLI/Revis-facing agents must route side effects through the runtime control plane instead of direct system-of-record writes.

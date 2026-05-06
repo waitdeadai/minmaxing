@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minmaxing.dev/schemas/opusminimax-run.schema.json",
+  "title": "OpusMiniMax run artifact",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "run_id",
+    "provider_profiles",
+    "model_ids",
+    "capacity",
+    "packets",
+    "verification",
+    "failures",
+    "retries",
+    "final_confidence"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "opusminimax-run"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider_profiles": {
+      "type": "object",
+      "required": ["planner", "executor"]
+    },
+    "model_ids": {
+      "type": "object",
+      "required": ["planner_requested", "executor_requested"]
+    },
+    "capacity": {
+      "type": "object",
+      "required": ["local_ceiling", "provider_ceiling", "task_packet_count", "safety_cap", "effective_concurrency"]
+    },
+    "packets": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "verification": {
+      "type": "object",
+      "required": ["status"]
+    },
+    "failures": {
+      "type": "array"
+    },
+    "retries": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "final_confidence": {
+      "enum": ["high", "medium", "low"]
+    }
+  },
+  "additionalProperties": true
+}

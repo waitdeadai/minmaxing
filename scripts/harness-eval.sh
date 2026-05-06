@@ -66,6 +66,7 @@ KNOWN_GATES = {
     "codex-run-smoke",
     "agentfactory-smoke",
     "digestflow-static",
+    "opusminimax-benchmark-smoke",
     "spec-archive-smoke",
 }
 VALID_RESULTS = {"pass", "reject", "accept", "fail", "skip", "blocked"}
@@ -257,6 +258,10 @@ def normalize_gate(value: str) -> str:
         "digestflow-smoke": "digestflow-static",
         "scripts/digestflow-smoke.sh": "digestflow-static",
         "bash scripts/digestflow-smoke.sh": "digestflow-static",
+        "opusminimax-benchmark-smoke": "opusminimax-benchmark-smoke",
+        "scripts/opusminimax-benchmark-smoke.sh": "opusminimax-benchmark-smoke",
+        "scripts/opusminimax-benchmark-smoke.sh --fixtures": "opusminimax-benchmark-smoke",
+        "bash scripts/opusminimax-benchmark-smoke.sh --fixtures": "opusminimax-benchmark-smoke",
         "spec-archive-smoke": "spec-archive-smoke",
         "scripts/spec-archive.sh": "spec-archive-smoke",
         "scripts/test-harness.sh": "spec-archive-smoke",
@@ -608,6 +613,10 @@ run_gate() {
       ;;
     "digestflow-static")
       run_digestflow_static_smoke
+      ;;
+    "opusminimax-benchmark-smoke")
+      require_gate_script "scripts/opusminimax-benchmark-smoke.sh" || return $?
+      bash "$ROOT_DIR/scripts/opusminimax-benchmark-smoke.sh" --fixtures
       ;;
     "spec-archive-smoke")
       require_gate_script "scripts/spec-archive.sh" || return $?

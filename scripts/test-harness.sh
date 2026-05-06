@@ -44,12 +44,16 @@ else
     fi
 fi
 
-# Test 2: MiniMax Model Config
-echo "[2] MiniMax Model Config"
-if grep -q "MiniMax-M2.7-highspeed" .claude/settings.json 2>/dev/null; then
-    test_pass "MiniMax M2.7 Highspeed configured"
+# Test 2: OpusMiniMax Provider Split
+echo "[2] OpusMiniMax Provider Split"
+if [ -f ".claude/settings.opusminimax-planner.example.json" ] && \
+   [ -f ".claude/settings.minimax-executor.example.json" ] && \
+   ! grep -Fq "MiniMax-M2.7-highspeed" .claude/settings.json 2>/dev/null && \
+   grep -Fq "claude-opus-4-7" .claude/settings.opusminimax-planner.example.json 2>/dev/null && \
+   grep -Fq "MiniMax-M2.7-highspeed" .claude/settings.minimax-executor.example.json 2>/dev/null; then
+    test_pass "Opus planner and MiniMax executor profiles are split"
 else
-    test_fail "MiniMax M2.7 not configured"
+    test_fail "OpusMiniMax provider split is not configured"
 fi
 
 # Test 3: Settings
@@ -60,14 +64,16 @@ else
     test_fail ".claude/settings.json missing"
 fi
 
-# Test 3aa: Team-Safe Settings Profile
-echo "[3aa] Team-Safe Settings Profile"
+# Test 3aa: Team-Safe And OpusMiniMax Settings Profiles
+echo "[3aa] Team-Safe And OpusMiniMax Settings Profiles"
 if [ -f ".claude/settings.team-safe.example.json" ] && \
    python3 -m json.tool .claude/settings.team-safe.example.json >/dev/null 2>&1 && \
-   grep -Fq '"defaultMode": "acceptEdits"' .claude/settings.team-safe.example.json 2>/dev/null; then
-    test_pass "team-safe settings example is valid and uses acceptEdits"
+   grep -Fq '"defaultMode": "acceptEdits"' .claude/settings.team-safe.example.json 2>/dev/null && \
+   python3 -m json.tool .claude/settings.opusminimax-planner.example.json >/dev/null 2>&1 && \
+   python3 -m json.tool .claude/settings.minimax-executor.example.json >/dev/null 2>&1; then
+    test_pass "team-safe and OpusMiniMax settings examples are valid"
 else
-    test_fail "team-safe settings example is missing, invalid, or not using acceptEdits"
+    test_fail "team-safe or OpusMiniMax settings examples are missing or invalid"
 fi
 
 # Test 3a: Taste Kernel Structure
@@ -153,6 +159,59 @@ else
     test_fail "/tastebootstrap is missing required bootstrap prompts"
 fi
 
+# Test 3d-opusminimax: Opus Planner + MiniMax Executor Mode
+echo "[3d-opusminimax] OpusMiniMax Mode"
+OPUSMINIMAX_OK=true
+for required_file in \
+    ".claude/skills/opusminimax/SKILL.md" \
+    ".claude/settings.opusminimax-planner.example.json" \
+    ".claude/settings.minimax-executor.example.json" \
+    "scripts/opusminimax.sh" \
+    "scripts/minimax-exec.sh" \
+    "scripts/opusminimax-doctor.sh" \
+    "scripts/opusminimax-benchmark-smoke.sh" \
+    "schemas/opusminimax-packet.schema.json" \
+    "schemas/opusminimax-run.schema.json" \
+    "schemas/opusminimax-benchmark-result.schema.json" \
+    "evals/harness/tasks/m8-opusminimax-benchmark.yaml" \
+    "evals/harness/golden/m8-opusminimax-benchmark.json"; do
+    if [ ! -e "$required_file" ]; then
+        OPUSMINIMAX_OK=false
+    fi
+done
+for script in opusminimax minimax-exec opusminimax-doctor opusminimax-benchmark-smoke; do
+    if [ ! -x "scripts/$script.sh" ]; then
+        OPUSMINIMAX_OK=false
+    fi
+done
+for pattern in \
+    "Claude is planner, adversary, and reviewer" \
+    "MiniMax-M2.7-highspeed is executor for bulk coding" \
+    "Do not claim Opus planned" \
+    "gold/hidden quarantine" \
+    "Aggregate scores require per-task result artifacts"; do
+    if ! grep -Fq "$pattern" .claude/skills/opusminimax/SKILL.md 2>/dev/null; then
+        OPUSMINIMAX_OK=false
+    fi
+done
+for pattern in \
+    "--mode opusminimax" \
+    "--minimax-key-file" \
+    "--planner-model" \
+    "--executor-model" \
+    "--profile"; do
+    if ! grep -Fq -- "$pattern" setup.sh 2>/dev/null; then
+        OPUSMINIMAX_OK=false
+    fi
+done
+if [ "$OPUSMINIMAX_OK" = true ] && \
+   bash scripts/opusminimax-doctor.sh --static >/dev/null 2>&1 && \
+   bash scripts/opusminimax-benchmark-smoke.sh --fixtures >/dev/null 2>&1; then
+    test_pass "/opusminimax separates Opus planning from MiniMax execution with static benchmark honesty gates"
+else
+    test_fail "/opusminimax skill, profiles, scripts, schemas, fixtures, or static gates are incomplete"
+fi
+
 # Test 3e: Efficacy-First Parallelism Contract
 echo "[3e] Efficacy-First Parallelism"
 PARALLEL_OK=true
@@ -225,7 +284,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "30 skills" README.md 2>/dev/null && \
+   grep -Fq "31 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -413,7 +472,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 30 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 31 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -795,6 +854,9 @@ for required_file in \
     "schemas/agent-native-estimate.schema.json" \
     "schemas/verification-result.schema.json" \
     "schemas/worker-result.schema.json" \
+    "schemas/opusminimax-packet.schema.json" \
+    "schemas/opusminimax-run.schema.json" \
+    "schemas/opusminimax-benchmark-result.schema.json" \
     "scripts/artifact-lint.sh"; do
     if [ ! -f "$required_file" ]; then
         ARTIFACT_LINT_OK=false
@@ -806,7 +868,10 @@ fi
 for schema in \
     schemas/agent-native-estimate.schema.json \
     schemas/verification-result.schema.json \
-    schemas/worker-result.schema.json; do
+    schemas/worker-result.schema.json \
+    schemas/opusminimax-packet.schema.json \
+    schemas/opusminimax-run.schema.json \
+    schemas/opusminimax-benchmark-result.schema.json; do
     if ! python3 -m json.tool "$schema" >/dev/null 2>&1; then
         ARTIFACT_LINT_OK=false
     fi
@@ -818,7 +883,10 @@ for pattern in \
     "tests-passed-without-command-evidence" \
     "failed-verification-positive-closeout" \
     "unowned-worker-packet-change" \
-    "unverified-worker-claim"; do
+    "unverified-worker-claim" \
+    "opusminimax-fake-opus-claim" \
+    "opusminimax-planner-minimax-base-url" \
+    "opusminimax-benchmark-aggregate-without-per-task"; do
     if ! find .taste/fixtures/artifact-lint -type f -name "*$pattern*.json" 2>/dev/null | grep -q .; then
         ARTIFACT_LINT_OK=false
     fi
@@ -905,6 +973,8 @@ SECURITY_PROFILE_OK=true
 for required_file in \
     ".claude/settings.solo-fast.example.json" \
     ".claude/settings.team-safe.example.json" \
+    ".claude/settings.opusminimax-planner.example.json" \
+    ".claude/settings.minimax-executor.example.json" \
     ".claude/rules/security.rules.md" \
     "scripts/security-smoke.sh"; do
     if [ ! -e "$required_file" ]; then
@@ -917,6 +987,8 @@ fi
 if [ "$SECURITY_PROFILE_OK" = true ] && \
    python3 -m json.tool .claude/settings.solo-fast.example.json >/dev/null 2>&1 && \
    python3 -m json.tool .claude/settings.team-safe.example.json >/dev/null 2>&1 && \
+   python3 -m json.tool .claude/settings.opusminimax-planner.example.json >/dev/null 2>&1 && \
+   python3 -m json.tool .claude/settings.minimax-executor.example.json >/dev/null 2>&1 && \
    bash scripts/security-smoke.sh >/dev/null 2>&1; then
     test_pass "solo-fast and team-safe profiles are explicit, valid, and security-smoked"
 else
@@ -1158,11 +1230,11 @@ else
 fi
 
 # ========================================
-# Skills (30 Expected)
+# Skills (31 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 30 Expected]"
+echo "[Skills - 31 Expected]"
 echo ""
 
 # Test 4: Skills Count
@@ -1171,7 +1243,7 @@ SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d '
 if [ "$SKILL_COUNT" -ge 30 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 30+ skills, found $SKILL_COUNT"
+    test_fail "Expected 31+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
@@ -1246,7 +1318,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else
