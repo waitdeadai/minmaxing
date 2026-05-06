@@ -4,6 +4,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT="$ROOT_DIR/.claude/settings.json"
 SOLO="$ROOT_DIR/.claude/settings.solo-fast.example.json"
 TEAM="$ROOT_DIR/.claude/settings.team-safe.example.json"
 OPUS_PLANNER="$ROOT_DIR/.claude/settings.opusminimax-planner.example.json"
@@ -52,6 +53,7 @@ expect_hook_block() {
   [ "$status" -eq 2 ] || fail "$name should block with exit 2, got $status"
 }
 
+require_json "$PROJECT"
 require_json "$SOLO"
 require_json "$TEAM"
 require_json "$OPUS_PLANNER"
@@ -61,8 +63,11 @@ require_text "$TEAM" '"profile": "team-safe"'
 require_text "$OPUS_PLANNER" '"profile": "opusminimax-planner"'
 require_text "$MINIMAX_EXECUTOR" '"profile": "minimax-executor"'
 
+[ "$(json_value "$PROJECT" "permissions.defaultMode")" = "bypassPermissions" ] || fail "project default must use bypassPermissions"
 [ "$(json_value "$SOLO" "permissions.defaultMode")" = "bypassPermissions" ] || fail "solo-fast must use bypassPermissions"
 [ "$(json_value "$TEAM" "permissions.defaultMode")" = "acceptEdits" ] || fail "team-safe must use acceptEdits"
+require_text "$PROJECT" "TRUSTED-LOCAL WARNING"
+require_text "$PROJECT" "settings.team-safe.example.json"
 
 python3 - "$OPUS_PLANNER" <<'PY' || fail "opusminimax planner example must not route through MiniMax"
 import json
@@ -75,7 +80,7 @@ PY
 grep -Fq '"ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic"' "$MINIMAX_EXECUTOR" || fail "minimax executor example must set MiniMax base URL"
 grep -Fq '"ANTHROPIC_MODEL": "MiniMax-M2.7-highspeed"' "$MINIMAX_EXECUTOR" || fail "minimax executor example must set MiniMax-M2.7-highspeed"
 
-for file in "$SOLO" "$TEAM"; do
+for file in "$PROJECT" "$SOLO" "$TEAM"; do
   for pattern in \
     "Read(./.claude/settings.local.json)" \
     "Read(./.env)" \
@@ -113,6 +118,7 @@ require_text "$ROOT_DIR/.claude/rules/security.rules.md" "team-safe"
 require_text "$ROOT_DIR/.claude/rules/security.rules.md" "ci-static"
 require_text "$ROOT_DIR/.claude/rules/security.rules.md" "ci-runtime"
 require_text "$ROOT_DIR/SECURITY.md" "Runtime Policy Matrix"
+require_text "$ROOT_DIR/SECURITY.md" "trusted-local default"
 require_text "$ROOT_DIR/SECURITY.md" "bypassPermissions is not the recommended team default"
 
 expect_hook_block "destructive Bash" '{

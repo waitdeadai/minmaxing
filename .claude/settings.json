@@ -1,7 +1,9 @@
 {
     "profile": "project-governance",
     "profileNotes": [
-        "Provider-neutral shared project settings.",
+        "Provider-neutral trusted-local project settings.",
+        "TRUSTED-LOCAL WARNING: this workspace defaults to bypassPermissions for the operator's solo workflow.",
+        "Use .claude/settings.team-safe.example.json for shared, reviewed, client-visible, or less trusted work.",
         "Do not put Anthropic, Claude subscription, MiniMax, or other provider credentials in this file.",
         "Use ignored local profiles for planner/executor identity."
     ],
@@ -24,7 +26,7 @@
             "Read(./.env.*)",
             "Read(./secrets/**)"
         ],
-        "defaultMode": "acceptEdits"
+        "defaultMode": "bypassPermissions"
     },
     "hooks": {
         "PreToolUse": [

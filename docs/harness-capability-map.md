@@ -89,7 +89,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `parallelism` | `.claude/rules/parallelism.rules.md` | 114 |
 | `pev-loop` | `.claude/rules/pev-loop.rules.md` | 2 |
 | `quality` | `.claude/rules/quality.rules.md` | 65 |
-| `security` | `.claude/rules/security.rules.md` | 37 |
+| `security` | `.claude/rules/security.rules.md` | 41 |
 | `spec` | `.claude/rules/spec.rules.md` | 123 |
 | `speed` | `.claude/rules/speed.rules.md` | 3 |
 | `verify` | `.claude/rules/verify.rules.md` | 127 |
@@ -150,7 +150,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 - Settings path: `.claude/settings.json`
 - Secret values redacted: `true`
-- Default permission mode: `acceptEdits`
+- Default permission mode: `bypassPermissions`
 - Deny rules: `Read(./.claude/settings.local.json)`, `Read(./.claude/*.local.json)`, `Read(./.env)`, `Read(./.env.*)`, `Read(./secrets/**)`
 
 | Event | Matcher | Commands |

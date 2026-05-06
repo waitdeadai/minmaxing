@@ -7,6 +7,7 @@ context.
 
 | Profile | Use Case | Default Mode | Network | Runtime Expectations |
 |---|---|---|---|---|
+| `project-default` | Operator-owned private local loop | `bypassPermissions` | provider-neutral settings; secrets denied | explicit warning, governance hooks, local operator risk |
 | `solo-fast` | Trusted single-operator local loop | `bypassPermissions` | allowed by local settings | blocks secrets and catastrophic commands |
 | `team-safe` | Shared project work | `acceptEdits` | narrower allowlist | governance hooks enabled; bypass mode not recommended |
 | `opusminimax-planner` | Claude subscription planner/reviewer | `acceptEdits` | no MiniMax base URL | Opus model request only; no executor credentials |
@@ -18,7 +19,8 @@ context.
 
 - Never read `.env`, `.env.*`, `.claude/settings.local.json`, or `secrets/**`
   in normal harness work.
-- Never claim `bypassPermissions` is the recommended team default.
+- Never claim `bypassPermissions` is the recommended team default; it is only
+  this operator workspace's trusted-local default.
 - Never run destructive Bash without explicit human approval and rollback
   context.
 - Never expose real credentials in fixtures, logs, examples, or generated
@@ -30,6 +32,8 @@ context.
 ## Required Proof
 
 - Profile JSON must parse with `python3 -m json.tool`.
+- `.claude/settings.json` must warn that the default is trusted-local
+  `bypassPermissions`.
 - `solo-fast` and `team-safe` must deny secret reads.
 - `team-safe` must use `acceptEdits`.
 - Governance hooks must be wired for tool use and closeout events.

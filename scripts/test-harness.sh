@@ -58,10 +58,13 @@ fi
 
 # Test 3: Settings
 echo "[3] Settings Files"
-if [ -f ".claude/settings.json" ]; then
-    test_pass ".claude/settings.json exists"
+if [ -f ".claude/settings.json" ] && \
+   python3 -m json.tool .claude/settings.json >/dev/null 2>&1 && \
+   grep -Fq '"defaultMode": "bypassPermissions"' .claude/settings.json 2>/dev/null && \
+   grep -Fq "TRUSTED-LOCAL WARNING" .claude/settings.json 2>/dev/null; then
+    test_pass ".claude/settings.json uses explicit trusted-local bypass default"
 else
-    test_fail ".claude/settings.json missing"
+    test_fail ".claude/settings.json missing, invalid, or not using the explicit trusted-local bypass default"
 fi
 
 # Test 3aa: Team-Safe And OpusMiniMax Settings Profiles
@@ -1125,6 +1128,7 @@ fi
 echo "[3s] Security And Permission Profiles"
 SECURITY_PROFILE_OK=true
 for required_file in \
+    ".claude/settings.json" \
     ".claude/settings.solo-fast.example.json" \
     ".claude/settings.team-safe.example.json" \
     ".claude/settings.opusminimax-planner.example.json" \
@@ -1139,12 +1143,13 @@ if [ ! -x "scripts/security-smoke.sh" ]; then
     SECURITY_PROFILE_OK=false
 fi
 if [ "$SECURITY_PROFILE_OK" = true ] && \
+   python3 -m json.tool .claude/settings.json >/dev/null 2>&1 && \
    python3 -m json.tool .claude/settings.solo-fast.example.json >/dev/null 2>&1 && \
    python3 -m json.tool .claude/settings.team-safe.example.json >/dev/null 2>&1 && \
    python3 -m json.tool .claude/settings.opusminimax-planner.example.json >/dev/null 2>&1 && \
    python3 -m json.tool .claude/settings.minimax-executor.example.json >/dev/null 2>&1 && \
    bash scripts/security-smoke.sh >/dev/null 2>&1; then
-    test_pass "solo-fast and team-safe profiles are explicit, valid, and security-smoked"
+    test_pass "trusted-local default plus solo-fast and team-safe profiles are explicit, valid, and security-smoked"
 else
     test_fail "security profiles, rules, or smoke tests are incomplete"
 fi

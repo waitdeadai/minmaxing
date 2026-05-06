@@ -24,7 +24,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 12. **Artifact Sidecars**: When estimates, verification results, or worker results are machine-consumed, validate the minimal JSON sidecar with `scripts/artifact-lint.sh`; Markdown remains for humans, sidecars exist for gates
 13. **Static Harness Evals**: Use `scripts/harness-eval.sh` to score local harness behavior against the static task/golden pack before claiming the harness improved
 14. **Run Metrics Honesty**: `scripts/run-metrics.sh` and `scripts/session-insights.sh` summarize local artifacts, flag unhealthy runs, and report unavailable provider/cost/token data as `insufficient_data`
-15. **Security Profiles**: Keep `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime` distinct. `bypassPermissions` is trusted-local only, not the recommended team default.
+15. **Security Profiles**: This operator workspace defaults to trusted-local `bypassPermissions` by design. Keep `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime` distinct; `team-safe` remains the shared-work fallback.
 16. **Release Governance**: Public harness changes must pass `scripts/release-check.sh --static-only`; authenticated runtime checks stay explicit and secret-gated
 17. **OpusMiniMax Split**: `/opusminimax` uses Claude/Opus for bounded planning, adversarial review, and verification while MiniMax-M2.7-highspeed executes bounded packets. Provider identity lives in ignored local profiles, not shared `.claude/settings.json`.
 18. **OpusWorkflow Default**: `/opusworkflow` is the cost-optimized daily route over `/opusminimax --mode workflow`: Opus only at judgment gates when proven available, MiniMax for bulk execution, executor concurrency 1 by default for Plus-Highspeed.
@@ -118,7 +118,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Capability Map Gate**: `bash scripts/harness-capability-map.sh --check`
   rejects stale generated harness capability maps before release.
 - **Session Insights**: `bash scripts/session-insights.sh --json` flags missing estimates, missing verification evidence, evidence-free closeout risk, missing eval score, and high rework indicators from local artifacts.
-- **Security Profiles**: Validate profile examples with `bash scripts/security-smoke.sh`; use `team-safe` for shared work and keep `solo-fast` as a trusted-local speed profile.
+- **Security Profiles**: Validate profile examples with `bash scripts/security-smoke.sh`; the committed project default is trusted-local `bypassPermissions`, while `team-safe` remains the shared-work fallback and `solo-fast` documents the fast solo posture.
 - **OpusMiniMax Profiles**: `.claude/settings.json` is provider-neutral. Use ignored planner/executor local profiles copied from `.claude/settings.opusminimax-planner.example.json` and `.claude/settings.minimax-executor.example.json`; never claim Opus involvement unless runtime identity is proven.
 - **OpusWorkflow Budget**: `/opusworkflow` is the daily default for the $20 Claude + $40 MiniMax strategy. It must not run Opus as a bulk executor, must not silently use PAYG, and must record `provider_ceiling=1` until runtime MiniMax tier evidence proves a higher safe executor budget.
 - **Opus Runtime Proof**: A Claude subscription login plus exact `OPUSWORKFLOW_AUTH_OK` sentinel from `claude --model claude-opus-4-7` proves the planner side for the current account state. MiniMax executor runtime is a separate proof and must not be implied by the Opus check.

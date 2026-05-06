@@ -78,10 +78,13 @@ RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh
 
 Choose the runtime profile deliberately:
 
-- `solo-fast`: trusted-local speed profile, useful on your own machine after
-  inspecting `.claude/settings.solo-fast.example.json`.
-- `team-safe`: shared-work default with `acceptEdits`; start from
-  `.claude/settings.team-safe.example.json`.
+- **Default in this repo:** trusted-local `bypassPermissions` for the operator's
+  solo workflow. This is intentionally fast and intentionally riskier: use it
+  only on a private machine/repo where you accept local command authority.
+- `solo-fast`: tracked example of the same trusted-local speed posture.
+- `team-safe`: shared-work fallback with `acceptEdits`; start from
+  `.claude/settings.team-safe.example.json` for teammates, reviews, clients, or
+  any workspace where automatic tool permission is too much authority.
 - `ci-static`: no-secret static validation for public PRs and release checks.
 - `ci-runtime`: manual authenticated validation through
   `.github/workflows/harness-runtime.yml`.
@@ -134,7 +137,7 @@ Claude subscription auth is separate account auth. Run `claude auth login` once
 if this machine is not already logged in; the setup command does not store or
 fake your Claude subscription session.
 
-**Shared settings are committed on purpose, but they are provider-neutral.** `.claude/settings.json` contains governance hooks, deny rules, and project defaults. Real credentials and provider identity belong in ignored local files such as `.claude/settings.opusminimax-planner.local.json` and `.claude/settings.minimax-executor.local.json`.
+**Shared settings are committed on purpose, but they are provider-neutral.** `.claude/settings.json` contains governance hooks, deny rules, and the trusted-local `bypassPermissions` default. This is an explicit operator-speed choice, not a team-safety recommendation. Real credentials and provider identity belong in ignored local files such as `.claude/settings.opusminimax-planner.local.json` and `.claude/settings.minimax-executor.local.json`.
 
 **Fresh repos should start with `/tastebootstrap`.** It asks the 10 kernel questions, writes `taste.md` + `taste.vision`, and gives `/workflow` explicit taste to follow before anything is built.
 
@@ -360,8 +363,8 @@ Agent Factory writes its own run artifact under `.taste/workflow-runs/*-agentfac
 For REVCLI/Revis-style products, `/agentfactory` treats Hermes as the role-scoped interaction/runtime shell, REVCLI/Revis as the policy and audit control plane, and Odoo or the configured database as the system of record. The repo includes `REVCLI_HERMES_AGENT_MAP.md` so generated agents map to concrete roles, approval gates, runtime evidence, kill switches, and closed-loop outcomes instead of broad “run the company” authority.
 
 ### Permission Mode
-- **Project default:** provider-neutral `acceptEdits` with governance hooks and secret-read denies.
-- **solo-fast option:** trusted-local fast profile for personal repos where you want fewer prompts.
+- **Project default:** provider-neutral trusted-local `bypassPermissions` with governance hooks and secret-read denies. Warning: this allows Claude Code to act without normal permission prompts, so use it only where you accept local operator risk.
+- **solo-fast option:** tracked example of the same trusted-local fast profile for personal repos where you want fewer prompts.
 - **Team-safe option:** copy [`.claude/settings.team-safe.example.json`](.claude/settings.team-safe.example.json) to your local settings and keep `defaultMode` at `acceptEdits`.
 - **OpusWorkflow option:** use `/opusworkflow` as the recommended daily mode so Opus is reserved for judgment checkpoints while MiniMax-M2.7-highspeed does bounded execution packets.
 - **OpusMiniMax option:** use `/opusminimax` directly when you need benchmark or repair mode, or lower-level packet control.
@@ -741,7 +744,7 @@ local trace ledger, hook mesh, worktree runner, scenario evals, learning loop,
 and harness doctor without secrets or network access. See
 `docs/runtime-hardening.md` for the operator surface.
 
-**Security profiles:** `solo-fast` is a trusted-local speed profile, `team-safe` is the shared-work default, `ci-static` is no-secret static validation, and `ci-runtime` is isolated authenticated validation. Run `bash scripts/security-smoke.sh` after profile changes.
+**Security profiles:** this repo's default is trusted-local `bypassPermissions` for the operator's solo loop. `solo-fast` documents that posture, `team-safe` is the shared-work fallback, `ci-static` is no-secret static validation, and `ci-runtime` is isolated authenticated validation. Run `bash scripts/security-smoke.sh` after profile changes.
 
 **Release governance:** Public harness work should pass `bash scripts/release-check.sh --static-only`. The static GitHub Actions lane runs without secrets; authenticated runtime checks are isolated in the manual/scheduled runtime lane.
 

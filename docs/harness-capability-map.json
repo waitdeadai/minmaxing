@@ -333,10 +333,10 @@
       "title": "Quality Rules"
     },
     {
-      "line_count": 37,
+      "line_count": 41,
       "name": "security",
       "path": ".claude/rules/security.rules.md",
-      "sha256": "3fe8577c9c5df0ffe77ccbc2d3e00d9624eecf0c5cde0c60c2f6d4e45dcd2cba",
+      "sha256": "5a690734227bb79474b0e5088cf6eaaca85a331cb458485931d5a1218004521c",
       "title": "Security Rules"
     },
     {
@@ -707,12 +707,12 @@
       "sha256": "9c3e0a29b441fdffeb0e280f3960bfc2cc6bf7c1f18fc752316a83f632dd8b42"
     },
     {
-      "line_count": 131,
+      "line_count": 137,
       "name": "security-smoke",
       "path": "scripts/security-smoke.sh",
       "purpose": "Static security smoke for Claude Code profile examples and governance hooks.",
       "required_gate": false,
-      "sha256": "b9d97cbcb36b57c3fd7ba8eed72c22319b265c98da3961c91aba4584dac63a56"
+      "sha256": "537c159a4124f9e674f1d387231d274999af56df3db4ff34c6c048efe046edc4"
     },
     {
       "line_count": 130,
@@ -763,12 +763,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1829,
+      "line_count": 1834,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "5b7addd04336901cd9a1e2139ffe86e70b57c3d34cf0364964b664fa7e78f42d"
+      "sha256": "a3f9bc4b36b17d7e550514b15969ca4656315e1f439216d941b5efc2009f0217"
     },
     {
       "line_count": 552,
@@ -962,7 +962,7 @@
         "mcp__MiniMax__web_search",
         "Bash(bash *.sh)"
       ],
-      "defaultMode": "acceptEdits",
+      "defaultMode": "bypassPermissions",
       "deny": [
         "Read(./.claude/settings.local.json)",
         "Read(./.claude/*.local.json)",

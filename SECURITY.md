@@ -51,18 +51,24 @@ Public contributions and generated examples must preserve these rules:
 ## Runtime Policy Matrix
 
 minmaxing supports multiple runtime profiles. Do not blur them together.
+This clone defaults the committed Claude Code project settings to the
+trusted-local `bypassPermissions` posture because the operator explicitly works
+that way. Treat that as local operator authority, not as a safe default for
+teams, clients, public forks, or unfamiliar machines.
 
 | Profile | Intended Use | Permission Mode | Network / Secrets | Required Proof |
 |---|---|---|---|---|
+| `project-default` | Operator-owned private local loop | `bypassPermissions` | local operator responsibility; secrets still denied by settings | valid JSON, explicit warning, secret deny rules, governance hook smoke |
 | `solo-fast` | Trusted single-operator local loop | `bypassPermissions` | local operator responsibility; secrets still denied by settings | valid JSON, secret deny rules, governance hook smoke |
 | `team-safe` | Shared project and collaborator work | `acceptEdits` | narrower allowlist; no broad side effects by default | valid JSON, governance hooks, no bypass default |
 | `ci-static` | Public CI and pull requests | static only | no secrets, no external network requirement | shell syntax, static smokes, eval pack, diff hygiene |
 | `ci-runtime` | Authenticated runtime validation | isolated test workspace | dedicated test credentials only, redacted logs | explicit runtime smoke with no production secrets |
 
-bypassPermissions is not the recommended team default. It is a trusted-local
-speed profile for a single operator who understands the repo and accepts the
-local risk. Team and CI contexts should prefer `team-safe`, `ci-static`, or
-`ci-runtime` depending on whether runtime credentials are intentionally present.
+bypassPermissions is not the recommended team default. It is the explicit
+trusted-local default in this operator workspace for a single operator who
+understands the repo and accepts the local risk. Team and CI contexts should
+prefer `team-safe`, `ci-static`, or `ci-runtime` depending on whether runtime
+credentials are intentionally present.
 
 ## Out Of Scope
 

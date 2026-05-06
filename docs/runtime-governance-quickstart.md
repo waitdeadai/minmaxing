@@ -11,6 +11,7 @@ Use this guide to choose the right profile before running work.
 
 | Profile | Use When | Permission Posture | Proof Command |
 |---------|----------|--------------------|---------------|
+| `project-default` | Operator-owned private local loop | `bypassPermissions` in committed project settings, with explicit warning, secret denies, and governance hooks | `bash scripts/security-smoke.sh` |
 | `solo-fast` | Trusted local operator, fast iteration, private machine | `bypassPermissions` example with governance hooks and secret/destructive-command guards | `bash scripts/security-smoke.sh` |
 | `team-safe` | Shared repo, teammates, reviewers, or client-visible work | `acceptEdits` example with governance hooks and safer defaults | `bash scripts/security-smoke.sh` |
 | `ci-static` | Public PRs and no-secret release checks | No runtime credentials, static scripts/evals/docs only | `bash scripts/release-check.sh --static-only` |
@@ -34,6 +35,11 @@ These commands must not need production secrets.
 
 ## Choose A Claude Code Profile
 
+This repo's committed default is trusted-local `bypassPermissions` because the
+operator intentionally optimizes for a fast solo loop. That means Claude Code
+can act without normal permission prompts; use it only on a private machine and
+repo where that local authority is acceptable.
+
 For shared work, start with the team-safe example:
 
 ```bash
@@ -41,7 +47,8 @@ cp .claude/settings.team-safe.example.json .claude/settings.local.json
 bash scripts/security-smoke.sh
 ```
 
-For trusted solo local speed, inspect the solo-fast profile first:
+For trusted solo local speed, the committed default already matches
+`solo-fast`; inspect the example when changing local profile details:
 
 ```bash
 python3 -m json.tool .claude/settings.solo-fast.example.json >/dev/null
