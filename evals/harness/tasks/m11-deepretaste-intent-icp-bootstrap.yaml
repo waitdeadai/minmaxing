@@ -1,0 +1,6 @@
+id: m11-deepretaste-intent-icp-bootstrap
+title: /deepretaste intent-to-ICP-to-taste bootstrap gate
+gate: scripts/deepretaste-smoke.sh --fixtures
+expected_result: reject
+golden: evals/harness/golden/m11-deepretaste-intent-icp-bootstrap.json
+evidence: accepts valid bootstrap proposal and apply artifacts while rejecting destructive overwrite fake SOTA shallow research slot filling missing hive blackboard vague approval ambiguous apply worker summary trust secret-bearing artifacts and route confusion

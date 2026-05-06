@@ -118,7 +118,7 @@ For the lower-level Opus planner + MiniMax executor mode:
 curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusminimax --minimax-key-file /path/to/minimax.token
 ```
 
-That's it. Memory system, governed runtime profiles, and 33 skills — all configured.
+That's it. Memory system, governed runtime profiles, and 34 skills — all configured.
 
 **Shared settings are committed on purpose, but they are provider-neutral.** `.claude/settings.json` contains governance hooks, deny rules, and project defaults. Real credentials and provider identity belong in ignored local files such as `.claude/settings.opusminimax-planner.local.json` and `.claude/settings.minimax-executor.local.json`.
 
@@ -584,7 +584,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 33 Skills
+## The 34 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -596,6 +596,7 @@ Now you can use any workflow pattern:
 | `/visualizeworkflow` | **Approval-first workflow** — drafts SPEC + visualization, stops at `WAITING_FOR_VISUAL_APPROVAL`, then continues only with `--continue` |
 | `/demo` | **Governed recorded demo pipeline** — produces product recordings with Playwright evidence, bilingual voiceover, captions, manifests, and safety gates |
 | `/digestflow` | **External-report-informed workflow** — digests 1-10 AI research reports as untrusted candidate evidence, then runs the full governed workflow |
+| `/deepretaste` | **Intent-to-ICP-to-taste bootstrap** — detects product intent, uses `/deepresearch` for taste-driving evidence, defines ICPs, and bootstraps or proposes/applies taste changes through `/tastebootstrap` or `/defineicp` semantics |
 | `/defineicp` | **ICP-to-taste evolution** — defines primary/secondary/anti-ICPs with deepresearch, drafts taste.md + taste.vision changes, and applies only with explicit approval |
 | `/icpweek` | **ICP week-in-the-life stress test** — simulates Monday-Sunday real usage with ideal-user, CTO, and senior product-engineer lenses, then delivers the A-J product diagnosis |
 | `/align` | Validate idea against taste + vision. Gates /workflow on taste mismatch. |
@@ -635,6 +636,7 @@ The routing ladder is:
 
 ```text
 local /workflow
+-> /deepretaste when product intent, ICP, and taste kernel need a SOTA-2026 research-backed bootstrap or retaste
 -> /defineicp when the product kernel needs ICP research before taste changes
 -> /opusworkflow when the $20 Claude + $40 MiniMax budget should be optimized end to end
 -> /opusminimax when Opus should plan/review and MiniMax should execute packets in workflow/benchmark/repair mode
@@ -651,6 +653,7 @@ Use this rule of thumb:
 | Pick | When | The Developer Should Expect |
 | --- | --- | --- |
 | local `/workflow` | One tight reasoning loop, one shared file, unclear ownership, or coordination would slow the work down. | One supervisor does the whole governed lifecycle. |
+| `/deepretaste` | You need to detect product intent, define ICPs, and bootstrap or retaste the project kernel from research-backed customer evidence. | `/deepresearch` remains general-purpose; `/deepretaste` uses it only for taste-driving evidence, then routes fresh kernels through `/tastebootstrap` and existing kernels through `/defineicp` proposal/apply semantics. |
 | `/defineicp` | You need to define the ICP or ICPs and tailor `taste.md` / `taste.vision` to that customer profile. | Deepresearch plan, primary/secondary/anti-ICPs, source and claim ledgers, taste patch proposal, explicit apply approval, backups, hashes, validation, and rollback evidence. |
 | `/opusworkflow` | You want the daily default for a Claude subscription plus MiniMax Plus-Highspeed: Opus only at plan/review/ship gates and MiniMax for bulk implementation. | One-command split setup, provider doctor, default executor concurrency 1, bounded packets, parent verification, and no silent PAYG. |
 | `/opusminimax` | You want to squeeze a Claude subscription by using Opus only for planning, adversarial review, and final judgment while MiniMax does speed/bulk execution. | Provider split doctor, Opus planner artifact, MiniMax executor packets, quota-aware concurrency, parent verification, and no benchmark overclaims. |
@@ -906,7 +909,7 @@ minmaxing/
 │   ├── settings.opusminimax-planner.example.json
 │   ├── settings.minimax-executor.example.json
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 33 skills (system calls)
+│   ├── skills/                 # 34 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── opusworkflow/       # Cost-optimized daily Opus + MiniMax route
 │   │   ├── opusminimax/        # Opus planner + MiniMax executor mode
@@ -914,6 +917,7 @@ minmaxing/
 │   │   ├── visualizeworkflow/  # Approval-first workflow route
 │   │   ├── demo/               # Recorded product demo route
 │   │   ├── digestflow/         # External report intake + governed workflow
+│   │   ├── deepretaste/        # Intent-to-ICP-to-taste bootstrap/retaste
 │   │   ├── defineicp/          # ICP-to-taste evolution route
 │   │   ├── icpweek/            # ICP week-in-the-life product stress test
 │   │   ├── tastebootstrap/     # Fresh-repo taste bootstrap

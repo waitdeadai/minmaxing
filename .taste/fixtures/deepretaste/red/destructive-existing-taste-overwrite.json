@@ -1,0 +1,85 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "red-destructive-existing-taste-overwrite",
+  "mode": "proposal",
+  "status": "RETASTE_PROPOSED",
+  "product_scope": {
+    "scope_type": "repo",
+    "product": "governed AI coding harness",
+    "source_evidence": ["README.md"],
+    "confidence": "high",
+    "ambiguities": [],
+    "apply_allowed": false
+  },
+  "intent_detection": {
+    "developer_intent": "propose retaste",
+    "product_intent": "governed coding",
+    "route_decision": "proposal",
+    "confidence": "high"
+  },
+  "taste_state": {
+    "taste_md_exists": true,
+    "taste_vision_exists": true,
+    "existing_kernel": true
+  },
+  "routing": {
+    "declared_route": "/deepretaste proposal",
+    "delegated_routes": ["/deepresearch", "/defineicp"]
+  },
+  "research": {
+    "deepresearch_plan": {"branches": ["ICP"]},
+    "loop_log": [{"loop": 1}],
+    "source_ledger": {"cited": [{"source": "README.md"}], "reviewed_but_not_cited": [], "conflicts": []},
+    "sota_2026_policy": {"sota_claims_allowed": true, "current_sources": [{"source": "current source", "current": true}]},
+    "claim_ledger": [{"claim": "ICP values evidence", "label": "repo-derived", "evidence": "README.md", "taste_impact": "rewrite", "direct_taste_driver": true}]
+  },
+  "parallel_decision": {
+    "ceiling": 10,
+    "effective_budget": 1,
+    "distinct_lenses": ["ICP"],
+    "supervisor_capacity": 1,
+    "verifier_capacity": 1,
+    "why_not_more": "bounded",
+    "substrate": "subagents"
+  },
+  "icp": {
+    "primary": {
+      "segment": "technical builders",
+      "buyer_user_distinction": "same",
+      "job_to_be_done": "ship verified work",
+      "pain_points": ["untrusted output"],
+      "trigger_events": ["repo work"],
+      "buyer_context": "founder",
+      "adoption_channel": "CLI",
+      "objections": ["ceremony"],
+      "proof_needed": ["tests"],
+      "disqualifiers": ["no audit"]
+    },
+    "anti_icp": ["unchecked generation"]
+  },
+  "taste_evolution": {
+    "defineicp_semantics": true,
+    "protected_kernel_checklist": {
+      "SPEC-first": true,
+      "research-first": true,
+      "evidence-backed verification": true,
+      "explicit contracts": true,
+      "single-owner state": true,
+      "structured errors": true,
+      "observability": true,
+      "least privilege": true,
+      "rollback": true,
+      "separate verifier": true,
+      "no silent destructive behavior": true
+    },
+    "taste_md_changes": [{"change": "replace whole file"}],
+    "taste_vision_changes": [{"change": "replace whole file"}],
+    "changed_line_trace": [{"file": "taste.md"}],
+    "what_not_to_change": ["kernel"]
+  },
+  "taste_mutation": {
+    "applied": true
+  },
+  "verification": {"status": "pass", "commands": [{"command": "false", "exit_code": 1}]},
+  "introspection": {"likely_mistakes": ["overwrite"], "evidence_checked": ["none"], "confidence": "low"}
+}

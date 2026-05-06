@@ -54,10 +54,10 @@
     "path": ".codex"
   },
   "counts": {
-    "eval_tasks": 21,
+    "eval_tasks": 22,
     "rules": 15,
-    "scripts": 53,
-    "skills": 33
+    "scripts": 54,
+    "skills": 34
   },
   "evals": [
     {
@@ -68,6 +68,15 @@
       "id": "m10-defineicp-taste-evolution",
       "task_path": "evals/harness/tasks/m10-defineicp-taste-evolution.yaml",
       "title": "/defineicp ICP-to-taste evolution gate"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/deepretaste-smoke.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m11-deepretaste-intent-icp-bootstrap.json",
+      "id": "m11-deepretaste-intent-icp-bootstrap",
+      "task_path": "evals/harness/tasks/m11-deepretaste-intent-icp-bootstrap.yaml",
+      "title": "/deepretaste intent-to-ICP-to-taste bootstrap gate"
     },
     {
       "expected_result": "pass",
@@ -410,6 +419,14 @@
       "sha256": "45893ba7c1a467e774f725f3fb0697e49cbcb35943943c2449f309aed2e350e8"
     },
     {
+      "line_count": 507,
+      "name": "deepretaste-smoke",
+      "path": "scripts/deepretaste-smoke.sh",
+      "purpose": "intent-to-ICP-to-taste bootstrap contract gate",
+      "required_gate": true,
+      "sha256": "6e2104f513e2fab928da819f6595e34889d7f3224989aa73a3aa82d50a44a281"
+    },
+    {
       "line_count": 319,
       "name": "defineicp-smoke",
       "path": "scripts/defineicp-smoke.sh",
@@ -458,12 +475,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 659,
+      "line_count": 663,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "fe5560925ef75f5634b58d54721f1a76d760fcc401da63aa42ccee849e449225"
+      "sha256": "335b31db95d208d23bfc36a9dca253b15e6a24748118534850071fb18d5b61bd"
     },
     {
       "line_count": 640,
@@ -482,12 +499,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 793,
+      "line_count": 802,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "c7d3d4854308b44ce97dfae3efd0ca9a671bae3f7f7765251999eed3d50dc9a1"
+      "sha256": "529a3c955709e829310d27a050aa95201f607472214ee06bfa3c41876b6ecb0f"
     },
     {
       "line_count": 322,
@@ -658,12 +675,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 91,
+      "line_count": 92,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "14887caa7775a9bcbe2b5b8b458735aeac2a9fa6ca7fe4a16af83bf50e28a331"
+      "sha256": "c069956f1e882f0dd1728d930410fa2453be16188acc2ee6250a85c228498e79"
     },
     {
       "line_count": 144,
@@ -727,7 +744,7 @@
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "df2b1771313762d602873731d75005593c2a3a2dc47ebe959ef843997b662102"
+      "sha256": "0e5d13ac0fe2c64132a221593c368282e4320621351ad43fa404804cb2eb9eb6"
     },
     {
       "line_count": 382,
@@ -746,12 +763,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1769,
+      "line_count": 1825,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "825c03762ba89a97bc3db9de6149ee16bd9096eb41b200051e86a97cd53e3138"
+      "sha256": "aac199824a2b039a1089470fafe5313b182b7226252f7949d76bf6c22ee2b480"
     },
     {
       "line_count": 552,
@@ -767,7 +784,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "9f6eedeb88ac2d5c694450c703e0d90899111a2f856c676d8f1ae1a49d5ce440"
+      "sha256": "a1d7a90666da0d4b7d188b747921a95f1333aa267e440373fcbc206e857b450b"
     },
     {
       "line_count": 117,
@@ -1120,6 +1137,26 @@
       "user_invocable": true
     },
     {
+      "argument_hint": "[product/context, mode: research|bootstrap|proposal|apply]",
+      "core_route": true,
+      "description": "Detect product intent, run SOTA-2026 deepresearch with a capacity-bound parallel or hive budget, define ICPs, and bootstrap or propose/apply taste.md, taste.vision, and ICP artifacts. Use when the user invokes /deepretaste or asks to retaste a product from intent and customer research.",
+      "group": "kernel",
+      "line_count": 346,
+      "model_invocation": false,
+      "name": "deepretaste",
+      "path": ".claude/skills/deepretaste/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m11-deepretaste-intent-icp-bootstrap.yaml"
+      ],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/deepretaste-smoke.sh"
+      ],
+      "sha256": "cfb9186c7d5e75ed6165c3a9dfbbccee8fc90ee16209d9a568c3a4793a393a78",
+      "slash": "/deepretaste",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "[product/context, mode: research|proposal|apply]",
       "core_route": false,
       "description": "Define the ICP or ICPs for the current product with deepresearch, then draft or apply ICP-driven updates to taste.md and taste.vision. Use when the user invokes /defineicp or asks to tailor the product kernel to ideal customer profiles.",
@@ -1297,7 +1334,7 @@
       "core_route": true,
       "description": "Route and calibrate work with model-agnostic metacognitive control. Use when the user asks for thinking-about-thinking, harness effectiveness, task routing, self-correction, confidence calibration, or strategy improvement before execution.",
       "group": "routing",
-      "line_count": 228,
+      "line_count": 229,
       "model_invocation": false,
       "name": "metacognition",
       "path": ".claude/skills/metacognition/SKILL.md",
@@ -1311,7 +1348,7 @@
         "scripts/metacognition-scorecard.sh",
         "scripts/parallel-capacity.sh"
       ],
-      "sha256": "ad808d57cf3586eea9287ac4b2ce0cc93b539eb1b1a73eb094d457744297b997",
+      "sha256": "59bf1d294b4d9f4ee20aeb76862cc2a82131f2c9ba3541aa43ee71dc42e474c2",
       "slash": "/metacognition",
       "user_invocable": true
     },
@@ -1571,7 +1608,7 @@
       "core_route": true,
       "description": "Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.",
       "group": "execution",
-      "line_count": 772,
+      "line_count": 773,
       "model_invocation": false,
       "name": "workflow",
       "path": ".claude/skills/workflow/SKILL.md",
@@ -1593,7 +1630,7 @@
         "scripts/test-harness.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "8a08362e5e4c18244da44545a3f8ef877c641b0f3e6a295b480fbee241cac4a7",
+      "sha256": "b8d4940f1cd746299e8eb3d168b06b6f0337608896cbf72c6199a96c206fb8ff",
       "slash": "/workflow",
       "user_invocable": true
     }
@@ -1616,8 +1653,8 @@
   },
   "summary": {
     "codex_file_count": 4,
-    "core_route_count": 14,
-    "eval_task_count": 21,
+    "core_route_count": 15,
+    "eval_task_count": 22,
     "groups": {
       "agent-systems": [
         "/agentfactory"
@@ -1639,6 +1676,7 @@
       ],
       "kernel": [
         "/align",
+        "/deepretaste",
         "/tastebootstrap"
       ],
       "knowledge": [
@@ -1683,7 +1721,7 @@
     },
     "hook_event_count": 11,
     "rule_count": 15,
-    "script_count": 53,
-    "skill_count": 33
+    "script_count": 54,
+    "skill_count": 34
   }
 }

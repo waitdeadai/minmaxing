@@ -1,0 +1,148 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "deepretaste-green-apply",
+  "mode": "apply",
+  "status": "RETASTE_APPLIED",
+  "product_scope": {
+    "scope_type": "repo",
+    "product": "governed AI coding harness",
+    "source_evidence": ["accepted proposal proposal-deepretaste-20260506-a", "taste.md", "taste.vision"],
+    "confidence": "high",
+    "ambiguities": [],
+    "apply_allowed": true
+  },
+  "intent_detection": {
+    "developer_intent": "apply an exact approved retaste proposal",
+    "product_intent": "make AI coding work inspectable, evidence-backed, and customer-aligned",
+    "route_decision": "apply",
+    "confidence": "high"
+  },
+  "taste_state": {
+    "taste_md_exists": true,
+    "taste_vision_exists": true,
+    "existing_kernel": true
+  },
+  "routing": {
+    "declared_route": "/deepretaste apply",
+    "delegated_routes": ["/deepresearch", "/defineicp"],
+    "reason": "existing taste files require defineicp apply semantics"
+  },
+  "research": {
+    "deepresearch_plan": {
+      "product": "governed AI coding harness",
+      "branches": ["accepted proposal", "hash reconciliation", "protected kernel"],
+      "effective_parallel_budget": 3,
+      "stop_condition": "accepted proposal matches current hashes and protected kernel"
+    },
+    "loop_log": [
+      {"loop": 1, "change": "reconciled proposal id and file hashes", "why_it_mattered": "apply must be exact"}
+    ],
+    "source_ledger": {
+      "cited": [
+        {"source": "accepted proposal proposal-deepretaste-20260506-a", "claim_supported": "exact retaste proposal approved"}
+      ],
+      "reviewed_but_not_cited": [],
+      "rejected": [],
+      "conflicts": []
+    },
+    "sota_2026_policy": {
+      "sota_claims_allowed": true,
+      "current_sources": [
+        {"source": "approved current-source-backed proposal ledger", "current": true}
+      ],
+      "stable_foundations": ["protected kernel invariants"]
+    },
+    "claim_ledger": [
+      {
+        "id": "C1",
+        "claim": "The approved retaste keeps verification, rollback, and least privilege intact.",
+        "label": "user-stated",
+        "evidence": "proposal-deepretaste-20260506-a exact approval",
+        "taste_impact": "Apply only the accepted audience and experience refinements.",
+        "direct_taste_driver": true
+      }
+    ]
+  },
+  "parallel_decision": {
+    "ceiling": 10,
+    "effective_budget": 3,
+    "distinct_lenses": ["proposal reconciliation", "protected kernel", "verification"],
+    "supervisor_capacity": 3,
+    "verifier_capacity": 3,
+    "why_not_more": "apply reconciliation is bounded and does not benefit from extra lanes",
+    "substrate": "subagents",
+    "agent_teams_available": false
+  },
+  "icp": {
+    "primary": {
+      "segment": "technical owner-operators using AI agents on production-bound repos",
+      "buyer_user_distinction": "buyer and user are usually the same founder or CTO",
+      "job_to_be_done": "convert ambiguous work into verified implementation without losing product intent",
+      "pain_points": ["untrusted agent claims", "kernel drift", "unclear customer fit"],
+      "trigger_events": ["approved retaste proposal", "before workflow execution"],
+      "buyer_context": "technical owner with authority to change local tooling",
+      "adoption_channel": "Claude Code project skill",
+      "objections": ["fear of overwriting taste", "too much ceremony"],
+      "proof_needed": ["backups", "hashes", "rollback", "verification"],
+      "disqualifiers": ["no need for auditability"]
+    },
+    "secondary": [],
+    "anti_icp": ["users who want unreviewed prompt-to-code output"]
+  },
+  "taste_evolution": {
+    "defineicp_semantics": true,
+    "protected_kernel_checklist": {
+      "SPEC-first": true,
+      "research-first": true,
+      "evidence-backed verification": true,
+      "explicit contracts": true,
+      "single-owner state": true,
+      "structured errors": true,
+      "observability": true,
+      "least privilege": true,
+      "rollback": true,
+      "separate verifier": true,
+      "no silent destructive behavior": true
+    },
+    "taste_md_changes": [{"section": "Experience & Interaction", "change": "Apply approved operator-confidence language."}],
+    "taste_vision_changes": [{"section": "Audience", "change": "Apply approved technical-owner ICP language."}],
+    "changed_line_trace": [{"file": "taste.md", "section": "Experience & Interaction", "source_claim": "C1", "label": "user-stated"}],
+    "what_not_to_change": ["SPEC-first", "research-first", "least privilege", "rollback", "separate verification"]
+  },
+  "approval": {
+    "explicit": true,
+    "approved_proposal_id": "proposal-deepretaste-20260506-a",
+    "approval_text": "I approve proposal-deepretaste-20260506-a for governed AI coding harness and authorize changes to taste.md, taste.vision, and icp artifact.",
+    "approved_files": ["taste.md", "taste.vision", "icp artifact"]
+  },
+  "taste_mutation": {
+    "applied": true,
+    "mutation_kind": "apply",
+    "authority": "/defineicp",
+    "backup_paths": [
+      ".taste/deepretaste/deepretaste-green-apply/backups/taste.md",
+      ".taste/deepretaste/deepretaste-green-apply/backups/taste.vision"
+    ],
+    "pre_change_hashes": {
+      "taste.md": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "taste.vision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "post_change_hashes": {
+      "taste.md": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "taste.vision": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "rollback_plan": "restore both taste files from backups and rerun deepretaste smoke plus taste structure checks"
+  },
+  "verification": {
+    "status": "pass",
+    "commands": [
+      {"command": "bash scripts/deepretaste-smoke.sh --artifact valid-apply.json", "exit_code": 0}
+    ]
+  },
+  "introspection": {
+    "likely_mistakes": ["approved patch might still narrow the kernel too much"],
+    "evidence_checked": ["accepted proposal", "hashes", "backups", "verification commands"],
+    "confidence": "medium-high",
+    "unresolved_blockers": []
+  }
+}

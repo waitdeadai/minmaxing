@@ -1,0 +1,17 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "red-sota-without-current-sources",
+  "mode": "research",
+  "status": "RETASTE_RESEARCHED",
+  "product_scope": {"scope_type": "repo", "product": "AI product", "source_evidence": ["prompt"], "confidence": "medium", "ambiguities": [], "apply_allowed": false},
+  "intent_detection": {"developer_intent": "research", "product_intent": "AI product", "route_decision": "research", "confidence": "medium"},
+  "taste_state": {"taste_md_exists": false, "taste_vision_exists": false, "existing_kernel": false},
+  "routing": {"declared_route": "/deepretaste research", "delegated_routes": ["/deepresearch"]},
+  "research": {
+    "deepresearch_plan": {"claim": "SOTA 2026 research-backed retaste"},
+    "loop_log": [{"loop": 1}],
+    "source_ledger": {"cited": [{"source": "one blog"}], "reviewed_but_not_cited": [], "conflicts": []},
+    "sota_2026_policy": {"sota_claims_allowed": false, "current_sources": []},
+    "claim_ledger": [{"claim": "SOTA 2026 method", "label": "assumption", "evidence": "none", "taste_impact": "none"}]
+  }
+}

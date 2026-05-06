@@ -1,0 +1,139 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "deepretaste-green-proposal",
+  "mode": "proposal",
+  "status": "RETASTE_PROPOSED",
+  "product_scope": {
+    "scope_type": "repo",
+    "product": "governed AI coding harness",
+    "source_evidence": ["taste.md", "taste.vision", "README.md"],
+    "confidence": "high",
+    "ambiguities": [],
+    "apply_allowed": false
+  },
+  "intent_detection": {
+    "developer_intent": "retaste an existing product kernel from fresh ICP research",
+    "product_intent": "make AI coding work inspectable, evidence-backed, and customer-aligned",
+    "route_decision": "proposal",
+    "confidence": "high"
+  },
+  "taste_state": {
+    "taste_md_exists": true,
+    "taste_vision_exists": true,
+    "existing_kernel": true
+  },
+  "routing": {
+    "declared_route": "/deepretaste proposal",
+    "delegated_routes": ["/deepresearch", "/defineicp"],
+    "reason": "existing taste files require defineicp proposal-first semantics"
+  },
+  "research": {
+    "deepresearch_plan": {
+      "product": "governed AI coding harness",
+      "branches": ["intent", "ICP/JTBD", "current 2026 product discovery", "technical fit", "skeptic"],
+      "effective_parallel_budget": 5,
+      "stop_condition": "ICP and taste proposal are traceable to strong claims"
+    },
+    "loop_log": [
+      {"loop": 1, "change": "split primary ICP from anti-ICP", "why_it_mattered": "prevents broad developer fluff"}
+    ],
+    "source_ledger": {
+      "cited": [
+        {"source": "current 2026 UX/product source", "claim_supported": "research synthesis should expose gaps and avoid assumptions"}
+      ],
+      "reviewed_but_not_cited": [
+        {"source": "secondary ICP article", "why_downweighted": "less authoritative than repo evidence and UX sources"}
+      ],
+      "rejected": [],
+      "conflicts": []
+    },
+    "sota_2026_policy": {
+      "sota_claims_allowed": true,
+      "current_sources": [
+        {"source": "NN/g UX research methods poster 2026", "current": true}
+      ],
+      "stable_foundations": ["JTBD"]
+    },
+    "claim_ledger": [
+      {
+        "id": "C1",
+        "claim": "The ICP values verified agent work more than raw speed.",
+        "label": "repo-derived",
+        "evidence": "taste.vision and README emphasize right results and evidence.",
+        "taste_impact": "Keep verification and rollback as kernel invariants.",
+        "direct_taste_driver": true
+      },
+      {
+        "id": "C2",
+        "claim": "The product should be easier for first-run operators to understand.",
+        "label": "current-source-backed",
+        "evidence": "current UX source supports gap discovery and communication artifacts.",
+        "taste_impact": "Sharpen first-run experience language.",
+        "direct_taste_driver": true
+      }
+    ]
+  },
+  "parallel_decision": {
+    "ceiling": 10,
+    "effective_budget": 5,
+    "distinct_lenses": ["intent", "ICP/JTBD", "current practice", "technical fit", "skeptic"],
+    "supervisor_capacity": 5,
+    "verifier_capacity": 5,
+    "why_not_more": "five lenses cover the useful uncertainty without slot filling",
+    "substrate": "subagents",
+    "agent_teams_available": false
+  },
+  "icp": {
+    "primary": {
+      "segment": "technical owner-operators using AI agents on production-bound repos",
+      "buyer_user_distinction": "the buyer is usually the same founder or CTO who operates the harness daily",
+      "job_to_be_done": "turn ambiguous work into researched, spec-backed, implemented, verified changes",
+      "pain_points": ["agents skip planning", "tests are claimed without evidence", "parallel work is hard to trust"],
+      "trigger_events": ["new product build", "repo recovery", "pre-demo polish"],
+      "buyer_context": "technical founder or CTO with tooling authority",
+      "adoption_channel": "Claude Code slash skill and one-command setup",
+      "objections": ["ceremony", "cost", "provider uncertainty"],
+      "proof_needed": ["static gates", "artifact ledgers", "rollback path"],
+      "disqualifiers": ["users who only want unchecked code generation"]
+    },
+    "secondary": [
+      {"segment": "consultants packaging governed AI workflows", "difference": "needs client-facing proof artifacts"}
+    ],
+    "anti_icp": ["teams optimizing only for shortest prompt-to-code path"]
+  },
+  "taste_evolution": {
+    "defineicp_semantics": true,
+    "protected_kernel_checklist": {
+      "SPEC-first": true,
+      "research-first": true,
+      "evidence-backed verification": true,
+      "explicit contracts": true,
+      "single-owner state": true,
+      "structured errors": true,
+      "observability": true,
+      "least privilege": true,
+      "rollback": true,
+      "separate verifier": true,
+      "no silent destructive behavior": true
+    },
+    "taste_md_changes": [{"section": "Experience & Interaction", "change": "Add first-run operator confidence as a product taste goal."}],
+    "taste_vision_changes": [{"section": "Audience", "change": "Name technical owner-operators as the primary ICP."}],
+    "changed_line_trace": [{"file": "taste.vision", "section": "Audience", "source_claim": "C1", "label": "repo-derived"}],
+    "what_not_to_change": ["SPEC-first", "research-first", "rollback", "separate verification"]
+  },
+  "taste_mutation": {
+    "applied": false
+  },
+  "verification": {
+    "status": "pass_with_notes",
+    "commands": [
+      {"command": "bash scripts/deepretaste-smoke.sh --artifact valid-proposal.json", "exit_code": 0}
+    ]
+  },
+  "introspection": {
+    "likely_mistakes": ["treating inferred buying context as proven"],
+    "evidence_checked": ["taste.md", "taste.vision", "README.md", "source ledger"],
+    "confidence": "medium-high",
+    "unresolved_blockers": []
+  }
+}

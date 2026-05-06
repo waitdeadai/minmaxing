@@ -1,0 +1,18 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "red-apply-with-vague-approval",
+  "mode": "apply",
+  "status": "RETASTE_APPLIED",
+  "product_scope": {"scope_type": "repo", "product": "governed AI coding harness", "source_evidence": ["proposal"], "confidence": "high", "ambiguities": [], "apply_allowed": true},
+  "intent_detection": {"developer_intent": "apply retaste", "product_intent": "governed coding", "route_decision": "apply", "confidence": "high"},
+  "taste_state": {"taste_md_exists": true, "taste_vision_exists": true, "existing_kernel": true},
+  "routing": {"declared_route": "/deepretaste apply", "delegated_routes": ["/defineicp"]},
+  "research": {"deepresearch_plan": {"branches": ["proposal"]}, "loop_log": [{"loop": 1}], "source_ledger": {"cited": [{"source": "proposal"}], "reviewed_but_not_cited": [], "conflicts": []}, "sota_2026_policy": {"sota_claims_allowed": true, "current_sources": [{"source": "current proposal", "current": true}]}, "claim_ledger": [{"claim": "approved", "label": "user-stated", "evidence": "approval", "taste_impact": "apply", "direct_taste_driver": true}]},
+  "parallel_decision": {"ceiling": 10, "effective_budget": 1, "distinct_lenses": ["proposal"], "supervisor_capacity": 1, "verifier_capacity": 1, "why_not_more": "bounded", "substrate": "subagents"},
+  "icp": {"primary": {"segment": "technical builders", "buyer_user_distinction": "same", "job_to_be_done": "verify work", "pain_points": ["claims"], "trigger_events": ["approval"], "buyer_context": "founder", "adoption_channel": "CLI", "objections": ["ceremony"], "proof_needed": ["hashes"], "disqualifiers": ["no audit"]}, "anti_icp": ["unchecked generation"]},
+  "taste_evolution": {"defineicp_semantics": true, "protected_kernel_checklist": {"SPEC-first": true, "research-first": true, "evidence-backed verification": true, "explicit contracts": true, "single-owner state": true, "structured errors": true, "observability": true, "least privilege": true, "rollback": true, "separate verifier": true, "no silent destructive behavior": true}, "taste_md_changes": [{"change": "apply"}], "taste_vision_changes": [{"change": "apply"}], "changed_line_trace": [{"file": "taste.md"}], "what_not_to_change": ["kernel"]},
+  "approval": {"explicit": true, "approved_proposal_id": "proposal-a", "approval_text": "go ahead", "approved_files": ["taste.md", "taste.vision", "icp artifact"]},
+  "taste_mutation": {"applied": true, "mutation_kind": "apply", "authority": "/defineicp", "backup_paths": ["b1", "b2"], "pre_change_hashes": {"taste.md": "a", "taste.vision": "b"}, "post_change_hashes": {"taste.md": "c", "taste.vision": "d"}, "rollback_plan": "restore backups"},
+  "verification": {"status": "pass", "commands": [{"command": "true", "exit_code": 0}]},
+  "introspection": {"likely_mistakes": ["approval vague"], "evidence_checked": ["approval"], "confidence": "low", "unresolved_blockers": []}
+}

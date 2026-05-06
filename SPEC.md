@@ -1,226 +1,246 @@
-# SPEC: `/defineicp` ICP-to-Taste Evolution Workflow
+# SPEC: `/deepretaste` SOTA 2026 Intent-to-Taste Bootstrap Workflow
 
 ## Problem Statement
 
-The harness already has `taste.md` and `taste.vision` as the project operating
-kernel, and `/icpweek` can stress-test a product from an ideal-user lens. What is
-missing is a governed workflow that defines the real ICP or ICPs for the current
-product and feeds those findings back into the kernel so future product work is
-tailored to the right customer profile.
+The harness now has `/tastebootstrap` for fresh taste creation and `/defineicp`
+for proposal-first ICP-to-taste evolution. The missing mode is the higher-order
+workflow the user is asking for: `/deepretaste`, a SOTA-2026, research-backed,
+parallel-aware command that detects the developer's product intent, defines the
+right ICP or ICPs, and bootstraps or retastes `taste.md`, `taste.vision`, and a
+durable ICP artifact.
 
-The dangerous version of this feature would overwrite `taste.md` and
-`taste.vision` with market persona fluff. The useful version is
-`/defineicp`: a deepresearch-backed ICP discovery and taste-evolution command
-that preserves the protected kernel, produces a source-backed ICP artifact, then
-drafts and optionally applies a rollbackable rewrite of both taste files.
+The dangerous version would become a theatrical "max agents" persona generator
+that overwrites the project kernel with generic market language. The useful
+version is governed: it uses current-source deepresearch, capacity-bound
+parallel or hive lanes, explicit claim ledgers, protected-kernel preservation,
+and mutation gates that distinguish fresh bootstrap from existing-kernel
+retaste.
 
 ## Success Criteria
 
-- [x] Add `.claude/skills/defineicp/SKILL.md` as a manual slash skill.
-- [x] The skill must use the repo's `/deepresearch` discipline for market,
-  customer, competitor, workflow, buying, or current-behavior claims.
-- [x] The skill must infer or intake product scope before research: repo-level
-  product, feature, customer vertical, or target distribution.
-- [x] The skill must define primary ICP, secondary ICPs where warranted, and
+- [ ] Add `.claude/skills/deepretaste/SKILL.md` as a manual slash skill.
+- [ ] The skill must detect product intent from user prompt plus repo truth
+  surfaces before choosing bootstrap, proposal, apply, or research mode.
+- [ ] The skill must define primary ICP, secondary ICPs where useful, and
   anti-ICP/disqualified segments.
-- [x] The skill must default to proposal mode: it writes an ICP artifact and
-  taste patch proposal, but does not mutate `taste.md` or `taste.vision`
-  without explicit apply approval.
-- [x] Apply mode must preserve pre-change hashes, backup both taste files,
-  update both files as one unit, and validate semantic kernel preservation.
-- [x] Add a no-secret static gate `scripts/defineicp-smoke.sh --fixtures`.
-- [x] Add green/red fixtures that prove proposal-first behavior, source-ledger
-  discipline, protected-kernel preservation, apply approval, and secret
+- [ ] The skill must use SOTA-2026 claim discipline: current sources where
+  available, stable foundations labeled as such, and no "SOTA" claim without a
+  source ledger.
+- [ ] The skill must compute an effective parallel/hive budget from local
+  capacity and independent research roles, treating max agents as a ceiling.
+- [ ] Fresh repos may write `taste.md`, `taste.vision`, and an ICP artifact
+  when intent is explicit enough; existing taste files require proposal-first
+  behavior unless exact apply approval exists.
+- [ ] Apply/bootstrap mutations must backup existing files when present, record
+  hashes, update taste files as one unit, validate required sections, and
+  record rollback.
+- [ ] Add a no-secret static gate `scripts/deepretaste-smoke.sh --fixtures`.
+- [ ] Add green/red fixtures that prove intent detection, SOTA source
+  discipline, ICP completeness, parallel budget honesty, fresh bootstrap,
+  proposal-first existing-kernel behavior, approval gating, and secret
   rejection.
-- [x] Register the smoke gate in the static eval pack, release gate, capability
+- [ ] Register the smoke gate in the static eval pack, release gate, capability
   map, startup surface, and test harness.
-- [x] Update README, CLAUDE.md, and AGENTS.md so `/defineicp` is visible and
-  distinct from `/icpweek` and `/tastebootstrap`.
-- [x] Regenerate `docs/harness-capability-map.md` and
+- [ ] Update README, CLAUDE.md, AGENTS.md, `/workflow`, and `/metacognition` so
+  `/deepretaste` is discoverable and distinct from `/tastebootstrap`,
+  `/defineicp`, `/icpweek`, `/deepresearch`, and `/hive`.
+- [ ] Regenerate `docs/harness-capability-map.md` and
   `docs/harness-capability-map.json`.
-- [x] Static release gates pass without reading `.env`, local Claude settings,
+- [ ] Static release gates pass without reading `.env`, local Claude settings,
   MiniMax key files, private customer artifacts, or production logs.
 
 ## Research Brief
 
 ### Collaborative Research Plan
 
-- Deliverable: a safe `/defineicp` route that can define ICPs and evolve the
-  taste kernel without destructive or evidence-free rewrites.
+- Deliverable: a safe `/deepretaste` skill that can bootstrap or retaste a
+  project kernel from intent + ICP research without destructive overwrites.
 - Local branches:
-  - skill/frontmatter conventions and route discovery
-  - taste creation, validation, and evolution contracts
-  - harness registration, eval, release, and docs surfaces
-  - adversarial overwrite and semantic-loss risks
+  - skill/frontmatter and route discovery conventions
+  - existing `/defineicp` and `/tastebootstrap` mutation semantics
+  - harness eval, release, startup, and capability-map wiring
+  - adversarial overwrite and fake-SOTA risks
 - External branches:
-  - current Claude Code skill and settings behavior
-  - stable ICP/persona/JTBD principles that justify the output structure
+  - current Claude Code skill/subagent/hook behavior
+  - current or stable product discovery, ICP, JTBD, persona, and UX research
+    evidence standards
 - Effective research budget:
-  - capacity evidence: `scripts/parallel-capacity.sh --json` returned
-    `recommended_ceiling=10`, `codex_max_threads=10`, `cores=16`,
-    `ram_gb=32`, `hardware_class=workstation`.
-  - used lanes: 5 distinct lanes plus parent synthesis, not the full ceiling.
+  - `scripts/parallel-capacity.sh --json` returned `recommended_ceiling=10`,
+    `codex_max_threads=10`, `cores=16`, `ram_gb=32`,
+    `hardware_class=workstation`, `agent_teams_available=false`.
+  - Used lanes: 4 subagents plus parent synthesis and live web research. This
+    uses distinct lenses, not the whole ceiling.
 - Stop condition:
-  - identify exact files to edit, safety contract for taste mutation, static
-    fixtures, and release gates.
+  - exact skill contract, static artifacts, registration surfaces, and
+    verification commands are known.
 
 ### Source Ledger
 
 - Local source surfaces:
-  - `AGENTS.md`: deepresearch, `/icpweek`, `/introspect`, spec lifecycle,
-    release-check, surgical diff, and taste/kernel rules.
-  - `.claude/skills/icpweek/SKILL.md`: closest ICP-style research route.
-  - `.claude/skills/deepresearch/SKILL.md`: collaborative plan, iterative
-    search/read/refine, source ledger, conflict handling, and introspection.
-  - `.claude/skills/tastebootstrap/SKILL.md`: fresh taste creation contract.
-  - `.claude/skills/align/SKILL.md`: taste evolution precedent and approval
-    boundary.
-  - `.claude/skills/workflow/SKILL.md`: taste gate and route lifecycle.
-  - `scripts/taste.sh`: non-overwrite init behavior and required taste
+  - `AGENTS.md`: deepresearch, hive, parallel, defineicp, tastebootstrap,
+    introspect, release-check, spec lifecycle, and surgical diff rules.
+  - `docs/harness-capability-map.md`: current 33-skill route map and required
+    script gates.
+  - `.claude/skills/defineicp/SKILL.md`: proposal-first ICP-to-taste mutation
+    precedent.
+  - `.claude/skills/tastebootstrap/SKILL.md`: fresh-repo kernel bootstrap
     structure.
-  - `scripts/harness-capability-map.sh`, `scripts/harness-eval.sh`,
-    `scripts/release-check.sh`, `scripts/test-harness.sh`: registration,
-    eval, release, and regression surfaces.
+  - `.claude/skills/deepresearch/SKILL.md`: collaborative plan,
+    search-read-refine loop, source ledger, conflict handling, and effective
+    parallel budget.
+  - `.claude/skills/hive/SKILL.md`: queen/supervisor, blackboard, dissent, and
+    evidence-backed synthesis.
+  - `scripts/defineicp-smoke.sh`, `scripts/harness-eval.sh`,
+    `scripts/harness-capability-map.sh`, `scripts/release-check.sh`,
+    `scripts/test-harness.sh`: static gate patterns.
 - External sources:
-  - Claude Code skills docs: `https://code.claude.com/docs/en/skills`
-    confirmed project skills live under `.claude/skills/<name>/SKILL.md`,
-    can be invoked as `/name`, and `disable-model-invocation: true` makes a
-    workflow manual.
-  - Claude Code settings docs: `https://code.claude.com/docs/en/settings`
-    confirmed shared project settings and ignored local settings boundaries.
-  - Claude Code hooks docs: `https://code.claude.com/docs/en/hooks`
-    confirmed hook decisions can block actions, reinforcing that safety gates
-    should be deterministic when needed.
+  - Claude Code skills docs:
+    `https://code.claude.com/docs/en/slash-commands` confirmed project skills
+    live under `.claude/skills/<name>/SKILL.md`, can be invoked directly, and
+    support `disable-model-invocation: true`.
+  - Claude Code subagents docs:
+    `https://code.claude.com/docs/en/sub-agents` confirmed subagents can be
+    model-scoped, inherit by default, and can have lifecycle hooks.
+  - Claude Code hooks docs:
+    `https://code.claude.com/docs/en/hooks-guide` confirmed restrictive hook
+    decisions can block actions and agent hooks can verify real repo state.
+  - Strategyzer Value Proposition Canvas:
+    `https://www.strategyzer.com/library/the-value-proposition-canvas`
+    published January 28, 2026, supports jobs-to-be-done, pains, gains, and
+    product-market-fit evidence mapping.
+  - Harvard Business Review JTBD:
+    `https://hbr.org/2016/09/know-your-customers-jobs-to-be-done` is a stable
+    foundation for centering the job customers hire a product to do.
   - Yale UX archetypes/personas:
     `https://usability.yale.edu/ux/discovery/create-user-representations/archetypes-and-personas`
-    confirmed personas/archetypes should be grounded in user research and
-    focus on behavior, goals, and pain points.
+    supports grounding archetypes/personas in real user research, behavior,
+    goals, and pain points.
+  - NN/g empathy mapping poster:
+    `https://media.nngroup.com/media/articles/attachments/Empathy_Mapping_Poster1-compressed.pdf`
+    supports empathy maps as qualitative-research synthesis and gap discovery.
+  - NN/g UX research methods poster:
+    `https://media.nngroup.com/media/articles/attachments/User_Research_Methods_A4-compressed.pdf`
+    supports mixing attitudinal/behavioral and qualitative/quantitative
+    methods rather than trusting what users say alone.
   - Shopify ICP guide:
-    `https://www.shopify.com/blog/ideal-customer-profile` confirmed ICPs
-    should be data-driven, focus on highest-value customers, include buyer
-    attributes, pains, budget, technology, goals, and can be multiple by
-    product/service.
-  - Harvard Business Review JTBD article:
-    `https://hbr.org/2016/09/know-your-customers-jobs-to-be-done` supported
-    using the job customers are trying to accomplish as the center of product
-    definition.
+    `https://www.shopify.com/blog/ideal-customer-profile` supports ICPs as
+    data-driven descriptions of the customers most valuable to the business.
+  - Proto-persona LLM case study:
+    `https://arxiv.org/abs/2507.08594` supports GenAI-assisted product
+    discovery efficiency while warning about generalization and domain
+    specificity.
+  - Personagram:
+    `https://arxiv.org/abs/2602.06197` supports structured persona-to-product
+    ideation with AI, with transparency and engagement benefits over a
+    chat-only baseline.
 
 ### Reviewed But Not Cited
 
-- Secondary ICP blog posts and Reddit discussions were useful for vocabulary
-  but downweighted because official/product-neutral sources and repo contracts
-  were stronger.
+- Generic ICP and product-discovery blog posts were useful for vocabulary but
+  downweighted behind official docs, established UX/product sources, and recent
+  AI-persona research.
 
 ### Conflicts And Resolutions
 
-- User requested rewrite of `taste.md` and `taste.vision`; repo contracts treat
-  those files as protected kernel surfaces. Resolution: `/defineicp` may apply
-  rewrites, but default mode is proposal-first and apply requires explicit
-  approval, backups, changed-line trace, and validation.
-- ICP/persona sources sometimes emphasize sales/marketing; this harness needs
-  product behavior and engineering taste. Resolution: the skill maps ICP
-  findings into product experience, contracts, operations, verification, and
-  non-goals, not just positioning copy.
+- User asked for "max parallel agents or hive"; repo contracts say capacity is
+  a ceiling, not a quota. Resolution: `/deepretaste` computes an effective
+  budget and uses hive only when distinct roles, blackboard, dissent, and
+  synthesis materially improve judgment.
+- User wants bootstrap of taste and vision; existing repo kernels are protected
+  surfaces. Resolution: fresh repos may be bootstrapped, but existing taste
+  files default to proposal mode and require explicit apply approval.
+- "SOTA 2026" can become marketing language. Resolution: the skill requires
+  current-source evidence for current claims and labels stable foundations
+  separately.
 
 ## Scope
 
 ### In Scope
 
-- New `/defineicp` skill and no-secret smoke gate.
-- Static fixtures for valid and invalid ICP/taste-evolution artifacts.
+- New `/deepretaste` skill.
+- New no-secret smoke gate and fixtures.
 - Eval, release, test harness, capability map, startup, and docs wiring.
-- A guarded contract for rewriting `taste.md` and `taste.vision` when invoked
-  later by an operator with explicit apply approval.
+- Contract for writing `taste.md`, `taste.vision`, and ICP artifacts in future
+  downstream repos.
 
 ### Out Of Scope
 
-- Running `/defineicp` against this repo's own ICP and rewriting the live
-  `taste.md` / `taste.vision` during this implementation.
-- Authenticated provider calls, customer-data imports, CRM scraping, outreach,
-  analytics ingestion, or production-log access.
-- Guaranteeing that market research is true when external sources are absent or
-  blocked. The skill must label assumptions and downgrade confidence.
+- Running `/deepretaste` against this repo's own product and rewriting the live
+  root taste files during this implementation.
+- Authenticated provider calls, CRM/customer-data ingestion, private analytics,
+  outreach, or production logs.
+- Claiming universal SOTA or PMF proof; the skill can only report evidence
+  strength and missing validation.
 
 ## Agent-Native Estimate
 
 - Estimate type: agent-native.
-- Execution topology: parent orchestrator plus bounded read-only research lanes.
+- Execution topology: parent orchestrator plus 4 distinct research/review lanes.
 - Capacity evidence: `recommended_ceiling=10`, `codex_max_threads=10`,
   `agent_teams_available=false`.
-- Effective lanes: 5 research/review lanes plus one local implementation lane.
-  Edits are coupled across skill, script, fixtures, evals, docs, and generated
-  maps, so implementation stays local to avoid integration churn.
+- Effective lanes: 4 subagents plus local implementation. Implementation is
+  coupled across skill, script, fixtures, evals, docs, and generated maps, so
+  final edits stay local.
 - Critical path: spec -> skill -> smoke/fixtures -> eval/release/test wiring ->
-  docs/startup -> capability map regeneration -> static verification -> commit
-  and push.
-- Agent wall-clock: optimistic 1 hour / likely 2 hours / pessimistic 4 hours.
+  docs/startup -> capability map regeneration -> verification -> commit/push.
+- Agent wall-clock: optimistic 45 minutes / likely 90 minutes / pessimistic
+  3 hours.
 - Agent-hours: 3-6 including research/review lanes.
-- Human touch time later: 5-20 minutes to approve an actual ICP-to-taste apply
-  patch in a downstream repo.
-- Calendar blockers: none for static route implementation; external market
-  research can be blocked later by source availability.
-- Confidence: medium-high for static harness implementation, medium for future
-  ICP quality because each product's evidence quality will vary.
+- Human touch time later: 5-20 minutes to approve exact retaste apply proposals
+  in downstream repos.
+- Calendar blockers: none for static route implementation; external research
+  quality depends on downstream product evidence.
+- Confidence: medium-high for harness implementation; medium for future ICP
+  quality because product/customer evidence varies.
 
 ## Implementation Plan
 
 ### Task 1: Skill Contract
 
-- Add `/defineicp` with phases:
-  - taste gate and product scope
-  - ICP intake
-  - deepresearch plan
-  - parallel lenses
+- Add `/deepretaste` with phases:
+  - intent detection and product-scope gate
+  - taste-state detection
+  - SOTA-2026 deepresearch plan
+  - parallel or hive role budget
   - ICP synthesis
-  - taste evolution proposal
-  - optional apply
+  - kernel bootstrap/proposal/apply
   - verification and introspection
-- Require claim labels: `source-backed`, `repo-derived`, `user-stated`,
-  `inference`, `assumption`, `unknown`.
-- Require protected-kernel preservation:
-  - SPEC-first
-  - research-first
-  - evidence-backed verification
-  - explicit contracts
-  - single-owner validated state
-  - structured/explainable errors
-  - observability
-  - least privilege
-  - rollbackability
-  - separate verifier
-  - no silent destructive behavior
+- Require claim labels: `current-source-backed`, `stable-source-backed`,
+  `repo-derived`, `user-stated`, `inference`, `assumption`, `unknown`.
+- Require output artifacts under `.taste/deepretaste/{run_id}/`.
 
 ### Task 2: Static Gate
 
-- Add `scripts/defineicp-smoke.sh`.
+- Add `scripts/deepretaste-smoke.sh`.
 - Validate:
   - skill/frontmatter/doc patterns
-  - docs/route visibility
-  - fixture artifacts
-  - positive proposal/apply artifacts
-  - negative artifacts for missing source ledger, generic persona fluff,
-    kernel loss, apply without approval, failed verification positive closeout,
-    and secret-bearing artifacts.
+  - source and claim ledger discipline
+  - SOTA claim policy
+  - intent detection
+  - ICP completeness
+  - parallel/hive budget honesty
+  - fresh bootstrap and existing-kernel proposal-first behavior
+  - approval, backups, hashes, rollback, and secret rejection
 
 ### Task 3: Eval And Release Wiring
 
-- Add `evals/harness/tasks/m10-defineicp-taste-evolution.yaml`.
-- Add `evals/harness/golden/m10-defineicp-taste-evolution.json`.
-- Register `defineicp-smoke` in `scripts/harness-eval.sh`.
+- Add `evals/harness/tasks/m11-deepretaste-intent-icp-bootstrap.yaml`.
+- Add `evals/harness/golden/m11-deepretaste-intent-icp-bootstrap.json`.
+- Register `deepretaste-smoke` in `scripts/harness-eval.sh`.
 - Add the smoke to `scripts/release-check.sh`.
 - Add focused assertions to `scripts/test-harness.sh`.
 
 ### Task 4: Discovery And Docs
 
-- Add `defineicp` to the capability-map route group and script owner maps.
-- Update README, CLAUDE.md, AGENTS.md, and `scripts/start-session.sh`.
-- Update skill counts from 32 to 33 where exact text is asserted.
+- Add `deepretaste` to route groups, startup, README, CLAUDE.md, AGENTS.md,
+  `/workflow`, and `/metacognition`.
+- Update exact skill counts from 33 to 34.
 - Regenerate generated capability map files.
 
 ## Verification Plan
 
+- `bash scripts/deepretaste-smoke.sh --fixtures`
 - `bash -n scripts/*.sh`
-- `bash scripts/defineicp-smoke.sh --fixtures`
 - `bash scripts/harness-capability-map.sh --check --json`
 - `bash scripts/harness-eval.sh --json`
 - `bash scripts/artifact-lint.sh --fixtures`
@@ -229,69 +249,42 @@ drafts and optionally applies a rollbackable rewrite of both taste files.
 - `bash scripts/release-check.sh --static-only`
 - `git diff --check`
 
+## Introspection: Pre-Plan
+
+- Likely mistake: overbuild by merging `/tastebootstrap`, `/defineicp`, and
+  `/hiveworkflow` into a second full workflow engine. Mitigation: make
+  `/deepretaste` a kernel-discovery/bootstrap skill with bounded outputs.
+- Likely mistake: fake "SOTA 2026" confidence. Mitigation: require current
+  source ledger and label stable foundations separately.
+- Likely mistake: destructive taste overwrite. Mitigation: fresh bootstrap only
+  when files are absent; existing files require proposal-first or explicit
+  apply approval with backups.
+- Likely mistake: max-agent theater. Mitigation: static fixtures reject budgets
+  above ceilings or unsupported lane counts.
+
 ## Verified 2026-05-06
 
-- `bash -n scripts/defineicp-smoke.sh scripts/harness-eval.sh scripts/harness-capability-map.sh scripts/release-check.sh scripts/test-harness.sh scripts/start-session.sh scripts/visualize-smoke.sh`: pass.
-- `bash scripts/defineicp-smoke.sh --fixtures`: pass.
-- `bash scripts/harness-capability-map.sh --check --json`: pass; generated map reports `skills=33`, `scripts=53`, `eval_tasks=21`, and includes `/defineicp`.
+- `bash scripts/deepretaste-smoke.sh --fixtures`: pass.
+- `bash -n scripts/deepretaste-smoke.sh scripts/harness-eval.sh scripts/harness-capability-map.sh scripts/release-check.sh scripts/test-harness.sh scripts/start-session.sh scripts/visualize-smoke.sh`: pass.
+- `bash scripts/harness-capability-map.sh --check --json`: pass; generated map reports `skills=34`, `scripts=54`, `eval_tasks=22`, and includes `/deepretaste`.
+- `bash scripts/harness-eval.sh --json`: pass (`22 tasks`, `19 gates`, `0 mismatches`).
 - `bash scripts/artifact-lint.sh --fixtures`: pass (`7 green`, `21 red`).
 - `bash scripts/security-smoke.sh`: pass.
-- `bash scripts/harness-eval.sh --json`: pass (`21 tasks`, `18 gates`, `0 mismatches`).
 - `git diff --check`: pass.
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`134 passed`, `0 failed`; runtime Claude integration intentionally skipped).
-- `bash scripts/release-check.sh --static-only`: pass, including `git diff --check`.
+- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`137 passed`, `0 failed`).
+- `bash scripts/release-check.sh --static-only`: pass (`137 passed`, `0 failed`; static-only release gate passed).
 
-No runtime provider smoke, customer-data import, `.env` read, local Claude
-settings read, or actual live `taste.md` / `taste.vision` ICP rewrite was
-performed.
+## Introspection: Pre-Closeout
 
-## Introspection Pre-Plan
-
-- Likely mistake: honoring the user's "rewrite taste" wording too literally and
-  creating a destructive overwrite path. Mitigation: proposal-first default,
-  apply-only with explicit approval, backups, hashes, and validation.
-- Likely mistake: duplicating `/icpweek`. Mitigation: `/defineicp` owns ICP
-  definition and taste evolution; `/icpweek` owns seven-day product stress
-  simulation.
-- Likely mistake: turning ICP into a marketing persona instead of product taste.
-  Mitigation: require JTBD, buying context, disqualifiers, proof needed, and
-  mapping into experience, contracts, system behavior, and non-goals.
-- Likely mistake: relying on structural tests only. Mitigation: smoke fixtures
-  reject semantic kernel loss and evidence-free ICP claims.
-- Missing verification before implementation: docs researcher lane may return
-  additional Claude Code source details later, but parent web research already
-  verified the needed official skill/settings behavior.
-- Blocker decision: PASS.
-
-## Introspection Post-Implementation
-
-- Checked destructive-overwrite risk: `/defineicp` defaults to proposal mode and
-  requires explicit approval, backups, hashes, changed-line trace, validation,
-  and rollback evidence before `ICP_APPLIED`.
-- Checked semantic kernel preservation: the skill and smoke fixtures require
-  protected invariants for spec-first, research-first, verification, explicit
-  contracts, state boundaries, errors, observability, least privilege, rollback,
-  separate verifier, and no silent destructive behavior.
-- Checked `/icpweek` overlap: `/defineicp` owns ICP definition and taste
-  evolution, while `/icpweek` remains the Monday-Sunday product stress test.
-- Checked evidence quality: source ledger, claim ledger, claim labels,
-  anti-ICP, disqualifiers, and missing-evidence handling are mandatory in the
-  skill and in fixture validation.
-- Checked docs and generated truth: README, CLAUDE.md, AGENTS.md,
-  `scripts/start-session.sh`, generated capability maps, harness eval,
-  release-check, and test-harness all include the new route.
-- Changed-line trace: every meaningful edit maps to this spec's skill contract,
-  static gate, fixtures, eval/release/test wiring, docs/discovery, or generated
-  capability map.
-- Confidence: high for static route behavior; medium for future ICP quality
-  because real product evidence will vary by repo.
-- Blocker decision: PASS.
-
-## Rollback Plan
-
-1. Remove `.claude/skills/defineicp/`.
-2. Remove `scripts/defineicp-smoke.sh` and `.taste/fixtures/defineicp/`.
-3. Remove the defineicp eval task/golden and harness-eval registration.
-4. Remove route/script mappings from `scripts/harness-capability-map.sh`.
-5. Remove docs/startup/test-harness/release-check references.
-6. Regenerate capability map and rerun static release checks.
+- Likely mistake: `/deepretaste` could still be read as a replacement for
+  `/deepresearch`. Mitigation: skill, CLAUDE.md, AGENTS.md, and workflow
+  routing explicitly state that `/deepresearch` remains general-purpose and
+  `/deepretaste` consumes it only for taste-driving evidence.
+- Likely mistake: `/deepretaste` could bypass `/defineicp` apply safety.
+  Mitigation: skill contract and smoke fixtures require `/defineicp` semantics
+  for existing-kernel mutation and reject destructive overwrite, vague
+  approval, ambiguous intent apply, worker-summary-as-truth, and route
+  confusion.
+- Remaining verification risk: none known after the static release gate; runtime
+  authenticated Claude checks remain explicit opt-in and were not needed for
+  this no-secret harness route.

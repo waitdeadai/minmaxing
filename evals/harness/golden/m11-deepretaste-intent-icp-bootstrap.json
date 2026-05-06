@@ -1,0 +1,12 @@
+{
+  "id": "m11-deepretaste-intent-icp-bootstrap",
+  "gate": "scripts/deepretaste-smoke.sh --fixtures",
+  "status": "reject",
+  "gate_status": "pass",
+  "evidence_summary": [
+    "/deepretaste exists as a manual intent-to-ICP-to-taste skill",
+    "the route preserves /deepresearch as the general research engine and uses /defineicp for existing-kernel taste mutation",
+    "the smoke gate accepts valid bootstrap/proposal/apply artifacts and rejects unsafe red fixtures",
+    "docs, capability map, release, and eval surfaces discover the route"
+  ]
+}

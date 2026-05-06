@@ -126,6 +126,7 @@ Choose the route from user intent:
 | build, implement, create, add, refactor, optimize, migrate | run full research → audit → plan → spec → execute → verify → closeout flow |
 | fix, debug, investigate | research first, audit the relevant code path, then reproduce/fix/verify; create `SPEC.md` if files change |
 | audit, analyze, understand, deepresearch, webresearch | inspect deeply, report findings, make fixes only if the user asked for them |
+| deepretaste, retaste, detect intent, bootstrap taste and ICP, SOTA customer research for taste | route to `/deepretaste`; preserve `/deepresearch` as the general research route when findings will not mutate taste |
 | define ICP, ideal customer profile, tailor taste to customer, update taste.md or taste.vision from ICP | route to `/defineicp`; keep proposal-first unless explicit apply approval is present |
 | Claude product, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, plan availability, limits, setup | route product facts through `/claudeproduct` before generic research; continue into `/workflow` only if files change |
 | parallel, mode parallel, dense workflow, orchestrate subagents, split across instances | run the `/parallel` eligibility audit; use `/parallel` only when capacity, ownership, and verification pass |
@@ -699,7 +700,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/digestflow`, `/defineicp`, `/claudeproduct`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/hive`, `/hiveworkflow`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepretaste`, `/defineicp`, `/claudeproduct`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/hive`, `/hiveworkflow`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers

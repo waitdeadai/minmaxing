@@ -1,0 +1,10 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "red-route-confusion",
+  "mode": "bootstrap",
+  "status": "RETASTE_BOOTSTRAPPED",
+  "product_scope": {"scope_type": "repo", "product": "fresh AI product", "source_evidence": ["prompt"], "confidence": "high", "ambiguities": [], "apply_allowed": false},
+  "intent_detection": {"developer_intent": "bootstrap", "product_intent": "fresh AI product", "route_decision": "bootstrap", "confidence": "high"},
+  "taste_state": {"taste_md_exists": false, "taste_vision_exists": false, "existing_kernel": false},
+  "routing": {"declared_route": "/deepretaste bootstrap", "delegated_routes": ["/deepresearch"]}
+}

@@ -62,6 +62,7 @@ run bash scripts/claudeproduct-scorecard.sh --fixtures --json >/dev/null
 run bash scripts/harness-capability-map.sh --check --json >/dev/null
 run bash scripts/demo-smoke.sh --fixtures
 run bash scripts/defineicp-smoke.sh --fixtures
+run bash scripts/deepretaste-smoke.sh --fixtures
 run bash scripts/opusminimax-doctor.sh --static >/dev/null
 run bash scripts/opusminimax-benchmark-smoke.sh --fixtures
 run bash scripts/opusworkflow-smoke.sh

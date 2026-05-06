@@ -67,6 +67,7 @@ KNOWN_GATES = {
     "agentfactory-smoke",
     "digestflow-static",
     "defineicp-smoke",
+    "deepretaste-smoke",
     "opusminimax-benchmark-smoke",
     "opusworkflow-smoke",
     "spec-archive-smoke",
@@ -264,6 +265,10 @@ def normalize_gate(value: str) -> str:
         "scripts/defineicp-smoke.sh": "defineicp-smoke",
         "scripts/defineicp-smoke.sh --fixtures": "defineicp-smoke",
         "bash scripts/defineicp-smoke.sh --fixtures": "defineicp-smoke",
+        "deepretaste-smoke": "deepretaste-smoke",
+        "scripts/deepretaste-smoke.sh": "deepretaste-smoke",
+        "scripts/deepretaste-smoke.sh --fixtures": "deepretaste-smoke",
+        "bash scripts/deepretaste-smoke.sh --fixtures": "deepretaste-smoke",
         "opusminimax-benchmark-smoke": "opusminimax-benchmark-smoke",
         "scripts/opusminimax-benchmark-smoke.sh": "opusminimax-benchmark-smoke",
         "scripts/opusminimax-benchmark-smoke.sh --fixtures": "opusminimax-benchmark-smoke",
@@ -626,6 +631,10 @@ run_gate() {
     "defineicp-smoke")
       require_gate_script "scripts/defineicp-smoke.sh" || return $?
       bash "$ROOT_DIR/scripts/defineicp-smoke.sh" --fixtures
+      ;;
+    "deepretaste-smoke")
+      require_gate_script "scripts/deepretaste-smoke.sh" || return $?
+      bash "$ROOT_DIR/scripts/deepretaste-smoke.sh" --fixtures
       ;;
     "opusminimax-benchmark-smoke")
       require_gate_script "scripts/opusminimax-benchmark-smoke.sh" || return $?

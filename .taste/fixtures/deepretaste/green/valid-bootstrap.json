@@ -1,0 +1,118 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "deepretaste-green-bootstrap",
+  "mode": "bootstrap",
+  "status": "RETASTE_BOOTSTRAPPED",
+  "product_scope": {
+    "scope_type": "repo",
+    "product": "AI workflow builder for local project automation",
+    "source_evidence": ["user prompt", "README.md"],
+    "confidence": "high",
+    "ambiguities": [],
+    "apply_allowed": false
+  },
+  "intent_detection": {
+    "developer_intent": "bootstrap a fresh product kernel from product intent and ICP research",
+    "product_intent": "help technical builders turn ambiguous product ideas into governed implementation workflows",
+    "route_decision": "bootstrap",
+    "confidence": "high"
+  },
+  "taste_state": {
+    "taste_md_exists": false,
+    "taste_vision_exists": false,
+    "existing_kernel": false
+  },
+  "routing": {
+    "declared_route": "/deepretaste bootstrap",
+    "delegated_routes": ["/deepresearch", "/tastebootstrap"],
+    "reason": "taste files are missing, so the route uses tastebootstrap semantics after intent and ICP research"
+  },
+  "research": {
+    "deepresearch_plan": {
+      "product": "AI workflow builder",
+      "branches": ["intent", "ICP/JTBD", "current practice", "UX trust"],
+      "effective_parallel_budget": 4,
+      "stop_condition": "fresh kernel and ICP are specific enough to validate"
+    },
+    "loop_log": [
+      {"loop": 1, "change": "separated buyer from end user", "why_it_mattered": "taste.vision audience needed both roles"}
+    ],
+    "source_ledger": {
+      "cited": [
+        {"source": "current 2026 value proposition source", "claim_supported": "customer jobs, pains, and gains should drive fit"}
+      ],
+      "reviewed_but_not_cited": [
+        {"source": "generic ICP blog", "why_downweighted": "too generic for taste mutation"}
+      ],
+      "rejected": [],
+      "conflicts": []
+    },
+    "sota_2026_policy": {
+      "sota_claims_allowed": true,
+      "current_sources": [
+        {"source": "Strategyzer Value Proposition Canvas 2026", "current": true}
+      ],
+      "stable_foundations": ["Jobs to Be Done as stable product-discovery foundation"]
+    },
+    "claim_ledger": [
+      {
+        "id": "C1",
+        "claim": "The best-fit user needs confidence that the agent will preserve product intent while executing.",
+        "label": "current-source-backed",
+        "evidence": "current source plus repo intent",
+        "taste_impact": "Experience promise should prioritize obvious, reversible, evidence-backed work.",
+        "direct_taste_driver": true
+      }
+    ]
+  },
+  "parallel_decision": {
+    "ceiling": 10,
+    "effective_budget": 4,
+    "distinct_lenses": ["intent", "ICP/JTBD", "current practice", "UX trust"],
+    "supervisor_capacity": 5,
+    "verifier_capacity": 4,
+    "why_not_more": "four lenses covered the decision-relevant uncertainty",
+    "substrate": "subagents",
+    "agent_teams_available": false
+  },
+  "icp": {
+    "primary": {
+      "segment": "technical founders starting a serious AI-assisted product repo",
+      "buyer_user_distinction": "the founder is both buyer and daily operator",
+      "job_to_be_done": "convert a product idea into a governed build kernel before implementation begins",
+      "pain_points": ["generic scaffolds", "lost product intent", "unverified agent work"],
+      "trigger_events": ["new repo", "new product idea", "before first workflow run"],
+      "buyer_context": "owner-operator with authority over local tooling",
+      "adoption_channel": "Claude Code project skill in an empty folder",
+      "objections": ["too much ceremony", "unclear evidence quality"],
+      "proof_needed": ["taste files", "ICP artifact", "verification commands"],
+      "disqualifiers": ["throwaway scripts", "users who do not want an operating kernel"]
+    },
+    "secondary": [],
+    "anti_icp": ["teams that want prompt-to-code output with no discovery or verification"]
+  },
+  "kernel_output": {
+    "taste_md_created": true,
+    "taste_vision_created": true,
+    "icp_artifact_path": ".taste/deepretaste/deepretaste-green-bootstrap/icp.json",
+    "tastebootstrap_semantics": true,
+    "kernel_questions_answered": 10
+  },
+  "taste_mutation": {
+    "applied": true,
+    "mutation_kind": "bootstrap",
+    "authority": "/tastebootstrap"
+  },
+  "verification": {
+    "status": "pass",
+    "commands": [
+      {"command": "bash scripts/deepretaste-smoke.sh --artifact valid-bootstrap.json", "exit_code": 0}
+    ]
+  },
+  "introspection": {
+    "likely_mistakes": ["overfitting the initial ICP to one implementation idea"],
+    "evidence_checked": ["user prompt", "README.md", "source ledger"],
+    "confidence": "medium-high",
+    "unresolved_blockers": []
+  }
+}

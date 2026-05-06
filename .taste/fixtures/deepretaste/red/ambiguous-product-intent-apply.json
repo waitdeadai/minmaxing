@@ -1,0 +1,9 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "red-ambiguous-product-intent-apply",
+  "mode": "apply",
+  "status": "RETASTE_APPLIED",
+  "product_scope": {"scope_type": "unknown", "product": "current product", "source_evidence": ["inference"], "confidence": "low", "ambiguities": ["which product"], "apply_allowed": true},
+  "intent_detection": {"developer_intent": "apply", "product_intent": "unclear", "route_decision": "apply", "confidence": "low"},
+  "taste_state": {"taste_md_exists": true, "taste_vision_exists": true, "existing_kernel": true}
+}

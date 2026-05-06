@@ -70,6 +70,7 @@ Choose exactly one:
 | `claudeproduct` | Claude, Claude Code, Claude.ai, Anthropic API, connector, plugin, skill, or subagent product question | `/claudeproduct` |
 | `webresearch` | narrow current fact check | `/webresearch` |
 | `deepresearch` | landscape, architecture, due diligence, strategic research | `/deepresearch` |
+| `deepretaste` | detect product intent, define ICPs, and bootstrap or retaste `taste.md` / `taste.vision` from research-backed customer evidence | `/deepretaste` |
 | `defineicp` | define ICPs or tailor `taste.md` / `taste.vision` to an ideal customer profile | `/defineicp` |
 | `workflow` | repo-changing build/fix/refactor/docs/config work | `/workflow` |
 | `parallel` | dense independent packets with clear ownership and verification | `/parallel` |
@@ -131,7 +132,7 @@ as "10 agents means 10x faster."
 
 ```markdown
 ## Task Class
-[answer / webresearch / deepresearch / workflow / parallel / hive / agentfactory / verify / introspect / blocked]
+[answer / webresearch / deepresearch / deepretaste / workflow / parallel / hive / agentfactory / verify / introspect / blocked]
 
 ## Capacity Evidence
 - Source: [`scripts/parallel-capacity.sh --json` output, repo config, or unavailable]
@@ -163,7 +164,7 @@ as "10 agents means 10x faster."
 - Estimate audit: ...
 
 ## Route Decision
-- Route: [/workflow, /claudeproduct, /deepresearch, /parallel, /hive, /hiveworkflow, /agentfactory, /verify, /introspect, direct answer, or blocked]
+- Route: [/workflow, /claudeproduct, /deepresearch, /deepretaste, /parallel, /hive, /hiveworkflow, /agentfactory, /verify, /introspect, direct answer, or blocked]
 - Reason: ...
 
 ## Confidence

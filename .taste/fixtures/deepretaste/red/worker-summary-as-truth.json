@@ -1,0 +1,11 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "red-worker-summary-as-truth",
+  "mode": "proposal",
+  "status": "RETASTE_PROPOSED",
+  "product_scope": {"scope_type": "repo", "product": "AI product", "source_evidence": ["worker"], "confidence": "high", "ambiguities": [], "apply_allowed": false},
+  "intent_detection": {"developer_intent": "propose", "product_intent": "AI product", "route_decision": "proposal", "confidence": "high"},
+  "taste_state": {"taste_md_exists": true, "taste_vision_exists": true, "existing_kernel": true},
+  "routing": {"declared_route": "/deepretaste proposal", "delegated_routes": ["/defineicp"]},
+  "research": {"deepresearch_plan": {"branches": ["worker summary"]}, "loop_log": [{"loop": 1}], "source_ledger": {"cited": [{"source": "worker"}], "reviewed_but_not_cited": [], "conflicts": []}, "sota_2026_policy": {"sota_claims_allowed": true, "current_sources": [{"source": "current", "current": true}]}, "claim_ledger": [{"claim": "worker says ICP is developers", "label": "repo-derived", "evidence": "worker summary", "taste_impact": "rewrite", "direct_taste_driver": true, "source": "worker-summary", "parent_verified": false}]}
+}

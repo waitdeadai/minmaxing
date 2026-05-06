@@ -1,0 +1,12 @@
+{
+  "artifact_type": "deepretaste-run",
+  "run_id": "red-agent-teams-default",
+  "mode": "research",
+  "status": "RETASTE_RESEARCHED",
+  "product_scope": {"scope_type": "repo", "product": "AI product", "source_evidence": ["prompt"], "confidence": "medium", "ambiguities": [], "apply_allowed": false},
+  "intent_detection": {"developer_intent": "research", "product_intent": "AI product", "route_decision": "research", "confidence": "medium"},
+  "taste_state": {"taste_md_exists": false, "taste_vision_exists": false, "existing_kernel": false},
+  "routing": {"declared_route": "/deepretaste research", "delegated_routes": ["/deepresearch"]},
+  "research": {"deepresearch_plan": {"branches": ["ICP"]}, "loop_log": [{"loop": 1}], "source_ledger": {"cited": [{"source": "current"}], "reviewed_but_not_cited": [], "conflicts": []}, "sota_2026_policy": {"sota_claims_allowed": true, "current_sources": [{"source": "current", "current": true}]}, "claim_ledger": [{"claim": "research-backed", "label": "current-source-backed", "evidence": "current", "taste_impact": "none"}]},
+  "parallel_decision": {"ceiling": 10, "effective_budget": 2, "distinct_lenses": ["ICP", "skeptic"], "supervisor_capacity": 2, "verifier_capacity": 2, "why_not_more": "two roles", "substrate": "agent-teams", "agent_teams_available": false}
+}

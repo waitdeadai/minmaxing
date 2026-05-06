@@ -306,6 +306,62 @@ else
     test_fail "/defineicp skill, docs, fixtures, eval, or static gate is incomplete"
 fi
 
+# Test 3d-deepretaste: Intent-To-ICP-To-Taste Bootstrap Mode
+echo "[3d-deepretaste] DeepRetaste Intent-To-Taste"
+DEEPRETASTE_OK=true
+for required_file in \
+    ".claude/skills/deepretaste/SKILL.md" \
+    "scripts/deepretaste-smoke.sh" \
+    "evals/harness/tasks/m11-deepretaste-intent-icp-bootstrap.yaml" \
+    "evals/harness/golden/m11-deepretaste-intent-icp-bootstrap.json" \
+    ".taste/fixtures/deepretaste/green/valid-bootstrap.json" \
+    ".taste/fixtures/deepretaste/green/valid-proposal.json" \
+    ".taste/fixtures/deepretaste/green/valid-apply.json"; do
+    if [ ! -e "$required_file" ]; then
+        DEEPRETASTE_OK=false
+    fi
+done
+if [ ! -x "scripts/deepretaste-smoke.sh" ]; then
+    DEEPRETASTE_OK=false
+fi
+for pattern in \
+    "not an independent write path around \`/defineicp\`" \
+    "general-purpose research engine" \
+    "/tastebootstrap" \
+    "/defineicp" \
+    "SOTA-2026" \
+    "effective_deepretaste_budget" \
+    "Route Arbitration" \
+    "RETASTE_BOOTSTRAPPED" \
+    "RETASTE_PROPOSED" \
+    "RETASTE_APPLIED" \
+    "RETASTE_BLOCKED" \
+    "Claim Ledger" \
+    "changed-line trace" \
+    "protected-kernel checklist"; do
+    if ! grep -Fq "$pattern" .claude/skills/deepretaste/SKILL.md 2>/dev/null; then
+        DEEPRETASTE_OK=false
+    fi
+done
+for pattern in \
+    "deepretaste-smoke" \
+    "m11-deepretaste-intent-icp-bootstrap"; do
+    if ! grep -Fq -- "$pattern" scripts/harness-eval.sh scripts/release-check.sh scripts/harness-capability-map.sh evals/harness/tasks/m11-deepretaste-intent-icp-bootstrap.yaml evals/harness/golden/m11-deepretaste-intent-icp-bootstrap.json 2>/dev/null; then
+        DEEPRETASTE_OK=false
+    fi
+done
+for file in README.md CLAUDE.md AGENTS.md scripts/start-session.sh; do
+    if ! grep -Fq "/deepretaste" "$file" 2>/dev/null; then
+        DEEPRETASTE_OK=false
+    fi
+done
+if [ "$DEEPRETASTE_OK" = true ] && \
+   bash scripts/deepretaste-smoke.sh --fixtures >/dev/null 2>&1; then
+    test_pass "/deepretaste gates intent detection, ICPs, and taste bootstrap/retaste"
+else
+    test_fail "/deepretaste skill, docs, fixtures, eval, or static gate is incomplete"
+fi
+
 # Test 3e: Efficacy-First Parallelism Contract
 echo "[3e] Efficacy-First Parallelism"
 PARALLEL_OK=true
@@ -378,7 +434,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "33 skills" README.md 2>/dev/null && \
+   grep -Fq "34 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -566,7 +622,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 33 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 34 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -1324,25 +1380,25 @@ else
 fi
 
 # ========================================
-# Skills (33 Expected)
+# Skills (34 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 33 Expected]"
+echo "[Skills - 34 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 33 ]; then
+if [ "$SKILL_COUNT" -ge 34 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 33+ skills, found $SKILL_COUNT"
+    test_fail "Expected 34+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow visualize visualizeworkflow demo digestflow defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow visualize visualizeworkflow demo digestflow deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1412,7 +1468,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke defineicp-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state spec-archive digestflow-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else
