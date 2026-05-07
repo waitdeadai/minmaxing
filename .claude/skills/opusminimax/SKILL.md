@@ -38,7 +38,10 @@ Worker summaries are claims until verified by diffs, logs, tests, or artifacts.
   verified.
 - Default MiniMax executor concurrency to `1` unless provider-tier evidence
   proves a higher ceiling.
-- Run `/introspect` before plan freeze, after MiniMax execution, after failed
+- If `executor_provider=claude-sonnet` is explicit, treat it as the optional
+  Claude-only `/opussonnet` route: no MiniMax base URL, executor model must be
+  Sonnet, and the run artifact must not imply MiniMax executed anything.
+- Run `/introspect` before plan freeze, after executor execution, after failed
   verification, and before push or ship decisions.
 - Run `/verify` against `SPEC.md` after executor aggregation.
 
@@ -204,6 +207,7 @@ When `/opusminimax` executes or prepares a real run, produce:
   "run_id": "YYYYMMDD-HHMMSS-task",
   "outer_route": "opusworkflow",
   "inner_contract": "workflow",
+  "executor_provider": "minimax",
   "planner_identity_status": "blocked",
   "executor_identity_status": "configured",
   "fallback_status": "none",

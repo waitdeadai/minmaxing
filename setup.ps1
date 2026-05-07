@@ -1,19 +1,28 @@
 # minmaxing Windows Setup
 # Bash/Git Bash remains the recommended installer. This PowerShell helper keeps
 # the same default: opusworkflow, with split ignored local profiles.
+# Optional suggested Claude-only mode: -Mode opussonnet.
 
 param(
     [Parameter(Position=0)]
     [string]$ApiKey = $env:MINIMAX_TOKEN_KEY,
 
-    [ValidateSet("minimax", "opusworkflow", "opusminimax")]
+    [ValidateSet("minimax", "opusworkflow", "opusminimax", "opussonnet")]
     [string]$Mode = "opusworkflow",
 
     [string]$PlannerModel = "claude-opus-4-7",
-    [string]$ExecutorModel = "MiniMax-M2.7-highspeed"
+    [string]$ExecutorModel = ""
 )
 
 $ErrorActionPreference = "Stop"
+
+if (-not $ExecutorModel) {
+    if ($Mode -eq "opussonnet") {
+        $ExecutorModel = "claude-sonnet-4-6"
+    } else {
+        $ExecutorModel = "MiniMax-M2.7-highspeed"
+    }
+}
 
 function Write-Step($Text) {
     Write-Host $Text -ForegroundColor Yellow
@@ -94,12 +103,85 @@ function Configure-PlannerProfile($Path, $Model) {
     Write-Json $Path $data
 }
 
+function Configure-OpusSonnetProfile($Path, $PlannerModel, $ExecutorModel) {
+    $default = '{"profile":"opussonnet","model":"opusplan","env":{},"permissions":{"defaultMode":"bypassPermissions"}}'
+    $data = Read-JsonOrDefault $Path $default
+    Ensure-ObjectProperty $data "env" ([pscustomobject]@{})
+    $data.profile = "opussonnet"
+    Ensure-ObjectProperty $data "model" "opusplan"
+    $data.model = "opusplan"
+
+    foreach ($name in @("ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "MINIMAX_API_KEY", "MINIMAX_API_HOST")) {
+        if ($data.env.PSObject.Properties.Name -contains $name) {
+            $data.env.PSObject.Properties.Remove($name)
+        }
+    }
+
+    $values = @{
+        "ANTHROPIC_MODEL" = "opusplan"
+        "ANTHROPIC_DEFAULT_OPUS_MODEL" = $PlannerModel
+        "ANTHROPIC_DEFAULT_SONNET_MODEL" = $ExecutorModel
+        "CLAUDE_CODE_SUBAGENT_MODEL" = $ExecutorModel
+        "CLAUDE_CODE_EFFORT_LEVEL" = "xhigh"
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC" = "1"
+        "DISABLE_AUTO_COMPACT" = "0"
+        "CLAUDE_CODE_NO_FLICKER" = "1"
+    }
+
+    foreach ($name in $values.Keys) {
+        if ($data.env.PSObject.Properties.Name -contains $name) {
+            $data.env.$name = $values[$name]
+        } else {
+            $data.env | Add-Member -NotePropertyName $name -NotePropertyValue $values[$name]
+        }
+    }
+
+    Write-Json $Path $data
+}
+
+function Configure-SonnetExecutorProfile($Path, $Model) {
+    $default = '{"profile":"sonnet-executor","model":"claude-sonnet-4-6","env":{},"permissions":{"defaultMode":"bypassPermissions"}}'
+    $data = Read-JsonOrDefault $Path $default
+    Ensure-ObjectProperty $data "env" ([pscustomobject]@{})
+    $data.profile = "sonnet-executor"
+    Ensure-ObjectProperty $data "model" $Model
+    $data.model = $Model
+
+    foreach ($name in @("ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "MINIMAX_API_KEY", "MINIMAX_API_HOST")) {
+        if ($data.env.PSObject.Properties.Name -contains $name) {
+            $data.env.PSObject.Properties.Remove($name)
+        }
+    }
+
+    $values = @{
+        "ANTHROPIC_MODEL" = $Model
+        "ANTHROPIC_DEFAULT_SONNET_MODEL" = $Model
+        "CLAUDE_CODE_SUBAGENT_MODEL" = $Model
+        "CLAUDE_CODE_EFFORT_LEVEL" = "high"
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC" = "1"
+        "DISABLE_AUTO_COMPACT" = "0"
+        "CLAUDE_CODE_NO_FLICKER" = "1"
+    }
+
+    foreach ($name in $values.Keys) {
+        if ($data.env.PSObject.Properties.Name -contains $name) {
+            $data.env.$name = $values[$name]
+        } else {
+            $data.env | Add-Member -NotePropertyName $name -NotePropertyValue $values[$name]
+        }
+    }
+
+    Write-Json $Path $data
+}
+
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "  minmaxing Setup (Windows)" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "Mode: $Mode" -ForegroundColor White
 if ($Mode -eq "opusworkflow") {
     Write-Host "Default route: /opusworkflow (Claude/Opus judgment + MiniMax execution)" -ForegroundColor White
+} elseif ($Mode -eq "opussonnet") {
+    Write-Host "Suggested route: /opusworkflow with Claude opusplan (Opus planning + Sonnet execution)" -ForegroundColor White
 }
 Write-Host ""
 
@@ -125,9 +207,37 @@ Write-Host ""
 Write-Step "[3/5] Preparing local provider profiles..."
 New-Item -ItemType Directory -Force -Path ".claude" | Out-Null
 
-$splitMode = ($Mode -eq "opusworkflow" -or $Mode -eq "opusminimax")
+$splitMode = ($Mode -eq "opusworkflow" -or $Mode -eq "opusminimax" -or $Mode -eq "opussonnet")
 
-if ($ApiKey -and $ApiKey -ne "YOUR_TOKEN_PLAN_KEY") {
+if ($Mode -eq "opussonnet") {
+    $opussonnetPath = ".claude\settings.opussonnet.local.json"
+    $sonnetPath = ".claude\settings.sonnet-executor.local.json"
+    $plannerPath = ".claude\settings.opusminimax-planner.local.json"
+
+    if ((-not (Test-Path $opussonnetPath)) -and (Test-Path ".claude\settings.opussonnet.example.json")) {
+        Copy-Item ".claude\settings.opussonnet.example.json" $opussonnetPath
+    }
+    if ((-not (Test-Path $sonnetPath)) -and (Test-Path ".claude\settings.sonnet-executor.example.json")) {
+        Copy-Item ".claude\settings.sonnet-executor.example.json" $sonnetPath
+    }
+    if ((-not (Test-Path $plannerPath)) -and (Test-Path ".claude\settings.opusminimax-planner.example.json")) {
+        Copy-Item ".claude\settings.opusminimax-planner.example.json" $plannerPath
+    }
+
+    Configure-OpusSonnetProfile $opussonnetPath $PlannerModel $ExecutorModel
+    Configure-SonnetExecutorProfile $sonnetPath $ExecutorModel
+    Configure-PlannerProfile $plannerPath $PlannerModel
+
+    if (-not (Test-Path ".claude\settings.local.json")) {
+        Copy-Item $opussonnetPath ".claude\settings.local.json"
+        Write-Host "  [PASS] Claude Code default local profile set to opusplan" -ForegroundColor Green
+    } else {
+        Write-Host "  [INFO] Preserved existing .claude\settings.local.json" -ForegroundColor Gray
+        Write-Host "  [INFO] To launch explicitly: claude --settings .claude/settings.opussonnet.local.json" -ForegroundColor Gray
+    }
+    Write-Host "  [PASS] Opus planner pinned to $PlannerModel" -ForegroundColor Green
+    Write-Host "  [PASS] Sonnet executor pinned to $ExecutorModel" -ForegroundColor Green
+} elseif ($ApiKey -and $ApiKey -ne "YOUR_TOKEN_PLAN_KEY") {
     if ($splitMode) {
         $executorPath = ".claude\settings.minimax-executor.local.json"
         $plannerPath = ".claude\settings.opusminimax-planner.local.json"
@@ -156,7 +266,7 @@ if ($ApiKey -and $ApiKey -ne "YOUR_TOKEN_PLAN_KEY") {
 } else {
     Write-Host "  [WARN] MiniMax token not provided; local executor profile was not credentialed" -ForegroundColor Yellow
     Write-Host "  Use the default Bash/Git Bash command:" -ForegroundColor Gray
-    Write-Host "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude" -ForegroundColor Cyan
+    Write-Host "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'" -ForegroundColor Cyan
 }
 Write-Host ""
 
@@ -191,6 +301,8 @@ if ($Mode -eq "opusminimax") {
     Write-Host "  3. Then try: /opusminimax 'build a REST API'" -ForegroundColor Gray
 } elseif ($Mode -eq "minimax") {
     Write-Host "  3. Legacy MiniMax-only override: /workflow 'build a REST API'" -ForegroundColor Gray
+} elseif ($Mode -eq "opussonnet") {
+    Write-Host "  3. Then try: /opussonnet 'build a REST API'" -ForegroundColor Gray
 } else {
     Write-Host "  3. Then try: /opusworkflow 'build a REST API'" -ForegroundColor Gray
 }

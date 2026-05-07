@@ -8,9 +8,9 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 34
+- Skills: 35
 - Rules: 15
-- Scripts: 55
+- Scripts: 56
 - Static eval tasks: 22
 - Hook entries: 12
 - Codex config files: 4
@@ -35,6 +35,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `release`: `/ship`
 - `research`: `/browse`, `/deepresearch`, `/defineicp`, `/digestflow`, `/icpweek`, `/webresearch`
 - `routing`: `/metacognition`
+- `support`: `/opussonnet`
 
 ## Skills
 
@@ -61,6 +62,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/memory` | `memory` | yes | no | `.claude/skills/memory/SKILL.md` | minmaxing 5-tier memory system management |
 | `/metacognition` | `routing` | manual | yes | `.claude/skills/metacognition/SKILL.md` | Route and calibrate work with model-agnostic metacognitive control. Use when the user asks for thinking-about-thinking, harness effectiveness, task routing, self-correction, confidence calibration, or strategy improvement before execution. |
 | `/opusminimax` | `execution` | manual | yes | `.claude/skills/opusminimax/SKILL.md` | Run the Opus planner plus MiniMax-M2.7-highspeed executor workflow. Use when the user invokes /opusminimax or wants Claude/Opus to plan, adversarially review, and verify while MiniMax executes bounded coding packets. |
+| `/opussonnet` | `support` | manual | no | `.claude/skills/opussonnet/SKILL.md` | Run the optional Claude-only Opus 4.7 planner plus Sonnet 4.6 executor workflow. Use when the user invokes /opussonnet or installed with --mode opussonnet and wants the harness without MiniMax. |
 | `/opusworkflow` | `execution` | manual | yes | `.claude/skills/opusworkflow/SKILL.md` | Run the cost-optimized Opus planner plus MiniMax-M2.7-highspeed executor workflow end to end. Use when the user invokes /opusworkflow or wants the recommended daily mode for a Claude subscription plus MiniMax Plus-Highspeed Token Plan. |
 | `/overnight` | `operations` | yes | no | `.claude/skills/overnight/SKILL.md` | /overnight |
 | `/parallel` | `parallelism` | manual | yes | `.claude/skills/parallel/SKILL.md` | Run dense minmaxing work as a hardware-aware, main-orchestrated parallel workflow with bounded packets, explicit ownership, sync barriers, aggregation, and independent verification. |
@@ -89,7 +91,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `parallelism` | `.claude/rules/parallelism.rules.md` | 114 |
 | `pev-loop` | `.claude/rules/pev-loop.rules.md` | 2 |
 | `quality` | `.claude/rules/quality.rules.md` | 65 |
-| `security` | `.claude/rules/security.rules.md` | 41 |
+| `security` | `.claude/rules/security.rules.md` | 45 |
 | `spec` | `.claude/rules/spec.rules.md` | 123 |
 | `speed` | `.claude/rules/speed.rules.md` | 3 |
 | `verify` | `.claude/rules/verify.rules.md` | 127 |
@@ -112,6 +114,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `metacognition-scorecard` | metacognition scorecard | `scripts/metacognition-scorecard.sh` |
 | `opusminimax-benchmark-smoke` | OpusMiniMax benchmark honesty gate | `scripts/opusminimax-benchmark-smoke.sh` |
 | `opusminimax-doctor` | OpusMiniMax provider split doctor | `scripts/opusminimax-doctor.sh` |
+| `opussonnetworkflow` | optional Claude-only Opus plus Sonnet workflow wrapper | `scripts/opussonnetworkflow.sh` |
 | `opusworkflow-smoke` | OpusWorkflow cost-optimized route gate | `scripts/opusworkflow-smoke.sh` |
 | `parallel-aggregate` | parallel worker aggregate validator | `scripts/parallel-aggregate.sh` |
 | `parallel-capacity` | local parallel capacity profile | `scripts/parallel-capacity.sh` |

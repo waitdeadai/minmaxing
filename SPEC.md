@@ -1,150 +1,146 @@
-# SPEC: OpusWorkflow Default For Mutating Work
+# SPEC: Suggested Opus + Sonnet Install Mode
 
 ## Problem Statement
 
-The harness already recommends `/opusworkflow` for ordinary build and plan work,
-but several routing surfaces still present `/workflow`, `/agentfactory`,
-`/hiveworkflow`, and other mutating skills as separate non-hybrid execution
-islands. The operator wants one standard: Claude/Opus plans, criticizes, and
-reviews when proven available; MiniMax-M2.7-highspeed performs coding and repair
-packets.
+The harness default should remain `/opusworkflow`: Claude/Opus judgment plus
+MiniMax-M2.7-highspeed execution for the user's preferred cost-optimized split.
+The operator also wants a clean, suggested Claude-only install path for repos
+where MiniMax should not be required: Opus 4.7 plans, adversarially reviews, and
+handles judgment, while Sonnet 4.6 performs execution through Claude Code's
+native model behavior.
 
-The harness must make that default explicit without deleting specialized
-contracts. A governed Hermes agent still needs `/agentfactory`; a coordinated
-multi-agent build still needs `/hiveworkflow`; taste evolution still needs
-`/defineicp` or `/deepretaste`. The difference is that mutating specialist work
-inherits the `/opusworkflow` provider split by default.
+This must be a first-class suggested install option, not a replacement default
+and not a silent model downgrade.
 
 ## Success Criteria
 
-- [x] File-changing routes identify `/opusworkflow` as the default outer route.
-- [x] Specialized mutating skills declare that they inherit the Opus planner plus
-  MiniMax executor split by default.
-- [x] Plain `/workflow` remains available only as explicit user override,
-  provider-split fallback, or intentionally local supervisor loop.
-- [x] `/opusminimax` run artifacts include `outer_route`, `inner_contract`,
-  planner/executor identity status, and fallback status.
-- [x] Runtime planner execution diagnoses and repairs safe local profile issues
-  before failing, but never fakes Opus or enables PAYG silently.
-- [x] Static smokes and metacognition fixtures cover ordinary, AgentFactory, and
-  Hive routing through `/opusworkflow`.
+- [x] `setup.sh` supports a non-default `--mode opussonnet` install/update path.
+- [x] `opussonnet` installs the same harness files and governed hooks while
+  preparing ignored local Claude-only profiles.
+- [x] The optional profile pins Opus 4.7 and Sonnet 4.6 without MiniMax base URLs
+  or secrets.
+- [x] Existing MiniMax default install commands remain unchanged.
+- [x] `/opusworkflow` script/artifacts can represent either the standard MiniMax
+  executor or the optional Claude/Sonnet executor without confusing the two.
+- [x] Static gates prove the default MiniMax route still works and the optional
+  Sonnet route is lintable.
+- [x] README and runtime docs show one clean command for the suggested
+  Claude-only install path and clearly mark it as optional.
 - [x] No `.env`, `.env.*`, `.claude/*.local.json`, key files, or secrets are read
-  or committed.
-- [x] Release gates pass before push.
+  by the assistant or committed.
 
 ## Research Brief
 
 ### Local Evidence
 
-- `AGENTS.md` already says `/opusworkflow` is the default outer route for
-  ordinary build/plan work, but direct specialized routes remain more prominent
-  in `/workflow` and `/metacognition`.
-- `.claude/skills/opusworkflow/SKILL.md` defines the budget policy:
-  Opus for judgment gates, MiniMax-M2.7-highspeed for implementation, executor
-  concurrency `1` until provider evidence proves otherwise.
-- `scripts/opusminimax.sh` currently writes placeholder `opusminimax-run`
-  artifacts, but does not record `outer_route`, `inner_contract`,
-  `planner_identity_status`, `executor_identity_status`, or `fallback_status`.
-- `scripts/opusminimax-doctor.sh` validates committed example profiles and
-  runtime Claude auth/version state, but has no safe local profile repair mode.
-- `scripts/opusworkflow-smoke.sh` and `scripts/test-harness.sh` already protect
-  the default `/opusworkflow` install and docs surface.
+- `setup.sh` already installs clean folders, imports into existing projects, and
+  creates ignored split profiles for Opus planner plus MiniMax executor.
+- `.claude/skills/opusworkflow/SKILL.md` defines the standard budget policy:
+  Opus only at judgment gates, MiniMax-M2.7-highspeed for bounded coding and
+  repair packets.
+- `scripts/opusworkflow.sh` and `scripts/opusminimax.sh` currently hard-code the
+  executor assumption to MiniMax, so optional Sonnet execution needs explicit
+  provider metadata to avoid misleading artifacts.
+- `scripts/artifact-lint.sh` currently rejects every `opusminimax-run` whose
+  executor is not MiniMax, which is correct for the standard path but too narrow
+  for an explicit Claude-only optional route.
 
 ### Current Product Evidence
 
-- Claude Code settings docs define shareable project settings and ignored local
-  settings levels, supporting the repo's provider-neutral shared settings plus
-  local planner/executor profiles.
-- Claude Code model configuration docs say the `default` model depends on
-  account type and may fall back when Opus usage thresholds are hit; this
-  supports blocking fake Opus claims and requiring model-identity evidence.
-- Claude Code hooks docs define project hooks and exit-code behavior; the
-  existing governance hooks remain the enforcement surface for closeout quality.
+- Claude Code model configuration docs say the `opusplan` alias uses Opus during
+  plan mode and Sonnet during execution mode.
+- The same docs say Anthropic API aliases currently resolve `opus` to Opus 4.7
+  and `sonnet` to Sonnet 4.6, and model environment variables can pin alias
+  resolution.
+- The Claude Help Center lists `claude-opus-4-7` and `claude-sonnet-4-6` as
+  supported Claude Code model identifiers.
 
 ### Source Ledger
 
-- Claude Code settings: https://code.claude.com/docs/en/configuration
-- Claude Code model configuration: https://code.claude.com/docs/en/model-config
-- Claude Code hooks: https://code.claude.com/docs/en/hooks
+- Claude Code model configuration:
+  https://code.claude.com/docs/en/model-config
+- Claude Help Center model configuration:
+  https://support.claude.com/en/articles/11940350-claude-code-model-configuration
 
 ## Plan
 
-1. Extend `/opusminimax` and `/opusworkflow` artifacts with the new route,
-   identity, and fallback fields. Default `outer_route=opusworkflow` and infer
-   `inner_contract` from an optional CLI flag, defaulting to `workflow`.
-2. Extend `scripts/opusminimax-doctor.sh` with `--fix-local-profiles`:
-   create/repair ignored local profile structure, remove MiniMax base URL from
-   planner local profile, ensure MiniMax model is executor-only, preserve
-   unknown local keys, and never print secrets.
-3. Before `--execute-planner`, run runtime doctor repair/checks. If local repair
-   cannot prove a safe planner path, fail with exact auth/account/API-key
-   instructions rather than silently degrading.
-4. Update routing contracts in docs and skills so mutating specialized routes
-   inherit `/opusworkflow` by default.
-5. Update smokes and fixtures to prove ordinary, AgentFactory, Hive, direct
-   fallback, and Opus-unavailable routing semantics.
-6. Regenerate the harness capability map and run the required gates.
+1. Add committed `opussonnet`/Sonnet example profiles with no MiniMax endpoint,
+   no credentials, explicit secret denies, governance hooks, and pinned model
+   env vars.
+2. Extend `setup.sh` and `setup.ps1` with `--mode opussonnet`, keeping default
+   `opusworkflow` untouched.
+3. Extend `scripts/opusworkflow.sh`, `scripts/opusminimax.sh`, and
+   `scripts/artifact-lint.sh` with explicit `executor_provider` support for
+   `minimax` and `claude-sonnet`.
+4. Extend static doctor/security/smoke tests to validate the optional profile
+   while preserving MiniMax as the standard route.
+5. Update README, AGENTS/CLAUDE guidance, runtime quickstart, and regenerate the
+   harness capability map.
+6. Run static acceptance gates and archive this SPEC after verified closeout.
 
 ## Agent-Native Estimate
 
 - Estimate type: agent-native.
 - Capacity evidence: `bash scripts/parallel-capacity.sh --json` reported
   `recommended_ceiling=10`, `codex_max_threads=10`, `hardware_class=workstation`
-  on 2026-05-07T07:44:30-03:00.
-- Effective parallel budget: 1 main implementation lane. The change is tightly
-  coupled across routing docs, one doctor script, one artifact writer, and
-  static gates; parallel edits would add review overhead.
+  on 2026-05-07.
+- Effective parallel budget: 1 implementation lane. The change is coupled across
+  installer, profile examples, artifact validation, docs, and static gates.
 - Agent wall-clock: 60-120 minutes.
 - Agent-hours: 1.5-3.
-- Human touch time: none expected unless runtime Opus account access must be
-  proven.
-- Calendar blockers: none for static implementation.
-- Confidence: medium. The behavior is mostly static and testable, but runtime
-  model identity remains account-dependent by design.
+- Human touch time: none for static implementation; runtime account access
+  remains operator-dependent.
+- Calendar blockers: none for static release.
+- Confidence: medium. Claude Code model availability is account-dependent, so
+  static checks can prove configuration but not live Opus/Sonnet access.
 
 ## Introspection: Pre-Implementation
 
-- Likely mistake: replacing specialist contracts with `/opusworkflow` and losing
-  AgentFactory/Hive safeguards. Mitigation: make `/opusworkflow` the outer route
-  while preserving `inner_contract`.
-- Likely mistake: fake Opus claims. Mitigation: artifacts default
-  `planner_identity_status=blocked` or `not_required` until runtime proof exists.
-- Likely mistake: local profile repair overwrites user credentials. Mitigation:
-  do not read secret files, do not print values, and preserve unknown local env
-  keys while removing only unsafe planner MiniMax routing keys.
-- Likely mistake: making plain `/workflow` impossible. Mitigation: keep it as an
-  explicit override/fallback and document the boundary.
+- Likely mistake: making `opussonnet` look like the new default. Mitigation:
+  docs and setup output must say it is suggested/optional; default commands stay
+  MiniMax-backed `/opusworkflow`.
+- Likely mistake: using Sonnet artifacts that still say MiniMax executed.
+  Mitigation: add explicit `executor_provider` and provider-specific validation.
+- Likely mistake: writing secrets or reading local ignored profiles during this
+  implementation. Mitigation: create committed examples only; tests must not
+  inspect local credential files.
+- Likely mistake: overclaiming runtime proof. Mitigation: all static docs say
+  model identity still requires `claude auth login`, `/status`, or explicit
+  runtime checks.
 
 ## Verified 2026-05-07
 
-- `bash -n scripts/opusminimax-doctor.sh scripts/opusminimax.sh scripts/opusworkflow.sh scripts/opusworkflow-smoke.sh scripts/test-harness.sh scripts/artifact-lint.sh scripts/metacognition-scorecard.sh`: pass.
-- `bash scripts/artifact-lint.sh --fixtures`: pass (`7 green`, `22 red`).
-- `bash scripts/opusworkflow-smoke.sh`: pass; it now validates
-  `inner_contract=workflow`, `agentfactory`, and `hiveworkflow` artifacts.
-- `bash scripts/opusminimax-doctor.sh --static`: exits 0 with no failures and
-  warns only on existing tracked fixture/test placeholder strings.
-- `bash scripts/metacognition-scorecard.sh --fixtures --json`: pass (`7 green`,
-  `11 red`).
-- `bash scripts/harness-capability-map.sh --check`: pass after regeneration.
+- `bash -n setup.sh scripts/opusminimax.sh scripts/opusworkflow.sh scripts/opussonnetworkflow.sh scripts/opusminimax-doctor.sh scripts/opusworkflow-smoke.sh scripts/security-smoke.sh scripts/test-harness.sh scripts/artifact-lint.sh scripts/harness-capability-map.sh`: pass.
+- `python3 -m json.tool` on the new OpusSonnet profiles, updated schema, and
+  green artifact fixture: pass.
+- `env -u MINIMAX_TOKEN_KEY -u TOKEN_KEY bash setup.sh --help`: pass; help shows
+  the optional `--mode opussonnet` command without executing setup.
+- `bash scripts/opusminimax-doctor.sh --static --executor-provider claude-sonnet`:
+  exits 0 with only existing tracked fixture/test placeholder warnings.
+- `bash scripts/opusworkflow-smoke.sh`: pass; validates default MiniMax and
+  optional `claude-sonnet` artifacts.
+- `bash scripts/artifact-lint.sh --fixtures`: pass (`8 green`, `22 red`).
+- `bash scripts/security-smoke.sh`: pass.
+- `bash scripts/opussonnetworkflow.sh --task "manual optional route check" --run-id manual-opussonnet-check` plus artifact lint: pass; runtime not executed.
+- `bash scripts/harness-capability-map.sh --write` and `--check`: pass.
 - `bash scripts/harness-eval.sh --json`: pass (`22 tasks`, `19 gates`,
   `0 mismatches`).
-- `bash scripts/security-smoke.sh`: pass.
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`138 passed`,
-  `0 failed`; workflow smoke skipped by static CI mode).
+- `bash scripts/metacognition-scorecard.sh --fixtures --json`: pass (`7 green`,
+  `11 red`).
+- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`141 passed`,
+  `0 failed`).
+- `bash scripts/release-check.sh --static-only`: pass.
 - `git diff --check`: pass.
-- `bash scripts/release-check.sh --static-only`: pass (`138 passed`,
-  `0 failed`; static-only release gate passed).
 
 ## Introspection: Pre-Closeout
 
-- Likely mistake: overclaiming runtime proof. This implementation adds runtime
-  diagnosis and local profile repair, but static checks still do not prove real
-  Opus or MiniMax model calls.
-- Likely mistake: hiding specialist routes. The routes remain direct commands,
-  but mutating use now records them as `inner_contract` under `/opusworkflow`.
-- Likely mistake: local profile repair could overwrite credentials. The repair
-  function preserves unknown local env keys, removes only unsafe planner
-  MiniMax routing keys, and never prints values.
-- Remaining risk: `--runtime --fix-local-profiles` is intentionally not run in
-  static release gates because it can touch ignored local profiles. Runtime
-  account/auth proof remains operator opt-in.
+- Likely mistake checked: `opussonnet` could appear to replace the MiniMax
+  default. The README, AGENTS, CLAUDE, skill text, and setup output all label it
+  as optional/suggested, while default commands still use MiniMax-backed
+  `/opusworkflow`.
+- Likely mistake checked: Sonnet artifacts could imply MiniMax execution. The
+  run artifact now carries `executor_provider`, and artifact lint validates
+  MiniMax and Claude/Sonnet providers differently.
+- Remaining risk: static gates prove profile shape and artifact honesty, not
+  live account model access. Runtime identity still requires authenticated
+  Claude Code checks.

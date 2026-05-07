@@ -9,6 +9,8 @@ SOLO="$ROOT_DIR/.claude/settings.solo-fast.example.json"
 TEAM="$ROOT_DIR/.claude/settings.team-safe.example.json"
 OPUS_PLANNER="$ROOT_DIR/.claude/settings.opusminimax-planner.example.json"
 MINIMAX_EXECUTOR="$ROOT_DIR/.claude/settings.minimax-executor.example.json"
+OPUSSONNET="$ROOT_DIR/.claude/settings.opussonnet.example.json"
+SONNET_EXECUTOR="$ROOT_DIR/.claude/settings.sonnet-executor.example.json"
 HOOK="$ROOT_DIR/.claude/hooks/govern-effectiveness.sh"
 TIME_ANCHOR_HOOK="$ROOT_DIR/.claude/hooks/time-anchor.sh"
 
@@ -59,10 +61,14 @@ require_json "$SOLO"
 require_json "$TEAM"
 require_json "$OPUS_PLANNER"
 require_json "$MINIMAX_EXECUTOR"
+require_json "$OPUSSONNET"
+require_json "$SONNET_EXECUTOR"
 require_text "$SOLO" '"profile": "solo-fast"'
 require_text "$TEAM" '"profile": "team-safe"'
 require_text "$OPUS_PLANNER" '"profile": "opusminimax-planner"'
 require_text "$MINIMAX_EXECUTOR" '"profile": "minimax-executor"'
+require_text "$OPUSSONNET" '"profile": "opussonnet"'
+require_text "$SONNET_EXECUTOR" '"profile": "sonnet-executor"'
 
 [ "$(json_value "$PROJECT" "permissions.defaultMode")" = "bypassPermissions" ] || fail "project default must use bypassPermissions"
 [ "$(json_value "$SOLO" "permissions.defaultMode")" = "bypassPermissions" ] || fail "solo-fast must use bypassPermissions"
@@ -81,6 +87,21 @@ assert "MiniMax-M2.7-highspeed" not in json.dumps(env)
 PY
 grep -Fq '"ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic"' "$MINIMAX_EXECUTOR" || fail "minimax executor example must set MiniMax base URL"
 grep -Fq '"ANTHROPIC_MODEL": "MiniMax-M2.7-highspeed"' "$MINIMAX_EXECUTOR" || fail "minimax executor example must set MiniMax-M2.7-highspeed"
+grep -Fq '"ANTHROPIC_MODEL": "opusplan"' "$OPUSSONNET" || fail "opussonnet example must request opusplan"
+grep -Fq '"ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7"' "$OPUSSONNET" || fail "opussonnet example must pin Opus 4.7"
+grep -Fq '"ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6"' "$OPUSSONNET" || fail "opussonnet example must pin Sonnet 4.6"
+grep -Fq '"ANTHROPIC_MODEL": "claude-sonnet-4-6"' "$SONNET_EXECUTOR" || fail "sonnet executor example must request Sonnet 4.6"
+
+python3 - "$OPUSSONNET" "$SONNET_EXECUTOR" <<'PY' || fail "Claude-only profiles must not route through MiniMax"
+import json
+import sys
+for raw in sys.argv[1:]:
+    data = json.load(open(raw, encoding="utf-8"))
+    env = data.get("env", {})
+    assert "ANTHROPIC_BASE_URL" not in env
+    assert "MINIMAX_API_KEY" not in env
+    assert "MINIMAX_API_HOST" not in env
+PY
 
 for file in "$PROJECT" "$SOLO" "$TEAM"; do
   for pattern in \
@@ -102,7 +123,7 @@ for file in "$PROJECT" "$SOLO" "$TEAM"; do
   done
 done
 
-for file in "$OPUS_PLANNER" "$MINIMAX_EXECUTOR"; do
+for file in "$OPUS_PLANNER" "$MINIMAX_EXECUTOR" "$OPUSSONNET" "$SONNET_EXECUTOR"; do
   for pattern in \
     "Read(./.claude/settings.local.json)" \
     "Read(./.claude/*.local.json)" \

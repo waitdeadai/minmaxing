@@ -14,6 +14,7 @@ Use this guide to choose the right profile before running work.
 | `project-default` | Operator-owned private local loop | `bypassPermissions` in committed project settings, with explicit warning, secret denies, and governance hooks | `bash scripts/security-smoke.sh` |
 | `solo-fast` | Trusted local operator, fast iteration, private machine | `bypassPermissions` example with governance hooks and secret/destructive-command guards | `bash scripts/security-smoke.sh` |
 | `team-safe` | Shared repo, teammates, reviewers, or client-visible work | `acceptEdits` example with governance hooks and safer defaults | `bash scripts/security-smoke.sh` |
+| `opussonnet` | Optional Claude-only harness usage without a MiniMax Token Plan | trusted-local `bypassPermissions`; no MiniMax base URL; `opusplan` pinned to Opus 4.7 + Sonnet 4.6 | `bash scripts/opusminimax-doctor.sh --static --executor-provider claude-sonnet` |
 | `ci-static` | Public PRs and no-secret release checks | No runtime credentials, static scripts/evals/docs only | `bash scripts/release-check.sh --static-only` |
 | `ci-runtime` | Authenticated smoke/eval in an isolated environment | Explicit credentials from secrets, never default on public PRs | manual `.github/workflows/harness-runtime.yml` |
 
@@ -56,6 +57,20 @@ bash scripts/security-smoke.sh
 ```
 
 Do not make `bypassPermissions` the default for teams.
+
+For the optional Claude-only Opus + Sonnet path:
+
+```bash
+bash setup.sh --mode opussonnet
+claude
+/opussonnet "build a small feature"
+```
+
+This pins Claude Code `opusplan`, `claude-opus-4-7`, and
+`claude-sonnet-4-6` in ignored local settings. It is useful when you want the
+whole harness but do not want to configure MiniMax. It is not the default
+MiniMax-backed `/opusworkflow` budget strategy, and runtime model identity still
+depends on the authenticated Claude account.
 
 ## Runtime Smoke
 

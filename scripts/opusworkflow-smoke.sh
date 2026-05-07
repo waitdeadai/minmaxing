@@ -27,9 +27,12 @@ require_text() {
 
 require_file ".claude/skills/opusworkflow/SKILL.md"
 require_file ".claude/skills/opusminimax/SKILL.md"
+require_file ".claude/skills/opussonnet/SKILL.md"
 require_file "scripts/opusworkflow.sh"
 require_file "scripts/opusminimax.sh"
+require_file "scripts/opussonnetworkflow.sh"
 require_executable "scripts/opusworkflow.sh"
+require_executable "scripts/opussonnetworkflow.sh"
 
 for pattern in \
   "cost-optimized" \
@@ -47,7 +50,9 @@ for file in README.md CLAUDE.md AGENTS.md scripts/start-session.sh; do
 done
 
 require_text "--mode minimax|opusworkflow|opusminimax" setup.sh
+require_text "--mode minimax|opusworkflow|opusminimax|opussonnet" setup.sh
 require_text 'MODE="opusworkflow"' setup.sh
+require_text "--mode opussonnet" README.md
 require_text "--import-existing" setup.sh
 require_text "MINIMAX_TOKEN_KEY" setup.sh
 require_text "TOKEN_KEY" setup.sh
@@ -58,6 +63,10 @@ require_text "--inner-contract" scripts/opusworkflow.sh
 require_text "planner_identity_status" scripts/opusminimax.sh
 require_text "executor_identity_status" scripts/opusminimax.sh
 require_text "fallback_status" scripts/opusminimax.sh
+require_text "executor_provider" scripts/opusminimax.sh
+require_text "claude-sonnet" scripts/opusworkflow.sh
+require_text "claude-sonnet-4-6" .claude/settings.opussonnet.example.json
+require_text "claude-sonnet-4-6" .claude/settings.sonnet-executor.example.json
 require_text "import-manifest.tsv" setup.sh
 require_text "skipped_conflicts" setup.sh
 require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md
@@ -87,25 +96,29 @@ fi
 RUN_ID="opusworkflow-smoke"
 AGENTFACTORY_RUN_ID="opusworkflow-agentfactory-smoke"
 HIVE_RUN_ID="opusworkflow-hiveworkflow-smoke"
+SONNET_RUN_ID="opusworkflow-sonnet-smoke"
 RUN_DIR=".taste/opusminimax/$RUN_ID"
 AGENTFACTORY_RUN_DIR=".taste/opusminimax/$AGENTFACTORY_RUN_ID"
 HIVE_RUN_DIR=".taste/opusminimax/$HIVE_RUN_ID"
+SONNET_RUN_DIR=".taste/opusminimax/$SONNET_RUN_ID"
 OUT_FILE="$(mktemp)"
 cleanup() {
   rm -f "$OUT_FILE"
-  rm -rf "$RUN_DIR" "$AGENTFACTORY_RUN_DIR" "$HIVE_RUN_DIR"
+  rm -rf "$RUN_DIR" "$AGENTFACTORY_RUN_DIR" "$HIVE_RUN_DIR" "$SONNET_RUN_DIR"
 }
 trap cleanup EXIT
-rm -rf "$RUN_DIR" "$AGENTFACTORY_RUN_DIR" "$HIVE_RUN_DIR"
+rm -rf "$RUN_DIR" "$AGENTFACTORY_RUN_DIR" "$HIVE_RUN_DIR" "$SONNET_RUN_DIR"
 
 bash scripts/opusworkflow.sh --task "cost optimized smoke" --run-id "$RUN_ID" >"$OUT_FILE"
 bash scripts/opusworkflow.sh --task "governed Hermes smoke" --inner-contract agentfactory --run-id "$AGENTFACTORY_RUN_ID" >>"$OUT_FILE"
 bash scripts/opusworkflow.sh --task "governed hive smoke" --inner-contract hiveworkflow --run-id "$HIVE_RUN_ID" >>"$OUT_FILE"
+bash scripts/opusworkflow.sh --task "optional Sonnet smoke" --executor-provider claude-sonnet --run-id "$SONNET_RUN_ID" >>"$OUT_FILE"
 
 [ -f "$RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create run artifact"
 [ -f "$RUN_DIR/packets/P1.json" ] || fail "opusworkflow did not create packet"
 [ -f "$AGENTFACTORY_RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create agentfactory run artifact"
 [ -f "$HIVE_RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create hiveworkflow run artifact"
+[ -f "$SONNET_RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create Sonnet run artifact"
 
 python3 - "$RUN_DIR/opusminimax-run.json" "$AGENTFACTORY_RUN_DIR/opusminimax-run.json" "$HIVE_RUN_DIR/opusminimax-run.json" <<'PY'
 import json
@@ -130,9 +143,28 @@ for raw_path, contract in zip(sys.argv[1:], expected):
     assert data.get("claims", {}).get("opus_planned") is False
 PY
 
+python3 - "$SONNET_RUN_DIR/opusminimax-run.json" <<'PY'
+import json
+import pathlib
+import sys
+
+data = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+models = data.get("model_ids", {})
+profiles = data.get("provider_profiles", {})
+executor = profiles.get("executor", {})
+assert data.get("artifact_type") == "opusminimax-run"
+assert data.get("outer_route") == "opusworkflow"
+assert data.get("executor_provider") == "claude-sonnet"
+assert models.get("executor_requested") == "claude-sonnet-4-6"
+assert executor.get("anthropic_base_url", "") == ""
+assert "sonnet" in executor.get("model", "").lower()
+assert data.get("claims", {}).get("opus_planned") is False
+PY
+
 bash scripts/artifact-lint.sh "$RUN_DIR/opusminimax-run.json" >/dev/null
 bash scripts/artifact-lint.sh "$RUN_DIR/packets/P1.json" >/dev/null
 bash scripts/artifact-lint.sh "$AGENTFACTORY_RUN_DIR/opusminimax-run.json" >/dev/null
 bash scripts/artifact-lint.sh "$HIVE_RUN_DIR/opusminimax-run.json" >/dev/null
+bash scripts/artifact-lint.sh "$SONNET_RUN_DIR/opusminimax-run.json" >/dev/null
 
 echo "[PASS] /opusworkflow cost-optimized smoke passed"

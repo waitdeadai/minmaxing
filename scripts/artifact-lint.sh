@@ -360,6 +360,7 @@ def validate_opusminimax_run(data: dict[str, Any], errors: list[str]) -> None:
     executor = profiles.get("executor") if isinstance(profiles, dict) else {}
     planner_blob = profile_blob(planner).lower()
     executor_blob = profile_blob(executor)
+    executor_provider = str(data.get("executor_provider") or "minimax").strip()
 
     if not planner:
         error(errors, "opusminimax-run missing planner profile")
@@ -367,18 +368,28 @@ def validate_opusminimax_run(data: dict[str, Any], errors: list[str]) -> None:
         error(errors, "opusminimax-run missing executor profile")
     if "api.minimax.io/anthropic" in planner_blob or "minimax-m2.7-highspeed" in planner_blob:
         error(errors, "opusminimax-run planner profile must not route through MiniMax")
-    if "https://api.minimax.io/anthropic" not in executor_blob:
-        error(errors, "opusminimax-run executor profile must use MiniMax base URL")
-    if "MiniMax-M2.7-highspeed" not in executor_blob:
-        error(errors, "opusminimax-run executor profile must request MiniMax-M2.7-highspeed")
+    if executor_provider not in {"minimax", "claude-sonnet"}:
+        error(errors, "opusminimax-run executor_provider is unsupported")
+    if executor_provider == "minimax":
+        if "https://api.minimax.io/anthropic" not in executor_blob:
+            error(errors, "opusminimax-run executor profile must use MiniMax base URL")
+        if "MiniMax-M2.7-highspeed" not in executor_blob:
+            error(errors, "opusminimax-run executor profile must request MiniMax-M2.7-highspeed")
+    elif executor_provider == "claude-sonnet":
+        if "api.minimax.io/anthropic" in executor_blob.lower() or "minimax-m2.7-highspeed" in executor_blob.lower():
+            error(errors, "opusminimax-run Claude Sonnet executor profile must not route through MiniMax")
+        if "sonnet" not in executor_blob.lower():
+            error(errors, "opusminimax-run Claude Sonnet executor profile must request Sonnet")
 
     model_ids = data.get("model_ids") if isinstance(data.get("model_ids"), dict) else {}
     planner_model = str(model_ids.get("planner_requested", "")).lower()
     executor_model = str(model_ids.get("executor_requested", ""))
     if planner_model and "opus" not in planner_model:
         error(errors, "opusminimax-run planner_requested must be an Opus model or alias")
-    if executor_model != "MiniMax-M2.7-highspeed":
+    if executor_provider == "minimax" and executor_model != "MiniMax-M2.7-highspeed":
         error(errors, "opusminimax-run executor_requested must be MiniMax-M2.7-highspeed")
+    if executor_provider == "claude-sonnet" and "sonnet" not in executor_model.lower():
+        error(errors, "opusminimax-run executor_requested must be a Sonnet model for claude-sonnet provider")
 
     capacity = data.get("capacity") if isinstance(data.get("capacity"), dict) else {}
     effective = capacity.get("effective_concurrency")

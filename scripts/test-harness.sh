@@ -48,12 +48,16 @@ fi
 echo "[2] OpusMiniMax Provider Split"
 if [ -f ".claude/settings.opusminimax-planner.example.json" ] && \
    [ -f ".claude/settings.minimax-executor.example.json" ] && \
+   [ -f ".claude/settings.opussonnet.example.json" ] && \
+   [ -f ".claude/settings.sonnet-executor.example.json" ] && \
    ! grep -Fq "MiniMax-M2.7-highspeed" .claude/settings.json 2>/dev/null && \
    grep -Fq "claude-opus-4-7" .claude/settings.opusminimax-planner.example.json 2>/dev/null && \
-   grep -Fq "MiniMax-M2.7-highspeed" .claude/settings.minimax-executor.example.json 2>/dev/null; then
-    test_pass "Opus planner and MiniMax executor profiles are split"
+   grep -Fq "MiniMax-M2.7-highspeed" .claude/settings.minimax-executor.example.json 2>/dev/null && \
+   grep -Fq "claude-sonnet-4-6" .claude/settings.opussonnet.example.json 2>/dev/null && \
+   grep -Fq "claude-sonnet-4-6" .claude/settings.sonnet-executor.example.json 2>/dev/null; then
+    test_pass "Opus planner, MiniMax executor, and optional Sonnet executor profiles are split"
 else
-    test_fail "OpusMiniMax provider split is not configured"
+    test_fail "OpusMiniMax/OpusSonnet provider split is not configured"
 fi
 
 # Test 3: Settings
@@ -73,10 +77,12 @@ if [ -f ".claude/settings.team-safe.example.json" ] && \
    python3 -m json.tool .claude/settings.team-safe.example.json >/dev/null 2>&1 && \
    grep -Fq '"defaultMode": "acceptEdits"' .claude/settings.team-safe.example.json 2>/dev/null && \
    python3 -m json.tool .claude/settings.opusminimax-planner.example.json >/dev/null 2>&1 && \
-   python3 -m json.tool .claude/settings.minimax-executor.example.json >/dev/null 2>&1; then
-    test_pass "team-safe and OpusMiniMax settings examples are valid"
+   python3 -m json.tool .claude/settings.minimax-executor.example.json >/dev/null 2>&1 && \
+   python3 -m json.tool .claude/settings.opussonnet.example.json >/dev/null 2>&1 && \
+   python3 -m json.tool .claude/settings.sonnet-executor.example.json >/dev/null 2>&1; then
+    test_pass "team-safe and OpusMiniMax/OpusSonnet settings examples are valid"
 else
-    test_fail "team-safe or OpusMiniMax settings examples are missing or invalid"
+    test_fail "team-safe, OpusMiniMax, or OpusSonnet settings examples are missing or invalid"
 fi
 
 # Test 3a: Taste Kernel Structure
@@ -198,7 +204,7 @@ for pattern in \
     fi
 done
 for pattern in \
-    "--mode minimax|opusworkflow|opusminimax" \
+    "--mode minimax|opusworkflow|opusminimax|opussonnet" \
     "MINIMAX_TOKEN_KEY" \
     "--import-existing" \
     "--minimax-key" \
@@ -249,7 +255,7 @@ for pattern in \
     fi
 done
 for pattern in \
-    "--mode minimax|opusworkflow|opusminimax" \
+    "--mode minimax|opusworkflow|opusminimax|opussonnet" \
     'MODE="opusworkflow"' \
     "--import-existing" \
     "MINIMAX_TOKEN_KEY" \
@@ -270,6 +276,42 @@ if [ "$OPUSWORKFLOW_OK" = true ] && \
     test_pass "/opusworkflow exposes cost-optimized daily Opus/MiniMax workflow with static budget gate"
 else
     test_fail "/opusworkflow skill, setup alias, scripts, docs, eval, or static gate is incomplete"
+fi
+
+# Test 3d-opussonnet: Optional Claude-Only Opus + Sonnet Workflow Mode
+echo "[3d-opussonnet] Optional Opus + Sonnet Workflow"
+OPUSSONNET_OK=true
+for required_file in \
+    ".claude/skills/opussonnet/SKILL.md" \
+    ".claude/settings.opussonnet.example.json" \
+    ".claude/settings.sonnet-executor.example.json" \
+    "scripts/opussonnetworkflow.sh"; do
+    if [ ! -e "$required_file" ]; then
+        OPUSSONNET_OK=false
+    fi
+done
+if [ ! -x "scripts/opussonnetworkflow.sh" ]; then
+    OPUSSONNET_OK=false
+fi
+for pattern in \
+    "--mode opussonnet" \
+    "claude-opus-4-7" \
+    "claude-sonnet-4-6" \
+    "opusplan" \
+    "executor_provider" \
+    "claude-sonnet"; do
+    if ! grep -Fq -- "$pattern" setup.sh scripts/opusminimax.sh scripts/opusworkflow.sh scripts/artifact-lint.sh .claude/skills/opussonnet/SKILL.md 2>/dev/null; then
+        OPUSSONNET_OK=false
+    fi
+done
+if [ "$OPUSSONNET_OK" = true ] && \
+   bash scripts/opussonnetworkflow.sh --task "optional sonnet smoke" --run-id "opussonnet-smoke" >/dev/null 2>&1 && \
+   bash scripts/artifact-lint.sh .taste/opusminimax/opussonnet-smoke/opusminimax-run.json >/dev/null 2>&1; then
+    rm -rf .taste/opusminimax/opussonnet-smoke
+    test_pass "/opussonnet exposes optional Claude-only Opus/Sonnet workflow"
+else
+    rm -rf .taste/opusminimax/opussonnet-smoke
+    test_fail "/opussonnet skill, setup mode, profile, or static artifact path is incomplete"
 fi
 
 # Test 3d-defineicp: ICP-To-Taste Evolution Mode
@@ -452,7 +494,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "34 skills" README.md 2>/dev/null && \
+   grep -Fq "35 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -640,7 +682,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 34 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 35 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -1409,25 +1451,25 @@ else
 fi
 
 # ========================================
-# Skills (34 Expected)
+# Skills (35 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 34 Expected]"
+echo "[Skills - 35 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 34 ]; then
+if [ "$SKILL_COUNT" -ge 35 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 34+ skills, found $SKILL_COUNT"
+    test_fail "Expected 35+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow visualize visualizeworkflow demo digestflow deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1497,7 +1539,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

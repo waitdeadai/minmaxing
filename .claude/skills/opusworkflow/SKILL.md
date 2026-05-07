@@ -19,10 +19,20 @@ MiniMax-M2.7-highspeed is the executor for bulk coding and repair.
 Default executor concurrency is 1 until provider evidence proves otherwise.
 ```
 
+Optional Claude-only sibling:
+
+```text
+/opussonnet keeps the same workflow governance but requests Claude Code opusplan:
+Opus 4.7 planning/judgment and Sonnet 4.6 execution, with no MiniMax token.
+```
+
 ## Contract
 
 - Treat `/opusworkflow` as `/opusminimax --mode workflow` with stricter budget
   defaults and as the normal daily route for all mutating work in this harness.
+- Keep MiniMax as the standard executor provider. Use `/opussonnet` or
+  `--executor-provider claude-sonnet` only when the operator explicitly wants
+  the optional Claude-only route.
 - Record the specialist being executed as
   `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow`.
 - If the task asks for Hermes, Hive, ICP/taste mutation, approved
@@ -68,6 +78,14 @@ Practical target for the $20 Claude + $40 MiniMax setup:
 executor lanes: 1 default, 2 only after explicit runtime proof
 ```
 
+Optional `opussonnet` target:
+
+```text
+planner/judgment: claude-opus-4-7 through opusplan
+execution: claude-sonnet-4-6 through opusplan/Sonnet profile
+MiniMax token: not required
+```
+
 ## Workflow
 
 1. Run provider/capacity preflight:
@@ -91,6 +109,12 @@ For specialist mutation, pass the contract explicitly:
 ```bash
 bash scripts/opusworkflow.sh --task "$ARGUMENTS" --inner-contract agentfactory
 bash scripts/opusworkflow.sh --task "$ARGUMENTS" --inner-contract hiveworkflow
+```
+
+For the optional Claude-only executor:
+
+```bash
+bash scripts/opusworkflow.sh --task "$ARGUMENTS" --executor-provider claude-sonnet
 ```
 
 4. MiniMax executes only planner-approved packets with owned paths,

@@ -23,6 +23,9 @@
       "type": "string",
       "minLength": 1
     },
+    "executor_provider": {
+      "enum": ["minimax", "claude-sonnet"]
+    },
     "provider_profiles": {
       "type": "object",
       "required": ["planner", "executor"]

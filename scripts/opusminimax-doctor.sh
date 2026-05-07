@@ -7,6 +7,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODE="static"
 JSON_ONLY=0
 FIX_LOCAL_PROFILES=0
+EXECUTOR_PROVIDER="minimax"
 
 usage() {
   cat >&2 <<'EOF'
@@ -15,6 +16,7 @@ Usage:
   bash scripts/opusminimax-doctor.sh --runtime [--fix-local-profiles] [--json]
 
 --static is no-secret and does not run provider model calls.
+--executor-provider minimax|claude-sonnet selects the executor profile contract.
 --runtime may inspect local Claude auth/version state, but still never prints secrets.
 --fix-local-profiles repairs ignored planner/executor local profile structure
 without printing credentials or reading .env files.
@@ -39,6 +41,10 @@ while [ "$#" -gt 0 ]; do
       FIX_LOCAL_PROFILES=1
       shift
       ;;
+    "--executor-provider")
+      EXECUTOR_PROVIDER="${2:-}"
+      shift 2
+      ;;
     "-h"|"--help")
       usage
       exit 0
@@ -50,7 +56,12 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-python3 - "$ROOT_DIR" "$MODE" "$JSON_ONLY" "$FIX_LOCAL_PROFILES" <<'PY'
+case "$EXECUTOR_PROVIDER" in
+  minimax|claude-sonnet) ;;
+  *) usage; exit 2 ;;
+esac
+
+python3 - "$ROOT_DIR" "$MODE" "$JSON_ONLY" "$FIX_LOCAL_PROFILES" "$EXECUTOR_PROVIDER" <<'PY'
 import json
 import os
 import pathlib
@@ -64,12 +75,17 @@ ROOT = pathlib.Path(sys.argv[1]).resolve()
 MODE = sys.argv[2]
 JSON_ONLY = sys.argv[3] == "1"
 FIX_LOCAL_PROFILES = sys.argv[4] == "1"
+EXECUTOR_PROVIDER = sys.argv[5]
 
 PROJECT = ROOT / ".claude" / "settings.json"
 PLANNER = ROOT / ".claude" / "settings.opusminimax-planner.example.json"
 EXECUTOR = ROOT / ".claude" / "settings.minimax-executor.example.json"
+SONNET_EXECUTOR = ROOT / ".claude" / "settings.sonnet-executor.example.json"
+OPUSSONNET = ROOT / ".claude" / "settings.opussonnet.example.json"
 PLANNER_LOCAL = ROOT / ".claude" / "settings.opusminimax-planner.local.json"
 EXECUTOR_LOCAL = ROOT / ".claude" / "settings.minimax-executor.local.json"
+SONNET_EXECUTOR_LOCAL = ROOT / ".claude" / "settings.sonnet-executor.local.json"
+OPUSSONNET_LOCAL = ROOT / ".claude" / "settings.opussonnet.local.json"
 SKILL = ROOT / ".claude" / "skills" / "opusminimax" / "SKILL.md"
 
 SECRET_PATTERNS = [
@@ -132,7 +148,13 @@ def add(checks: list[dict[str, Any]], name: str, ok: bool, detail: str = "") -> 
     checks.append(item)
 
 
-def repair_local_profiles(checks: list[dict[str, Any]], planner_example: dict[str, Any], executor_example: dict[str, Any]) -> None:
+def repair_local_profiles(
+    checks: list[dict[str, Any]],
+    planner_example: dict[str, Any],
+    executor_example: dict[str, Any],
+    sonnet_executor_example: dict[str, Any],
+    opussonnet_example: dict[str, Any],
+) -> None:
     if MODE != "runtime":
         add(checks, "--fix-local-profiles requires --runtime", False)
         return
@@ -182,6 +204,75 @@ def repair_local_profiles(checks: list[dict[str, Any]], planner_example: dict[st
             changed.append(rel(PLANNER_LOCAL))
         write_json(PLANNER_LOCAL, planner_local)
         add(checks, "planner local profile repaired", True, "updated ignored local profile" if rel(PLANNER_LOCAL) in changed else "already safe")
+
+    if EXECUTOR_PROVIDER == "claude-sonnet":
+        sonnet_local, sonnet_state = read_json_quiet(SONNET_EXECUTOR_LOCAL)
+        if sonnet_state == "invalid":
+            add(checks, "sonnet executor local profile repair", False, "invalid JSON; fix or remove .claude/settings.sonnet-executor.local.json")
+        else:
+            if sonnet_state == "missing":
+                sonnet_local = json.loads(json.dumps(sonnet_executor_example))
+                changed.append(rel(SONNET_EXECUTOR_LOCAL))
+            sonnet_local.setdefault("profile", "sonnet-executor")
+            sonnet_local["model"] = "claude-sonnet-4-6"
+            sonnet_env = sonnet_local.setdefault("env", {})
+            if not isinstance(sonnet_env, dict):
+                sonnet_env = {}
+                sonnet_local["env"] = sonnet_env
+                changed.append(rel(SONNET_EXECUTOR_LOCAL))
+            for key in ["ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "MINIMAX_API_KEY", "MINIMAX_API_HOST"]:
+                if key in sonnet_env:
+                    sonnet_env.pop(key, None)
+                    changed.append(rel(SONNET_EXECUTOR_LOCAL))
+            for key, value in {
+                "ANTHROPIC_MODEL": "claude-sonnet-4-6",
+                "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
+                "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6",
+                "CLAUDE_CODE_EFFORT_LEVEL": "high",
+                "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+                "DISABLE_AUTO_COMPACT": "0",
+                "CLAUDE_CODE_NO_FLICKER": "1",
+            }.items():
+                if sonnet_env.get(key) != value:
+                    sonnet_env[key] = value
+                    changed.append(rel(SONNET_EXECUTOR_LOCAL))
+            write_json(SONNET_EXECUTOR_LOCAL, sonnet_local)
+            add(checks, "sonnet executor local profile repaired", True, "updated ignored local profile" if rel(SONNET_EXECUTOR_LOCAL) in changed else "already safe")
+
+        opussonnet_local, opussonnet_state = read_json_quiet(OPUSSONNET_LOCAL)
+        if opussonnet_state == "invalid":
+            add(checks, "opussonnet local profile repair", False, "invalid JSON; fix or remove .claude/settings.opussonnet.local.json")
+        else:
+            if opussonnet_state == "missing":
+                opussonnet_local = json.loads(json.dumps(opussonnet_example))
+                changed.append(rel(OPUSSONNET_LOCAL))
+            opussonnet_local.setdefault("profile", "opussonnet")
+            opussonnet_local["model"] = "opusplan"
+            opussonnet_env = opussonnet_local.setdefault("env", {})
+            if not isinstance(opussonnet_env, dict):
+                opussonnet_env = {}
+                opussonnet_local["env"] = opussonnet_env
+                changed.append(rel(OPUSSONNET_LOCAL))
+            for key in ["ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "MINIMAX_API_KEY", "MINIMAX_API_HOST"]:
+                if key in opussonnet_env:
+                    opussonnet_env.pop(key, None)
+                    changed.append(rel(OPUSSONNET_LOCAL))
+            for key, value in {
+                "ANTHROPIC_MODEL": "opusplan",
+                "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
+                "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
+                "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6",
+                "CLAUDE_CODE_EFFORT_LEVEL": "xhigh",
+                "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+                "DISABLE_AUTO_COMPACT": "0",
+                "CLAUDE_CODE_NO_FLICKER": "1",
+            }.items():
+                if opussonnet_env.get(key) != value:
+                    opussonnet_env[key] = value
+                    changed.append(rel(OPUSSONNET_LOCAL))
+            write_json(OPUSSONNET_LOCAL, opussonnet_local)
+            add(checks, "opussonnet local profile repaired", True, "updated ignored local profile" if rel(OPUSSONNET_LOCAL) in changed else "already safe")
+        return
 
     executor_local, executor_state = read_json_quiet(EXECUTOR_LOCAL)
     if executor_state == "invalid":
@@ -302,13 +393,17 @@ checks: list[dict[str, Any]] = []
 project = load_json(PROJECT, checks)
 planner = load_json(PLANNER, checks)
 executor = load_json(EXECUTOR, checks)
+sonnet_executor = load_json(SONNET_EXECUTOR, checks)
+opussonnet = load_json(OPUSSONNET, checks)
 
 if FIX_LOCAL_PROFILES:
-    repair_local_profiles(checks, planner, executor)
+    repair_local_profiles(checks, planner, executor, sonnet_executor, opussonnet)
 
 project_env = env(project)
 planner_env = env(planner)
 executor_env = env(executor)
+sonnet_executor_env = env(sonnet_executor)
+opussonnet_env = env(opussonnet)
 
 add(checks, "opusminimax skill exists", SKILL.is_file())
 add(checks, "shared settings are provider-neutral", "ANTHROPIC_BASE_URL" not in project_env and "MiniMax-M2.7-highspeed" not in json.dumps(project_env, sort_keys=True))
@@ -319,16 +414,29 @@ add(checks, "planner profile has no MiniMax base URL", "ANTHROPIC_BASE_URL" not 
 add(checks, "executor profile uses MiniMax base URL", executor_env.get("ANTHROPIC_BASE_URL") == "https://api.minimax.io/anthropic")
 add(checks, "executor profile uses MiniMax-M2.7-highspeed", "MiniMax-M2.7-highspeed" in json.dumps(executor_env, sort_keys=True))
 add(checks, "executor profile does not alias Opus to MiniMax", executor_env.get("ANTHROPIC_DEFAULT_OPUS_MODEL", "") != "MiniMax-M2.7-highspeed")
+add(checks, "opussonnet profile requests opusplan", opussonnet.get("model") == "opusplan" or opussonnet_env.get("ANTHROPIC_MODEL") == "opusplan")
+add(checks, "opussonnet profile has no MiniMax base URL", "ANTHROPIC_BASE_URL" not in opussonnet_env and "minimax" not in json.dumps(opussonnet_env, sort_keys=True).lower())
+add(checks, "opussonnet profile pins Opus 4.7", opussonnet_env.get("ANTHROPIC_DEFAULT_OPUS_MODEL") == "claude-opus-4-7")
+add(checks, "opussonnet profile pins Sonnet 4.6", opussonnet_env.get("ANTHROPIC_DEFAULT_SONNET_MODEL") == "claude-sonnet-4-6")
+add(checks, "sonnet executor profile has no MiniMax base URL", "ANTHROPIC_BASE_URL" not in sonnet_executor_env and "minimax" not in json.dumps(sonnet_executor_env, sort_keys=True).lower())
+add(checks, "sonnet executor profile requests Sonnet 4.6", "claude-sonnet-4-6" in json.dumps(sonnet_executor_env, sort_keys=True))
 if MODE == "runtime":
     local_planner, local_planner_state = read_json_quiet(PLANNER_LOCAL)
-    local_executor, local_executor_state = read_json_quiet(EXECUTOR_LOCAL)
     local_planner_env = env(local_planner)
-    local_executor_env = env(local_executor)
     add(checks, "planner local profile exists", local_planner_state == "ok", "run --runtime --fix-local-profiles" if local_planner_state != "ok" else "")
-    add(checks, "executor local profile exists", local_executor_state == "ok", "run --runtime --fix-local-profiles" if local_executor_state != "ok" else "")
     add(checks, "planner local profile has no MiniMax base URL", "ANTHROPIC_BASE_URL" not in local_planner_env and "minimax" not in json.dumps(local_planner_env, sort_keys=True).lower())
-    add(checks, "executor local profile uses MiniMax-M2.7-highspeed", "MiniMax-M2.7-highspeed" in json.dumps(local_executor_env, sort_keys=True))
-    add(checks, "executor local profile does not alias Opus to MiniMax", local_executor_env.get("ANTHROPIC_DEFAULT_OPUS_MODEL", "") != "MiniMax-M2.7-highspeed")
+    if EXECUTOR_PROVIDER == "claude-sonnet":
+        local_sonnet, local_sonnet_state = read_json_quiet(SONNET_EXECUTOR_LOCAL)
+        local_sonnet_env = env(local_sonnet)
+        add(checks, "sonnet executor local profile exists", local_sonnet_state == "ok", "run --runtime --fix-local-profiles --executor-provider claude-sonnet" if local_sonnet_state != "ok" else "")
+        add(checks, "sonnet executor local profile has no MiniMax base URL", "ANTHROPIC_BASE_URL" not in local_sonnet_env and "minimax" not in json.dumps(local_sonnet_env, sort_keys=True).lower())
+        add(checks, "sonnet executor local profile requests Sonnet 4.6", "claude-sonnet-4-6" in json.dumps(local_sonnet_env, sort_keys=True))
+    else:
+        local_executor, local_executor_state = read_json_quiet(EXECUTOR_LOCAL)
+        local_executor_env = env(local_executor)
+        add(checks, "executor local profile exists", local_executor_state == "ok", "run --runtime --fix-local-profiles" if local_executor_state != "ok" else "")
+        add(checks, "executor local profile uses MiniMax-M2.7-highspeed", "MiniMax-M2.7-highspeed" in json.dumps(local_executor_env, sort_keys=True))
+        add(checks, "executor local profile does not alias Opus to MiniMax", local_executor_env.get("ANTHROPIC_DEFAULT_OPUS_MODEL", "") != "MiniMax-M2.7-highspeed")
 gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8", errors="replace") if (ROOT / ".gitignore").exists() else ""
 add(checks, "local profile files are ignored", ".claude/*.local.json" in gitignore)
 add(checks, "opusminimax run artifacts are ignored", ".taste/opusminimax/" in gitignore)
@@ -367,6 +475,7 @@ elif any(item["status"] == "warn" for item in checks):
 payload = {
     "artifact_type": "opusminimax-doctor-result",
     "mode": MODE,
+    "executor_provider": EXECUTOR_PROVIDER,
     "status": status,
     "checks": checks,
     "runtime_model_calls": False,

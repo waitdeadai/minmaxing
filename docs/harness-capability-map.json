@@ -56,8 +56,8 @@
   "counts": {
     "eval_tasks": 22,
     "rules": 15,
-    "scripts": 55,
-    "skills": 34
+    "scripts": 56,
+    "skills": 35
   },
   "evals": [
     {
@@ -333,10 +333,10 @@
       "title": "Quality Rules"
     },
     {
-      "line_count": 41,
+      "line_count": 45,
       "name": "security",
       "path": ".claude/rules/security.rules.md",
-      "sha256": "5a690734227bb79474b0e5088cf6eaaca85a331cb458485931d5a1218004521c",
+      "sha256": "dd1fb3f23731d90356f9f29a32aa593a89880c4dc59d967ddd11638043b3ca6d",
       "title": "Security Rules"
     },
     {
@@ -379,12 +379,12 @@
       "sha256": "4dcbd22f5493e69884e2918455ca1aa0964bd31490681ef49d80e9c5a4069742"
     },
     {
-      "line_count": 651,
+      "line_count": 662,
       "name": "artifact-lint",
       "path": "scripts/artifact-lint.sh",
       "purpose": "machine sidecar validator",
       "required_gate": true,
-      "sha256": "96279afecae290f64ee8a4888752d94da2d305821c6302bfd7e3e32dc1177192"
+      "sha256": "958bef1364bfe3e83ecd0d10387952e883a28ca2e539d939a65c3e20be73ea20"
     },
     {
       "line_count": 189,
@@ -475,12 +475,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 663,
+      "line_count": 665,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "335b31db95d208d23bfc36a9dca253b15e6a24748118534850071fb18d5b61bd"
+      "sha256": "dafc0194daf486a584f0c6e74ddee3e992e25d97fd0432ab05ffa5711b2b86e3"
     },
     {
       "line_count": 640,
@@ -603,36 +603,44 @@
       "sha256": "814fdc31e20687d24b8efbb2b44d67a3ec932aaef5be9a730d791c66bfc2ff03"
     },
     {
-      "line_count": 392,
+      "line_count": 501,
       "name": "opusminimax-doctor",
       "path": "scripts/opusminimax-doctor.sh",
       "purpose": "OpusMiniMax provider split doctor",
       "required_gate": true,
-      "sha256": "69694bd054fc4b4aba11531de79534d43485f106e1b697c49ad98b354893ec86"
+      "sha256": "87ce355b7ecd84ddb8b1719da40f5540509d8f045149182700f52e72b5a9432a"
     },
     {
-      "line_count": 253,
+      "line_count": 292,
       "name": "opusminimax",
       "path": "scripts/opusminimax.sh",
       "purpose": "Prepare or explicitly launch the /opusminimax planner workflow.",
       "required_gate": false,
-      "sha256": "7ee50e40a8cebefbe85ae7c6376665fd5eaa7bda0d43e46674dc3d9b4337a502"
+      "sha256": "1e358ad090f810a2eed1d0167c7274a0406fc07eeffbf059167cd81161d3b1de"
     },
     {
-      "line_count": 138,
+      "line_count": 29,
+      "name": "opussonnetworkflow",
+      "path": "scripts/opussonnetworkflow.sh",
+      "purpose": "optional Claude-only Opus plus Sonnet workflow wrapper",
+      "required_gate": true,
+      "sha256": "70be9fb377e88766cff9656f348815f31461ad054de52682582d94c161731109"
+    },
+    {
+      "line_count": 170,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "97cd130b317445e9d74261545634760e275f8f53d2970e3c73fd13eb01bf654a"
+      "sha256": "a0c7e5fa48146cded6be1a20a0b7475f7a16f6bb2905f7a2796a2b8ce5786b0a"
     },
     {
-      "line_count": 41,
+      "line_count": 75,
       "name": "opusworkflow",
       "path": "scripts/opusworkflow.sh",
       "purpose": "Prepare or explicitly launch the cost-optimized /opusworkflow route.",
       "required_gate": false,
-      "sha256": "a8d435ae5e5cd683c94e24247ce154f70213cc4dabb82311cf0f53f65f7f0eed"
+      "sha256": "8ed5b4829d3a45290e9a47f84e225066d264f42485c5bea85f665ab5df23251f"
     },
     {
       "line_count": 113,
@@ -707,12 +715,12 @@
       "sha256": "9c3e0a29b441fdffeb0e280f3960bfc2cc6bf7c1f18fc752316a83f632dd8b42"
     },
     {
-      "line_count": 149,
+      "line_count": 170,
       "name": "security-smoke",
       "path": "scripts/security-smoke.sh",
       "purpose": "Static security smoke for Claude Code profile examples and governance hooks.",
       "required_gate": false,
-      "sha256": "0d63e1ad02e8139b0355cb62ca7dc192091ead19f96c4d8640fb6600dd18f1b5"
+      "sha256": "571328fa613f2cb895f8a6ecd090164acecadd74127fdf5792aad2de609d5c5d"
     },
     {
       "line_count": 130,
@@ -739,12 +747,12 @@
       "sha256": "3e80abf5a2f2a5dc3532dbb294cf6f554c4acfa39189baaee2e46fcc3ff3a5f4"
     },
     {
-      "line_count": 116,
+      "line_count": 117,
       "name": "start-session",
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "c684573afcd0463cde0698bf01629607ff8f6a7f47439f399cd0e4270d2cfc19"
+      "sha256": "1bfc1bb8efd603381bfbf06e5bef7e3920b79a6e4874e7de0669bd0c03431664"
     },
     {
       "line_count": 400,
@@ -763,12 +771,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1866,
+      "line_count": 1908,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "778753778d02a125ae7ea99689085febc8e1bda96463d709b2ff4ec440d47791"
+      "sha256": "623a3789d0381824ae49d0ecc4797f1dceef665083e98f9b3402da880bdf980b"
     },
     {
       "line_count": 127,
@@ -792,7 +800,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "a1d7a90666da0d4b7d188b747921a95f1333aa267e440373fcbc206e857b450b"
+      "sha256": "fc3f3ec2347d9c9b774c6013a3c68fbce6d70c6efb09dd89dbd233ba2f587827"
     },
     {
       "line_count": 117,
@@ -1381,7 +1389,7 @@
       "core_route": true,
       "description": "Run the Opus planner plus MiniMax-M2.7-highspeed executor workflow. Use when the user invokes /opusminimax or wants Claude/Opus to plan, adversarially review, and verify while MiniMax executes bounded coding packets.",
       "group": "execution",
-      "line_count": 248,
+      "line_count": 252,
       "model_invocation": false,
       "name": "opusminimax",
       "path": ".claude/skills/opusminimax/SKILL.md",
@@ -1395,8 +1403,26 @@
         "scripts/opusminimax-benchmark-smoke.sh",
         "scripts/opusminimax-doctor.sh"
       ],
-      "sha256": "a9ced482e51ef4e0bc7891bf12dfdb7ec1bcffc46ee1d0555bda917ce8586af9",
+      "sha256": "be79426f8bc821bc0bd178df1ed49c217da0707a1b438657680dd375ab3b2018",
       "slash": "/opusminimax",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[task]",
+      "core_route": false,
+      "description": "Run the optional Claude-only Opus 4.7 planner plus Sonnet 4.6 executor workflow. Use when the user invokes /opussonnet or installed with --mode opussonnet and wants the harness without MiniMax.",
+      "group": "support",
+      "line_count": 84,
+      "model_invocation": false,
+      "name": "opussonnet",
+      "path": ".claude/skills/opussonnet/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/opussonnetworkflow.sh"
+      ],
+      "sha256": "59c7bcb4e81e4e3e47dfe650c8ced30bb94e23eed2da72a81b7d94f596cfc4c1",
+      "slash": "/opussonnet",
       "user_invocable": true
     },
     {
@@ -1404,7 +1430,7 @@
       "core_route": true,
       "description": "Run the cost-optimized Opus planner plus MiniMax-M2.7-highspeed executor workflow end to end. Use when the user invokes /opusworkflow or wants the recommended daily mode for a Claude subscription plus MiniMax Plus-Highspeed Token Plan.",
       "group": "execution",
-      "line_count": 140,
+      "line_count": 164,
       "model_invocation": false,
       "name": "opusworkflow",
       "path": ".claude/skills/opusworkflow/SKILL.md",
@@ -1416,9 +1442,10 @@
         "scripts/minimax-exec.sh",
         "scripts/opusminimax-doctor.sh",
         "scripts/opusworkflow.sh",
-        "scripts/opusworkflow-smoke.sh"
+        "scripts/opusworkflow-smoke.sh",
+        "scripts/opussonnetworkflow.sh"
       ],
-      "sha256": "c226d05676b263639c498c2fa740a943bebe03e71c3e14f497542d6155f086b5",
+      "sha256": "c0fb5110fe22f126df178fbd3ff44ba6f7539e649ef90061342c40cdb086c765",
       "slash": "/opusworkflow",
       "user_invocable": true
     },
@@ -1741,11 +1768,14 @@
       ],
       "routing": [
         "/metacognition"
+      ],
+      "support": [
+        "/opussonnet"
       ]
     },
     "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 55,
-    "skill_count": 34
+    "script_count": 56,
+    "skill_count": 35
   }
 }

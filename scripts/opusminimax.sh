@@ -12,12 +12,13 @@ RUN_ID=""
 EXECUTE_PLANNER=0
 PLANNER_SETTINGS="${CLAUDE_PLANNER_SETTINGS_PATH:-$ROOT_DIR/.claude/settings.opusminimax-planner.local.json}"
 PLANNER_MODEL="${OPUSMINIMAX_PLANNER_MODEL:-claude-opus-4-7}"
-EXECUTOR_MODEL="${OPUSMINIMAX_EXECUTOR_MODEL:-MiniMax-M2.7-highspeed}"
+EXECUTOR_PROVIDER="${OPUSMINIMAX_EXECUTOR_PROVIDER:-minimax}"
+EXECUTOR_MODEL="${OPUSMINIMAX_EXECUTOR_MODEL:-}"
 
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--execute-planner] [--planner-settings PATH]
+  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--executor-provider minimax|claude-sonnet] [--execute-planner] [--planner-settings PATH]
 
 Default behavior prepares no-secret run artifacts and prints the next command.
 --execute-planner is the explicit Claude runtime opt-in.
@@ -61,6 +62,10 @@ while [ "$#" -gt 0 ]; do
       EXECUTOR_MODEL="${2:-}"
       shift 2
       ;;
+    "--executor-provider")
+      EXECUTOR_PROVIDER="${2:-}"
+      shift 2
+      ;;
     "--execute-planner")
       EXECUTE_PLANNER=1
       shift
@@ -89,6 +94,17 @@ case "$INNER_CONTRACT" in
   workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow) ;;
   *) echo "[opusminimax] invalid inner contract: $INNER_CONTRACT" >&2; exit 2 ;;
 esac
+case "$EXECUTOR_PROVIDER" in
+  minimax|claude-sonnet) ;;
+  *) echo "[opusminimax] invalid executor provider: $EXECUTOR_PROVIDER" >&2; exit 2 ;;
+esac
+if [ -z "$EXECUTOR_MODEL" ]; then
+  if [ "$EXECUTOR_PROVIDER" = "claude-sonnet" ]; then
+    EXECUTOR_MODEL="claude-sonnet-4-6"
+  else
+    EXECUTOR_MODEL="MiniMax-M2.7-highspeed"
+  fi
+fi
 
 if [ -z "$RUN_ID" ]; then
   STAMP="$(date +%Y%m%d-%H%M%S)"
@@ -103,21 +119,37 @@ mkdir -p "$PACKET_DIR"
 PACKET="$PACKET_DIR/P1.json"
 RUN_ARTIFACT="$RUN_DIR/opusminimax-run.json"
 
-python3 - "$TASK" "$MODE" "$OUTER_ROUTE" "$INNER_CONTRACT" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" <<'PY'
+python3 - "$TASK" "$MODE" "$OUTER_ROUTE" "$INNER_CONTRACT" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" "$EXECUTOR_PROVIDER" <<'PY'
 import json
 import pathlib
 import sys
 
-task, mode, outer_route, inner_contract, run_id, packet_path, run_artifact, planner_model, executor_model = sys.argv[1:10]
+task, mode, outer_route, inner_contract, run_id, packet_path, run_artifact, planner_model, executor_model, executor_provider = sys.argv[1:11]
 packet_path = pathlib.Path(packet_path)
 run_artifact = pathlib.Path(run_artifact)
+if executor_provider == "claude-sonnet":
+    executor_profile = {
+        "path": ".claude/settings.sonnet-executor.example.json",
+        "anthropic_base_url": "",
+        "model": executor_model,
+        "provider": "claude-sonnet",
+    }
+    executor_label = "Claude Sonnet executor"
+else:
+    executor_profile = {
+        "path": ".claude/settings.minimax-executor.example.json",
+        "anthropic_base_url": "https://api.minimax.io/anthropic",
+        "model": executor_model,
+        "provider": "minimax",
+    }
+    executor_label = "MiniMax executor"
 
 packet = {
     "artifact_type": "opusminimax-packet",
     "run_id": run_id,
     "packet_id": "P1",
     "objective": f"Prepare implementation packet for: {task}",
-    "context_summary": f"Outer route={outer_route}. Inner contract={inner_contract}. Mode={mode}. Claude planner must refine this packet before MiniMax execution.",
+    "context_summary": f"Outer route={outer_route}. Inner contract={inner_contract}. Mode={mode}. Claude planner must refine this packet before {executor_label} execution.",
     "owned_paths": ["SPEC.md"],
     "forbidden_paths": [".env", ".env.*", ".claude/*.local.json", "secrets/**"],
     "commands_allowed": ["bash scripts/opusminimax-doctor.sh --static"],
@@ -132,6 +164,7 @@ run = {
     "run_id": run_id,
     "outer_route": outer_route,
     "inner_contract": inner_contract,
+    "executor_provider": executor_provider,
     "planner_identity_status": "blocked",
     "executor_identity_status": "configured",
     "fallback_status": "none" if outer_route == "opusworkflow" else "explicit_user_override",
@@ -141,11 +174,7 @@ run = {
             "anthropic_base_url": "",
             "model": planner_model,
         },
-        "executor": {
-            "path": ".claude/settings.minimax-executor.example.json",
-            "anthropic_base_url": "https://api.minimax.io/anthropic",
-            "model": executor_model,
-        },
+        "executor": executor_profile,
     },
     "model_ids": {
         "planner_requested": planner_model,
@@ -186,7 +215,7 @@ echo "[opusminimax] run artifact: $RUN_ARTIFACT"
 
 if [ "$EXECUTE_PLANNER" -eq 0 ]; then
   echo "[opusminimax] runtime not executed. To launch planner explicitly:"
-  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --outer-route $OUTER_ROUTE --inner-contract $INNER_CONTRACT --execute-planner"
+  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --outer-route $OUTER_ROUTE --inner-contract $INNER_CONTRACT --executor-provider $EXECUTOR_PROVIDER --executor-model $EXECUTOR_MODEL --execute-planner"
   exit 0
 fi
 
@@ -195,20 +224,33 @@ if [ ! -f "$PLANNER_SETTINGS" ]; then
 fi
 
 DOCTOR_JSON="$(mktemp)"
-if ! bash "$ROOT_DIR/scripts/opusminimax-doctor.sh" --runtime --fix-local-profiles --json >"$DOCTOR_JSON"; then
+if ! bash "$ROOT_DIR/scripts/opusminimax-doctor.sh" --runtime --fix-local-profiles --executor-provider "$EXECUTOR_PROVIDER" --json >"$DOCTOR_JSON"; then
   echo "[opusminimax] planner identity blocked: runtime doctor failed." >&2
   echo "[opusminimax] repair steps: run claude auth login, ensure Opus is available on the account, unset ANTHROPIC_API_KEY for subscription billing, then retry." >&2
   rm -f "$DOCTOR_JSON"
   exit 1
 fi
 
-if ! python3 - "$DOCTOR_JSON" <<'PY'
+if ! python3 - "$DOCTOR_JSON" "$EXECUTOR_PROVIDER" <<'PY'
 import json
 import pathlib
 import sys
 
 path = pathlib.Path(sys.argv[1])
+executor_provider = sys.argv[2]
 payload = json.loads(path.read_text(encoding="utf-8"))
+provider_required = {
+    "minimax": {
+        "executor local profile exists",
+        "executor local profile uses MiniMax-M2.7-highspeed",
+        "executor local profile does not alias Opus to MiniMax",
+    },
+    "claude-sonnet": {
+        "sonnet executor local profile exists",
+        "sonnet executor local profile has no MiniMax base URL",
+        "sonnet executor local profile requests Sonnet 4.6",
+    },
+}.get(executor_provider, set())
 blocking = []
 for item in payload.get("checks", []):
     name = str(item.get("name", ""))
@@ -221,11 +263,8 @@ for item in payload.get("checks", []):
         "claude auth status",
         "ANTHROPIC_API_KEY subscription billing footgun",
         "planner local profile exists",
-        "executor local profile exists",
         "planner local profile has no MiniMax base URL",
-        "executor local profile uses MiniMax-M2.7-highspeed",
-        "executor local profile does not alias Opus to MiniMax",
-    } and status != "pass":
+    }.union(provider_required) and status != "pass":
         blocking.append(f"{name}: {status}")
 
 if blocking:
@@ -249,5 +288,5 @@ if [ ! -f "$PLANNER_SETTINGS" ]; then
   exit 1
 fi
 
-PROMPT="/opusminimax outer_route=$OUTER_ROUTE inner_contract=$INNER_CONTRACT mode=$MODE task=$TASK run_dir=$RUN_DIR planner_model=$PLANNER_MODEL executor_model=$EXECUTOR_MODEL"
+PROMPT="/opusminimax outer_route=$OUTER_ROUTE inner_contract=$INNER_CONTRACT mode=$MODE task=$TASK run_dir=$RUN_DIR planner_model=$PLANNER_MODEL executor_provider=$EXECUTOR_PROVIDER executor_model=$EXECUTOR_MODEL"
 claude --model "$PLANNER_MODEL" --effort xhigh --settings "$PLANNER_SETTINGS" -p "$PROMPT"

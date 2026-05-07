@@ -12,6 +12,8 @@ context.
 | `team-safe` | Shared project work | `acceptEdits` | narrower allowlist | governance hooks enabled; bypass mode not recommended |
 | `opusminimax-planner` | Claude subscription planner/reviewer | `acceptEdits` | no MiniMax base URL | Opus model request only; no executor credentials |
 | `minimax-executor` | Bounded MiniMax execution packets | `acceptEdits` | MiniMax Anthropic-compatible endpoint | exact `MiniMax-M2.7-highspeed`; packet-only authority |
+| `opussonnet` | Optional trusted-local Claude-only workflow | `bypassPermissions` | no MiniMax base URL | `opusplan` with Opus 4.7 planning and Sonnet 4.6 execution |
+| `sonnet-executor` | Optional Claude-only execution profile | `bypassPermissions` | no MiniMax base URL | exact `claude-sonnet-4-6`; no MiniMax token |
 | `ci-static` | Public static CI | no secrets | no external network | shell syntax, static smokes, evals, diff hygiene |
 | `ci-runtime` | Authenticated runtime checks | dedicated test secrets only | isolated temp workspace | runtime smoke, redacted logs, no production credentials |
 
@@ -28,6 +30,8 @@ context.
 - Never treat static CI as proof of authenticated Claude runtime behavior.
 - Never claim `/opusminimax` used Opus unless model identity is verified by
   runtime evidence; planner profiles must not inherit MiniMax base URLs.
+- Never present `opussonnet` as the default MiniMax-backed budget path, and
+  never claim `opusplan` used Opus/Sonnet without runtime account evidence.
 
 ## Required Proof
 
