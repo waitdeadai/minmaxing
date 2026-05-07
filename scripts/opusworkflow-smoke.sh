@@ -64,6 +64,9 @@ require_text "planner_identity_status" scripts/opusminimax.sh
 require_text "executor_identity_status" scripts/opusminimax.sh
 require_text "fallback_status" scripts/opusminimax.sh
 require_text "executor_provider" scripts/opusminimax.sh
+require_text "model_profile" scripts/opusminimax.sh
+require_text "--model-profile" scripts/opusworkflow.sh
+require_text "anthropic" scripts/opusworkflow.sh
 require_text "claude-sonnet" scripts/opusworkflow.sh
 require_text "claude-sonnet-4-6" .claude/settings.opussonnet.example.json
 require_text "claude-sonnet-4-6" .claude/settings.sonnet-executor.example.json
@@ -97,28 +100,36 @@ RUN_ID="opusworkflow-smoke"
 AGENTFACTORY_RUN_ID="opusworkflow-agentfactory-smoke"
 HIVE_RUN_ID="opusworkflow-hiveworkflow-smoke"
 SONNET_RUN_ID="opusworkflow-sonnet-smoke"
+ALL_SONNET_RUN_ID="opusworkflow-all-sonnet-smoke"
+ALL_OPUS_RUN_ID="opusworkflow-all-opus-smoke"
 RUN_DIR=".taste/opusminimax/$RUN_ID"
 AGENTFACTORY_RUN_DIR=".taste/opusminimax/$AGENTFACTORY_RUN_ID"
 HIVE_RUN_DIR=".taste/opusminimax/$HIVE_RUN_ID"
 SONNET_RUN_DIR=".taste/opusminimax/$SONNET_RUN_ID"
+ALL_SONNET_RUN_DIR=".taste/opusminimax/$ALL_SONNET_RUN_ID"
+ALL_OPUS_RUN_DIR=".taste/opusminimax/$ALL_OPUS_RUN_ID"
 OUT_FILE="$(mktemp)"
 cleanup() {
   rm -f "$OUT_FILE"
-  rm -rf "$RUN_DIR" "$AGENTFACTORY_RUN_DIR" "$HIVE_RUN_DIR" "$SONNET_RUN_DIR"
+  rm -rf "$RUN_DIR" "$AGENTFACTORY_RUN_DIR" "$HIVE_RUN_DIR" "$SONNET_RUN_DIR" "$ALL_SONNET_RUN_DIR" "$ALL_OPUS_RUN_DIR"
 }
 trap cleanup EXIT
-rm -rf "$RUN_DIR" "$AGENTFACTORY_RUN_DIR" "$HIVE_RUN_DIR" "$SONNET_RUN_DIR"
+rm -rf "$RUN_DIR" "$AGENTFACTORY_RUN_DIR" "$HIVE_RUN_DIR" "$SONNET_RUN_DIR" "$ALL_SONNET_RUN_DIR" "$ALL_OPUS_RUN_DIR"
 
 bash scripts/opusworkflow.sh --task "cost optimized smoke" --run-id "$RUN_ID" >"$OUT_FILE"
 bash scripts/opusworkflow.sh --task "governed Hermes smoke" --inner-contract agentfactory --run-id "$AGENTFACTORY_RUN_ID" >>"$OUT_FILE"
 bash scripts/opusworkflow.sh --task "governed hive smoke" --inner-contract hiveworkflow --run-id "$HIVE_RUN_ID" >>"$OUT_FILE"
 bash scripts/opusworkflow.sh --task "optional Sonnet smoke" --executor-provider claude-sonnet --run-id "$SONNET_RUN_ID" >>"$OUT_FILE"
+bash scripts/opusworkflow.sh --task "all Sonnet smoke" --model-profile sonnet --run-id "$ALL_SONNET_RUN_ID" >>"$OUT_FILE"
+bash scripts/opusworkflow.sh --task "all Opus smoke" --model-profile opus --run-id "$ALL_OPUS_RUN_ID" >>"$OUT_FILE"
 
 [ -f "$RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create run artifact"
 [ -f "$RUN_DIR/packets/P1.json" ] || fail "opusworkflow did not create packet"
 [ -f "$AGENTFACTORY_RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create agentfactory run artifact"
 [ -f "$HIVE_RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create hiveworkflow run artifact"
 [ -f "$SONNET_RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create Sonnet run artifact"
+[ -f "$ALL_SONNET_RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create all-Sonnet run artifact"
+[ -f "$ALL_OPUS_RUN_DIR/opusminimax-run.json" ] || fail "opusworkflow did not create all-Opus run artifact"
 
 python3 - "$RUN_DIR/opusminimax-run.json" "$AGENTFACTORY_RUN_DIR/opusminimax-run.json" "$HIVE_RUN_DIR/opusminimax-run.json" <<'PY'
 import json
@@ -137,6 +148,7 @@ for raw_path, contract in zip(sys.argv[1:], expected):
     assert data.get("planner_identity_status") == "blocked"
     assert data.get("executor_identity_status") == "configured"
     assert data.get("fallback_status") == "none"
+    assert data.get("model_profile") == "minimax"
     assert models.get("executor_requested") == "MiniMax-M2.7-highspeed"
     assert capacity.get("provider_ceiling") == 1
     assert capacity.get("effective_concurrency") == 1
@@ -154,6 +166,7 @@ profiles = data.get("provider_profiles", {})
 executor = profiles.get("executor", {})
 assert data.get("artifact_type") == "opusminimax-run"
 assert data.get("outer_route") == "opusworkflow"
+assert data.get("model_profile") == "opussonnet"
 assert data.get("executor_provider") == "claude-sonnet"
 assert models.get("executor_requested") == "claude-sonnet-4-6"
 assert executor.get("anthropic_base_url", "") == ""
@@ -161,10 +174,35 @@ assert "sonnet" in executor.get("model", "").lower()
 assert data.get("claims", {}).get("opus_planned") is False
 PY
 
+python3 - "$ALL_SONNET_RUN_DIR/opusminimax-run.json" "$ALL_OPUS_RUN_DIR/opusminimax-run.json" <<'PY'
+import json
+import pathlib
+import sys
+
+sonnet = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+opus = json.loads(pathlib.Path(sys.argv[2]).read_text(encoding="utf-8"))
+for data, profile, needle in [(sonnet, "sonnet", "sonnet"), (opus, "opus", "opus")]:
+    models = data.get("model_ids", {})
+    executor = data.get("provider_profiles", {}).get("executor", {})
+    assert data.get("artifact_type") == "opusminimax-run"
+    assert data.get("outer_route") == "opusworkflow"
+    assert data.get("model_profile") == profile
+    assert data.get("executor_provider") == "anthropic"
+    assert needle in models.get("planner_requested", "").lower()
+    assert needle in models.get("executor_requested", "").lower()
+    assert executor.get("anthropic_base_url", "") == ""
+    executor_blob = json.dumps(executor).lower()
+    assert "api.minimax.io/anthropic" not in executor_blob
+    assert "minimax-m2.7-highspeed" not in executor_blob
+    assert data.get("claims", {}).get("opus_planned") is False
+PY
+
 bash scripts/artifact-lint.sh "$RUN_DIR/opusminimax-run.json" >/dev/null
 bash scripts/artifact-lint.sh "$RUN_DIR/packets/P1.json" >/dev/null
 bash scripts/artifact-lint.sh "$AGENTFACTORY_RUN_DIR/opusminimax-run.json" >/dev/null
 bash scripts/artifact-lint.sh "$HIVE_RUN_DIR/opusminimax-run.json" >/dev/null
 bash scripts/artifact-lint.sh "$SONNET_RUN_DIR/opusminimax-run.json" >/dev/null
+bash scripts/artifact-lint.sh "$ALL_SONNET_RUN_DIR/opusminimax-run.json" >/dev/null
+bash scripts/artifact-lint.sh "$ALL_OPUS_RUN_DIR/opusminimax-run.json" >/dev/null
 
 echo "[PASS] /opusworkflow cost-optimized smoke passed"

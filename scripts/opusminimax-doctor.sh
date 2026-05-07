@@ -8,6 +8,7 @@ MODE="static"
 JSON_ONLY=0
 FIX_LOCAL_PROFILES=0
 EXECUTOR_PROVIDER="minimax"
+MODEL_PROFILE="minimax"
 
 usage() {
   cat >&2 <<'EOF'
@@ -16,7 +17,8 @@ Usage:
   bash scripts/opusminimax-doctor.sh --runtime [--fix-local-profiles] [--json]
 
 --static is no-secret and does not run provider model calls.
---executor-provider minimax|claude-sonnet selects the executor profile contract.
+--model-profile minimax|opussonnet|sonnet|opus|default|custom selects the governed route.
+--executor-provider minimax|claude-sonnet|anthropic selects the executor profile contract.
 --runtime may inspect local Claude auth/version state, but still never prints secrets.
 --fix-local-profiles repairs ignored planner/executor local profile structure
 without printing credentials or reading .env files.
@@ -45,6 +47,10 @@ while [ "$#" -gt 0 ]; do
       EXECUTOR_PROVIDER="${2:-}"
       shift 2
       ;;
+    "--model-profile")
+      MODEL_PROFILE="${2:-}"
+      shift 2
+      ;;
     "-h"|"--help")
       usage
       exit 0
@@ -56,12 +62,22 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-case "$EXECUTOR_PROVIDER" in
-  minimax|claude-sonnet) ;;
+case "$MODEL_PROFILE" in
+  minimax|opussonnet|sonnet|opus|default|custom) ;;
   *) usage; exit 2 ;;
 esac
 
-python3 - "$ROOT_DIR" "$MODE" "$JSON_ONLY" "$FIX_LOCAL_PROFILES" "$EXECUTOR_PROVIDER" <<'PY'
+case "$EXECUTOR_PROVIDER" in
+  minimax|claude-sonnet|anthropic) ;;
+  *) usage; exit 2 ;;
+esac
+
+case "$MODEL_PROFILE:$EXECUTOR_PROVIDER" in
+  minimax:minimax|opussonnet:claude-sonnet|sonnet:anthropic|opus:anthropic|default:anthropic|custom:anthropic) ;;
+  *) usage; exit 2 ;;
+esac
+
+python3 - "$ROOT_DIR" "$MODE" "$JSON_ONLY" "$FIX_LOCAL_PROFILES" "$EXECUTOR_PROVIDER" "$MODEL_PROFILE" <<'PY'
 import json
 import os
 import pathlib
@@ -76,6 +92,7 @@ MODE = sys.argv[2]
 JSON_ONLY = sys.argv[3] == "1"
 FIX_LOCAL_PROFILES = sys.argv[4] == "1"
 EXECUTOR_PROVIDER = sys.argv[5]
+MODEL_PROFILE = sys.argv[6]
 
 PROJECT = ROOT / ".claude" / "settings.json"
 PLANNER = ROOT / ".claude" / "settings.opusminimax-planner.example.json"
@@ -274,6 +291,10 @@ def repair_local_profiles(
             add(checks, "opussonnet local profile repaired", True, "updated ignored local profile" if rel(OPUSSONNET_LOCAL) in changed else "already safe")
         return
 
+    if EXECUTOR_PROVIDER == "anthropic":
+        add(checks, "anthropic executor local profile repair", True, "no MiniMax executor profile needed")
+        return
+
     executor_local, executor_state = read_json_quiet(EXECUTOR_LOCAL)
     if executor_state == "invalid":
         add(checks, "executor local profile repair", False, "invalid JSON; fix or remove .claude/settings.minimax-executor.local.json")
@@ -431,6 +452,8 @@ if MODE == "runtime":
         add(checks, "sonnet executor local profile exists", local_sonnet_state == "ok", "run --runtime --fix-local-profiles --executor-provider claude-sonnet" if local_sonnet_state != "ok" else "")
         add(checks, "sonnet executor local profile has no MiniMax base URL", "ANTHROPIC_BASE_URL" not in local_sonnet_env and "minimax" not in json.dumps(local_sonnet_env, sort_keys=True).lower())
         add(checks, "sonnet executor local profile requests Sonnet 4.6", "claude-sonnet-4-6" in json.dumps(local_sonnet_env, sort_keys=True))
+    elif EXECUTOR_PROVIDER == "anthropic":
+        add(checks, "anthropic executor profile uses Claude account route", True, f"model_profile={MODEL_PROFILE}")
     else:
         local_executor, local_executor_state = read_json_quiet(EXECUTOR_LOCAL)
         local_executor_env = env(local_executor)
@@ -476,6 +499,7 @@ payload = {
     "artifact_type": "opusminimax-doctor-result",
     "mode": MODE,
     "executor_provider": EXECUTOR_PROVIDER,
+    "model_profile": MODEL_PROFILE,
     "status": status,
     "checks": checks,
     "runtime_model_calls": False,

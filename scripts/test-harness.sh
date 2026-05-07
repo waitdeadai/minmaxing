@@ -266,6 +266,8 @@ for pattern in \
     "planner_identity_status" \
     "executor_identity_status" \
     "fallback_status" \
+    "model_profile" \
+    "--model-profile" \
     "opusworkflow-smoke"; do
     if ! grep -Fq -- "$pattern" setup.sh scripts/opusminimax.sh scripts/opusminimax-doctor.sh scripts/harness-eval.sh scripts/release-check.sh scripts/harness-capability-map.sh 2>/dev/null; then
         OPUSWORKFLOW_OK=false
@@ -299,6 +301,7 @@ for pattern in \
     "claude-sonnet-4-6" \
     "opusplan" \
     "executor_provider" \
+    "model_profile" \
     "claude-sonnet"; do
     if ! grep -Fq -- "$pattern" setup.sh scripts/opusminimax.sh scripts/opusworkflow.sh scripts/artifact-lint.sh .claude/skills/opussonnet/SKILL.md 2>/dev/null; then
         OPUSSONNET_OK=false
@@ -1096,6 +1099,7 @@ for pattern in \
     "unverified-worker-claim" \
     "opusminimax-fake-opus-claim" \
     "opusminimax-planner-minimax-base-url" \
+    "valid-sonnet-model-profile-run" \
     "opusminimax-benchmark-aggregate-without-per-task"; do
     if ! find .taste/fixtures/artifact-lint -type f -name "*$pattern*.json" 2>/dev/null | grep -q .; then
         ARTIFACT_LINT_OK=false

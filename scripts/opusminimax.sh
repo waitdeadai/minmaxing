@@ -11,17 +11,29 @@ INNER_CONTRACT="workflow"
 RUN_ID=""
 EXECUTE_PLANNER=0
 PLANNER_SETTINGS="${CLAUDE_PLANNER_SETTINGS_PATH:-$ROOT_DIR/.claude/settings.opusminimax-planner.local.json}"
-PLANNER_MODEL="${OPUSMINIMAX_PLANNER_MODEL:-claude-opus-4-7}"
+PLANNER_MODEL="${OPUSMINIMAX_PLANNER_MODEL:-}"
 EXECUTOR_PROVIDER="${OPUSMINIMAX_EXECUTOR_PROVIDER:-minimax}"
 EXECUTOR_MODEL="${OPUSMINIMAX_EXECUTOR_MODEL:-}"
+MODEL_PROFILE="${OPUSMINIMAX_MODEL_PROFILE:-}"
+PLANNER_MODEL_SET=0
+EXECUTOR_MODEL_SET=0
+EXECUTOR_PROVIDER_SET=0
 
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--executor-provider minimax|claude-sonnet] [--execute-planner] [--planner-settings PATH]
+  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--execute-planner] [--planner-settings PATH]
 
 Default behavior prepares no-secret run artifacts and prints the next command.
 --execute-planner is the explicit Claude runtime opt-in.
+
+Model profiles are governed routing presets, not runtime identity proof:
+  minimax     Opus judgment + MiniMax execution (default)
+  opussonnet  Opus judgment + Sonnet execution, no MiniMax token
+  sonnet      Sonnet planning + Sonnet execution
+  opus        Opus planning + Opus execution
+  default     Claude Code account default planning + execution
+  custom      Explicit --planner-model and --executor-model values
 
 CONTRACT may be workflow, agentfactory, hiveworkflow, parallel, defineicp,
 deepretaste, demo, or visualizeworkflow.
@@ -56,14 +68,21 @@ while [ "$#" -gt 0 ]; do
       ;;
     "--planner-model")
       PLANNER_MODEL="${2:-}"
+      PLANNER_MODEL_SET=1
       shift 2
       ;;
     "--executor-model")
       EXECUTOR_MODEL="${2:-}"
+      EXECUTOR_MODEL_SET=1
       shift 2
       ;;
     "--executor-provider")
       EXECUTOR_PROVIDER="${2:-}"
+      EXECUTOR_PROVIDER_SET=1
+      shift 2
+      ;;
+    "--model-profile")
+      MODEL_PROFILE="${2:-}"
       shift 2
       ;;
     "--execute-planner")
@@ -94,16 +113,78 @@ case "$INNER_CONTRACT" in
   workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow) ;;
   *) echo "[opusminimax] invalid inner contract: $INNER_CONTRACT" >&2; exit 2 ;;
 esac
+
+if [ -z "$MODEL_PROFILE" ]; then
+  case "$EXECUTOR_PROVIDER" in
+    minimax) MODEL_PROFILE="minimax" ;;
+    claude-sonnet) MODEL_PROFILE="opussonnet" ;;
+    anthropic) MODEL_PROFILE="custom" ;;
+    *) MODEL_PROFILE="minimax" ;;
+  esac
+fi
+
+case "$MODEL_PROFILE" in
+  minimax|opussonnet|sonnet|opus|default|custom) ;;
+  *) echo "[opusminimax] invalid model profile: $MODEL_PROFILE" >&2; exit 2 ;;
+esac
+
+if [ "$EXECUTOR_PROVIDER_SET" -eq 0 ]; then
+  case "$MODEL_PROFILE" in
+    minimax) EXECUTOR_PROVIDER="minimax" ;;
+    opussonnet) EXECUTOR_PROVIDER="claude-sonnet" ;;
+    sonnet|opus|default|custom) EXECUTOR_PROVIDER="anthropic" ;;
+  esac
+fi
+
 case "$EXECUTOR_PROVIDER" in
-  minimax|claude-sonnet) ;;
+  minimax|claude-sonnet|anthropic) ;;
   *) echo "[opusminimax] invalid executor provider: $EXECUTOR_PROVIDER" >&2; exit 2 ;;
 esac
-if [ -z "$EXECUTOR_MODEL" ]; then
-  if [ "$EXECUTOR_PROVIDER" = "claude-sonnet" ]; then
-    EXECUTOR_MODEL="claude-sonnet-4-6"
-  else
-    EXECUTOR_MODEL="MiniMax-M2.7-highspeed"
-  fi
+
+case "$MODEL_PROFILE:$EXECUTOR_PROVIDER" in
+  minimax:minimax|opussonnet:claude-sonnet|sonnet:anthropic|opus:anthropic|default:anthropic|custom:anthropic) ;;
+  *)
+    echo "[opusminimax] model profile '$MODEL_PROFILE' conflicts with executor provider '$EXECUTOR_PROVIDER'" >&2
+    exit 2
+    ;;
+esac
+
+case "$MODEL_PROFILE" in
+  minimax)
+    [ -n "$PLANNER_MODEL" ] || PLANNER_MODEL="claude-opus-4-7"
+    [ -n "$EXECUTOR_MODEL" ] || EXECUTOR_MODEL="MiniMax-M2.7-highspeed"
+    ;;
+  opussonnet)
+    [ -n "$PLANNER_MODEL" ] || PLANNER_MODEL="claude-opus-4-7"
+    [ -n "$EXECUTOR_MODEL" ] || EXECUTOR_MODEL="claude-sonnet-4-6"
+    ;;
+  sonnet)
+    [ -n "$PLANNER_MODEL" ] || PLANNER_MODEL="claude-sonnet-4-6"
+    [ -n "$EXECUTOR_MODEL" ] || EXECUTOR_MODEL="claude-sonnet-4-6"
+    ;;
+  opus)
+    [ -n "$PLANNER_MODEL" ] || PLANNER_MODEL="claude-opus-4-7"
+    [ -n "$EXECUTOR_MODEL" ] || EXECUTOR_MODEL="claude-opus-4-7"
+    ;;
+  default)
+    [ -n "$PLANNER_MODEL" ] || PLANNER_MODEL="default"
+    [ -n "$EXECUTOR_MODEL" ] || EXECUTOR_MODEL="default"
+    ;;
+  custom)
+    if [ -z "$PLANNER_MODEL" ] || [ -z "$EXECUTOR_MODEL" ]; then
+      echo "[opusminimax] --model-profile custom requires --planner-model and --executor-model or OPUSMINIMAX_* model env vars" >&2
+      exit 2
+    fi
+    ;;
+esac
+
+if [ "$EXECUTOR_PROVIDER" = "minimax" ] && [ "$EXECUTOR_MODEL" != "MiniMax-M2.7-highspeed" ]; then
+  echo "[opusminimax] minimax profile requires executor model MiniMax-M2.7-highspeed" >&2
+  exit 2
+fi
+if [ "$EXECUTOR_PROVIDER" != "minimax" ] && [[ "${EXECUTOR_MODEL,,}" == *"minimax"* ]]; then
+  echo "[opusminimax] Anthropic model profiles must not request MiniMax executor models" >&2
+  exit 2
 fi
 
 if [ -z "$RUN_ID" ]; then
@@ -119,12 +200,12 @@ mkdir -p "$PACKET_DIR"
 PACKET="$PACKET_DIR/P1.json"
 RUN_ARTIFACT="$RUN_DIR/opusminimax-run.json"
 
-python3 - "$TASK" "$MODE" "$OUTER_ROUTE" "$INNER_CONTRACT" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" "$EXECUTOR_PROVIDER" <<'PY'
+python3 - "$TASK" "$MODE" "$OUTER_ROUTE" "$INNER_CONTRACT" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" "$EXECUTOR_PROVIDER" "$MODEL_PROFILE" <<'PY'
 import json
 import pathlib
 import sys
 
-task, mode, outer_route, inner_contract, run_id, packet_path, run_artifact, planner_model, executor_model, executor_provider = sys.argv[1:11]
+task, mode, outer_route, inner_contract, run_id, packet_path, run_artifact, planner_model, executor_model, executor_provider, model_profile = sys.argv[1:12]
 packet_path = pathlib.Path(packet_path)
 run_artifact = pathlib.Path(run_artifact)
 if executor_provider == "claude-sonnet":
@@ -135,6 +216,14 @@ if executor_provider == "claude-sonnet":
         "provider": "claude-sonnet",
     }
     executor_label = "Claude Sonnet executor"
+elif executor_provider == "anthropic":
+    executor_profile = {
+        "path": ".claude/settings.opusminimax-planner.example.json",
+        "anthropic_base_url": "",
+        "model": executor_model,
+        "provider": "anthropic",
+    }
+    executor_label = "Claude/Anthropic executor"
 else:
     executor_profile = {
         "path": ".claude/settings.minimax-executor.example.json",
@@ -164,10 +253,11 @@ run = {
     "run_id": run_id,
     "outer_route": outer_route,
     "inner_contract": inner_contract,
+    "model_profile": model_profile,
     "executor_provider": executor_provider,
     "planner_identity_status": "blocked",
     "executor_identity_status": "configured",
-    "fallback_status": "none" if outer_route == "opusworkflow" else "explicit_user_override",
+    "fallback_status": "none" if outer_route == "opusworkflow" and model_profile == "minimax" else "explicit_user_override",
     "provider_profiles": {
         "planner": {
             "path": ".claude/settings.opusminimax-planner.example.json",
@@ -179,6 +269,20 @@ run = {
     "model_ids": {
         "planner_requested": planner_model,
         "executor_requested": executor_model,
+    },
+    "model_route": {
+        "profile": model_profile,
+        "planner": {
+            "provider": "anthropic",
+            "requested_model": planner_model,
+            "identity_status": "blocked",
+        },
+        "executor": {
+            "provider": executor_profile["provider"],
+            "requested_model": executor_model,
+            "identity_status": "configured",
+        },
+        "fallback_policy": "fail-closed-unless-explicit",
     },
     "capacity": {
         "local_ceiling": 10,
@@ -215,7 +319,7 @@ echo "[opusminimax] run artifact: $RUN_ARTIFACT"
 
 if [ "$EXECUTE_PLANNER" -eq 0 ]; then
   echo "[opusminimax] runtime not executed. To launch planner explicitly:"
-  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --outer-route $OUTER_ROUTE --inner-contract $INNER_CONTRACT --executor-provider $EXECUTOR_PROVIDER --executor-model $EXECUTOR_MODEL --execute-planner"
+  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --outer-route $OUTER_ROUTE --inner-contract $INNER_CONTRACT --model-profile $MODEL_PROFILE --executor-provider $EXECUTOR_PROVIDER --planner-model $PLANNER_MODEL --executor-model $EXECUTOR_MODEL --execute-planner"
   exit 0
 fi
 
@@ -224,7 +328,7 @@ if [ ! -f "$PLANNER_SETTINGS" ]; then
 fi
 
 DOCTOR_JSON="$(mktemp)"
-if ! bash "$ROOT_DIR/scripts/opusminimax-doctor.sh" --runtime --fix-local-profiles --executor-provider "$EXECUTOR_PROVIDER" --json >"$DOCTOR_JSON"; then
+if ! bash "$ROOT_DIR/scripts/opusminimax-doctor.sh" --runtime --fix-local-profiles --model-profile "$MODEL_PROFILE" --executor-provider "$EXECUTOR_PROVIDER" --json >"$DOCTOR_JSON"; then
   echo "[opusminimax] planner identity blocked: runtime doctor failed." >&2
   echo "[opusminimax] repair steps: run claude auth login, ensure Opus is available on the account, unset ANTHROPIC_API_KEY for subscription billing, then retry." >&2
   rm -f "$DOCTOR_JSON"
@@ -288,5 +392,9 @@ if [ ! -f "$PLANNER_SETTINGS" ]; then
   exit 1
 fi
 
-PROMPT="/opusminimax outer_route=$OUTER_ROUTE inner_contract=$INNER_CONTRACT mode=$MODE task=$TASK run_dir=$RUN_DIR planner_model=$PLANNER_MODEL executor_provider=$EXECUTOR_PROVIDER executor_model=$EXECUTOR_MODEL"
-claude --model "$PLANNER_MODEL" --effort xhigh --settings "$PLANNER_SETTINGS" -p "$PROMPT"
+PROMPT="/opusminimax outer_route=$OUTER_ROUTE inner_contract=$INNER_CONTRACT mode=$MODE task=$TASK run_dir=$RUN_DIR model_profile=$MODEL_PROFILE planner_model=$PLANNER_MODEL executor_provider=$EXECUTOR_PROVIDER executor_model=$EXECUTOR_MODEL"
+CLAUDE_ARGS=()
+if [ "$PLANNER_MODEL" != "default" ]; then
+  CLAUDE_ARGS+=(--model "$PLANNER_MODEL")
+fi
+claude "${CLAUDE_ARGS[@]}" --effort xhigh --settings "$PLANNER_SETTINGS" -p "$PROMPT"

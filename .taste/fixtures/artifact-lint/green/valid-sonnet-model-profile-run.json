@@ -1,0 +1,67 @@
+{
+  "artifact_type": "opusminimax-run",
+  "run_id": "20260507-150000-sonnet-profile",
+  "outer_route": "opusworkflow",
+  "inner_contract": "workflow",
+  "model_profile": "sonnet",
+  "executor_provider": "anthropic",
+  "planner_identity_status": "blocked",
+  "executor_identity_status": "configured",
+  "fallback_status": "explicit_user_override",
+  "provider_profiles": {
+    "planner": {
+      "path": ".claude/settings.opusminimax-planner.example.json",
+      "anthropic_base_url": "",
+      "model": "claude-sonnet-4-6"
+    },
+    "executor": {
+      "path": ".claude/settings.opusminimax-planner.example.json",
+      "anthropic_base_url": "",
+      "model": "claude-sonnet-4-6",
+      "provider": "anthropic"
+    }
+  },
+  "model_ids": {
+    "planner_requested": "claude-sonnet-4-6",
+    "executor_requested": "claude-sonnet-4-6"
+  },
+  "model_route": {
+    "profile": "sonnet",
+    "planner": {
+      "provider": "anthropic",
+      "requested_model": "claude-sonnet-4-6",
+      "identity_status": "blocked"
+    },
+    "executor": {
+      "provider": "anthropic",
+      "requested_model": "claude-sonnet-4-6",
+      "identity_status": "configured"
+    },
+    "fallback_policy": "fail-closed-unless-explicit"
+  },
+  "capacity": {
+    "local_ceiling": 10,
+    "provider_ceiling": 1,
+    "task_packet_count": 1,
+    "safety_cap": 1,
+    "effective_concurrency": 1
+  },
+  "packets": [
+    "P1"
+  ],
+  "verification": {
+    "status": "runtime-pending",
+    "commands_run": [
+      "bash scripts/opusworkflow.sh --task ... --model-profile sonnet"
+    ],
+    "closeout_status": "runtime-pending"
+  },
+  "failures": [],
+  "retries": 0,
+  "final_confidence": "medium",
+  "model_identity_confirmed": false,
+  "claims": {
+    "opus_planned": false,
+    "runtime_model_calls": false
+  }
+}

@@ -41,6 +41,10 @@ Worker summaries are claims until verified by diffs, logs, tests, or artifacts.
 - If `executor_provider=claude-sonnet` is explicit, treat it as the optional
   Claude-only `/opussonnet` route: no MiniMax base URL, executor model must be
   Sonnet, and the run artifact must not imply MiniMax executed anything.
+- If `model_profile=sonnet|opus|default|custom` is explicit, treat it as a
+  governed Anthropic-only route: no MiniMax base URL, no MiniMax executor model,
+  and no runtime model identity claim without `/status`, sentinel, or artifact
+  proof.
 - Run `/introspect` before plan freeze, after executor execution, after failed
   verification, and before push or ship decisions.
 - Run `/verify` against `SPEC.md` after executor aggregation.
@@ -68,6 +72,8 @@ Record:
 
 - planner profile path and whether it is provider-neutral
 - executor profile path and whether it uses `MiniMax-M2.7-highspeed`
+- selected `model_profile` and whether it is default cost-optimized or an
+  explicit user override
 - requested planner model
 - requested executor model
 - local capacity ceiling
@@ -207,6 +213,7 @@ When `/opusminimax` executes or prepares a real run, produce:
   "run_id": "YYYYMMDD-HHMMSS-task",
   "outer_route": "opusworkflow",
   "inner_contract": "workflow",
+  "model_profile": "minimax",
   "executor_provider": "minimax",
   "planner_identity_status": "blocked",
   "executor_identity_status": "configured",
@@ -218,6 +225,12 @@ When `/opusminimax` executes or prepares a real run, produce:
   "model_ids": {
     "planner_requested": "claude-opus-4-7",
     "executor_requested": "MiniMax-M2.7-highspeed"
+  },
+  "model_route": {
+    "profile": "minimax",
+    "planner": {"provider": "anthropic", "requested_model": "claude-opus-4-7", "identity_status": "blocked"},
+    "executor": {"provider": "minimax", "requested_model": "MiniMax-M2.7-highspeed", "identity_status": "configured"},
+    "fallback_policy": "fail-closed-unless-explicit"
   },
   "capacity": {
     "local_ceiling": 10,

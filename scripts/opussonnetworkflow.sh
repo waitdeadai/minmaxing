@@ -23,6 +23,7 @@ fi
 
 echo "[opussonnetworkflow] optional Claude-only mode: Opus 4.7 planning, Sonnet 4.6 execution"
 exec bash "$ROOT_DIR/scripts/opusworkflow.sh" \
+  --model-profile opussonnet \
   --executor-provider claude-sonnet \
   --planner-model claude-opus-4-7 \
   --executor-model claude-sonnet-4-6 \
