@@ -25,6 +25,8 @@ MiniMax is not required for this optional route.
 - This is a suggested alternative, not the standard default. The default
   `/opusworkflow` route remains Claude/Opus judgment plus MiniMax-M2.7-highspeed
   execution.
+- It is also available as `/opusworkflow --model-profile opussonnet` or the
+  backward-compatible `/opusworkflow --executor-provider claude-sonnet`.
 - Use the same governed `/workflow` lifecycle: research brief, SPEC, bounded
   implementation, `/introspect`, `/verify`, and command-backed closeout.
 - Use Claude Code's `opusplan` behavior for the interactive session when
@@ -73,6 +75,12 @@ Then run:
 ```bash
 claude
 /opussonnet "build or fix the thing"
+```
+
+Equivalent static artifact preparation:
+
+```bash
+bash scripts/opusworkflow.sh --task "build or fix the thing" --model-profile opussonnet
 ```
 
 ## Anti-Patterns

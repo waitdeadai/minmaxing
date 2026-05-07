@@ -26,6 +26,17 @@ Optional Claude-only sibling:
 Opus 4.7 planning/judgment and Sonnet 4.6 execution, with no MiniMax token.
 ```
 
+Model-profile selector:
+
+```text
+--model-profile minimax    # default: Opus judgment + MiniMax execution
+--model-profile opussonnet # Opus judgment + Sonnet execution
+--model-profile sonnet     # Sonnet planning + Sonnet execution
+--model-profile opus       # Opus planning + Opus execution, explicit high-cost route
+--model-profile default    # Claude Code account default
+--model-profile custom --planner-model MODEL --executor-model MODEL
+```
+
 ## Contract
 
 - Treat `/opusworkflow` as `/opusminimax --mode workflow` with stricter budget
@@ -33,6 +44,8 @@ Opus 4.7 planning/judgment and Sonnet 4.6 execution, with no MiniMax token.
 - Keep MiniMax as the standard executor provider. Use `/opussonnet` or
   `--executor-provider claude-sonnet` only when the operator explicitly wants
   the optional Claude-only route.
+- Allow explicit model freedom through `--model-profile`; treat it as a
+  governed route request, not runtime identity proof.
 - Record the specialist being executed as
   `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow`.
 - If the task asks for Hermes, Hive, ICP/taste mutation, approved
@@ -86,6 +99,15 @@ execution: claude-sonnet-4-6 through opusplan/Sonnet profile
 MiniMax token: not required
 ```
 
+Explicit Anthropic-only profiles:
+
+```text
+sonnet: claude-sonnet-4-6 for planning and execution
+opus: claude-opus-4-7 for planning and execution; use intentionally
+default: Claude Code account default; confirm with /status before claims
+custom: explicit planner/executor model IDs; static gates only prove request shape
+```
+
 ## Workflow
 
 1. Run provider/capacity preflight:
@@ -115,6 +137,14 @@ For the optional Claude-only executor:
 
 ```bash
 bash scripts/opusworkflow.sh --task "$ARGUMENTS" --executor-provider claude-sonnet
+```
+
+For explicit model profiles:
+
+```bash
+bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile sonnet
+bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile opus
+bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile custom --planner-model claude-sonnet-4-6 --executor-model claude-sonnet-4-6
 ```
 
 4. MiniMax executes only planner-approved packets with owned paths,

@@ -181,6 +181,19 @@ Use this as a suggested alternative, not the default budget strategy. Runtime
 Opus access still depends on your Claude account state; use `/status` or an
 explicit runtime check before claiming Opus 4.7 actually planned a run.
 
+You can also choose an explicit governed model profile per workflow without
+changing the default:
+
+```bash
+bash scripts/opusworkflow.sh --task "build or fix the thing" --model-profile sonnet
+bash scripts/opusworkflow.sh --task "build or fix the thing" --model-profile opus
+bash scripts/opusworkflow.sh --task "build or fix the thing" --model-profile custom --planner-model claude-sonnet-4-6 --executor-model claude-sonnet-4-6
+```
+
+`minimax` remains the default. `opussonnet`, `sonnet`, `opus`, `default`, and
+`custom` are explicit operator choices; static artifacts record the request, but
+runtime identity still depends on the current Claude Code account/session.
+
 Claude subscription auth is separate account auth. Run `claude auth login` once
 if this machine is not already logged in; the setup command does not store or
 fake your Claude subscription session.
@@ -407,6 +420,7 @@ For REVCLI/Revis-style products, `/agentfactory` treats Hermes as the role-scope
 - **solo-fast option:** tracked example of the same trusted-local fast profile for personal repos where you want fewer prompts.
 - **Team-safe option:** copy [`.claude/settings.team-safe.example.json`](.claude/settings.team-safe.example.json) to your local settings and keep `defaultMode` at `acceptEdits`.
 - **OpusWorkflow default:** use `/opusworkflow` as the recommended daily mode for all mutating work so Opus is reserved for judgment checkpoints while MiniMax-M2.7-highspeed does bounded execution packets. Specialist mutation still uses its own contract as `inner_contract`.
+- **Model profile override:** add `--model-profile sonnet`, `--model-profile opus`, `--model-profile opussonnet`, `--model-profile default`, or `--model-profile custom --planner-model MODEL --executor-model MODEL` when you intentionally want a different Claude model route for that run.
 - **OpusMiniMax option:** use `/opusminimax` directly when you need benchmark or repair mode, or lower-level packet control.
 - **OpusSonnet option:** use `/opussonnet` when you want the same governed harness without a MiniMax token, via Claude Code `opusplan` with Opus 4.7 planning and Sonnet 4.6 execution.
 - If you want even more guardrails, switch your local Claude session to `plan` before high-risk work.
@@ -670,7 +684,7 @@ Now you can use any workflow pattern:
 |-------|-------------|
 | `/tastebootstrap` | **Fresh-repo bootstrap** — asks the 10 kernel questions and writes `taste.md` + `taste.vision` |
 | `/workflow` | **Underlying lifecycle and explicit fallback** — drives research → code audit → plan → Agent-Native Estimate → `SPEC.md` → implement → verify → closeout (supervises an efficacy-first agent budget) |
-| `/opusworkflow` | **Recommended cost-optimized daily mode** — runs `/opusminimax --mode workflow` with Opus reserved for judgment and MiniMax-M2.7-highspeed as the executor |
+| `/opusworkflow` | **Recommended cost-optimized daily mode** — runs `/opusminimax --mode workflow` with Opus reserved for judgment and MiniMax-M2.7-highspeed as the executor; supports explicit `--model-profile` overrides |
 | `/opusminimax` | **Primary split-execution mode** — Claude/Opus plans, adversarially reviews, and verifies while MiniMax-M2.7-highspeed executes bounded coding packets |
 | `/opussonnet` | **Optional Claude-only mode** — uses Claude Code `opusplan`, pins Opus 4.7 for planning/judgment and Sonnet 4.6 for execution, no MiniMax token required |
 | `/visualize` | **Taste-to-artifact comprehension check** — creates ignored visual, diagram, prompt, or narrative artifacts without implementation |
@@ -737,6 +751,7 @@ Use this rule of thumb:
 | --- | --- | --- |
 | `/opusworkflow` | You want the default for a Claude subscription plus MiniMax Plus-Highspeed across ordinary or specialist mutating work: Opus only at plan/review/ship gates and MiniMax for bulk implementation. | One-command split setup, provider doctor, default executor concurrency 1, bounded packets, `outer_route` + `inner_contract` artifacts, parent verification, and no silent PAYG. |
 | `/opussonnet` | You want the whole governed harness without MiniMax for a repo, and you are okay spending Claude subscription or extra usage on execution. | `setup.sh --mode opussonnet`, Claude Code `opusplan`, pinned `claude-opus-4-7` + `claude-sonnet-4-6`, no MiniMax base URL, same hooks and workflow gates. |
+| `/opusworkflow --model-profile sonnet|opus|default|custom` | You intentionally want Claude Code model freedom for one governed run. | Same workflow artifacts and gates, no MiniMax leakage for Anthropic-only profiles, requested model IDs recorded, and runtime identity claims blocked until proven. |
 | local `/workflow` | Explicit user override, provider split unavailable, one tight reasoning loop, one shared file, unclear ownership, or coordination would slow the work down. | One supervisor does the governed lifecycle and records why the hybrid outer route was not used. |
 | `/deepretaste` | You need to detect product intent, define ICPs, and bootstrap or retaste the project kernel from research-backed customer evidence. | `/deepresearch` remains general-purpose; `/deepretaste` uses it only for taste-driving evidence, then routes fresh kernels through `/tastebootstrap` and existing kernels through `/defineicp` proposal/apply semantics. |
 | `/defineicp` | You need to define the ICP or ICPs and tailor `taste.md` / `taste.vision` to that customer profile. | Deepresearch plan, primary/secondary/anti-ICPs, source and claim ledgers, taste patch proposal, explicit apply approval, backups, hashes, validation, and rollback evidence. |
