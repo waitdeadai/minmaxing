@@ -14,6 +14,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - Static eval tasks: 22
 - Hook entries: 12
 - Codex config files: 4
+- Codex repo skills: 1
 - Core routes: 15
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
@@ -77,6 +78,12 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/webresearch` | `research` | yes | yes | `.claude/skills/webresearch/SKILL.md` | /webresearch |
 | `/workflow` | `execution` | manual | yes | `.claude/skills/workflow/SKILL.md` | Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command. |
 
+## Codex Repo Skills
+
+| Skill | Contract | Agents Metadata | Description |
+| --- | --- | --- | --- |
+| `codex-imagegen` | `.agents/skills/codex-imagegen/SKILL.md` | `.agents/skills/codex-imagegen/agents/openai.yaml` | Generate or edit raster image assets requested by SPEC.md using Codex subscription or ChatGPT-included image generation, not OpenAI API keys. Use when a task, SPEC.md, visualization package, README, landing page, app, game, brand, product demo, or asset manifest asks Codex to create image files, hero images, UI mockups, sprites, diagrams-as-images, thumbnails, or image edits and the operator wants Codex subscription usage instead of API billing. |
+
 ## Rules
 
 | Rule | Contract | Lines |
@@ -92,10 +99,10 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `pev-loop` | `.claude/rules/pev-loop.rules.md` | 2 |
 | `quality` | `.claude/rules/quality.rules.md` | 65 |
 | `security` | `.claude/rules/security.rules.md` | 45 |
-| `spec` | `.claude/rules/spec.rules.md` | 123 |
+| `spec` | `.claude/rules/spec.rules.md` | 146 |
 | `speed` | `.claude/rules/speed.rules.md` | 3 |
 | `verify` | `.claude/rules/verify.rules.md` | 127 |
-| `visualization` | `.claude/rules/visualization.rules.md` | 94 |
+| `visualization` | `.claude/rules/visualization.rules.md` | 109 |
 
 ## Required Script Gates
 

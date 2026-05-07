@@ -1,146 +1,179 @@
-# SPEC: Suggested Opus + Sonnet Install Mode
+# SPEC: Codex Subscription Image Generation Skill
 
 ## Problem Statement
 
-The harness default should remain `/opusworkflow`: Claude/Opus judgment plus
-MiniMax-M2.7-highspeed execution for the user's preferred cost-optimized split.
-The operator also wants a clean, suggested Claude-only install path for repos
-where MiniMax should not be required: Opus 4.7 plans, adversarially reviews, and
-handles judgment, while Sonnet 4.6 performs execution through Claude Code's
-native model behavior.
-
-This must be a first-class suggested install option, not a replacement default
-and not a silent model downgrade.
+The harness needs a durable way to produce generated or edited image assets
+requested by `SPEC.md` through Codex subscription usage, without silently
+falling back to OpenAI API-key image generation.
 
 ## Success Criteria
 
-- [x] `setup.sh` supports a non-default `--mode opussonnet` install/update path.
-- [x] `opussonnet` installs the same harness files and governed hooks while
-  preparing ignored local Claude-only profiles.
-- [x] The optional profile pins Opus 4.7 and Sonnet 4.6 without MiniMax base URLs
-  or secrets.
-- [x] Existing MiniMax default install commands remain unchanged.
-- [x] `/opusworkflow` script/artifacts can represent either the standard MiniMax
-  executor or the optional Claude/Sonnet executor without confusing the two.
-- [x] Static gates prove the default MiniMax route still works and the optional
-  Sonnet route is lintable.
-- [x] README and runtime docs show one clean command for the suggested
-  Claude-only install path and clearly mark it as optional.
-- [x] No `.env`, `.env.*`, `.claude/*.local.json`, key files, or secrets are read
-  by the assistant or committed.
+- [x] A repo-scoped Codex skill exists under `.agents/skills/codex-imagegen/`
+  and can be discovered by Codex when a task or `SPEC.md` requests image
+  generation or image editing.
+- [x] The skill explicitly prefers Codex/ChatGPT subscription usage and
+  forbids OpenAI API-key image generation unless the user explicitly changes
+  the billing/auth mode.
+- [x] Harness rules explain how `SPEC.md` should express generated image asset
+  requirements, including output paths, acceptance criteria, and fail-closed
+  behavior when image generation is unavailable.
+- [x] The generated harness capability map includes repo-scoped Codex skills
+  so self-lookup can find `codex-imagegen`.
+- [x] Static validation passes for the new skill and generated capability map.
+
+## Scope
+
+In Scope:
+
+- Add one Codex repo skill for SPEC-driven raster image creation and editing.
+- Update harness routing/rules/docs so image requests are treated as product
+  artifacts, not vague visual inspiration.
+- Regenerate generated harness capability docs.
+
+Out of Scope:
+
+- Running a real image generation job in this turn; runtime image availability
+  and account limits are subscription-state dependent.
+- Adding OpenAI API scripts, `OPENAI_API_KEY` usage, or Responses API wrappers.
+- Adding a Claude slash command for image generation; the requested execution
+  lane is Codex subscription, not Claude or API.
 
 ## Research Brief
 
 ### Local Evidence
 
-- `setup.sh` already installs clean folders, imports into existing projects, and
-  creates ignored split profiles for Opus planner plus MiniMax executor.
-- `.claude/skills/opusworkflow/SKILL.md` defines the standard budget policy:
-  Opus only at judgment gates, MiniMax-M2.7-highspeed for bounded coding and
-  repair packets.
-- `scripts/opusworkflow.sh` and `scripts/opusminimax.sh` currently hard-code the
-  executor assumption to MiniMax, so optional Sonnet execution needs explicit
-  provider metadata to avoid misleading artifacts.
-- `scripts/artifact-lint.sh` currently rejects every `opusminimax-run` whose
-  executor is not MiniMax, which is correct for the standard path but too narrow
-  for an explicit Claude-only optional route.
+- `AGENTS.md` says OpenAI/Codex product questions must use the
+  `openaiDeveloperDocs` MCP server before memory.
+- `README.md` documents Codex plugin/direct CLI support through
+  `.codex/config.toml`, with `gpt-5.5`, `medium` reasoning, `max_threads = 10`,
+  and OpenAI docs MCP.
+- Existing visualization rules already require honest artifact paths and forbid
+  claiming generated images when no image artifact exists.
 
 ### Current Product Evidence
 
-- Claude Code model configuration docs say the `opusplan` alias uses Opus during
-  plan mode and Sonnet during execution mode.
-- The same docs say Anthropic API aliases currently resolve `opus` to Opus 4.7
-  and `sonnet` to Sonnet 4.6, and model environment variables can pin alias
-  resolution.
-- The Claude Help Center lists `claude-opus-4-7` and `claude-sonnet-4-6` as
-  supported Claude Code model identifiers.
+- Official Codex skills docs say Codex scans `.agents/skills` from the current
+  directory up to the repo root and can invoke skills explicitly or implicitly
+  from their descriptions.
+- Official OpenAI tool docs list image generation as a built-in tool for
+  generating or editing images with GPT Image.
+- Official Codex pricing docs say image generation counts toward general Codex
+  usage limits, is unavailable on Free, and uses API pricing when Codex is used
+  with an API key. Therefore this harness must prefer ChatGPT/Codex login for
+  the user's subscription path and fail closed if only API-key mode is present.
 
 ### Source Ledger
 
-- Claude Code model configuration:
-  https://code.claude.com/docs/en/model-config
-- Claude Help Center model configuration:
-  https://support.claude.com/en/articles/11940350-claude-code-model-configuration
-
-## Plan
-
-1. Add committed `opussonnet`/Sonnet example profiles with no MiniMax endpoint,
-   no credentials, explicit secret denies, governance hooks, and pinned model
-   env vars.
-2. Extend `setup.sh` and `setup.ps1` with `--mode opussonnet`, keeping default
-   `opusworkflow` untouched.
-3. Extend `scripts/opusworkflow.sh`, `scripts/opusminimax.sh`, and
-   `scripts/artifact-lint.sh` with explicit `executor_provider` support for
-   `minimax` and `claude-sonnet`.
-4. Extend static doctor/security/smoke tests to validate the optional profile
-   while preserving MiniMax as the standard route.
-5. Update README, AGENTS/CLAUDE guidance, runtime quickstart, and regenerate the
-   harness capability map.
-6. Run static acceptance gates and archive this SPEC after verified closeout.
+- OpenAI Codex Agent Skills, accessed 2026-05-07:
+  https://developers.openai.com/codex/skills
+- OpenAI Codex Pricing FAQ, accessed 2026-05-07:
+  https://developers.openai.com/codex/pricing#how-does-image-generation-count-toward-usage-limits
+- OpenAI Image Generation Tool docs, accessed 2026-05-07:
+  https://developers.openai.com/api/docs/guides/tools-image-generation
+- OpenAI Available Tools docs, accessed 2026-05-07:
+  https://developers.openai.com/api/docs/guides/tools#available-tools
 
 ## Agent-Native Estimate
 
 - Estimate type: agent-native.
 - Capacity evidence: `bash scripts/parallel-capacity.sh --json` reported
-  `recommended_ceiling=10`, `codex_max_threads=10`, `hardware_class=workstation`
+  `codex_max_threads=10`, `recommended_ceiling=10`, `hardware_class=workstation`
   on 2026-05-07.
-- Effective parallel budget: 1 implementation lane. The change is coupled across
-  installer, profile examples, artifact validation, docs, and static gates.
-- Agent wall-clock: 60-120 minutes.
-- Agent-hours: 1.5-3.
-- Human touch time: none for static implementation; runtime account access
-  remains operator-dependent.
+- Effective parallel budget: 1 implementation lane. The change is small and
+  coupled across one skill, rule/docs surfaces, and generated capability docs.
+- Agent wall-clock: 25-60 minutes.
+- Agent-hours: 0.5-1.0.
+- Human touch time: none for static implementation. A real image run still
+  depends on the operator's Codex subscription/login state.
 - Calendar blockers: none for static release.
-- Confidence: medium. Claude Code model availability is account-dependent, so
-  static checks can prove configuration but not live Opus/Sonnet access.
+- Confidence: medium-high for static wiring, medium for runtime image behavior
+  because image generation availability depends on current Codex auth/plan.
+
+## Implementation Plan
+
+### Task 1: Add Codex image generation skill
+
+Definition of Done:
+
+- [x] `.agents/skills/codex-imagegen/SKILL.md` has complete frontmatter and
+  workflow instructions.
+- [x] The skill requires Codex subscription/ChatGPT login preference and no
+  API-key fallback.
+- [x] The skill defines asset extraction, prompt construction, generation,
+  verification, and fail-closed output behavior.
+
+### Task 2: Wire harness contracts
+
+Definition of Done:
+
+- [x] SPEC and visualization rules define how generated image asset contracts
+  must be represented and verified.
+- [x] Workflow routing mentions SPEC-driven image generation as a Codex
+  subscription lane.
+- [x] README/AGENTS/CLAUDE explain the Codex image skill without implying API
+  billing or guaranteed runtime access.
+
+### Task 3: Update generated self-lookup
+
+Definition of Done:
+
+- [x] `scripts/harness-capability-map.sh` discovers `.agents/skills/*/SKILL.md`.
+- [x] `docs/harness-capability-map.md` and `.json` include the new Codex skill.
+- [x] Static gates for skill validation, capability map freshness, harness eval,
+  release check, and diff hygiene pass.
+
+## Verification
+
+- Success Criteria 1 -> `python3 /home/fer/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/codex-imagegen`
+- Success Criteria 2 -> Inspect `.agents/skills/codex-imagegen/SKILL.md` for
+  subscription-only and no-API fallback language.
+- Success Criteria 3 -> Inspect `.claude/rules/spec.rules.md` and
+  `.claude/rules/visualization.rules.md`.
+- Success Criteria 4 -> `bash scripts/harness-capability-map.sh --check --json`
+  and inspect generated map for `codex-imagegen`.
+- Success Criteria 5 -> `bash scripts/harness-eval.sh --json`,
+  `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`,
+  `bash scripts/release-check.sh --static-only`, and `git diff --check`.
+
+## Rollback Plan
+
+1. Revert the commit or remove `.agents/skills/codex-imagegen/`.
+2. Revert the harness rule/docs and capability-map generator changes.
+3. Regenerate the capability map with `bash scripts/harness-capability-map.sh`.
+4. Verify rollback with `bash scripts/harness-capability-map.sh --check` and
+   `bash scripts/release-check.sh --static-only`.
 
 ## Introspection: Pre-Implementation
 
-- Likely mistake: making `opussonnet` look like the new default. Mitigation:
-  docs and setup output must say it is suggested/optional; default commands stay
-  MiniMax-backed `/opusworkflow`.
-- Likely mistake: using Sonnet artifacts that still say MiniMax executed.
-  Mitigation: add explicit `executor_provider` and provider-specific validation.
-- Likely mistake: writing secrets or reading local ignored profiles during this
-  implementation. Mitigation: create committed examples only; tests must not
-  inspect local credential files.
-- Likely mistake: overclaiming runtime proof. Mitigation: all static docs say
-  model identity still requires `claude auth login`, `/status`, or explicit
-  runtime checks.
+- Likely mistake: accidentally building an OpenAI API wrapper. Mitigation: keep
+  the skill instruction-only and explicitly block API-key fallback.
+- Likely mistake: claiming Codex subscription image generation is always
+  available. Mitigation: document plan/auth dependency and require fail-closed
+  output when the image tool is absent.
+- Likely mistake: adding a Claude-only route when the user asked for Codex.
+  Mitigation: use `.agents/skills`, not only `.claude/skills`.
 
 ## Verified 2026-05-07
 
-- `bash -n setup.sh scripts/opusminimax.sh scripts/opusworkflow.sh scripts/opussonnetworkflow.sh scripts/opusminimax-doctor.sh scripts/opusworkflow-smoke.sh scripts/security-smoke.sh scripts/test-harness.sh scripts/artifact-lint.sh scripts/harness-capability-map.sh`: pass.
-- `python3 -m json.tool` on the new OpusSonnet profiles, updated schema, and
-  green artifact fixture: pass.
-- `env -u MINIMAX_TOKEN_KEY -u TOKEN_KEY bash setup.sh --help`: pass; help shows
-  the optional `--mode opussonnet` command without executing setup.
-- `bash scripts/opusminimax-doctor.sh --static --executor-provider claude-sonnet`:
-  exits 0 with only existing tracked fixture/test placeholder warnings.
-- `bash scripts/opusworkflow-smoke.sh`: pass; validates default MiniMax and
-  optional `claude-sonnet` artifacts.
-- `bash scripts/artifact-lint.sh --fixtures`: pass (`8 green`, `22 red`).
-- `bash scripts/security-smoke.sh`: pass.
-- `bash scripts/opussonnetworkflow.sh --task "manual optional route check" --run-id manual-opussonnet-check` plus artifact lint: pass; runtime not executed.
-- `bash scripts/harness-capability-map.sh --write` and `--check`: pass.
-- `bash scripts/harness-eval.sh --json`: pass (`22 tasks`, `19 gates`,
-  `0 mismatches`).
-- `bash scripts/metacognition-scorecard.sh --fixtures --json`: pass (`7 green`,
-  `11 red`).
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`141 passed`,
-  `0 failed`).
-- `bash scripts/release-check.sh --static-only`: pass.
+- `python3 /home/fer/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/codex-imagegen`: pass.
+- `bash -n scripts/harness-capability-map.sh`: pass.
+- `bash scripts/harness-capability-map.sh --check --json`: pass.
+- `python3 -m json.tool docs/harness-capability-map.json`: pass.
+- `rg -n 'codex-imagegen|Codex repo skills|codex_skill_count' docs/harness-capability-map.md docs/harness-capability-map.json`: pass; generated map lists one Codex repo skill.
 - `git diff --check`: pass.
+- `bash scripts/harness-eval.sh --json`: pass (`22 tasks`, `19 gates`, `0 mismatches`).
+- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`141 passed`, `0 failed`; runtime workflow smoke intentionally skipped).
+- `bash scripts/release-check.sh --static-only`: pass.
 
 ## Introspection: Pre-Closeout
 
-- Likely mistake checked: `opussonnet` could appear to replace the MiniMax
-  default. The README, AGENTS, CLAUDE, skill text, and setup output all label it
-  as optional/suggested, while default commands still use MiniMax-backed
-  `/opusworkflow`.
-- Likely mistake checked: Sonnet artifacts could imply MiniMax execution. The
-  run artifact now carries `executor_provider`, and artifact lint validates
-  MiniMax and Claude/Sonnet providers differently.
-- Remaining risk: static gates prove profile shape and artifact honesty, not
-  live account model access. Runtime identity still requires authenticated
-  Claude Code checks.
+- Likely mistake checked: the implementation could accidentally use API billing.
+  The skill explicitly forbids OpenAI API keys, API scripts, Responses API
+  wrappers, and direct HTTP calls unless the user changes the billing route.
+- Likely mistake checked: the harness could claim image generation was proven.
+  This static pass proves routing, skill discovery, and policy. It does not
+  prove a live image was generated because that depends on the current Codex
+  account/session exposing a native image generation tool.
+- Likely mistake checked: the skill could be invisible to harness self-lookup.
+  `scripts/harness-capability-map.sh` now indexes `.agents/skills/*/SKILL.md`,
+  and the generated docs list `codex-imagegen`.

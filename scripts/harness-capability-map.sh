@@ -68,6 +68,7 @@ TASK_DIR = ROOT / "evals" / "harness" / "tasks"
 GOLDEN_DIR = ROOT / "evals" / "harness" / "golden"
 SETTINGS_PATH = ROOT / ".claude" / "settings.json"
 CODEX_DIR = ROOT / ".codex"
+CODEX_SKILL_DIR = ROOT / ".agents" / "skills"
 
 
 ROUTE_GROUPS = {
@@ -413,8 +414,32 @@ def collect_codex() -> dict[str, object]:
     return {"path": rel(CODEX_DIR), "files": files}
 
 
+def collect_codex_skills() -> list[dict[str, object]]:
+    skills: list[dict[str, object]] = []
+    if not CODEX_SKILL_DIR.exists():
+        return skills
+    for path in sorted(CODEX_SKILL_DIR.glob("*/SKILL.md")):
+        meta, body = parse_frontmatter(path)
+        name = meta.get("name") or path.parent.name
+        description = meta.get("description") or first_heading(body) or name
+        text = path.read_text(encoding="utf-8")
+        agents_yaml = path.parent / "agents" / "openai.yaml"
+        skills.append(
+            {
+                "name": name,
+                "path": rel(path),
+                "description": sentence(description, name),
+                "line_count": len(text.splitlines()),
+                "sha256": sha256_text(text),
+                "agents_metadata": rel(agents_yaml) if agents_yaml.exists() else "",
+            }
+        )
+    return skills
+
+
 def build_map() -> dict[str, object]:
     skills = collect_skills()
+    codex_skills = collect_codex_skills()
     rules = collect_rules()
     scripts = collect_scripts()
     evals = collect_evals()
@@ -438,6 +463,7 @@ def build_map() -> dict[str, object]:
                 ".claude/settings.json",
                 ".claude/hooks/*",
                 ".codex/**/*.toml",
+                ".agents/skills/*/SKILL.md",
                 "README.md",
                 "CLAUDE.md",
                 "AGENTS.md",
@@ -451,16 +477,19 @@ def build_map() -> dict[str, object]:
             "eval_task_count": len(evals),
             "hook_event_count": len(settings.get("hooks", [])) if isinstance(settings, dict) else 0,
             "codex_file_count": len(codex.get("files", [])) if isinstance(codex, dict) else 0,
+            "codex_skill_count": len(codex_skills),
             "core_route_count": sum(1 for skill in skills if skill["core_route"]),
             "groups": {key: sorted(value) for key, value in sorted(groups.items())},
         },
         "counts": {
             "skills": len(skills),
+            "codex_skills": len(codex_skills),
             "rules": len(rules),
             "scripts": len(scripts),
             "eval_tasks": len(evals),
         },
         "skills": skills,
+        "codex_skills": codex_skills,
         "rules": rules,
         "scripts": scripts,
         "evals": evals,
@@ -475,6 +504,7 @@ def build_map() -> dict[str, object]:
                 ".claude/settings.json",
                 ".claude/hooks/",
                 ".codex/",
+                ".agents/skills/",
                 "CLAUDE.md",
                 "AGENTS.md",
                 "README.md",
@@ -488,6 +518,7 @@ def build_map() -> dict[str, object]:
 def markdown(payload: dict[str, object]) -> str:
     summary = payload["summary"]  # type: ignore[index]
     skills = payload["skills"]  # type: ignore[index]
+    codex_skills = payload["codex_skills"]  # type: ignore[index]
     rules = payload["rules"]  # type: ignore[index]
     scripts = payload["scripts"]  # type: ignore[index]
     evals = payload["evals"]  # type: ignore[index]
@@ -511,6 +542,7 @@ def markdown(payload: dict[str, object]) -> str:
         f"- Static eval tasks: {summary['eval_task_count']}",
         f"- Hook entries: {summary['hook_event_count']}",
         f"- Codex config files: {summary['codex_file_count']}",
+        f"- Codex repo skills: {summary['codex_skill_count']}",
         f"- Core routes: {summary['core_route_count']}",
         "- Secret policy: generated from committed repo truth only; never reads `.env`,",
         "  `.env.*`, `.claude/settings.local.json`, private customer artifacts, or",
@@ -535,6 +567,22 @@ def markdown(payload: dict[str, object]) -> str:
         lines.append(
             f"| `{skill['slash']}` | `{skill['group']}` | {auto} | {core} | `{skill['path']}` | {desc} |"
         )
+    lines += [
+        "",
+        "## Codex Repo Skills",
+        "",
+        "| Skill | Contract | Agents Metadata | Description |",
+        "| --- | --- | --- | --- |",
+    ]
+    if codex_skills:  # type: ignore[truthy-function]
+        for skill in codex_skills:  # type: ignore[union-attr]
+            desc = str(skill["description"]).replace("|", "\\|")
+            metadata = str(skill.get("agents_metadata", ""))
+            lines.append(
+                f"| `{skill['name']}` | `{skill['path']}` | `{metadata}` | {desc} |"
+            )
+    else:
+        lines.append("| `none` | `` | `` | No repo-scoped Codex skills found. |")
     lines += [
         "",
         "## Rules",
