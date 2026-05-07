@@ -41,8 +41,9 @@ medium
 - Estimate audit: one lane is enough.
 
 ## Route Decision
-- Route: `/workflow`
-- Reason: file-changing harness contract work.
+- Route: `/opusworkflow`
+- Inner contract: `workflow`
+- Reason: file-changing harness contract work uses the OpusWorkflow outer route.
 
 ## Confidence
 - Level: medium

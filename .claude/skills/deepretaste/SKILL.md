@@ -27,6 +27,16 @@ debugging, benchmarks, provider behavior, market work, product strategy, and
 other non-taste investigations. `/deepretaste` uses `/deepresearch` only when
 the research is feeding intent, ICP, or taste-kernel decisions.
 
+For bootstrap or apply modes that mutate files, `/opusworkflow` is the default
+outer route and `/deepretaste` is the inner contract. Direct `/deepretaste`
+invocation remains valid, but it must inherit the Claude/Opus planner-reviewer
+plus MiniMax-M2.7-highspeed executor policy before mutation.
+
+```text
+outer_route: opusworkflow
+inner_contract: deepretaste
+```
+
 ## Non-Negotiable Contract
 
 - Do not read `.env`, `.env.*`, `.claude/*.local.json`, `secrets/**`,

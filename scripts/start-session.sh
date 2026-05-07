@@ -39,7 +39,7 @@ echo ""
 # Step 3: Version Check
 echo "[3/5] Version information..."
 echo "Claude Code: $(claude --version 2>/dev/null || echo 'not found')"
-echo "Default mode: /opusworkflow (cost-optimized Claude/Opus judgment + MiniMax-M2.7-highspeed executor)"
+echo "Default mode: /opusworkflow for all mutating work (Claude/Opus judgment + MiniMax-M2.7-highspeed executor)"
 echo "Provider profiles: shared settings are provider-neutral; planner/executor use ignored local profiles"
 if [ -f "$SCRIPT_DIR/parallel-capacity.sh" ]; then
     bash "$SCRIPT_DIR/parallel-capacity.sh" --summary 2>/dev/null || true
@@ -103,6 +103,7 @@ echo "[5/5] Ready"
 echo "Philosophy: governed autonomy — delegate execution, keep judgment, require evidence"
 echo "Planning: Agent-Native Estimate before non-trivial plan or SPEC freeze"
 echo "Fresh repos: run /tastebootstrap before /opusworkflow"
+echo "Mutating specialist work: keep /opusworkflow outside and record inner_contract=agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow"
 echo "Skills: /tastebootstrap, /workflow, /opusworkflow, /opusminimax, /digestflow, /deepretaste, /defineicp, /align, /autoplan, /verify,"
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
 echo "        /audit, /deepresearch, /icpweek, /webresearch, /browse, /introspect, /codesearch,"

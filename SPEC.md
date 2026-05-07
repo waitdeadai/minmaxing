@@ -1,138 +1,150 @@
-# SPEC: Governance Hook Ergonomics
+# SPEC: OpusWorkflow Default For Mutating Work
 
 ## Problem Statement
 
-The project Stop hook intentionally blocks low-evidence positive closeout, but
-its current message is terse enough to feel like a recurring hook error instead
-of a repairable governance signal. The hook also treats read-only audit closeout
-the same as implementation closeout and lets some "tests not run" wording count
-as evidence.
+The harness already recommends `/opusworkflow` for ordinary build and plan work,
+but several routing surfaces still present `/workflow`, `/agentfactory`,
+`/hiveworkflow`, and other mutating skills as separate non-hybrid execution
+islands. The operator wants one standard: Claude/Opus plans, criticizes, and
+reviews when proven available; MiniMax-M2.7-highspeed performs coding and repair
+packets.
 
-The harness should keep the anti-hallucination gate strong while making the
-blocked path obvious to Claude and the operator.
+The harness must make that default explicit without deleting specialized
+contracts. A governed Hermes agent still needs `/agentfactory`; a coordinated
+multi-agent build still needs `/hiveworkflow`; taste evolution still needs
+`/defineicp` or `/deepretaste`. The difference is that mutating specialist work
+inherits the `/opusworkflow` provider split by default.
 
 ## Success Criteria
 
-- [x] Keep `exit 2` blocking behavior for destructive Bash, evidence-free
-  positive closeout, and failed-verification positive closeout.
-- [x] Replace terse Stop/SubagentStop block text with actionable guidance that
-  says exactly how to repair the final answer.
-- [x] Distinguish read-only/audit closeout from implementation closeout without
-  weakening failed-verification blocking.
-- [x] Treat "tests not run", "verification not run", and equivalent caveats as
-  missing verification when paired with positive closeout.
-- [x] Add fixtures for the noisy path and the missing-verification path.
-- [x] Keep hook execution local, shell-only, no network, no secret reads.
-- [x] Run static hook, harness, and release gates before push.
+- [x] File-changing routes identify `/opusworkflow` as the default outer route.
+- [x] Specialized mutating skills declare that they inherit the Opus planner plus
+  MiniMax executor split by default.
+- [x] Plain `/workflow` remains available only as explicit user override,
+  provider-split fallback, or intentionally local supervisor loop.
+- [x] `/opusminimax` run artifacts include `outer_route`, `inner_contract`,
+  planner/executor identity status, and fallback status.
+- [x] Runtime planner execution diagnoses and repairs safe local profile issues
+  before failing, but never fakes Opus or enables PAYG silently.
+- [x] Static smokes and metacognition fixtures cover ordinary, AgentFactory, and
+  Hive routing through `/opusworkflow`.
+- [x] No `.env`, `.env.*`, `.claude/*.local.json`, key files, or secrets are read
+  or committed.
+- [x] Release gates pass before push.
 
 ## Research Brief
 
 ### Local Evidence
 
-- `.claude/settings.json` wires `govern-effectiveness.sh` into many events,
-  including `Stop` before `state-stop.sh`.
-- `.claude/hooks/govern-effectiveness.sh` blocks `Stop` when the final answer has
-  positive closeout words but lacks evidence, or when positive closeout conflicts
-  with failed/missing verification.
-- `scripts/hook-smoke.sh` already proves the high-risk block cases, but does not
-  cover read-only/audit Stop ergonomics.
-- Parallel repo audit found the common noisy path: a harmless read-only final
-  answer like "Read-only audit done" is blocked because Stop does not consult the
-  existing read-only detector.
+- `AGENTS.md` already says `/opusworkflow` is the default outer route for
+  ordinary build/plan work, but direct specialized routes remain more prominent
+  in `/workflow` and `/metacognition`.
+- `.claude/skills/opusworkflow/SKILL.md` defines the budget policy:
+  Opus for judgment gates, MiniMax-M2.7-highspeed for implementation, executor
+  concurrency `1` until provider evidence proves otherwise.
+- `scripts/opusminimax.sh` currently writes placeholder `opusminimax-run`
+  artifacts, but does not record `outer_route`, `inner_contract`,
+  `planner_identity_status`, `executor_identity_status`, or `fallback_status`.
+- `scripts/opusminimax-doctor.sh` validates committed example profiles and
+  runtime Claude auth/version state, but has no safe local profile repair mode.
+- `scripts/opusworkflow-smoke.sh` and `scripts/test-harness.sh` already protect
+  the default `/opusworkflow` install and docs surface.
 
-### Current Docs Evidence
+### Current Product Evidence
 
-- Official Claude Code hooks docs say command hooks receive JSON on stdin and
-  communicate with exit codes, stdout, and stderr.
-- Exit code `2` is the blocking path. For `Stop` and `SubagentStop`, it prevents
-  Claude from stopping and sends stderr back to Claude.
-- Official docs also support structured JSON output, but the existing shell hook
-  already uses simple exit-code semantics correctly.
-- Official hook guide says Stop hooks must check `stop_hook_active` to avoid
-  loops; this hook already does.
-- Official configuration docs say `/hooks` can inspect hook sources and settings
-  precedence. Project settings are a real shared source, and local/global hooks
-  may add extra visible hook counts.
+- Claude Code settings docs define shareable project settings and ignored local
+  settings levels, supporting the repo's provider-neutral shared settings plus
+  local planner/executor profiles.
+- Claude Code model configuration docs say the `default` model depends on
+  account type and may fall back when Opus usage thresholds are hit; this
+  supports blocking fake Opus claims and requiring model-identity evidence.
+- Claude Code hooks docs define project hooks and exit-code behavior; the
+  existing governance hooks remain the enforcement surface for closeout quality.
 
 ### Source Ledger
 
-- Claude Code hooks reference:
-  https://code.claude.com/docs/en/hooks
-- Claude Code hooks guide:
-  https://code.claude.com/docs/en/hooks-guide
-- Claude Code settings/configuration:
-  https://code.claude.com/docs/en/configuration
-- Claude Code systems paper, April 2026:
-  https://arxiv.org/abs/2604.14228
+- Claude Code settings: https://code.claude.com/docs/en/configuration
+- Claude Code model configuration: https://code.claude.com/docs/en/model-config
+- Claude Code hooks: https://code.claude.com/docs/en/hooks
 
 ## Plan
 
-1. Add small helper functions:
-   - `has_missing_verification`
-   - `has_read_only_evidence`
-   - `block_closeout_conflict`
-   - `block_evidence_missing`
-2. Keep failed/missing verification as a hard block for positive closeout.
-3. Allow read-only positive closeout only when it includes read-only wording plus
-   concrete evidence such as files inspected, sources reviewed, commands run, or
-   verification notes.
-4. Keep implementation positive closeout evidence requirements intact.
-5. Expand `scripts/hook-smoke.sh` fixtures for:
-   - terse read-only closeout still blocked with actionable message
-   - evidence-backed read-only closeout passes
-   - "tests not run" positive closeout blocks
-   - block messages include repair guidance
-6. Run hook smoke, hook mesh, runtime hardening smoke, harness eval, full static
-   harness, release check, and `git diff --check`.
+1. Extend `/opusminimax` and `/opusworkflow` artifacts with the new route,
+   identity, and fallback fields. Default `outer_route=opusworkflow` and infer
+   `inner_contract` from an optional CLI flag, defaulting to `workflow`.
+2. Extend `scripts/opusminimax-doctor.sh` with `--fix-local-profiles`:
+   create/repair ignored local profile structure, remove MiniMax base URL from
+   planner local profile, ensure MiniMax model is executor-only, preserve
+   unknown local keys, and never print secrets.
+3. Before `--execute-planner`, run runtime doctor repair/checks. If local repair
+   cannot prove a safe planner path, fail with exact auth/account/API-key
+   instructions rather than silently degrading.
+4. Update routing contracts in docs and skills so mutating specialized routes
+   inherit `/opusworkflow` by default.
+5. Update smokes and fixtures to prove ordinary, AgentFactory, Hive, direct
+   fallback, and Opus-unavailable routing semantics.
+6. Regenerate the harness capability map and run the required gates.
 
 ## Agent-Native Estimate
 
 - Estimate type: agent-native.
-- Agent wall-clock: 35-70 minutes.
-- Agent-hours: 1-2.
-- Human touch time: none expected.
-- Calendar blockers: none.
-- Confidence: medium-high. The change is narrow and testable, but hook wording
-  impacts operator experience, so fixture coverage matters.
+- Capacity evidence: `bash scripts/parallel-capacity.sh --json` reported
+  `recommended_ceiling=10`, `codex_max_threads=10`, `hardware_class=workstation`
+  on 2026-05-07T07:44:30-03:00.
+- Effective parallel budget: 1 main implementation lane. The change is tightly
+  coupled across routing docs, one doctor script, one artifact writer, and
+  static gates; parallel edits would add review overhead.
+- Agent wall-clock: 60-120 minutes.
+- Agent-hours: 1.5-3.
+- Human touch time: none expected unless runtime Opus account access must be
+  proven.
+- Calendar blockers: none for static implementation.
+- Confidence: medium. The behavior is mostly static and testable, but runtime
+  model identity remains account-dependent by design.
 
 ## Introspection: Pre-Implementation
 
-- Likely mistake: weakening the hook because the error is annoying. Mitigation:
-  keep `exit 2` for all high-risk closeout conflicts.
-- Likely mistake: allowing read-only closeouts with no evidence. Mitigation:
-  read-only closeout still needs files/sources/commands/verification evidence.
-- Likely mistake: treating "tests not run" as evidence because the word `tests`
-  appears. Mitigation: detect missing-verification wording before evidence pass.
-- Likely mistake: changing hook wiring instead of hook behavior. Mitigation:
-  leave `.claude/settings.json` unchanged unless tests prove wiring is wrong.
+- Likely mistake: replacing specialist contracts with `/opusworkflow` and losing
+  AgentFactory/Hive safeguards. Mitigation: make `/opusworkflow` the outer route
+  while preserving `inner_contract`.
+- Likely mistake: fake Opus claims. Mitigation: artifacts default
+  `planner_identity_status=blocked` or `not_required` until runtime proof exists.
+- Likely mistake: local profile repair overwrites user credentials. Mitigation:
+  do not read secret files, do not print values, and preserve unknown local env
+  keys while removing only unsafe planner MiniMax routing keys.
+- Likely mistake: making plain `/workflow` impossible. Mitigation: keep it as an
+  explicit override/fallback and document the boundary.
 
 ## Verified 2026-05-07
 
-- `bash -n .claude/hooks/govern-effectiveness.sh scripts/hook-smoke.sh scripts/hook-mesh-smoke.sh scripts/security-smoke.sh scripts/runtime-hardening-smoke.sh`: pass.
-- `bash scripts/hook-smoke.sh`: pass; new fixtures cover indirect destructive Bash, `Done. No tests run.`, `Done. Unverified.`, terse read-only closeout, read-only closeout with evidence, and path-only implementation closeout.
-- `bash scripts/hook-mesh-smoke.sh`: pass.
-- Direct fixture: `Done. No tests run.` returns `exit 2` with repair guidance.
-- Direct fixture: read-only closeout with `Files inspected:` returns `exit 0`.
+- `bash -n scripts/opusminimax-doctor.sh scripts/opusminimax.sh scripts/opusworkflow.sh scripts/opusworkflow-smoke.sh scripts/test-harness.sh scripts/artifact-lint.sh scripts/metacognition-scorecard.sh`: pass.
+- `bash scripts/artifact-lint.sh --fixtures`: pass (`7 green`, `22 red`).
+- `bash scripts/opusworkflow-smoke.sh`: pass; it now validates
+  `inner_contract=workflow`, `agentfactory`, and `hiveworkflow` artifacts.
+- `bash scripts/opusminimax-doctor.sh --static`: exits 0 with no failures and
+  warns only on existing tracked fixture/test placeholder strings.
+- `bash scripts/metacognition-scorecard.sh --fixtures --json`: pass (`7 green`,
+  `11 red`).
+- `bash scripts/harness-capability-map.sh --check`: pass after regeneration.
+- `bash scripts/harness-eval.sh --json`: pass (`22 tasks`, `19 gates`,
+  `0 mismatches`).
 - `bash scripts/security-smoke.sh`: pass.
-- `bash scripts/runtime-hardening-smoke.sh`: pass.
-- `bash scripts/harness-capability-map.sh --check`: pass.
-- `bash scripts/harness-eval.sh --json`: pass (`22 tasks`, `19 gates`, `0 mismatches`).
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`138 passed`, `0 failed`; workflow smoke skipped by static CI mode).
+- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`138 passed`,
+  `0 failed`; workflow smoke skipped by static CI mode).
 - `git diff --check`: pass.
-- `bash scripts/release-check.sh --static-only`: pass (`138 passed`, `0 failed`; static-only release gate passed).
+- `bash scripts/release-check.sh --static-only`: pass (`138 passed`,
+  `0 failed`; static-only release gate passed).
 
 ## Introspection: Pre-Closeout
 
-- Likely mistake: claiming the hook can catch all destructive shell indirection.
-  It now catches obvious quoted `bash -c` / `sh -c` forms, but generated command
-  strings or variable indirection can still bypass regex scanning. This remains
-  a trusted-local tripwire, not a full sandbox.
-- Likely mistake: making read-only closeout too lax. The new rule allows
-  read-only positive closeout only with evidence labels such as `Files
-  inspected:` or `Sources reviewed:`.
-- Likely mistake: overblocking implementation closeouts that list only changed
-  files. This is intentional: implementation closeout needs command or
-  verification evidence. If unavailable, close as partial/blocked.
-- Remaining risk: `jq` is still a runtime dependency. The hook now says so and
-  fails open if unavailable; static smokes fail if `jq` is absent in this repo
-  environment.
+- Likely mistake: overclaiming runtime proof. This implementation adds runtime
+  diagnosis and local profile repair, but static checks still do not prove real
+  Opus or MiniMax model calls.
+- Likely mistake: hiding specialist routes. The routes remain direct commands,
+  but mutating use now records them as `inner_contract` under `/opusworkflow`.
+- Likely mistake: local profile repair could overwrite credentials. The repair
+  function preserves unknown local env keys, removes only unsafe planner
+  MiniMax routing keys, and never prints values.
+- Remaining risk: `--runtime --fix-local-profiles` is intentionally not run in
+  static release gates because it can touch ignored local profiles. Runtime
+  account/auth proof remains operator opt-in.

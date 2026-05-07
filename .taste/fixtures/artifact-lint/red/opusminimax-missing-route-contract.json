@@ -1,11 +1,6 @@
 {
   "artifact_type": "opusminimax-run",
-  "run_id": "20260506-093000-opusminimax",
-  "outer_route": "opusworkflow",
-  "inner_contract": "workflow",
-  "planner_identity_status": "blocked",
-  "executor_identity_status": "configured",
-  "fallback_status": "none",
+  "run_id": "missing-route-contract",
   "provider_profiles": {
     "planner": {
       "path": ".claude/settings.opusminimax-planner.example.json",
@@ -29,14 +24,10 @@
     "safety_cap": 1,
     "effective_concurrency": 1
   },
-  "packets": [
-    "P1"
-  ],
+  "packets": ["P1"],
   "verification": {
     "status": "runtime-pending",
-    "commands_run": [
-      "bash scripts/opusminimax-doctor.sh --static"
-    ],
+    "commands_run": ["bash scripts/opusminimax-doctor.sh --static"],
     "closeout_status": "runtime-pending"
   },
   "failures": [],

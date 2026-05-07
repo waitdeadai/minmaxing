@@ -9,6 +9,17 @@ disable-model-invocation: true
 
 Approval-first workflow for visual or experiential alignment. Plain `/workflow` remains autonomous; this command is the opt-in approval route.
 
+New `/visualizeworkflow` runs do not mutate product code or root `SPEC.md`.
+When a saved visualization is approved and implementation continues,
+`/opusworkflow` is the default outer route and `/visualizeworkflow` is the inner
+contract. Direct continuation remains valid, but implementation must inherit the
+Claude/Opus planner-reviewer plus MiniMax-M2.7-highspeed executor policy.
+
+```text
+outer_route: opusworkflow
+inner_contract: visualizeworkflow
+```
+
 ## Modes
 
 ### New Run

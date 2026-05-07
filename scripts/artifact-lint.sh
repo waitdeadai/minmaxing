@@ -323,11 +323,37 @@ def profile_value(profile: Any, key: str) -> str:
 
 
 def validate_opusminimax_run(data: dict[str, Any], errors: list[str]) -> None:
-    for field in ["run_id", "provider_profiles", "model_ids", "capacity", "packets", "verification", "retries", "final_confidence"]:
+    for field in [
+        "run_id",
+        "outer_route",
+        "inner_contract",
+        "planner_identity_status",
+        "executor_identity_status",
+        "provider_profiles",
+        "model_ids",
+        "capacity",
+        "packets",
+        "verification",
+        "retries",
+        "final_confidence",
+    ]:
         if not present(data.get(field)):
             error(errors, f"opusminimax-run missing {field}")
+    if "fallback_status" not in data:
+        error(errors, "opusminimax-run missing fallback_status")
     if "failures" not in data or not isinstance(data.get("failures"), list):
         error(errors, "opusminimax-run failures must be a list")
+
+    if data.get("outer_route") not in {"opusworkflow", "opusminimax"}:
+        error(errors, "opusminimax-run outer_route is unsupported")
+    if data.get("inner_contract") not in {"workflow", "agentfactory", "hiveworkflow", "parallel", "defineicp", "deepretaste", "demo", "visualizeworkflow"}:
+        error(errors, "opusminimax-run inner_contract is unsupported")
+    if data.get("planner_identity_status") not in {"proven", "diagnosed_fixed", "blocked", "not_required"}:
+        error(errors, "opusminimax-run planner_identity_status is unsupported")
+    if data.get("executor_identity_status") not in {"configured", "blocked", "not_required"}:
+        error(errors, "opusminimax-run executor_identity_status is unsupported")
+    if data.get("fallback_status") not in {"none", "explicit_user_override", "blocked"}:
+        error(errors, "opusminimax-run fallback_status is unsupported")
 
     profiles = data.get("provider_profiles") if isinstance(data.get("provider_profiles"), dict) else {}
     planner = profiles.get("planner") if isinstance(profiles, dict) else {}

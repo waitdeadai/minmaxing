@@ -19,6 +19,16 @@ This command is not a persona generator. It is a governed taste-evolution
 workflow: deepresearch first, ICP synthesis second, taste patch proposal third,
 and file rewrite only with explicit apply approval.
 
+For apply mode or any ICP-driven file mutation, `/opusworkflow` is the default
+outer route and `/defineicp` is the inner contract. Direct `/defineicp`
+invocation remains valid, but it must inherit the Claude/Opus planner-reviewer
+plus MiniMax-M2.7-highspeed executor policy before mutation.
+
+```text
+outer_route: opusworkflow
+inner_contract: defineicp
+```
+
 ## Non-Negotiable Contract
 
 - Do not read `.env`, `.env.*`, `.claude/*.local.json`, `secrets/**`,

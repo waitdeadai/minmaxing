@@ -60,6 +60,18 @@ STAMP="$(date +%Y%m%d-%H%M%S)"
 AGENT_FACTORY_ARTIFACT=".taste/workflow-runs/${STAMP}-agentfactory.md"
 ```
 
+## OpusWorkflow Inheritance
+
+For mutating AgentFactory work, `/opusworkflow` is the default outer route and
+`/agentfactory` is the inner contract. Direct `/agentfactory` invocation remains
+valid, but it must inherit the same Claude/Opus planner-reviewer plus
+MiniMax-M2.7-highspeed executor policy before files change.
+
+```text
+outer_route: opusworkflow
+inner_contract: agentfactory
+```
+
 Required section order:
 
 ```markdown

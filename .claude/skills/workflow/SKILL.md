@@ -13,11 +13,15 @@ $ARGUMENTS
 
 This command is the end-to-end executor.
 
-`/opusworkflow` is the default daily outer route for normal build/plan work in
-this harness. It reuses this `/workflow` lifecycle while adding the
-Claude/Opus planner-reviewer plus MiniMax-M2.7-highspeed executor split. Use
-plain `/workflow` when the user invokes it explicitly, the provider split is
-unavailable, or the work should stay in one local supervisor loop.
+`/opusworkflow` is the default outer route for normal build/plan work and for
+mutating specialist work in this harness. It reuses this `/workflow` lifecycle
+while adding the Claude/Opus planner-reviewer plus MiniMax-M2.7-highspeed
+executor split. Use plain `/workflow` only when the user invokes it explicitly,
+the provider split is unavailable, or the work should stay in one local
+supervisor loop.
+
+When a specialist route changes files, keep `/opusworkflow` as the outer route
+and record the specialist as `inner_contract=agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow`.
 
 `/digestflow` is a sibling route that reuses this same inline lifecycle after an external report-intake prelude. Normal `/workflow` behavior stays unchanged when no external research reports are supplied.
 
@@ -132,15 +136,15 @@ Choose the route from user intent:
 | build, implement, create, add, refactor, optimize, migrate | run full research → audit → plan → spec → execute → verify → closeout flow |
 | fix, debug, investigate | research first, audit the relevant code path, then reproduce/fix/verify; create `SPEC.md` if files change |
 | audit, analyze, understand, deepresearch, webresearch | inspect deeply, report findings, make fixes only if the user asked for them |
-| deepretaste, retaste, detect intent, bootstrap taste and ICP, SOTA customer research for taste | route to `/deepretaste`; preserve `/deepresearch` as the general research route when findings will not mutate taste |
-| define ICP, ideal customer profile, tailor taste to customer, update taste.md or taste.vision from ICP | route to `/defineicp`; keep proposal-first unless explicit apply approval is present |
+| deepretaste, retaste, detect intent, bootstrap taste and ICP, SOTA customer research for taste | route through `/opusworkflow` with `inner_contract=deepretaste` when files may change; preserve `/deepresearch` as the general research route when findings will not mutate taste |
+| define ICP, ideal customer profile, tailor taste to customer, update taste.md or taste.vision from ICP | route through `/opusworkflow` with `inner_contract=defineicp` when files may change; keep proposal-first unless explicit apply approval is present |
 | Claude product, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, plan availability, limits, setup | route product facts through `/claudeproduct` before generic research; continue into `/workflow` only if files change |
-| parallel, mode parallel, dense workflow, orchestrate subagents, split across instances | run the `/parallel` eligibility audit; use `/parallel` only when capacity, ownership, and verification pass |
-| hive, hive mind, coordinated agents, swarm, multi-agent synthesis | route to `/hiveworkflow` only when roles, blackboard, dissent, ownership, capacity, and verification pass; otherwise downgrade to `/workflow` or `/parallel` |
+| parallel, mode parallel, dense workflow, orchestrate subagents, split across instances | route through `/opusworkflow` with `inner_contract=parallel` for file-changing packet execution; run the `/parallel` eligibility audit and use packets only when capacity, ownership, and verification pass |
+| hive, hive mind, coordinated agents, swarm, multi-agent synthesis | route through `/opusworkflow` with `inner_contract=hiveworkflow` for file-changing hive work only when roles, blackboard, dissent, ownership, capacity, and verification pass; otherwise downgrade to `/workflow` or `/parallel` fallback |
 | explain | inspect and explain directly |
 | review | review directly |
 | qa | run focused validation directly |
-| visualize, visual approval, show me first, approve before implementation | route to `/visualizeworkflow` when the user wants implementation after visual approval; route to `/visualize` when the user only wants a comprehension artifact |
+| visualize, visual approval, show me first, approve before implementation | route to `/visualizeworkflow` for approval-first planning; after approval, continue implementation through `/opusworkflow` with `inner_contract=visualizeworkflow`; route to `/visualize` when the user only wants a comprehension artifact |
 
 Default to the full build flow when the task changes files.
 
@@ -157,7 +161,8 @@ For hive-like work, automatically consider `/hiveworkflow` when the request
 needs coordinated roles, a blackboard, dissent/conflict handling, synthesis, and
 verified learning. Prefer `/parallel` when disjoint execution packets are enough;
 prefer `/hiveworkflow` only when judgment breadth and role coordination are part
-of the value. Downgrade to local `/workflow` if role map, blackboard,
+of the value. For file-changing hive work, run it under `/opusworkflow` as
+`inner_contract=hiveworkflow`. Downgrade to local `/workflow` if role map, blackboard,
 ownership/locks, capacity, or verification cannot be written clearly.
 
 Before freezing the route for file-changing work, perform a compact

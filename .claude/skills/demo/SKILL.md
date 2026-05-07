@@ -15,6 +15,17 @@ $ARGUMENTS
 
 Use `/demo` when the operator wants a product-tour demo, sales demo, QA demo, or internal workflow recording that shows what the product actually does and can be trusted as evidence. The default language package is English plus well-spoken neutral Spanish.
 
+When `/demo` creates or updates repo-tracked scripts, fixtures, docs, manifests,
+or demo routes, `/opusworkflow` is the default outer route and `/demo` is the
+inner contract. Direct `/demo` invocation remains valid, but file-changing work
+must inherit the Claude/Opus planner-reviewer plus MiniMax-M2.7-highspeed
+executor policy.
+
+```text
+outer_route: opusworkflow
+inner_contract: demo
+```
+
 ## Non-Negotiable Contract
 
 - Start with research and repo inspection before storyboard, capture, or narration.

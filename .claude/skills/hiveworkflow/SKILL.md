@@ -15,6 +15,16 @@ $ARGUMENTS
 agents materially improve the outcome. It is not the default path; plain
 `/workflow` remains better for tightly coupled work.
 
+For file-changing hive work, `/opusworkflow` is the default outer route and
+`/hiveworkflow` is the inner contract. Direct `/hiveworkflow` invocation remains
+valid, but it must inherit the Claude/Opus planner-reviewer plus
+MiniMax-M2.7-highspeed executor policy before mutation.
+
+```text
+outer_route: opusworkflow
+inner_contract: hiveworkflow
+```
+
 ## Core Contract
 
 For file-changing work, follow this order:

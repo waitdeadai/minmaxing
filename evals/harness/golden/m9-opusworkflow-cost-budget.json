@@ -6,7 +6,8 @@
   "evidence_summary": [
     "/opusworkflow skill exists and documents the cost-optimized Opus/MiniMax split",
     "setup.sh defaults to opusworkflow while preserving --mode overrides",
-    "the wrapper prepares workflow-mode opusminimax artifacts with provider_ceiling=1 and effective_concurrency=1",
+    "the wrapper prepares workflow-mode opusminimax artifacts with outer_route, inner_contract, provider_ceiling=1, and effective_concurrency=1",
+    "agentfactory and hiveworkflow inner contracts inherit the OpusWorkflow provider split by default",
     "docs and release/eval surfaces discover the route"
   ]
 }

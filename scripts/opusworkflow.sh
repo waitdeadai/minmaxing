@@ -8,11 +8,14 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusworkflow.sh --task "..." [--run-id ID] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
+  bash scripts/opusworkflow.sh --task "..." [--inner-contract CONTRACT] [--run-id ID] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
 
 /opusworkflow is the cost-optimized workflow entrypoint. It reuses
 scripts/opusminimax.sh in workflow mode, keeping Claude/Opus for judgment and
 MiniMax-M2.7-highspeed for bounded execution packets.
+
+CONTRACT may be workflow, agentfactory, hiveworkflow, parallel, defineicp,
+deepretaste, demo, or visualizeworkflow.
 EOF
 }
 
@@ -35,4 +38,4 @@ while [ "$#" -gt 0 ]; do
 done
 
 echo "[opusworkflow] cost-optimized mode: Claude/Opus judgment, MiniMax-M2.7-highspeed execution, default executor concurrency=1"
-exec bash "$ROOT_DIR/scripts/opusminimax.sh" --mode workflow "${ARGS[@]}"
+exec bash "$ROOT_DIR/scripts/opusminimax.sh" --mode workflow --outer-route opusworkflow "${ARGS[@]}"

@@ -18,7 +18,8 @@ It classifies the task, chooses the smallest useful reasoning and verification
 budget, accounts for parallel capacity, records evidence requirements, and
 routes to the existing harness command that should do the work.
 
-It does not replace `/workflow`; it steers `/workflow`.
+It does not replace `/workflow`; it steers `/opusworkflow` for mutating work and
+the underlying `/workflow` lifecycle when an explicit fallback is needed.
 It does not replace `/introspect`; `/introspect` remains the canonical hard-gate
 self-audit command.
 
@@ -72,10 +73,10 @@ Choose exactly one:
 | `deepresearch` | landscape, architecture, due diligence, strategic research | `/deepresearch` |
 | `deepretaste` | detect product intent, define ICPs, and bootstrap or retaste `taste.md` / `taste.vision` from research-backed customer evidence | `/deepretaste` |
 | `defineicp` | define ICPs or tailor `taste.md` / `taste.vision` to an ideal customer profile | `/defineicp` |
-| `workflow` | repo-changing build/fix/refactor/docs/config work | `/workflow` |
-| `parallel` | dense independent packets with clear ownership and verification | `/parallel` |
-| `hive` | multi-agent coordination needs roles, blackboard, dissent, and synthesis | `/hive` or `/hiveworkflow` |
-| `agentfactory` | governed Hermes agent creation or runtime-bound agent design | `/agentfactory` |
+| `workflow` | repo-changing build/fix/refactor/docs/config work | `/opusworkflow` with `inner_contract=workflow` |
+| `parallel` | dense independent packets with clear ownership and verification | `/opusworkflow` with `inner_contract=parallel` for mutation; `/parallel` for explicit execution-only fallback |
+| `hive` | multi-agent coordination needs roles, blackboard, dissent, and synthesis | `/hive` for read-only coordination or `/opusworkflow` with `inner_contract=hiveworkflow` for mutation |
+| `agentfactory` | governed Hermes agent creation or runtime-bound agent design | `/opusworkflow` with `inner_contract=agentfactory` |
 | `verify` | check an output against `SPEC.md` | `/verify` |
 | `introspect` | hard-gate self-audit or confidence challenge | `/introspect` |
 | `blocked` | credentials, policy, source truth, safety, or approval is missing | stop and state blocker |
@@ -86,14 +87,16 @@ Route to the smallest mode that can improve correctness:
 
 | Route | Choose When | Downgrade When |
 | --- | --- | --- |
-| `/workflow` | the work is coupled, single-surface, or needs one supervisor loop | independent packets or role-based synthesis would materially help |
+| `/opusworkflow` | default for any repo-changing work, including specialist mutation | analysis-only task, explicit local `/workflow` override, or provider split unavailable |
+| `/workflow` | explicit fallback when the work must stay in one local supervisor loop | default mutating work should use `/opusworkflow` first |
 | `/parallel` | independent execution or evidence packets have clear ownership and aggregate verification | the main need is judgment breadth, dissent, or synthesis rather than execution throughput |
 | `/hive` | independent roles, blackboard state, dissent, and synthesis improve planning, research, review, or risk judgment | no visible blackboard, no dissent path, or summaries would become unverified truth |
-| `/hiveworkflow` | file-changing work needs both hive coordination and workflow execution | roles/blackboard/ownership/capacity/verification cannot be written cleanly |
+| `/hiveworkflow` | file-changing work needs both hive coordination and workflow execution | use under `/opusworkflow`; downgrade when roles/blackboard/ownership/capacity/verification cannot be written cleanly |
 
-Default to `/parallel` for disjoint execution throughput. Default to `/hive`
-for coordinated judgment breadth. Use `/hiveworkflow` only when the full
-implementation lifecycle needs both.
+Default to `/opusworkflow` for mutation. Within that route, default to
+`inner_contract=parallel` for disjoint execution throughput and
+`inner_contract=hiveworkflow` when coordinated judgment breadth plus file
+changes are both needed. Use `/hive` directly for read-only coordination.
 
 Never route to hive just because more agents are available.
 
@@ -132,7 +135,7 @@ as "10 agents means 10x faster."
 
 ```markdown
 ## Task Class
-[answer / webresearch / deepresearch / deepretaste / workflow / parallel / hive / agentfactory / verify / introspect / blocked]
+[answer / webresearch / deepresearch / opusworkflow / deepretaste / workflow-fallback / parallel / hive / agentfactory / verify / introspect / blocked]
 
 ## Capacity Evidence
 - Source: [`scripts/parallel-capacity.sh --json` output, repo config, or unavailable]
@@ -164,7 +167,7 @@ as "10 agents means 10x faster."
 - Estimate audit: ...
 
 ## Route Decision
-- Route: [/workflow, /claudeproduct, /deepresearch, /deepretaste, /parallel, /hive, /hiveworkflow, /agentfactory, /verify, /introspect, direct answer, or blocked]
+- Route: [/opusworkflow with inner_contract, /workflow fallback, /claudeproduct, /deepresearch, /deepretaste, /parallel, /hive, /hiveworkflow, /agentfactory, /verify, /introspect, direct answer, or blocked]
 - Reason: ...
 
 ## Confidence

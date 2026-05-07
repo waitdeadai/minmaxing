@@ -379,12 +379,12 @@
       "sha256": "4dcbd22f5493e69884e2918455ca1aa0964bd31490681ef49d80e9c5a4069742"
     },
     {
-      "line_count": 625,
+      "line_count": 651,
       "name": "artifact-lint",
       "path": "scripts/artifact-lint.sh",
       "purpose": "machine sidecar validator",
       "required_gate": true,
-      "sha256": "b685f5246134e073f21874ecca4a16d1668841592d2350ae76b08089cf22f974"
+      "sha256": "96279afecae290f64ee8a4888752d94da2d305821c6302bfd7e3e32dc1177192"
     },
     {
       "line_count": 189,
@@ -603,36 +603,36 @@
       "sha256": "814fdc31e20687d24b8efbb2b44d67a3ec932aaef5be9a730d791c66bfc2ff03"
     },
     {
-      "line_count": 258,
+      "line_count": 392,
       "name": "opusminimax-doctor",
       "path": "scripts/opusminimax-doctor.sh",
       "purpose": "OpusMiniMax provider split doctor",
       "required_gate": true,
-      "sha256": "5df851186625756c16cfb334ad168d4252242c175a8bfd278af13b569877ecd3"
+      "sha256": "69694bd054fc4b4aba11531de79534d43485f106e1b697c49ad98b354893ec86"
     },
     {
-      "line_count": 174,
+      "line_count": 253,
       "name": "opusminimax",
       "path": "scripts/opusminimax.sh",
       "purpose": "Prepare or explicitly launch the /opusminimax planner workflow.",
       "required_gate": false,
-      "sha256": "e7f70033e91b300b1450180ddaecefb09026672d9ae2bd5f5f83ce239a012f95"
+      "sha256": "7ee50e40a8cebefbe85ae7c6376665fd5eaa7bda0d43e46674dc3d9b4337a502"
     },
     {
-      "line_count": 114,
+      "line_count": 138,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "744a417523346455b896c9e8a107f94468e99f3038f2b20e982183a45c5b1d2b"
+      "sha256": "97cd130b317445e9d74261545634760e275f8f53d2970e3c73fd13eb01bf654a"
     },
     {
-      "line_count": 38,
+      "line_count": 41,
       "name": "opusworkflow",
       "path": "scripts/opusworkflow.sh",
       "purpose": "Prepare or explicitly launch the cost-optimized /opusworkflow route.",
       "required_gate": false,
-      "sha256": "74d980f3bee2217e955204564cfe112dceeb06ddc388580adbfa7a9dde4587db"
+      "sha256": "a8d435ae5e5cd683c94e24247ce154f70213cc4dabb82311cf0f53f65f7f0eed"
     },
     {
       "line_count": 113,
@@ -739,12 +739,12 @@
       "sha256": "3e80abf5a2f2a5dc3532dbb294cf6f554c4acfa39189baaee2e46fcc3ff3a5f4"
     },
     {
-      "line_count": 115,
+      "line_count": 116,
       "name": "start-session",
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "a1b216e3853b665dd9ec1fbdaaf096f5db705d6ceb39415d552c5b7343feebab"
+      "sha256": "c684573afcd0463cde0698bf01629607ff8f6a7f47439f399cd0e4270d2cfc19"
     },
     {
       "line_count": 400,
@@ -763,12 +763,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1861,
+      "line_count": 1866,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "5b8ff1eecd133e38d7547998842aa937a44ea33b585f19170e6ff223a9ce61e4"
+      "sha256": "778753778d02a125ae7ea99689085febc8e1bda96463d709b2ff4ec440d47791"
     },
     {
       "line_count": 127,
@@ -1003,7 +1003,7 @@
       "core_route": true,
       "description": "Create governed Hermes agents as auditable enterprise operating units with manifest, capability stack, memory seed, deployment plan, verification contract, registry entry, and kill switch.",
       "group": "agent-systems",
-      "line_count": 999,
+      "line_count": 1011,
       "model_invocation": false,
       "name": "agentfactory",
       "path": ".claude/skills/agentfactory/SKILL.md",
@@ -1016,7 +1016,7 @@
       "related_scripts": [
         "scripts/agentfactory-smoke.sh"
       ],
-      "sha256": "185daa16fe201aff19aea96c931d4785b8631e1a450bafff69b2cccc5f43775a",
+      "sha256": "6971ff7dc0b1e22d7ddc9784d50a66885ad378b042f1e1164cf7cf968975f3ff",
       "slash": "/agentfactory",
       "user_invocable": true
     },
@@ -1165,7 +1165,7 @@
       "core_route": true,
       "description": "Detect product intent, run SOTA-2026 deepresearch with a capacity-bound parallel or hive budget, define ICPs, and bootstrap or propose/apply taste.md, taste.vision, and ICP artifacts. Use when the user invokes /deepretaste or asks to retaste a product from intent and customer research.",
       "group": "kernel",
-      "line_count": 350,
+      "line_count": 360,
       "model_invocation": false,
       "name": "deepretaste",
       "path": ".claude/skills/deepretaste/SKILL.md",
@@ -1176,7 +1176,7 @@
       "related_scripts": [
         "scripts/deepretaste-smoke.sh"
       ],
-      "sha256": "3682ec8a4447bcc308de167baccd05d162d987c76b056782e1051ad340d7ed39",
+      "sha256": "f1eae297fd88ae8e56578d46915ea986c8f648b638665342b7c265078fce2cef",
       "slash": "/deepretaste",
       "user_invocable": true
     },
@@ -1185,7 +1185,7 @@
       "core_route": false,
       "description": "Define the ICP or ICPs for the current product with deepresearch, then draft or apply ICP-driven updates to taste.md and taste.vision. Use when the user invokes /defineicp or asks to tailor the product kernel to ideal customer profiles.",
       "group": "research",
-      "line_count": 365,
+      "line_count": 375,
       "model_invocation": false,
       "name": "defineicp",
       "path": ".claude/skills/defineicp/SKILL.md",
@@ -1196,7 +1196,7 @@
       "related_scripts": [
         "scripts/defineicp-smoke.sh"
       ],
-      "sha256": "c73f7e2540fe59aee7bc4187909bd33c28aed91603faf5efb46749eebb8b716a",
+      "sha256": "527aa4f7ef737377467e4565e8b514d775c95d8453bf829a1e5c4030cf075daf",
       "slash": "/defineicp",
       "user_invocable": true
     },
@@ -1205,7 +1205,7 @@
       "core_route": true,
       "description": "Produce governed recorded product demos with bilingual voiceover, captions, browser evidence, safety gates, and artifact manifests.",
       "group": "execution",
-      "line_count": 217,
+      "line_count": 228,
       "model_invocation": false,
       "name": "demo",
       "path": ".claude/skills/demo/SKILL.md",
@@ -1216,7 +1216,7 @@
       "related_scripts": [
         "scripts/demo-smoke.sh"
       ],
-      "sha256": "67a2d8418f4a2570308e469abe8271ba9949382984949e18c66471d42f00fc65",
+      "sha256": "a27b693333d651d6467b800b15185e20d031f3d457f2bf3ba77523e22f0d788d",
       "slash": "/demo",
       "user_invocable": true
     },
@@ -1243,7 +1243,7 @@
       "core_route": true,
       "description": "Coordinate a governed hive of specialized agents for broad research, planning, review, or implementation work when roles, blackboard state, dissent, synthesis, and verification materially improve the outcome.",
       "group": "parallelism",
-      "line_count": 244,
+      "line_count": 248,
       "model_invocation": false,
       "name": "hive",
       "path": ".claude/skills/hive/SKILL.md",
@@ -1261,7 +1261,7 @@
         "scripts/hive-aggregate.sh",
         "scripts/artifact-lint.sh"
       ],
-      "sha256": "0aa19cf02914a63722715e2c2b0d6a95aa7a03add1b25d3fa413a306f1412b12",
+      "sha256": "a1ef7849a45a605af2c9f966e51f2b0972f41ec71c1c4dd8abab6d45c5e3f3f8",
       "slash": "/hive",
       "user_invocable": true
     },
@@ -1270,7 +1270,7 @@
       "core_route": true,
       "description": "Run the full minmaxing workflow with governed hive coordination: metacognitive route, deepresearch, role map, blackboard, packet DAG, aggregation, introspection, verification, and closeout.",
       "group": "execution",
-      "line_count": 124,
+      "line_count": 134,
       "model_invocation": false,
       "name": "hiveworkflow",
       "path": ".claude/skills/hiveworkflow/SKILL.md",
@@ -1283,7 +1283,7 @@
         "scripts/hive-scorecard.sh",
         "scripts/hive-aggregate.sh"
       ],
-      "sha256": "09701d40a20b911275a72cee346f8412760cf5ea891f05b9301a85ade945f8c9",
+      "sha256": "96a7112dec8945335b70b587ec9a298225f1058b28ff2105a500cbdaaabfb2c8",
       "slash": "/hiveworkflow",
       "user_invocable": true
     },
@@ -1358,7 +1358,7 @@
       "core_route": true,
       "description": "Route and calibrate work with model-agnostic metacognitive control. Use when the user asks for thinking-about-thinking, harness effectiveness, task routing, self-correction, confidence calibration, or strategy improvement before execution.",
       "group": "routing",
-      "line_count": 229,
+      "line_count": 232,
       "model_invocation": false,
       "name": "metacognition",
       "path": ".claude/skills/metacognition/SKILL.md",
@@ -1372,7 +1372,7 @@
         "scripts/metacognition-scorecard.sh",
         "scripts/parallel-capacity.sh"
       ],
-      "sha256": "59bf1d294b4d9f4ee20aeb76862cc2a82131f2c9ba3541aa43ee71dc42e474c2",
+      "sha256": "2fa5f37451177fd81052ee23b37db8a11a1fd435b5f483e554561b9fd60feb83",
       "slash": "/metacognition",
       "user_invocable": true
     },
@@ -1381,7 +1381,7 @@
       "core_route": true,
       "description": "Run the Opus planner plus MiniMax-M2.7-highspeed executor workflow. Use when the user invokes /opusminimax or wants Claude/Opus to plan, adversarially review, and verify while MiniMax executes bounded coding packets.",
       "group": "execution",
-      "line_count": 233,
+      "line_count": 248,
       "model_invocation": false,
       "name": "opusminimax",
       "path": ".claude/skills/opusminimax/SKILL.md",
@@ -1395,7 +1395,7 @@
         "scripts/opusminimax-benchmark-smoke.sh",
         "scripts/opusminimax-doctor.sh"
       ],
-      "sha256": "4af29440833bc1ca75393116d6613c6ba5633b3d8d473f2b42d7738198c53736",
+      "sha256": "a9ced482e51ef4e0bc7891bf12dfdb7ec1bcffc46ee1d0555bda917ce8586af9",
       "slash": "/opusminimax",
       "user_invocable": true
     },
@@ -1404,7 +1404,7 @@
       "core_route": true,
       "description": "Run the cost-optimized Opus planner plus MiniMax-M2.7-highspeed executor workflow end to end. Use when the user invokes /opusworkflow or wants the recommended daily mode for a Claude subscription plus MiniMax Plus-Highspeed Token Plan.",
       "group": "execution",
-      "line_count": 128,
+      "line_count": 140,
       "model_invocation": false,
       "name": "opusworkflow",
       "path": ".claude/skills/opusworkflow/SKILL.md",
@@ -1418,7 +1418,7 @@
         "scripts/opusworkflow.sh",
         "scripts/opusworkflow-smoke.sh"
       ],
-      "sha256": "8978ebef64406710e7d8384a4a22b326f9611c03f0ddc335a2de255306eda9b5",
+      "sha256": "c226d05676b263639c498c2fa740a943bebe03e71c3e14f497542d6155f086b5",
       "slash": "/opusworkflow",
       "user_invocable": true
     },
@@ -1443,7 +1443,7 @@
       "core_route": true,
       "description": "Run dense minmaxing work as a hardware-aware, main-orchestrated parallel workflow with bounded packets, explicit ownership, sync barriers, aggregation, and independent verification.",
       "group": "parallelism",
-      "line_count": 463,
+      "line_count": 473,
       "model_invocation": false,
       "name": "parallel",
       "path": ".claude/skills/parallel/SKILL.md",
@@ -1461,7 +1461,7 @@
         "scripts/parallel-aggregate.sh",
         "scripts/artifact-lint.sh"
       ],
-      "sha256": "37e6bf130b7216ea29f5004304c6f81dc8c435add520b63d231307ad31a26010",
+      "sha256": "dcb9e75653db665924540e223e9f3af55924c28794d1732b8a0481410edd8a64",
       "slash": "/parallel",
       "user_invocable": true
     },
@@ -1596,7 +1596,7 @@
       "core_route": false,
       "description": "Run an approval-first variant of the minmaxing workflow: research, audit, plan, estimate, draft SPEC, visualize the intended product or operator experience, then stop with WAITING_FOR_VISUAL_APPROVAL before implementation. Use when the user wants to see and approve the model's understanding before code changes, or wants to continue or revise a saved visualization workflow.",
       "group": "execution",
-      "line_count": 129,
+      "line_count": 140,
       "model_invocation": false,
       "name": "visualizeworkflow",
       "path": ".claude/skills/visualizeworkflow/SKILL.md",
@@ -1607,7 +1607,7 @@
       "related_scripts": [
         "scripts/visualize-smoke.sh"
       ],
-      "sha256": "dd640037e06a2901c090467ccfcecc511565b7fce7f94214a31c17316e066f26",
+      "sha256": "8a87b6c2d202e9360b90b50d685b34166fab15588b479416d47c8baf38bb3cd8",
       "slash": "/visualizeworkflow",
       "user_invocable": true
     },
@@ -1632,7 +1632,7 @@
       "core_route": true,
       "description": "Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.",
       "group": "execution",
-      "line_count": 779,
+      "line_count": 784,
       "model_invocation": false,
       "name": "workflow",
       "path": ".claude/skills/workflow/SKILL.md",
@@ -1654,7 +1654,7 @@
         "scripts/test-harness.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "73fa4924382643c385c8c4af404fb04575e8514a81047543f362190ab6144077",
+      "sha256": "83927d43d49726ca0ad54bd240e08fa685b0c6bef86a40e452123c213ce7176f",
       "slash": "/workflow",
       "user_invocable": true
     }

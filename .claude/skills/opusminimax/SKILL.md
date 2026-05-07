@@ -51,6 +51,16 @@ bash scripts/opusminimax-doctor.sh --static
 bash scripts/parallel-capacity.sh --json
 ```
 
+When runtime planner execution is requested, diagnose and repair safe local
+profile drift before model invocation:
+
+```bash
+bash scripts/opusminimax-doctor.sh --runtime --fix-local-profiles
+```
+
+If auth, account access, `ANTHROPIC_API_KEY`, or model availability still blocks
+the planner, stop with repair steps. Do not silently downgrade or claim Opus.
+
 Record:
 
 - planner profile path and whether it is provider-neutral
@@ -192,6 +202,11 @@ When `/opusminimax` executes or prepares a real run, produce:
 {
   "artifact_type": "opusminimax-run",
   "run_id": "YYYYMMDD-HHMMSS-task",
+  "outer_route": "opusworkflow",
+  "inner_contract": "workflow",
+  "planner_identity_status": "blocked",
+  "executor_identity_status": "configured",
+  "fallback_status": "none",
   "provider_profiles": {
     "planner": {"path": ".claude/settings.opusminimax-planner.example.json"},
     "executor": {"path": ".claude/settings.minimax-executor.example.json"}

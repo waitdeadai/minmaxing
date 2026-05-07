@@ -241,6 +241,7 @@ for pattern in \
     "cost-optimized" \
     "Default executor concurrency is 1" \
     "Do not claim Opus planned" \
+    "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow" \
     "80-90% mechanical work" \
     "ANTHROPIC_API_KEY"; do
     if ! grep -Fq "$pattern" .claude/skills/opusworkflow/SKILL.md 2>/dev/null; then
@@ -255,8 +256,12 @@ for pattern in \
     "TOKEN_KEY" \
     "--minimax-key" \
     "--prompt-minimax-key" \
+    "--fix-local-profiles" \
+    "planner_identity_status" \
+    "executor_identity_status" \
+    "fallback_status" \
     "opusworkflow-smoke"; do
-    if ! grep -Fq -- "$pattern" setup.sh scripts/harness-eval.sh scripts/release-check.sh scripts/harness-capability-map.sh 2>/dev/null; then
+    if ! grep -Fq -- "$pattern" setup.sh scripts/opusminimax.sh scripts/opusminimax-doctor.sh scripts/harness-eval.sh scripts/release-check.sh scripts/harness-capability-map.sh 2>/dev/null; then
         OPUSWORKFLOW_OK=false
     fi
 done
@@ -1393,9 +1398,9 @@ if grep -Fq "## Install" README.md 2>/dev/null && \
    grep -Fq "/opusworkflow as the daily default" README.md 2>/dev/null && \
    grep -Fq "local /workflow when the hybrid provider split is unavailable" README.md 2>/dev/null && \
    grep -Fq "/parallel when independent execution packets are enough" README.md 2>/dev/null && \
-   grep -Fq "/hive or /hiveworkflow when coordinated roles" README.md 2>/dev/null && \
-   grep -Fq "Default to \`/parallel\` for disjoint execution throughput" .claude/skills/metacognition/SKILL.md 2>/dev/null && \
-   grep -Fq "Default to \`/hive\`" .claude/skills/metacognition/SKILL.md 2>/dev/null && \
+   grep -Fq "inner_contract=hiveworkflow" README.md 2>/dev/null && \
+   grep -Fq "Default to \`/opusworkflow\` for mutation" .claude/skills/metacognition/SKILL.md 2>/dev/null && \
+   grep -Fq "inner_contract=hiveworkflow" .claude/skills/metacognition/SKILL.md 2>/dev/null && \
    grep -Fq "Prefer \`/parallel\` when disjoint execution packets are enough" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "prefer \`/hiveworkflow\` only when judgment breadth" .claude/skills/workflow/SKILL.md 2>/dev/null; then
     test_pass "README and skills explain smart autorouting and hive vs parallel"

@@ -18,6 +18,16 @@ decides whether the whole request merits parallel orchestration, chooses the
 execution substrate, writes the packet DAG, supervises sync barriers, and
 verifies the aggregate result against the active contract.
 
+For file-changing packet work, `/opusworkflow` is the default outer route and
+`/parallel` is the inner contract. Direct `/parallel` invocation remains valid,
+but mutating packets must inherit the Claude/Opus planner-reviewer plus
+MiniMax-M2.7-highspeed executor policy before execution.
+
+```text
+outer_route: opusworkflow
+inner_contract: parallel
+```
+
 ## Non-Negotiable Contract
 
 - Never parallelize just to use slots.

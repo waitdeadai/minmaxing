@@ -54,6 +54,10 @@ Pick `/hiveworkflow` when the task needs both coordinated judgment and the full
 file-changing lifecycle. If the work only needs owned implementation packets,
 use `/parallel`. If it only needs one supervisor loop, use `/workflow`.
 
+For file-changing hive work, prefer `/opusworkflow` with
+`inner_contract=hiveworkflow`. Use `/hive` directly for read-only coordination,
+research, dissent, or synthesis where no files are changed.
+
 ## Non-Negotiable Contract
 
 - The queen/supervisor owns route, scope, safety, final synthesis, and closeout.

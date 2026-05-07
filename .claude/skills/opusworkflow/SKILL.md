@@ -22,7 +22,12 @@ Default executor concurrency is 1 until provider evidence proves otherwise.
 ## Contract
 
 - Treat `/opusworkflow` as `/opusminimax --mode workflow` with stricter budget
-  defaults and as the normal daily build/plan route for this harness.
+  defaults and as the normal daily route for all mutating work in this harness.
+- Record the specialist being executed as
+  `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow`.
+- If the task asks for Hermes, Hive, ICP/taste mutation, approved
+  visualization implementation, demo artifact production, or dense packet work,
+  preserve that specialist contract under the `/opusworkflow` outer route.
 - Do not claim Opus planned, reviewed, or verified unless auth/model evidence or
   the run artifact proves it.
 - Do not read `.env`, `.env.*`, `.claude/settings.local.json`,
@@ -79,6 +84,13 @@ bash scripts/parallel-capacity.sh --json
 
 ```bash
 bash scripts/opusworkflow.sh --task "$ARGUMENTS"
+```
+
+For specialist mutation, pass the contract explicitly:
+
+```bash
+bash scripts/opusworkflow.sh --task "$ARGUMENTS" --inner-contract agentfactory
+bash scripts/opusworkflow.sh --task "$ARGUMENTS" --inner-contract hiveworkflow
 ```
 
 4. MiniMax executes only planner-approved packets with owned paths,

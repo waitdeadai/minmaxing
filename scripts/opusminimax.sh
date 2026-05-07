@@ -6,6 +6,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TASK=""
 MODE="workflow"
+OUTER_ROUTE="opusminimax"
+INNER_CONTRACT="workflow"
 RUN_ID=""
 EXECUTE_PLANNER=0
 PLANNER_SETTINGS="${CLAUDE_PLANNER_SETTINGS_PATH:-$ROOT_DIR/.claude/settings.opusminimax-planner.local.json}"
@@ -15,10 +17,13 @@ EXECUTOR_MODEL="${OPUSMINIMAX_EXECUTOR_MODEL:-MiniMax-M2.7-highspeed}"
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--execute-planner] [--planner-settings PATH]
+  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--execute-planner] [--planner-settings PATH]
 
 Default behavior prepares no-secret run artifacts and prints the next command.
 --execute-planner is the explicit Claude runtime opt-in.
+
+CONTRACT may be workflow, agentfactory, hiveworkflow, parallel, defineicp,
+deepretaste, demo, or visualizeworkflow.
 EOF
 }
 
@@ -30,6 +35,14 @@ while [ "$#" -gt 0 ]; do
       ;;
     "--mode")
       MODE="${2:-}"
+      shift 2
+      ;;
+    "--outer-route")
+      OUTER_ROUTE="${2:-}"
+      shift 2
+      ;;
+    "--inner-contract")
+      INNER_CONTRACT="${2:-}"
       shift 2
       ;;
     "--run-id")
@@ -68,6 +81,14 @@ case "$MODE" in
   workflow|benchmark|repair) ;;
   *) echo "[opusminimax] invalid mode: $MODE" >&2; exit 2 ;;
 esac
+case "$OUTER_ROUTE" in
+  opusworkflow|opusminimax) ;;
+  *) echo "[opusminimax] invalid outer route: $OUTER_ROUTE" >&2; exit 2 ;;
+esac
+case "$INNER_CONTRACT" in
+  workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow) ;;
+  *) echo "[opusminimax] invalid inner contract: $INNER_CONTRACT" >&2; exit 2 ;;
+esac
 
 if [ -z "$RUN_ID" ]; then
   STAMP="$(date +%Y%m%d-%H%M%S)"
@@ -82,12 +103,12 @@ mkdir -p "$PACKET_DIR"
 PACKET="$PACKET_DIR/P1.json"
 RUN_ARTIFACT="$RUN_DIR/opusminimax-run.json"
 
-python3 - "$TASK" "$MODE" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" <<'PY'
+python3 - "$TASK" "$MODE" "$OUTER_ROUTE" "$INNER_CONTRACT" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" <<'PY'
 import json
 import pathlib
 import sys
 
-task, mode, run_id, packet_path, run_artifact, planner_model, executor_model = sys.argv[1:8]
+task, mode, outer_route, inner_contract, run_id, packet_path, run_artifact, planner_model, executor_model = sys.argv[1:10]
 packet_path = pathlib.Path(packet_path)
 run_artifact = pathlib.Path(run_artifact)
 
@@ -96,7 +117,7 @@ packet = {
     "run_id": run_id,
     "packet_id": "P1",
     "objective": f"Prepare implementation packet for: {task}",
-    "context_summary": f"Mode={mode}. Claude planner must refine this packet before MiniMax execution.",
+    "context_summary": f"Outer route={outer_route}. Inner contract={inner_contract}. Mode={mode}. Claude planner must refine this packet before MiniMax execution.",
     "owned_paths": ["SPEC.md"],
     "forbidden_paths": [".env", ".env.*", ".claude/*.local.json", "secrets/**"],
     "commands_allowed": ["bash scripts/opusminimax-doctor.sh --static"],
@@ -109,6 +130,11 @@ packet = {
 run = {
     "artifact_type": "opusminimax-run",
     "run_id": run_id,
+    "outer_route": outer_route,
+    "inner_contract": inner_contract,
+    "planner_identity_status": "blocked",
+    "executor_identity_status": "configured",
+    "fallback_status": "none" if outer_route == "opusworkflow" else "explicit_user_override",
     "provider_profiles": {
         "planner": {
             "path": ".claude/settings.opusminimax-planner.example.json",
@@ -160,15 +186,68 @@ echo "[opusminimax] run artifact: $RUN_ARTIFACT"
 
 if [ "$EXECUTE_PLANNER" -eq 0 ]; then
   echo "[opusminimax] runtime not executed. To launch planner explicitly:"
-  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --execute-planner"
+  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --outer-route $OUTER_ROUTE --inner-contract $INNER_CONTRACT --execute-planner"
   exit 0
 fi
 
 if [ ! -f "$PLANNER_SETTINGS" ]; then
-  echo "[opusminimax] missing planner settings: $PLANNER_SETTINGS" >&2
-  echo "[opusminimax] copy .claude/settings.opusminimax-planner.example.json to an ignored local profile first" >&2
+  echo "[opusminimax] missing planner settings; attempting safe local profile repair" >&2
+fi
+
+DOCTOR_JSON="$(mktemp)"
+if ! bash "$ROOT_DIR/scripts/opusminimax-doctor.sh" --runtime --fix-local-profiles --json >"$DOCTOR_JSON"; then
+  echo "[opusminimax] planner identity blocked: runtime doctor failed." >&2
+  echo "[opusminimax] repair steps: run claude auth login, ensure Opus is available on the account, unset ANTHROPIC_API_KEY for subscription billing, then retry." >&2
+  rm -f "$DOCTOR_JSON"
   exit 1
 fi
 
-PROMPT="/opusminimax mode=$MODE task=$TASK run_dir=$RUN_DIR planner_model=$PLANNER_MODEL executor_model=$EXECUTOR_MODEL"
+if ! python3 - "$DOCTOR_JSON" <<'PY'
+import json
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+payload = json.loads(path.read_text(encoding="utf-8"))
+blocking = []
+for item in payload.get("checks", []):
+    name = str(item.get("name", ""))
+    status = str(item.get("status", ""))
+    if status == "fail":
+        blocking.append(f"{name}: {status}")
+        continue
+    if name in {
+        "claude version >= 2.1.111",
+        "claude auth status",
+        "ANTHROPIC_API_KEY subscription billing footgun",
+        "planner local profile exists",
+        "executor local profile exists",
+        "planner local profile has no MiniMax base URL",
+        "executor local profile uses MiniMax-M2.7-highspeed",
+        "executor local profile does not alias Opus to MiniMax",
+    } and status != "pass":
+        blocking.append(f"{name}: {status}")
+
+if blocking:
+    print("[opusminimax] runtime doctor blocking checks:", file=sys.stderr)
+    for line in blocking:
+        print(f"  - {line}", file=sys.stderr)
+    print("[opusminimax] repair steps:", file=sys.stderr)
+    for step in payload.get("operator_repair_steps", []):
+        print(f"  - {step}", file=sys.stderr)
+    raise SystemExit(1)
+PY
+then
+  rm -f "$DOCTOR_JSON"
+  exit 1
+fi
+rm -f "$DOCTOR_JSON"
+
+if [ ! -f "$PLANNER_SETTINGS" ]; then
+  echo "[opusminimax] planner identity blocked: missing planner settings after repair: $PLANNER_SETTINGS" >&2
+  echo "[opusminimax] repair steps: run claude auth login, ensure Opus is available on the account, unset ANTHROPIC_API_KEY for subscription billing, then retry." >&2
+  exit 1
+fi
+
+PROMPT="/opusminimax outer_route=$OUTER_ROUTE inner_contract=$INNER_CONTRACT mode=$MODE task=$TASK run_dir=$RUN_DIR planner_model=$PLANNER_MODEL executor_model=$EXECUTOR_MODEL"
 claude --model "$PLANNER_MODEL" --effort xhigh --settings "$PLANNER_SETTINGS" -p "$PROMPT"
