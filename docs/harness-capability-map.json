@@ -539,12 +539,12 @@
       "sha256": "ba589818b21d29523f7319d07263521c84ff4ea000a04e5f11794143a0f764b8"
     },
     {
-      "line_count": 117,
+      "line_count": 190,
       "name": "hook-smoke",
       "path": "scripts/hook-smoke.sh",
       "purpose": "Claude Code hook enforcement smoke",
       "required_gate": true,
-      "sha256": "0c2ae725a2784c4745ea7620078355a357333ed8544b222b52b21a4d61571598"
+      "sha256": "520b76c2e1afea29f9b23adff40fde67cf675ffb177929cf6ff965c887df1aa2"
     },
     {
       "line_count": 385,

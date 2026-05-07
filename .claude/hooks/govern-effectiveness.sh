@@ -6,6 +6,11 @@ set -euo pipefail
 
 INPUT="$(cat)"
 
+if ! command -v jq >/dev/null 2>&1; then
+  echo "NOTE: minmaxing governance hook requires jq; fail-open for this event." >&2
+  exit 0
+fi
+
 json_get() {
   local filter="$1"
   printf '%s' "$INPUT" | jq -r "$filter // empty" 2>/dev/null || true
@@ -95,7 +100,14 @@ collect_failure_text() {
 }
 
 block() {
-  echo "BLOCKED: $1" >&2
+  local reason="$1"
+  local repair="${2:-}"
+  echo "BLOCKED: $reason" >&2
+  if [ -n "$repair" ]; then
+    echo "" >&2
+    echo "Repair guidance:" >&2
+    printf '%s\n' "$repair" >&2
+  fi
   exit 2
 }
 
@@ -107,6 +119,7 @@ event="$(json_get '.hook_event_name')"
 
 is_destructive_bash() {
   local command="$1"
+  local candidate
   local pattern
   local patterns=(
     '(^|[[:space:];&|])sudo[[:space:]]+rm[[:space:]].*(-[[:alnum:]]*r|--recursive)([[:space:]]|$)'
@@ -121,10 +134,12 @@ is_destructive_bash() {
     '(^|[[:space:];&|])chmod[[:space:]]+-R[[:space:]]+777([[:space:]]|$)'
   )
 
-  for pattern in "${patterns[@]}"; do
-    if printf '%s\n' "$command" | grep -Eiq -- "$pattern"; then
-      return 0
-    fi
+  for candidate in "$command" "$(printf '%s\n' "$command" | sed "s/['\"\\\\]/ /g")"; do
+    for pattern in "${patterns[@]}"; do
+      if printf '%s\n' "$candidate" | grep -Eiq -- "$pattern"; then
+        return 0
+      fi
+    done
   done
 
   return 1
@@ -176,7 +191,9 @@ block_sensitive_write_paths() {
 
   while IFS= read -r file_path; do
     if [ -n "$file_path" ] && is_sensitive_write_path "$file_path"; then
-      block "write tool touched sensitive env/secret path: $file_path"
+      block "write tool touched sensitive env/secret path: $file_path" \
+        "- Do not edit .env, .env.*, .claude/*.local.json, or secrets/**.
+- Ask the operator for a safe non-secret target path or a redacted example file."
     fi
   done <<< "$file_paths"
 }
@@ -189,20 +206,78 @@ has_positive_closeout() {
   printf '%s\n' "$message" | grep -Eiq '(^|[^[:alpha:]])(all set|done|completed|complete|implemented|fixed|finished|ready|passes|passed|shipped)([^[:alpha:]]|$)'
 }
 
+has_missing_verification() {
+  local message="$1"
+  printf '%s\n' "$message" | grep -Eiq '(^|[^[:alpha:]])(no[[:space:]]+tests?[[:space:]]+(run|ran)|tests?[[:space:]]+(not[[:space:]]+run|not[[:space:]]+ran|skipped|omitted)|not[[:space:]]+tested|untested|unverified|not[[:space:]]+verified|verification[[:space:]]+(not[[:space:]]+run|not[[:space:]]+ran|skipped|omitted|pending|missing)|verification[[:space:]]+was[[:space:]]+not[[:space:]]+run|could[[:space:]]+not[[:space:]]+verify|unable[[:space:]]+to[[:space:]]+verify)([^[:alpha:]]|$)' && return 0
+  return 1
+}
+
+has_command_evidence() {
+  local message="$1"
+  printf '%s\n' "$message" | grep -Eiq '(^|[[:space:]])commands?[[:space:]]+run:' && return 0
+  printf '%s\n' "$message" | grep -Eiq '`(bash|git|npm|pnpm|yarn|pytest|python3?|ruff|cargo|go test|make)[^`]*`' && return 0
+  return 1
+}
+
+has_verification_evidence() {
+  local message="$1"
+  printf '%s\n' "$message" | grep -Eiq '(^|[[:space:]])(verification|verified|tests?|smoke|lint|build)(:|[[:space:]]+(passed|pass|ok|succeeded|clean|green))' && return 0
+  return 1
+}
+
+has_artifact_evidence() {
+  local message="$1"
+  printf '%s\n' "$message" | grep -Eiq '(^|[[:space:]])(changed files?|files? changed|files? inspected|sources? reviewed|source ledger|diff|artifacts?|evidence)(:|[[:space:]])' && return 0
+  return 1
+}
+
 has_evidence() {
   local message="$1"
-  printf '%s\n' "$message" | grep -Eiq '(^|[[:space:]])(commands? run|verification|verified|tests?|smoke|changed files?|files? changed)(:|[[:space:]])' && return 0
-  printf '%s\n' "$message" | grep -Eiq '`(bash|git|npm|pnpm|yarn|pytest|python3?|ruff|cargo|go test|make)[^`]*`' && return 0
-  printf '%s\n' "$message" | grep -Eiq '([[:alnum:]_.-]+/)+[[:alnum:]_.-]+\.[[:alnum:]]+' && return 0
-  printf '%s\n' "$message" | grep -Eiq '[[:alnum:]_.-]+\.(sh|md|json|toml|yaml|yml|js|ts|tsx|jsx|py|go|rs|rb|php|java|kt|swift|css|html)' && return 0
+  has_command_evidence "$message" && return 0
+  has_verification_evidence "$message" && return 0
+  has_artifact_evidence "$message" && return 0
+  return 1
+}
+
+has_closeout_evidence() {
+  local message="$1"
+  has_command_evidence "$message" && return 0
+  has_verification_evidence "$message" && return 0
+  if is_read_only_text "$message" && has_artifact_evidence "$message"; then
+    return 0
+  fi
   return 1
 }
 
 has_failed_verification() {
   local message="$1"
+  has_missing_verification "$message" && return 0
   printf '%s\n' "$message" | grep -Eiq '(verification|verify|tests?|smoke|lint|build)[^[:cntrl:]]*(failed|failing|failure|error|errors|could not run|did not run|not run|unable to run|blocked)' && return 0
   printf '%s\n' "$message" | grep -Eiq '(failed|failing|failure|error|errors|could not run|did not run|not run|unable to run|blocked)[^[:cntrl:]]*(verification|verify|tests?|smoke|lint|build)' && return 0
   return 1
+}
+
+failed_verification_repair() {
+  cat <<'EOF'
+- Do not close with done/ready/passed/shipped while verification failed or did not run.
+- Either run the missing verification and cite the exact command evidence, or close as partial/blocked/runtime-pending.
+- Use a final shape like:
+  Status: partial
+  Verification: not run because <reason>
+  Next step: <specific command or blocker>
+EOF
+}
+
+missing_evidence_repair() {
+  cat <<'EOF'
+- Positive closeout needs concrete evidence, not just "done" or "ready".
+- Add at least one of:
+  Commands run: `<exact command>`
+  Verification: passed/blocked with detail
+- For implementation closeout, changed files alone are not enough.
+- For read-only work, include files inspected / sources reviewed.
+- If evidence is unavailable, close as partial/blocked/verification pending instead of done.
+EOF
 }
 
 tool_name="$(json_get '.tool_name')"
@@ -210,7 +285,9 @@ tool_name="$(json_get '.tool_name')"
 if [ "$tool_name" = "Bash" ]; then
   command="$(json_get '.tool_input.command')"
   if [ -n "$command" ] && is_destructive_bash "$command"; then
-    block "destructive Bash command requires explicit human approval and a rollback plan."
+    block "destructive Bash command requires explicit human approval and a rollback plan." \
+      "- Ask the operator for explicit approval before destructive commands.
+- Include the exact command, affected paths, and rollback plan."
   fi
 fi
 
@@ -233,7 +310,9 @@ if [ "$event" = "TaskCreated" ]; then
   fi
 
   if is_implementation_like_text "$task_text" && ! has_task_ownership "$task_text"; then
-    block "implementation-like TaskCreated payload needs explicit ownership or read-only scope."
+    block "implementation-like TaskCreated payload needs explicit ownership or read-only scope." \
+      "- Add owned paths, forbidden paths, and stop conditions to the task.
+- Or mark the task as read-only/audit-only if it must not edit files."
   fi
 
   exit 0
@@ -250,11 +329,11 @@ if [ "$event" = "TaskCompleted" ]; then
 
   if is_implementation_like_text "$combined_text"; then
     if has_failed_verification "$completion_text" && has_positive_closeout "$completion_text"; then
-      block "implementation task closeout conflicts with failed or missing verification."
+      block "implementation task closeout conflicts with failed or missing verification." "$(failed_verification_repair)"
     fi
 
-    if ! has_evidence "$completion_text"; then
-      block "implementation TaskCompleted payload needs concrete evidence."
+    if ! has_closeout_evidence "$completion_text"; then
+      block "implementation TaskCompleted payload needs concrete evidence." "$(missing_evidence_repair)"
     fi
   fi
 
@@ -280,11 +359,11 @@ if [ "$event" = "Stop" ] || [ "$event" = "SubagentStop" ]; then
   fi
 
   if has_failed_verification "$message" && has_positive_closeout "$message"; then
-    block "positive closeout conflicts with failed or missing verification."
+    block "positive closeout conflicts with failed or missing verification." "$(failed_verification_repair)"
   fi
 
-  if has_positive_closeout "$message" && ! has_evidence "$message"; then
-    block "closeout needs concrete evidence: changed files, commands run, or verification."
+  if has_positive_closeout "$message" && ! has_closeout_evidence "$message"; then
+    block "closeout needs concrete evidence." "$(missing_evidence_repair)"
   fi
 fi
 

@@ -33,6 +33,17 @@ expect_block() {
   fi
 }
 
+expect_block_contains() {
+  local name="$1"
+  local fixture="$2"
+  local expected="$3"
+
+  expect_block "$name" "$fixture"
+  if ! printf '%s\n' "$LAST_OUTPUT" | grep -Fq "$expected"; then
+    fail "$name should include '$expected'"
+  fi
+}
+
 expect_pass() {
   local name="$1"
   local fixture="$2"
@@ -56,6 +67,17 @@ destructive_bash="$(cat <<'JSON'
 JSON
 )"
 
+destructive_bash_indirect="$(cat <<'JSON'
+{
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "bash -c 'rm -rf dist'"
+  }
+}
+JSON
+)"
+
 evidence_free_closeout="$(cat <<'JSON'
 {
   "hook_event_name": "Stop",
@@ -65,11 +87,56 @@ evidence_free_closeout="$(cat <<'JSON'
 JSON
 )"
 
+path_only_implementation_closeout="$(cat <<'JSON'
+{
+  "hook_event_name": "Stop",
+  "stop_hook_active": false,
+  "last_assistant_message": "Implemented and ready. Changed files: README.md."
+}
+JSON
+)"
+
 failed_verification_closeout="$(cat <<'JSON'
 {
   "hook_event_name": "SubagentStop",
   "stop_hook_active": false,
   "last_assistant_message": "Implemented and ready. Verification failed when running the smoke test."
+}
+JSON
+)"
+
+missing_verification_closeout="$(cat <<'JSON'
+{
+  "hook_event_name": "Stop",
+  "stop_hook_active": false,
+  "last_assistant_message": "Done. No tests run."
+}
+JSON
+)"
+
+unverified_closeout="$(cat <<'JSON'
+{
+  "hook_event_name": "Stop",
+  "stop_hook_active": false,
+  "last_assistant_message": "Done. Unverified."
+}
+JSON
+)"
+
+read_only_terse_closeout="$(cat <<'JSON'
+{
+  "hook_event_name": "Stop",
+  "stop_hook_active": false,
+  "last_assistant_message": "Read-only audit done."
+}
+JSON
+)"
+
+read_only_closeout_with_evidence="$(cat <<'JSON'
+{
+  "hook_event_name": "Stop",
+  "stop_hook_active": false,
+  "last_assistant_message": "Read-only audit done.\n\nFiles inspected: `.claude/hooks/govern-effectiveness.sh`, `scripts/hook-smoke.sh`.\nSources reviewed: official Claude Code hooks docs.\nVerification: not applicable because no files were changed."
 }
 JSON
 )"
@@ -108,10 +175,16 @@ JSON
 )"
 
 expect_block "destructive Bash fixture" "$destructive_bash"
-expect_block "evidence-free closeout fixture" "$evidence_free_closeout"
-expect_block "failed-verification positive closeout fixture" "$failed_verification_closeout"
+expect_block "indirect destructive Bash fixture" "$destructive_bash_indirect"
+expect_block_contains "evidence-free closeout fixture" "$evidence_free_closeout" "Repair guidance:"
+expect_block_contains "path-only implementation closeout fixture" "$path_only_implementation_closeout" "changed files alone are not enough"
+expect_block_contains "failed-verification positive closeout fixture" "$failed_verification_closeout" "Status: partial"
+expect_block_contains "missing-verification positive closeout fixture" "$missing_verification_closeout" "verification failed or did not run"
+expect_block_contains "unverified positive closeout fixture" "$unverified_closeout" "verification failed or did not run"
+expect_block_contains "terse read-only closeout fixture" "$read_only_terse_closeout" "files inspected / sources reviewed"
 expect_pass "safe Bash read fixture" "$safe_bash_read"
 expect_pass "safe Edit fixture" "$safe_edit"
 expect_pass "safe closeout with evidence fixture" "$safe_closeout_with_evidence"
+expect_pass "read-only closeout with evidence fixture" "$read_only_closeout_with_evidence"
 
 echo "[PASS] Claude Code governance hook smoke test passed"
