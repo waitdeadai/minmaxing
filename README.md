@@ -439,6 +439,9 @@ What this repo config gives Codex:
 - Codex Memories enabled where supported, so useful local context can carry into future Codex sessions
 - Subagent ceiling: `10` via `[agents].max_threads`
 - OpenAI docs MCP: `https://developers.openai.com/mcp`
+- Repo-scoped skill: `.agents/skills/codex-imagegen` for `SPEC.md` image
+  assets that should use Codex subscription/ChatGPT image generation rather
+  than OpenAI API-key billing
 - Focused helper agents:
   - `repo_explorer`
   - `reviewer`
@@ -810,6 +813,14 @@ sidecars, and aggregation for execution; hive runs also emit
 
 **Visualization approval:** `/workflow` stays autonomous. Use `/visualize` when you only want to see the model's understanding, and `/visualizeworkflow` when you want a draft spec plus visual or operational artifact to approve before implementation.
 
+**Codex image generation:** When `SPEC.md` asks for generated or edited raster
+assets, use the repo Codex skill `$codex-imagegen` from
+`.agents/skills/codex-imagegen`. It is intentionally subscription-first:
+Codex/ChatGPT image usage when the current Codex runtime exposes it, no
+OpenAI API keys or API-priced fallbacks unless you explicitly change that
+billing route. If the runtime cannot generate an image, the harness writes a
+handoff prompt and marks the asset blocked rather than pretending a file exists.
+
 **Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, stale Claude product answers, shallow hive consensus, and linear lane-scaling claims. The Stop hook uses Claude Code's intentional blocking path: a blocked closeout is repair feedback, not a crash. Positive closeout must cite commands or verification; read-only/audit closeout may cite files inspected or sources reviewed. "Tests not run", "unverified", or equivalent wording must close as partial/blocked rather than done. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/claudeproduct-scorecard.sh --fixtures --json`, `bash scripts/hive-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
 
 **Artifact sidecars:** Markdown remains the human contract, but machine gates can consume minimal JSON sidecars for agent-native estimates, verification results, and worker results. Validate the local fixtures with `bash scripts/artifact-lint.sh --fixtures`.
@@ -1000,6 +1011,9 @@ minmaxing/
 ├── .codex/
 │   ├── config.toml             # Project-scoped Codex defaults
 │   └── agents/                 # Codex custom agents for research/review
+├── .agents/
+│   └── skills/
+│       └── codex-imagegen/     # Codex subscription image asset skill
 ├── .claude/
 │   ├── settings.json           # Provider-neutral governance config
 │   ├── settings.opusminimax-planner.example.json

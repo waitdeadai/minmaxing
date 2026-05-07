@@ -145,6 +145,7 @@ Choose the route from user intent:
 | review | review directly |
 | qa | run focused validation directly |
 | visualize, visual approval, show me first, approve before implementation | route to `/visualizeworkflow` for approval-first planning; after approval, continue implementation through `/opusworkflow` with `inner_contract=visualizeworkflow`; route to `/visualize` when the user only wants a comprehension artifact |
+| SPEC.md requests generated images, edited images, hero assets, UI mockups, sprites, thumbnails, or product raster assets | keep the normal `/workflow` contract, but route the asset generation lane through Codex skill `codex-imagegen` under `.agents/skills`; use Codex subscription/ChatGPT auth when available, never API-key image generation unless the user explicitly changes billing route |
 
 Default to the full build flow when the task changes files.
 

@@ -36,6 +36,21 @@ generation capability. If image generation is unavailable, produce a precise
 image prompt, storyboard, schematic, Mermaid, HTML, SVG, or markdown artifact
 instead.
 
+## Codex Subscription Image Lane
+
+When a visualization or `SPEC.md` asks for actual generated image files and the
+operator wants Codex subscription usage, route that asset work through the
+repo-scoped Codex skill at `.agents/skills/codex-imagegen/SKILL.md`.
+
+- Prefer Codex/ChatGPT subscription auth and included Codex image usage.
+- Do not use OpenAI API keys, Images API scripts, Responses API wrappers, or
+  direct HTTP calls unless the user explicitly changes the route to API billing.
+- Do not read `.env`, `.env.*`, ignored local provider profiles, or secret files
+  to prove image access.
+- If the runtime lacks native Codex image generation, write a prompt/handoff
+  artifact and mark the image blocked.
+- Closeout requires a real image artifact path, or an explicit blocked status.
+
 ## Surface Rules
 
 - Frontend, mobile, product UI, dashboard, game, docs, and brand tasks may use
