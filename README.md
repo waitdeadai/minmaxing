@@ -7,13 +7,13 @@ Pick the command that matches the folder.
 Clean/new folder:
 
 ```bash
-MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash && claude'
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude
 ```
 
 Existing project or harness update:
 
 ```bash
-MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing && claude'
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude
 ```
 
 Get your key from [platform.minimax.io](https://platform.minimax.io).
@@ -124,10 +124,15 @@ configures the ignored local MiniMax executor profile, keeps the Opus planner
 profile provider-clean, uses the default trusted-local `bypassPermissions`
 posture, and opens Claude when setup finishes.
 
-Inline/env token commands can land in shell history. That is the intentional
-fast path for trusted solo work; advanced hidden-input, key-file, and explicit
+Inline token commands can land in shell history. That is the intentional
+fast path for trusted solo work; environment-variable, hidden-input, key-file, and explicit
 `--mode minimax|opusworkflow|opusminimax` override forms still exist in
 `bash setup.sh --help`, but they are not the default path.
+
+If an earlier install did not detect MiniMax, rerun the existing-project command
+above from the project root. In `/opusworkflow` split mode, MiniMax is configured
+in the ignored executor profile `.claude/settings.minimax-executor.local.json`;
+it is not automatically added as a user-scope Claude MCP server.
 
 That's it. Memory system, governed runtime profiles, and 34 skills are
 configured.

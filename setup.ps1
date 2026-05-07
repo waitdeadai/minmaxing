@@ -156,7 +156,7 @@ if ($ApiKey -and $ApiKey -ne "YOUR_TOKEN_PLAN_KEY") {
 } else {
     Write-Host "  [WARN] MiniMax token not provided; local executor profile was not credentialed" -ForegroundColor Yellow
     Write-Host "  Use the default Bash/Git Bash command:" -ForegroundColor Gray
-    Write-Host "  MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash && claude'" -ForegroundColor Cyan
+    Write-Host "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude" -ForegroundColor Cyan
 }
 Write-Host ""
 

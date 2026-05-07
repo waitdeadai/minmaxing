@@ -54,8 +54,8 @@ require_text "--minimax-key" setup.sh
 require_text "--prompt-minimax-key" setup.sh
 require_text "import-manifest.tsv" setup.sh
 require_text "skipped_conflicts" setup.sh
-require_text "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash && claude'" README.md
-require_text "MINIMAX_TOKEN_KEY='YOUR_TOKEN_PLAN_KEY' bash -lc 'curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing && claude'" README.md
+require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude" README.md
+require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude" README.md
 require_text "Existing project or harness update" README.md
 require_text "Both commands default to \`/opusworkflow\`" README.md
 require_text 'Default route: /opusworkflow' setup.sh
