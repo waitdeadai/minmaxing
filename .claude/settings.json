@@ -5,10 +5,13 @@
         "TRUSTED-LOCAL WARNING: this workspace defaults to bypassPermissions for the operator's solo workflow.",
         "Use .claude/settings.team-safe.example.json for shared, reviewed, client-visible, or less trusted work.",
         "Do not put Anthropic, Claude subscription, MiniMax, or other provider credentials in this file.",
-        "Use ignored local profiles for planner/executor identity."
+        "Use ignored local profiles for planner/executor identity.",
+        "Remote Control compatible: do not set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, DISABLE_TELEMETRY, disableRemoteControl, or provider auth variables in shared project settings."
     ],
     "env": {
-        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+        "DISABLE_AUTOUPDATER": "1",
+        "DISABLE_FEEDBACK_COMMAND": "1",
+        "DISABLE_ERROR_REPORTING": "1",
         "DISABLE_AUTO_COMPACT": "0",
         "CLAUDE_CODE_NO_FLICKER": "1"
     },

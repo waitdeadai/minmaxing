@@ -147,7 +147,7 @@ above from the project root. In `/opusworkflow` split mode, MiniMax is configure
 in the ignored executor profile `.claude/settings.minimax-executor.local.json`;
 it is not automatically added as a user-scope Claude MCP server.
 
-That's it. Memory system, governed runtime profiles, and 35 skills are
+That's it. Memory system, governed runtime profiles, and 36 skills are
 configured.
 
 ### Suggested Claude-Only Install
@@ -197,6 +197,40 @@ runtime identity still depends on the current Claude Code account/session.
 Claude subscription auth is separate account auth. Run `claude auth login` once
 if this machine is not already logged in; the setup command does not store or
 fake your Claude subscription session.
+
+### Native Claude Code Remote Control
+
+Claude Code has native Remote Control for continuing a local session from
+`claude.ai/code` or the Claude mobile app. Use the native commands only:
+
+```text
+/remote-control
+/rc
+```
+
+From the CLI:
+
+```bash
+claude --remote-control
+claude remote-control
+```
+
+This is different from `claude --remote` or Claude Code on the web. Remote
+Control keeps the Claude Code process running locally, with this repo's hooks,
+tools, project settings, and trusted-local `bypassPermissions` posture. The
+harness intentionally does not create a custom remote server, websocket bridge,
+or API-key control path.
+
+Before using it, run the no-secret static doctor:
+
+```bash
+bash scripts/remote-control-doctor.sh --static --json
+```
+
+Remote Control requires claude.ai subscription login. `ANTHROPIC_API_KEY`,
+`CLAUDE_CODE_OAUTH_TOKEN`, third-party provider auth, `DISABLE_TELEMETRY`, and
+`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` can block eligibility, so shared
+project settings avoid those variables.
 
 **Shared settings are committed on purpose, but they are provider-neutral.** `.claude/settings.json` contains governance hooks, deny rules, and the trusted-local `bypassPermissions` default. This is an explicit operator-speed choice, not a team-safety recommendation. Real credentials and provider identity belong in ignored local files such as `.claude/settings.opusminimax-planner.local.json` and `.claude/settings.minimax-executor.local.json`.
 
@@ -678,7 +712,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 35 Skills
+## The 36 Skills
 
 | Skill | What It Does |
 |-------|-------------|
@@ -701,6 +735,7 @@ Now you can use any workflow pattern:
 | `/parallel` | Run hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | `/metacognition` | Parallel-aware control plane for task routing, evidence-grounded reflection, confidence calibration, and verified learning |
 | `/claudeproduct` | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, and subagents |
+| `/remote-control` | Native Claude Code Remote Control route with a static doctor, no custom network control plane, and no API-key auth fallback |
 | `/hive` | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
 | `/hiveworkflow` | Full workflow mode for hive-coordinated planning, execution, aggregation, introspection, and verification |
 | `/sprint` | Run an ownership-safe parallel execution wave |
@@ -739,6 +774,8 @@ The routing ladder is:
 -> /parallel when independent execution packets are enough
 -> /claudeproduct for Claude, Claude Code, Claude.ai, API, connector, plugin,
    skill, hook, MCP, subagent, availability, limit, model, or setup questions
+-> /remote-control when the operator wants native Claude Code RC from
+   claude.ai/code or mobile without building a custom control plane
 -> /hive for read-only coordination, or /opusworkflow with inner_contract=hiveworkflow
    when coordinated roles, blackboard state, dissent, synthesis, and mutation
    materially improve the outcome
@@ -757,6 +794,7 @@ Use this rule of thumb:
 | `/defineicp` | You need to define the ICP or ICPs and tailor `taste.md` / `taste.vision` to that customer profile. | Deepresearch plan, primary/secondary/anti-ICPs, source and claim ledgers, taste patch proposal, explicit apply approval, backups, hashes, validation, and rollback evidence. |
 | `/opusminimax` | You want to squeeze a Claude subscription by using Opus only for planning, adversarial review, and final judgment while MiniMax does speed/bulk execution. | Provider split doctor, Opus planner artifact, MiniMax executor packets, quota-aware concurrency, parent verification, and no benchmark overclaims. |
 | `/claudeproduct` | The question is about Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, availability, limits, models, or setup. | Official Anthropic/Claude docs first, surface separation, source ledger, connector permission/trust caveats, confidence downgrade when current docs are missing. |
+| `/remote-control` | You want Claude Code native Remote Control for an already trusted local harness session. | `/remote-control`, `/rc`, `claude --remote-control`, or `claude remote-control`; claude.ai subscription login; no custom server; no static runtime-proof claim. |
 | `/parallel` | The work splits into independent packets with clear owned files/surfaces and aggregate verification. | Packet DAG, ownership matrix, sync barriers, worker sidecars, `parallel-aggregate`. |
 | `/hive` | The task needs multiple perspectives but may not need a full file-changing workflow: research branches, adversarial review, planning alternatives, risk ranking, or synthesis. | Queen/supervisor, role map, blackboard, dissent/conflict log, evidence-backed synthesis. |
 | `/hiveworkflow` | The entire implementation lifecycle benefits from hive coordination and packet execution: broad audit plus implementation, multi-surface build, high-stakes verification, or agent/fleet design. | Use through `/opusworkflow` by default with `inner_contract=hiveworkflow`, plus hive artifact, `hive-run.json`, optional `/parallel` packets, `hive-aggregate`, `/introspect`, `/verify`. |
@@ -790,6 +828,15 @@ surfaces, includes connector permission/trust caveats, and never reads `.env`
 or secrets for product-doc answers. Use
 `bash scripts/claudeproduct-scorecard.sh --fixtures --json` to prove stale
 memory answers and unsupported Claude claims are rejected.
+
+**Native Remote Control:** `/remote-control`, `/rc`, `claude --remote-control`,
+and `claude remote-control` are the supported paths for steering a local Claude
+Code session from `claude.ai/code` or mobile. Use the native Claude Code feature
+only; do not add a custom remote server, websocket bridge, MCP control plane, or
+API-key fallback. Static harness evidence is compatibility evidence, not proof
+that a live browser or mobile session connected. Use
+`bash scripts/remote-control-doctor.sh --static --json` and
+`bash scripts/remote-control-smoke.sh --fixtures` before blaming the harness.
 
 **Harness capability map:** `docs/harness-capability-map.md` and
 `docs/harness-capability-map.json` are generated from repo truth surfaces and
@@ -1021,7 +1068,7 @@ minmaxing/
 │   ├── settings.opussonnet.example.json
 │   ├── settings.sonnet-executor.example.json
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 35 skills (system calls)
+│   ├── skills/                 # 36 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── opusworkflow/       # Cost-optimized daily Opus + MiniMax route
 │   │   ├── opusminimax/        # Opus planner + MiniMax executor mode
@@ -1040,6 +1087,7 @@ minmaxing/
 │   │   ├── agentfactory/       # Governed Hermes agent generator
 │   │   ├── parallel/           # Hardware-aware workflow parallelizer
 │   │   ├── claudeproduct/      # Official Claude product knowledge router
+│   │   ├── remote-control/     # Native Claude Code Remote Control route
 │   │   ├── hive/               # Governed multi-agent coordination
 │   │   ├── hiveworkflow/       # Full hive-coordinated workflow
 │   │   ├── sprint/             # Ownership-safe parallel executor
@@ -1065,6 +1113,8 @@ minmaxing/
 │   ├── taste.sh                 # Taste system CLI
 │   ├── start-session.sh         # Session initializer
 │   ├── harness-capability-map.sh # Generated harness capability map
+│   ├── remote-control-doctor.sh # Static native RC readiness doctor
+│   ├── remote-control-smoke.sh # Native RC compatibility smoke gate
 │   ├── parallel-capacity.sh     # Hardware-aware parallel budget profile
 │   ├── parallel-smoke.sh        # Parallel mode production-contract smoke test
 │   ├── agentfactory-smoke.sh    # Agent Factory production-contract smoke test

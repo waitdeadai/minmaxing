@@ -65,10 +65,10 @@
   ],
   "counts": {
     "codex_skills": 1,
-    "eval_tasks": 22,
+    "eval_tasks": 23,
     "rules": 15,
-    "scripts": 56,
-    "skills": 35
+    "scripts": 58,
+    "skills": 36
   },
   "evals": [
     {
@@ -88,6 +88,15 @@
       "id": "m11-deepretaste-intent-icp-bootstrap",
       "task_path": "evals/harness/tasks/m11-deepretaste-intent-icp-bootstrap.yaml",
       "title": "/deepretaste intent-to-ICP-to-taste bootstrap gate"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/remote-control-smoke.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m12-remote-control-smoke.json",
+      "id": "m12-remote-control-smoke",
+      "task_path": "evals/harness/tasks/m12-remote-control-smoke.yaml",
+      "title": "Native Claude Code Remote Control compatibility smoke"
     },
     {
       "expected_result": "pass",
@@ -486,12 +495,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 713,
+      "line_count": 718,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "a39852ab33f338fadadc2c48098ea7a73d03cc3ee4bcac19bf0b1fa80ccbae21"
+      "sha256": "95994dddf6a8e676f0b08df3fad96a5a7e76c889bebe8c1005b7e5dfa02365b5"
     },
     {
       "line_count": 640,
@@ -510,12 +519,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 802,
+      "line_count": 811,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "529a3c955709e829310d27a050aa95201f607472214ee06bfa3c41876b6ecb0f"
+      "sha256": "67d99afab21fd9b3f351232643551dc4bf35d689823517d900d0ac91fd56e6bb"
     },
     {
       "line_count": 322,
@@ -614,12 +623,12 @@
       "sha256": "814fdc31e20687d24b8efbb2b44d67a3ec932aaef5be9a730d791c66bfc2ff03"
     },
     {
-      "line_count": 525,
+      "line_count": 533,
       "name": "opusminimax-doctor",
       "path": "scripts/opusminimax-doctor.sh",
       "purpose": "OpusMiniMax provider split doctor",
       "required_gate": true,
-      "sha256": "1601190d4e749ffb37ddf657c62e4cdb4f6c7ac384e4ff26095bc45d3af3ba9d"
+      "sha256": "cb5fe25369342ebe8d517507170a5b64b01fba48e69b85f827ce38335dccbcbd"
     },
     {
       "line_count": 400,
@@ -694,12 +703,28 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 92,
+      "line_count": 93,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "c069956f1e882f0dd1728d930410fa2453be16188acc2ee6250a85c228498e79"
+      "sha256": "27ab8b97947dbf0e432a58147702b662ea0d66dab8fe8f209f8acfef2ac2f8b3"
+    },
+    {
+      "line_count": 280,
+      "name": "remote-control-doctor",
+      "path": "scripts/remote-control-doctor.sh",
+      "purpose": "Static readiness doctor for Claude Code native Remote Control.",
+      "required_gate": false,
+      "sha256": "96df5ac58d7b078915729d3b7a86e556b6674a46ea868f3f97d4e958450fa925"
+    },
+    {
+      "line_count": 331,
+      "name": "remote-control-smoke",
+      "path": "scripts/remote-control-smoke.sh",
+      "purpose": "native Claude Code Remote Control compatibility gate",
+      "required_gate": true,
+      "sha256": "7b2620306997b9b1111dde08d364bac0e48249dd6727db05cda19778e867ac83"
     },
     {
       "line_count": 144,
@@ -758,12 +783,12 @@
       "sha256": "3e80abf5a2f2a5dc3532dbb294cf6f554c4acfa39189baaee2e46fcc3ff3a5f4"
     },
     {
-      "line_count": 117,
+      "line_count": 118,
       "name": "start-session",
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "1bfc1bb8efd603381bfbf06e5bef7e3920b79a6e4874e7de0669bd0c03431664"
+      "sha256": "81c6da767be4e12a0781ac6771df1aa6dae2897e83eb8a9f82870de6c6c59e89"
     },
     {
       "line_count": 400,
@@ -782,12 +807,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 1912,
+      "line_count": 2000,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "d3868be503ca8e971431a7ab51755dd0fdb2f360df1add6192f284b471a11261"
+      "sha256": "669ee0474864ce2aede91e1b04aaf3ff3aecf4eca23c2bce177d7f3376eaa52f"
     },
     {
       "line_count": 127,
@@ -811,7 +836,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "fc3f3ec2347d9c9b774c6013a3c68fbce6d70c6efb09dd89dbd233ba2f587827"
+      "sha256": "d703f1466b573a3644921c6bdcedb64c1a4bcfe106320c32e29d9ab6dd96250e"
     },
     {
       "line_count": 117,
@@ -849,9 +874,11 @@
   },
   "settings": {
     "env_keys": [
-      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC",
       "CLAUDE_CODE_NO_FLICKER",
-      "DISABLE_AUTO_COMPACT"
+      "DISABLE_AUTOUPDATER",
+      "DISABLE_AUTO_COMPACT",
+      "DISABLE_ERROR_REPORTING",
+      "DISABLE_FEEDBACK_COMMAND"
     ],
     "exists": true,
     "hooks": [
@@ -1521,6 +1548,27 @@
       "user_invocable": true
     },
     {
+      "argument_hint": "[name/status/troubleshoot]",
+      "core_route": true,
+      "description": "Use Claude Code native Remote Control (/remote-control, /rc, claude --remote-control, claude remote-control) safely inside the minmaxing harness without custom network control planes, API-key auth, or static runtime overclaims.",
+      "group": "operations",
+      "line_count": 127,
+      "model_invocation": false,
+      "name": "remote-control",
+      "path": ".claude/skills/remote-control/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m12-remote-control-smoke.yaml"
+      ],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/remote-control-doctor.sh",
+        "scripts/remote-control-smoke.sh"
+      ],
+      "sha256": "30b8a3d03bf3ea8f6fc94f7ea6df6f3c133921d2242a335940e10a0bd4770cdb",
+      "slash": "/remote-control",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "",
       "core_route": false,
       "description": "/review",
@@ -1671,7 +1719,7 @@
       "core_route": true,
       "description": "Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.",
       "group": "execution",
-      "line_count": 785,
+      "line_count": 786,
       "model_invocation": false,
       "name": "workflow",
       "path": ".claude/skills/workflow/SKILL.md",
@@ -1693,7 +1741,7 @@
         "scripts/test-harness.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "8af32a68b2cc13e5cd70f821b86aa6d3b187dc45626e61d82204bfa2464f087b",
+      "sha256": "4cfd883f190b08c8c2b639cb9f54fb3359be57e155696c33894cded814fa2f92",
       "slash": "/workflow",
       "user_invocable": true
     }
@@ -1718,8 +1766,8 @@
   "summary": {
     "codex_file_count": 4,
     "codex_skill_count": 1,
-    "core_route_count": 15,
-    "eval_task_count": 22,
+    "core_route_count": 16,
+    "eval_task_count": 23,
     "groups": {
       "agent-systems": [
         "/agentfactory"
@@ -1751,7 +1799,8 @@
         "/memory"
       ],
       "operations": [
-        "/overnight"
+        "/overnight",
+        "/remote-control"
       ],
       "parallelism": [
         "/hive",
@@ -1789,7 +1838,7 @@
     },
     "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 56,
-    "skill_count": 35
+    "script_count": 58,
+    "skill_count": 36
   }
 }

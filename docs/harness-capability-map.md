@@ -8,14 +8,14 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 35
+- Skills: 36
 - Rules: 15
-- Scripts: 56
-- Static eval tasks: 22
+- Scripts: 58
+- Static eval tasks: 23
 - Hook entries: 12
 - Codex config files: 4
 - Codex repo skills: 1
-- Core routes: 15
+- Core routes: 16
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
   runtime secrets.
@@ -29,7 +29,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `kernel`: `/align`, `/deepretaste`, `/tastebootstrap`
 - `knowledge`: `/claudeproduct`
 - `memory`: `/memory`
-- `operations`: `/overnight`
+- `operations`: `/overnight`, `/remote-control`
 - `parallelism`: `/hive`, `/parallel`, `/sprint`
 - `planning`: `/autoplan`, `/council`
 - `quality`: `/audit`, `/introspect`, `/qa`, `/review`, `/verify`
@@ -68,6 +68,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/overnight` | `operations` | yes | no | `.claude/skills/overnight/SKILL.md` | /overnight |
 | `/parallel` | `parallelism` | manual | yes | `.claude/skills/parallel/SKILL.md` | Run dense minmaxing work as a hardware-aware, main-orchestrated parallel workflow with bounded packets, explicit ownership, sync barriers, aggregation, and independent verification. |
 | `/qa` | `quality` | yes | no | `.claude/skills/qa/SKILL.md` | /qa |
+| `/remote-control` | `operations` | manual | yes | `.claude/skills/remote-control/SKILL.md` | Use Claude Code native Remote Control (/remote-control, /rc, claude --remote-control, claude remote-control) safely inside the minmaxing harness without custom network control planes, API-key auth, or static runtime overclaims. |
 | `/review` | `quality` | yes | no | `.claude/skills/review/SKILL.md` | /review |
 | `/ship` | `release` | yes | no | `.claude/skills/ship/SKILL.md` | /ship |
 | `/sprint` | `parallelism` | yes | no | `.claude/skills/sprint/SKILL.md` | /sprint |
@@ -127,6 +128,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `parallel-capacity` | local parallel capacity profile | `scripts/parallel-capacity.sh` |
 | `parallel-plan-lint` | parallel plan fixture lint | `scripts/parallel-plan-lint.sh` |
 | `release-check` | public release/static gate | `scripts/release-check.sh` |
+| `remote-control-smoke` | native Claude Code Remote Control compatibility gate | `scripts/remote-control-smoke.sh` |
 | `test-harness` | full local harness regression suite | `scripts/test-harness.sh` |
 
 ## Static Eval Gates
@@ -135,6 +137,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | --- | --- | --- | --- | --- |
 | `m10-defineicp-taste-evolution` | `scripts/defineicp-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m10-defineicp-taste-evolution.yaml` | `evals/harness/golden/m10-defineicp-taste-evolution.json` |
 | `m11-deepretaste-intent-icp-bootstrap` | `scripts/deepretaste-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m11-deepretaste-intent-icp-bootstrap.yaml` | `evals/harness/golden/m11-deepretaste-intent-icp-bootstrap.json` |
+| `m12-remote-control-smoke` | `scripts/remote-control-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m12-remote-control-smoke.yaml` | `evals/harness/golden/m12-remote-control-smoke.json` |
 | `m4-agentfactory-kill-switch-evidence` | `scripts/agentfactory-smoke.sh` | `pass` | `evals/harness/tasks/m4-agentfactory-kill-switch-evidence.yaml` | `evals/harness/golden/m4-agentfactory-kill-switch-evidence.json` |
 | `m4-artifact-sidecar-lint` | `scripts/artifact-lint.sh --fixtures` | `pass` | `evals/harness/tasks/m4-artifact-sidecar-lint.yaml` | `evals/harness/golden/m4-artifact-sidecar-lint.json` |
 | `m4-codex-run-artifact-proof` | `scripts/codex-run-smoke.sh` | `pass` | `evals/harness/tasks/m4-codex-run-artifact-proof.yaml` | `evals/harness/golden/m4-codex-run-artifact-proof.json` |

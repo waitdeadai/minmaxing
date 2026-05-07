@@ -1,0 +1,28 @@
+{
+  "api_key_auth_allowed": false,
+  "artifact_type": "remote-control-readiness",
+  "auth": {
+    "api_keys_supported": false,
+    "oauth_login_required": true,
+    "requires_claude_ai_subscription": true
+  },
+  "commands": [
+    "/remote-control",
+    "/rc",
+    "claude --remote-control",
+    "claude remote-control"
+  ],
+  "custom_network_control_plane": false,
+  "mode": "ci-static",
+  "native_claude_code_remote_control": true,
+  "operator_stop_required": true,
+  "runtime_proof_status": "confirmed",
+  "runtime_remote_control_started": false,
+  "secrets": {
+    "read_secret_files": false,
+    "secret_values_redacted": true,
+    "tokens_in_url": false
+  },
+  "shared_project_env_blockers": [],
+  "status": "fail"
+}

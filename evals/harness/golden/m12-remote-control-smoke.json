@@ -1,0 +1,12 @@
+{
+  "expected_evidence": "scripts/remote-control-smoke.sh --fixtures validates the /remote-control skill contract, static doctor, shared-settings blocker removal, no-secret fixtures, and native-only Claude Code Remote Control boundaries",
+  "expected_result": "pass",
+  "gate": "remote-control-smoke",
+  "id": "m12-remote-control-smoke",
+  "requires": [
+    ".claude/skills/remote-control/SKILL.md",
+    "scripts/remote-control-doctor.sh",
+    "scripts/remote-control-smoke.sh",
+    ".taste/fixtures/remote-control"
+  ]
+}

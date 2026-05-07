@@ -538,7 +538,9 @@ env.update(
         "ANTHROPIC_DEFAULT_SONNET_MODEL": executor_model,
         "CLAUDE_CODE_SUBAGENT_MODEL": executor_model,
         "CLAUDE_CODE_EFFORT_LEVEL": "xhigh",
-        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+        "DISABLE_AUTOUPDATER": "1",
+        "DISABLE_FEEDBACK_COMMAND": "1",
+        "DISABLE_ERROR_REPORTING": "1",
         "DISABLE_AUTO_COMPACT": "0",
         "CLAUDE_CODE_NO_FLICKER": "1",
     }
@@ -560,7 +562,9 @@ env.update(
         "ANTHROPIC_DEFAULT_SONNET_MODEL": executor_model,
         "CLAUDE_CODE_SUBAGENT_MODEL": executor_model,
         "CLAUDE_CODE_EFFORT_LEVEL": "high",
-        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+        "DISABLE_AUTOUPDATER": "1",
+        "DISABLE_FEEDBACK_COMMAND": "1",
+        "DISABLE_ERROR_REPORTING": "1",
         "DISABLE_AUTO_COMPACT": "0",
         "CLAUDE_CODE_NO_FLICKER": "1",
     }
@@ -581,7 +585,9 @@ env.update(
     {
         "ANTHROPIC_DEFAULT_OPUS_MODEL": planner_model,
         "CLAUDE_CODE_EFFORT_LEVEL": "xhigh",
-        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+        "DISABLE_AUTOUPDATER": "1",
+        "DISABLE_FEEDBACK_COMMAND": "1",
+        "DISABLE_ERROR_REPORTING": "1",
         "DISABLE_AUTO_COMPACT": "0",
         "CLAUDE_CODE_NO_FLICKER": "1",
     }
@@ -645,7 +651,9 @@ EOF
     "MINIMAX_API_KEY": "YOUR_MINIMAX_API_KEY",
     "MINIMAX_API_HOST": "https://api.minimax.io",
     "API_TIMEOUT_MS": "3000000",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_FEEDBACK_COMMAND": "1",
+    "DISABLE_ERROR_REPORTING": "1",
     "ANTHROPIC_MODEL": "MiniMax-M2.7-highspeed",
     "ANTHROPIC_SMALL_FAST_MODEL": "MiniMax-M2.7-highspeed",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M2.7-highspeed",

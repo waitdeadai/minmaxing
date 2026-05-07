@@ -206,7 +206,9 @@ def repair_local_profiles(
                 planner_env.pop(key, None)
                 changed.append(rel(PLANNER_LOCAL))
         for key, value in {
-            "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+            "DISABLE_AUTOUPDATER": "1",
+            "DISABLE_FEEDBACK_COMMAND": "1",
+            "DISABLE_ERROR_REPORTING": "1",
             "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
             "CLAUDE_CODE_EFFORT_LEVEL": "xhigh",
             "DISABLE_AUTO_COMPACT": "0",
@@ -246,7 +248,9 @@ def repair_local_profiles(
                 "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
                 "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6",
                 "CLAUDE_CODE_EFFORT_LEVEL": "high",
-                "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+                "DISABLE_AUTOUPDATER": "1",
+                "DISABLE_FEEDBACK_COMMAND": "1",
+                "DISABLE_ERROR_REPORTING": "1",
                 "DISABLE_AUTO_COMPACT": "0",
                 "CLAUDE_CODE_NO_FLICKER": "1",
             }.items():
@@ -280,7 +284,9 @@ def repair_local_profiles(
                 "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
                 "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-6",
                 "CLAUDE_CODE_EFFORT_LEVEL": "xhigh",
-                "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+                "DISABLE_AUTOUPDATER": "1",
+                "DISABLE_FEEDBACK_COMMAND": "1",
+                "DISABLE_ERROR_REPORTING": "1",
                 "DISABLE_AUTO_COMPACT": "0",
                 "CLAUDE_CODE_NO_FLICKER": "1",
             }.items():
@@ -312,7 +318,9 @@ def repair_local_profiles(
             "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
             "MINIMAX_API_HOST": "https://api.minimax.io",
             "API_TIMEOUT_MS": "3000000",
-            "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+            "DISABLE_AUTOUPDATER": "1",
+            "DISABLE_FEEDBACK_COMMAND": "1",
+            "DISABLE_ERROR_REPORTING": "1",
             "ANTHROPIC_MODEL": "MiniMax-M2.7-highspeed",
             "ANTHROPIC_SMALL_FAST_MODEL": "MiniMax-M2.7-highspeed",
             "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M2.7-highspeed",

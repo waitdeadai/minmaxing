@@ -104,6 +104,7 @@ ROUTE_GROUPS = {
     "ship": "release",
     "memory": "memory",
     "overnight": "operations",
+    "remote-control": "operations",
     "council": "planning",
     "visualize": "design",
 }
@@ -124,6 +125,7 @@ CORE_ROUTES = {
     "verify",
     "agentfactory",
     "demo",
+    "remote-control",
 }
 
 REQUIRED_COMMANDS = {
@@ -143,6 +145,7 @@ REQUIRED_COMMANDS = {
     "opusminimax-doctor": "OpusMiniMax provider split doctor",
     "opusworkflow-smoke": "OpusWorkflow cost-optimized route gate",
     "opussonnetworkflow": "optional Claude-only Opus plus Sonnet workflow wrapper",
+    "remote-control-smoke": "native Claude Code Remote Control compatibility gate",
     "parallel-capacity": "local parallel capacity profile",
     "parallel-aggregate": "parallel worker aggregate validator",
     "parallel-plan-lint": "parallel plan fixture lint",
@@ -185,6 +188,8 @@ SCRIPT_OWNERS = {
     "opusworkflow": ["opusworkflow"],
     "opusworkflow-smoke": ["opusworkflow"],
     "opussonnetworkflow": ["opussonnet", "opusworkflow"],
+    "remote-control-doctor": ["remote-control"],
+    "remote-control-smoke": ["remote-control"],
     "harness-eval": ["workflow"],
     "release-check": ["ship", "workflow"],
     "test-harness": ["workflow"],

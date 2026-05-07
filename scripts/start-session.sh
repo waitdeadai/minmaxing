@@ -54,11 +54,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 35 ]; then
+if [ "$SKILL_COUNT" -ge 36 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 35 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 36 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -109,8 +109,9 @@ echo "Skills: /tastebootstrap, /workflow, /opusworkflow, /opusminimax, /digestfl
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
 echo "        /audit, /deepresearch, /icpweek, /webresearch, /browse, /introspect, /codesearch,"
 echo "        /memory, /agentfactory, /parallel, /metacognition, /claudeproduct,"
-echo "        /hive,"
+echo "        /hive, /remote-control,"
 echo "        /hiveworkflow, /visualize, /visualizeworkflow, /demo"
+echo "Remote Control: /remote-control inside Claude Code, or claude remote-control from the CLI after claude.ai login"
 echo ""
 echo "Start with: ./scripts/test-harness.sh to verify setup"
 echo "Optional runtime check: RUN_CLAUDE_INTEGRATION=1 bash scripts/test-harness.sh"

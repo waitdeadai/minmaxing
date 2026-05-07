@@ -139,6 +139,7 @@ Choose the route from user intent:
 | deepretaste, retaste, detect intent, bootstrap taste and ICP, SOTA customer research for taste | route through `/opusworkflow` with `inner_contract=deepretaste` when files may change; preserve `/deepresearch` as the general research route when findings will not mutate taste |
 | define ICP, ideal customer profile, tailor taste to customer, update taste.md or taste.vision from ICP | route through `/opusworkflow` with `inner_contract=defineicp` when files may change; keep proposal-first unless explicit apply approval is present |
 | Claude product, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, plan availability, limits, setup | route product facts through `/claudeproduct` before generic research; continue into `/workflow` only if files change |
+| remote control, rc, continue Claude Code from phone, claude.ai/code local session | route to `/remote-control`; use native Claude Code RC commands only (`/remote-control`, `/rc`, `claude --remote-control`, `claude remote-control`) and never build a custom control server |
 | parallel, mode parallel, dense workflow, orchestrate subagents, split across instances | route through `/opusworkflow` with `inner_contract=parallel` for file-changing packet execution; run the `/parallel` eligibility audit and use packets only when capacity, ownership, and verification pass |
 | hive, hive mind, coordinated agents, swarm, multi-agent synthesis | route through `/opusworkflow` with `inner_contract=hiveworkflow` for file-changing hive work only when roles, blackboard, dissent, ownership, capacity, and verification pass; otherwise downgrade to `/workflow` or `/parallel` fallback |
 | explain | inspect and explain directly |
@@ -712,7 +713,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepretaste`, `/defineicp`, `/claudeproduct`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/hive`, `/hiveworkflow`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepretaste`, `/defineicp`, `/claudeproduct`, `/remote-control`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/hive`, `/hiveworkflow`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers

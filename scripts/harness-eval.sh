@@ -70,6 +70,7 @@ KNOWN_GATES = {
     "deepretaste-smoke",
     "opusminimax-benchmark-smoke",
     "opusworkflow-smoke",
+    "remote-control-smoke",
     "spec-archive-smoke",
 }
 VALID_RESULTS = {"pass", "reject", "accept", "fail", "skip", "blocked"}
@@ -276,6 +277,10 @@ def normalize_gate(value: str) -> str:
         "opusworkflow-smoke": "opusworkflow-smoke",
         "scripts/opusworkflow-smoke.sh": "opusworkflow-smoke",
         "bash scripts/opusworkflow-smoke.sh": "opusworkflow-smoke",
+        "remote-control-smoke": "remote-control-smoke",
+        "scripts/remote-control-smoke.sh": "remote-control-smoke",
+        "scripts/remote-control-smoke.sh --fixtures": "remote-control-smoke",
+        "bash scripts/remote-control-smoke.sh --fixtures": "remote-control-smoke",
         "spec-archive-smoke": "spec-archive-smoke",
         "scripts/spec-archive.sh": "spec-archive-smoke",
         "scripts/test-harness.sh": "spec-archive-smoke",
@@ -643,6 +648,10 @@ run_gate() {
     "opusworkflow-smoke")
       require_gate_script "scripts/opusworkflow-smoke.sh" || return $?
       bash "$ROOT_DIR/scripts/opusworkflow-smoke.sh"
+      ;;
+    "remote-control-smoke")
+      require_gate_script "scripts/remote-control-smoke.sh" || return $?
+      bash "$ROOT_DIR/scripts/remote-control-smoke.sh" --fixtures
       ;;
     "spec-archive-smoke")
       require_gate_script "scripts/spec-archive.sh" || return $?

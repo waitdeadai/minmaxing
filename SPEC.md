@@ -1,90 +1,122 @@
-# SPEC: Governed Claude Model Profile Flexibility
+# SPEC: Claude Code Native Remote Control Harness
 
 ## Problem Statement
 
-The harness can already represent the cost-optimized `/opusworkflow` default
-and the optional `/opussonnet` route, but the current implementation makes model
-choice too rigid. Operators should be able to request Claude Code models such as
-`claude-opus-4-7`, `claude-sonnet-4-6`, `opus`, `sonnet`, `opusplan`, or a
-custom model route without breaking artifacts, smokes, or safety gates.
+Claude Code has native Remote Control (`/remote-control`, `/rc`,
+`claude --remote-control`, and `claude remote-control`) for continuing a local
+session from web or mobile. The minmaxing harness currently makes that path
+fragile because the shared project settings set
+`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`, and official Claude Code Remote
+Control troubleshooting says that variable can make Remote Control eligibility
+fail.
 
-The default must remain conservative and cost-aware. Model freedom must not
-weaken provider isolation, secret safety, runtime identity honesty, or
-verification requirements.
+The harness should support Claude Code's native Remote Control without building
+a separate network control plane, weakening secret protections, or claiming
+runtime proof from static checks.
 
 ## Success Criteria
 
-- [x] `/opusworkflow` accepts a first-class `--model-profile` selector while
-  preserving the existing default behavior.
-- [x] Supported profiles include `minimax`, `opussonnet`, `sonnet`, `opus`,
-  `default`, and `custom`.
-- [x] Existing `--executor-provider minimax|claude-sonnet` compatibility keeps
-  working for current scripts and docs.
-- [x] Anthropic-only profiles never inherit MiniMax base URLs, API key fields,
-  or MiniMax executor model IDs.
-- [x] `artifact-lint` validates model route honesty without requiring every
-  planner to be Opus.
-- [x] Static smokes prove the default MiniMax route, optional Opus+Sonnet route,
-  all-Sonnet route, and all-Opus route.
-- [x] Docs explain exact commands for switching models and state that runtime
-  identity is account/session dependent until proven with `/status`, sentinel,
-  or run artifact.
-- [x] No `.env`, `.env.*`, `.claude/*.local.json`, key files, or secrets are
-  read or committed.
+- [x] Shared project settings no longer set Remote Control blocker variables
+  such as `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` or `DISABLE_TELEMETRY`.
+- [x] The harness exposes an operator-facing `remote-control` route that
+  explains the native Claude Code commands and boundaries.
+- [x] A no-secret static doctor detects local blockers for native Remote
+  Control and returns machine-readable JSON.
+- [x] A smoke gate prevents regressions: blocker variables in shared settings,
+  API-key-precedence over subscription auth, missing version evidence, and
+  static runtime overclaims must fail.
+- [x] The generated capability map discovers the route, script, and eval gate.
+- [x] Docs distinguish native Remote Control from `claude --remote` cloud
+  sessions and from any custom network control plane.
+- [x] No `.env`, `.env.*`, `.claude/*.local.json`, key files, credentials, or
+  private tokens are read or committed.
 
 ## Scope
 
 In Scope:
 
-- Add governed model-profile resolution to the existing OpusWorkflow scripts.
-- Extend run artifacts with explicit model profile and role route metadata.
-- Update lint/doctor/static smokes for flexible Anthropic model profiles.
-- Update README, AGENTS, CLAUDE, skills, fixtures, and generated capability map.
+- Use official Claude Code docs to research native Remote Control behavior.
+- Patch shared harness settings to avoid known Remote Control blockers.
+- Add a `remote-control` skill/route, static doctor, smoke gate, fixtures,
+  eval metadata, and docs.
+- Regenerate generated capability map artifacts.
 
 Out of Scope:
 
-- Running live Claude model calls in this turn.
-- Editing ignored local settings profiles or shell startup files.
-- Changing the default `/opusworkflow` MiniMax-backed cost strategy.
-- Claiming Opus/Sonnet runtime identity without authenticated runtime proof.
+- Starting a live Remote Control session during static CI.
+- Reading Claude local credentials, `.env`, `.claude/*.local.json`, or managed
+  organization settings.
+- Building a custom HTTP/LAN/mobile control server.
+- Claiming that the operator's account, organization, or mobile app is eligible
+  without live authenticated runtime evidence.
 
-## Research Brief
+## DeepResearch Brief
+
+### Investigation Mode
+
+Comprehensive, with a parallel research ceiling of 10 from
+`bash scripts/parallel-capacity.sh --json`. Effective lanes used: 6 distinct
+sidecar lanes plus local implementation, because the useful branches were repo
+mapping, capability-map wiring, analogous route patterns, test/eval gates,
+official docs, and adversarial review.
+
+### Collaborative Research Plan
+
+- Deliverable: a static, release-gated harness patch that makes Claude Code
+  native Remote Control compatible with minmaxing.
+- Branches:
+  - official Claude Code Remote Control docs
+  - official Claude Code settings/env docs
+  - Codex project config and agent parallelism docs
+  - local harness capability registration
+  - local smoke/eval/release patterns
+  - security review for remote-facing authority
+- Source classes:
+  - official Claude docs
+  - official OpenAI Codex docs
+  - repo truth surfaces
+  - read-only subagent audits
+- Stop condition: identify a concrete blocker and implement the smallest
+  verified patch that removes it while preserving secret safety and release
+  gates.
 
 ### Local Evidence
 
-- `scripts/opusworkflow.sh` currently accepts only
-  `--executor-provider minimax|claude-sonnet`.
-- `scripts/opusminimax.sh` defaults the planner to `claude-opus-4-7` and rejects
-  executor providers outside `minimax|claude-sonnet`.
-- `scripts/artifact-lint.sh` rejects any `opusminimax-run` whose planner model
-  does not contain `opus`.
-- `scripts/opusworkflow-smoke.sh` proves the current MiniMax default and
-  optional `claude-sonnet` route but has no all-Sonnet or all-Opus route.
+- `.claude/settings.json` currently sets
+  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`.
+- No `.claude/skills/remote-control/SKILL.md`, route entry, smoke script, or
+  eval gate currently exists.
+- `scripts/harness-capability-map.sh` discovers `.claude/skills/*/SKILL.md`,
+  route groups, related scripts, and eval tasks.
+- `scripts/release-check.sh` is the static release gate that must include new
+  route smokes.
 
 ### Current Product Evidence
 
-- Claude Code model configuration docs say users can switch models with
-  `/model`, `claude --model`, `ANTHROPIC_MODEL`, or the `model` settings field.
-- Claude Code docs define `opusplan` as Opus in plan mode and Sonnet in
-  execution mode.
-- Claude Code docs say `ANTHROPIC_DEFAULT_OPUS_MODEL`,
-  `ANTHROPIC_DEFAULT_SONNET_MODEL`, and `CLAUDE_CODE_SUBAGENT_MODEL` control
-  alias and subagent model routing.
-- Claude Code docs say command-line settings override local/project/user
-  settings, while managed settings remain highest priority.
-- Claude Help Center lists `claude-opus-4-7` and `claude-sonnet-4-6` as
-  supported Claude Code model identifiers.
+- Claude Code Remote Control exists as native commands:
+  `/remote-control`, `/rc`, `claude --remote-control`, and
+  `claude remote-control`.
+- Remote Control runs Claude Code locally and exposes that local session to
+  Claude web/mobile; it is distinct from `claude --remote`, which starts a
+  cloud session.
+- Claude Code Remote Control troubleshooting lists
+  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` and `DISABLE_TELEMETRY` as
+  environment variables that can make eligibility checks fail.
+- Remote Control requires claude.ai subscription/OAuth-style login; API-key
+  authentication and long-lived inference-only tokens are not sufficient.
+- Claude Code settings support shared project `env` values and settings
+  precedence, so shared project settings can create repo-wide runtime blockers.
 
 ### Source Ledger
 
-- Claude Code model configuration, accessed 2026-05-07:
-  https://code.claude.com/docs/en/model-config
-- Claude Code CLI reference, accessed 2026-05-07:
-  https://code.claude.com/docs/en/cli-reference
-- Claude Code settings, accessed 2026-05-07:
+- Claude Code Remote Control, accessed 2026-05-07:
+  https://code.claude.com/docs/en/remote-control
+- Claude Code on the web, accessed 2026-05-07:
+  https://code.claude.com/docs/en/claude-code-on-the-web
+- Claude Code settings/configuration, accessed 2026-05-07:
   https://code.claude.com/docs/en/settings
-- Claude Help Center model configuration, accessed 2026-05-07:
-  https://support.claude.com/en/articles/11940350-claude-code-model-configuration
+- OpenAI Codex config reference, accessed 2026-05-07:
+  https://developers.openai.com/codex/config-reference
 
 ## Agent-Native Estimate
 
@@ -92,120 +124,122 @@ Out of Scope:
 - Capacity evidence: `bash scripts/parallel-capacity.sh --json` reported
   `codex_max_threads=10`, `recommended_ceiling=10`, `hardware_class=workstation`,
   `cores=16`, `ram_gb=32`, and `agent_teams_available=false` on 2026-05-07.
-- Effective parallel budget: 1 implementation lane. The work touches coupled
-  shell scripts, lint rules, fixtures, and docs, so parallel editing would
-  create merge friction.
+- Effective parallel budget: 6 research lanes, 1 local implementation lane.
 - Agent wall-clock: 60-120 minutes.
-- Agent-hours: 1.5-3.0.
-- Human touch time: none for static implementation. Runtime model proof remains
-  account/session dependent.
+- Agent-hours: 2-4 across research, patch, and verification.
+- Human touch time: none for static implementation; live `rc` proof requires
+  the operator's Claude account and mobile/web connection.
 - Calendar blockers: none for static release.
-- Confidence: medium. Static gates can prove routing and safety invariants, not
-  live model availability for the operator's Claude account.
+- Confidence: medium-high for the blocker removal and static gate; medium for
+  live account eligibility because Team/Enterprise admin policy and login state
+  are external.
 
 ## Implementation Plan
 
-### Task 1: Add model profile resolution
+### Task 1: Remove shared Remote Control blockers
 
 Definition of Done:
 
-- [x] `scripts/opusworkflow.sh` exposes `--model-profile`.
-- [x] `scripts/opusminimax.sh` resolves model profiles to planner/executor
-  provider and model IDs.
-- [x] Backward-compatible `--executor-provider claude-sonnet` still maps to the
-  Opus+Sonnet route.
+- [x] `.claude/settings.json` no longer sets
+  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` or `DISABLE_TELEMETRY`.
+- [x] The settings still avoid secrets and keep project hooks/denies intact.
 
-### Task 2: Relax lint while preserving honesty
+### Task 2: Add native Remote Control harness route
 
 Definition of Done:
 
-- [x] `scripts/artifact-lint.sh` accepts Anthropic model routes without MiniMax
-  base URLs.
-- [x] Lint still rejects MiniMax leakage into Anthropic profiles.
-- [x] Lint still rejects Opus runtime claims without model identity proof.
+- [x] `.claude/skills/remote-control/SKILL.md` documents native `rc` commands,
+  prerequisites, troubleshooting, and static/runtime evidence boundaries.
+- [x] README, CLAUDE, and AGENTS mention native Remote Control support.
+- [x] Capability map groups `remote-control` under operations and links the
+  doctor/smoke script.
 
-### Task 3: Update smokes and docs
+### Task 3: Add static doctor and regression gate
 
 Definition of Done:
 
-- [x] `scripts/opusworkflow-smoke.sh` validates default, Opus+Sonnet, all-Sonnet,
-  and all-Opus static artifacts.
-- [x] Fixture coverage includes at least one Anthropic flexible model route.
-- [x] README, AGENTS, CLAUDE, and route skills document the selector.
-- [x] Capability map is regenerated.
+- [x] `scripts/remote-control-doctor.sh --static --json` checks version,
+  shared settings blockers, API-key-precedence warnings, and runtime proof
+  status without reading secrets.
+- [x] `scripts/remote-control-smoke.sh --fixtures` validates green/red fixture
+  contracts.
+- [x] `scripts/harness-eval.sh`, `scripts/release-check.sh`, and
+  `scripts/test-harness.sh` include the route gate.
+- [x] Generated capability map artifacts are regenerated.
 
 ## Verification
 
-- `bash -n scripts/opusworkflow.sh scripts/opusminimax.sh scripts/opusminimax-doctor.sh scripts/artifact-lint.sh scripts/opusworkflow-smoke.sh`
-- `python3 -m json.tool` on changed JSON fixtures and settings examples.
-- `bash scripts/opusworkflow-smoke.sh`
-- `bash scripts/artifact-lint.sh --fixtures`
-- `bash scripts/security-smoke.sh`
-- `bash scripts/harness-capability-map.sh --write`
-- `bash scripts/harness-capability-map.sh --check --json`
-- `bash scripts/harness-eval.sh --json`
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`
-- `bash scripts/release-check.sh --static-only`
-- `git diff --check`
+- [x] `bash -n scripts/remote-control-doctor.sh scripts/remote-control-smoke.sh scripts/harness-eval.sh scripts/release-check.sh scripts/test-harness.sh scripts/harness-capability-map.sh scripts/opusminimax-doctor.sh setup.sh`
+- [x] `python3 -m json.tool` on changed settings examples, remote-control fixtures, and eval golden JSON.
+- [x] `bash scripts/remote-control-doctor.sh --static --json`
+  - Result: pass. Claude Code CLI version detected as `2.1.118`; no shared
+    blocker variables; runtime proof status `not_run_static_only`.
+- [x] `bash scripts/remote-control-smoke.sh --fixtures`
+  - Result: pass. Green fixture accepted; red fixtures for shared blocker env,
+    API-key auth, custom network control plane, static runtime proof claim, and
+    token-in-URL were rejected.
+- [x] `bash scripts/harness-capability-map.sh --write`
+- [x] `bash scripts/harness-capability-map.sh --check --json`
+  - Result: pass. Counts include 36 skills, 58 scripts, 23 eval tasks.
+- [x] `bash scripts/harness-eval.sh --json`
+  - Result: pass. 23 tasks, 20 gates, no mismatches; `remote-control-smoke`
+    passed.
+- [x] `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`
+  - Result: pass. 145 passed, 0 failed.
+- [x] `bash scripts/security-smoke.sh`
+  - Result: pass.
+- [x] `bash scripts/visualize-smoke.sh`
+  - Result: pass after updating expected skill count to 36.
+- [x] `bash scripts/release-check.sh --static-only`
+  - Result: pass, including full static harness and `git diff --check`.
+
+## Implementation Notes
+
+- Removed `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` from shared settings and
+  profile examples, replacing it with narrower non-RC-blocking toggles:
+  `DISABLE_AUTOUPDATER`, `DISABLE_FEEDBACK_COMMAND`, and
+  `DISABLE_ERROR_REPORTING`.
+- Updated `setup.sh`, `setup.ps1`, and `scripts/opusminimax-doctor.sh` so local
+  profile generation/repair does not reintroduce the Remote Control blocker.
+- Added `.claude/skills/remote-control/SKILL.md`,
+  `scripts/remote-control-doctor.sh`, `scripts/remote-control-smoke.sh`,
+  `.taste/fixtures/remote-control/*`, and `evals/harness/*/m12-*`.
+- Registered the route in `scripts/harness-capability-map.sh`,
+  `scripts/harness-eval.sh`, `scripts/release-check.sh`,
+  `scripts/test-harness.sh`, `scripts/start-session.sh`, README, CLAUDE, and
+  AGENTS.
 
 ## Rollback Plan
 
 1. Revert this commit.
 2. Regenerate the capability map if needed.
-3. Verify rollback with `bash scripts/opusworkflow-smoke.sh` and
-   `bash scripts/release-check.sh --static-only`.
+3. Re-run `bash scripts/release-check.sh --static-only`.
 
 ## Introspection: Pre-Implementation
 
-- Likely mistake: weakening the MiniMax/Anthropic boundary. Mitigation: lint
-  must still reject MiniMax URLs or MiniMax model IDs in Anthropic profiles.
-- Likely mistake: making all-Opus look like the new default. Mitigation:
-  default remains `minimax`; docs label Opus-only as explicit and expensive.
-- Likely mistake: treating static profile selection as runtime proof.
-  Mitigation: artifacts keep identity status `blocked` or `runtime-pending`
-  until `/status`, sentinel, or equivalent run evidence proves the model.
-- Likely mistake: breaking existing `--executor-provider claude-sonnet` users.
-  Mitigation: keep it as a backward-compatible alias for `opussonnet`.
+- Likely mistake: accidentally building a custom remote-control server. The
+  fix must stay on Claude Code native `rc`.
+- Likely mistake: removing privacy settings too broadly. Mitigation: only
+  remove known Remote Control blockers from shared project settings and keep
+  deny rules intact.
+- Likely mistake: static doctor overclaims runtime success. Mitigation: doctor
+  reports runtime proof as `not_run_static_only` unless the operator runs live
+  Remote Control.
+- Likely mistake: adding a skill count without updating hardcoded truth
+  surfaces. Mitigation: update startup/test/visualize checks and regenerate the
+  capability map.
 
-## Verified 2026-05-07
+## Introspection: Post-Implementation
 
-- `bash -n scripts/opusworkflow.sh scripts/opusminimax.sh scripts/opusminimax-doctor.sh scripts/artifact-lint.sh scripts/opusworkflow-smoke.sh scripts/opussonnetworkflow.sh scripts/test-harness.sh`: pass.
-- `python3 -m json.tool schemas/opusminimax-run.schema.json` and
-  `.taste/fixtures/artifact-lint/green/valid-sonnet-model-profile-run.json`:
-  pass.
-- `bash scripts/opusworkflow-smoke.sh`: pass; validates default MiniMax,
-  backward-compatible Opus+Sonnet, all-Sonnet, and all-Opus static artifacts.
-- `bash scripts/artifact-lint.sh --fixtures`: pass (`9 green`, `22 red`).
-- `bash scripts/opusminimax-doctor.sh --static --model-profile minimax --executor-provider minimax --json`: pass with existing tracked test/fixture secret-string warning.
-- `bash scripts/opusminimax-doctor.sh --static --model-profile opussonnet --executor-provider claude-sonnet --json`: pass with existing tracked test/fixture secret-string warning.
-- `bash scripts/opusminimax-doctor.sh --static --model-profile sonnet --executor-provider anthropic --json`: pass with existing tracked test/fixture secret-string warning.
-- `bash scripts/opusminimax-doctor.sh --static --model-profile opus --executor-provider anthropic --json`: pass with existing tracked test/fixture secret-string warning.
-- `bash scripts/opusworkflow.sh --task "default profile smoke" --model-profile default --run-id manual-profile-default` plus artifact lint: pass; runtime not executed.
-- `bash scripts/opusworkflow.sh --task "custom profile smoke" --model-profile custom --planner-model claude-sonnet-4-6 --executor-model claude-sonnet-4-6 --run-id manual-profile-custom` plus artifact lint: pass; runtime not executed.
-- `bash scripts/opusworkflow.sh --task "bad profile smoke" --model-profile sonnet --executor-provider minimax --run-id manual-profile-bad`: correctly exits 2.
-- `bash scripts/security-smoke.sh`: pass.
-- `bash scripts/harness-capability-map.sh --write` and
-  `bash scripts/harness-capability-map.sh --check --json`: pass.
-- `bash scripts/harness-eval.sh --json`: pass (`22 tasks`, `19 gates`,
-  `0 mismatches`).
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`: pass (`141 passed`,
-  `0 failed`; workflow runtime smoke intentionally skipped).
-- `bash scripts/release-check.sh --static-only`: pass.
-- `git diff --check`: pass.
-
-## Introspection: Pre-Closeout
-
-- Likely mistake checked: this could make all-Opus look like the new default.
-  The default remains `model_profile=minimax`; `opus` is explicit and documented
-  as a high-cost route.
-- Likely mistake checked: Anthropic profiles could leak MiniMax provider state.
-  `artifact-lint` rejects MiniMax base URLs and MiniMax executor model IDs in
-  Anthropic routes, and the smoke covers Sonnet/Opus profiles.
-- Likely mistake checked: static model selection could be overclaimed as runtime
-  model proof. Artifacts keep `model_identity_confirmed=false`,
-  `planner_identity_status=blocked`, and `verification.status=runtime-pending`
-  until `/status`, sentinel, or equivalent runtime evidence proves identity.
-- Remaining risk: live account availability and usage thresholds can still make
-  Claude Code fall back or block at runtime. This implementation proves the
-  harness no longer breaks statically when the operator requests a different
-  governed model route.
+- Verified mistake avoided: no custom remote-control server or network bridge
+  was added. The route documents and gates only native Claude Code RC.
+- Verified mistake avoided: static checks do not claim live browser/mobile
+  connection. Doctor artifacts report `runtime_remote_control_started=false`
+  and `runtime_proof_status=not_run_static_only`.
+- Verified mistake avoided: secret protections remained intact. Shared and
+  example profiles still deny `.env`, `.env.*`, `.claude/*.local.json`, and
+  `secrets/**`; no secret files were read.
+- Remaining live-runtime caveat: this proves harness compatibility, not the
+  operator account's live RC eligibility. Team/Enterprise admin policy,
+  claude.ai login state, mobile app state, and network access still require a
+  manual authenticated RC run by the operator.

@@ -497,7 +497,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "35 skills" README.md 2>/dev/null && \
+   grep -Fq "36 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -620,6 +620,94 @@ else
     test_fail "/claudeproduct contract, docs, fixtures, or scorecard are incomplete"
 fi
 
+# Test 3g-remote: Native Claude Code Remote Control Contract
+echo "[3g-remote] Native Claude Code Remote Control Contract"
+REMOTE_CONTROL_OK=true
+for required_file in \
+    ".claude/skills/remote-control/SKILL.md" \
+    "scripts/remote-control-doctor.sh" \
+    "scripts/remote-control-smoke.sh" \
+    "evals/harness/tasks/m12-remote-control-smoke.yaml" \
+    "evals/harness/golden/m12-remote-control-smoke.json"; do
+    if [ ! -e "$required_file" ]; then
+        REMOTE_CONTROL_OK=false
+    fi
+done
+for required_script in remote-control-doctor remote-control-smoke; do
+    if [ ! -x "scripts/$required_script.sh" ]; then
+        REMOTE_CONTROL_OK=false
+    fi
+done
+for pattern in \
+    "native Remote Control" \
+    "/remote-control" \
+    "/rc" \
+    "claude --remote-control" \
+    "claude remote-control" \
+    "claude --remote" \
+    "custom remote server" \
+    "claude.ai subscription" \
+    "ANTHROPIC_API_KEY" \
+    "CLAUDE_CODE_OAUTH_TOKEN" \
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC" \
+    "DISABLE_TELEMETRY" \
+    "disableRemoteControl" \
+    "bypassPermissions" \
+    "Static harness evidence is compatibility evidence"; do
+    if ! grep -Fq "$pattern" .claude/skills/remote-control/SKILL.md README.md CLAUDE.md AGENTS.md 2>/dev/null; then
+        REMOTE_CONTROL_OK=false
+    fi
+done
+for pattern in \
+    "shared_project_env_blockers" \
+    "runtime_remote_control_started" \
+    "not_run_static_only" \
+    "custom_network_control_plane" \
+    "api_key_auth_allowed" \
+    "tokens_in_url"; do
+    if ! grep -Fq "$pattern" scripts/remote-control-doctor.sh scripts/remote-control-smoke.sh .taste/fixtures/remote-control/green/valid-native-static.json 2>/dev/null; then
+        REMOTE_CONTROL_OK=false
+    fi
+done
+if ! python3 - <<'PY' >/dev/null 2>&1; then
+import json
+import pathlib
+
+data = json.loads(pathlib.Path(".claude/settings.json").read_text(encoding="utf-8"))
+env = data.get("env") or {}
+blockers = {
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC",
+    "DISABLE_TELEMETRY",
+    "ANTHROPIC_API_KEY",
+    "ANTHROPIC_AUTH_TOKEN",
+    "CLAUDE_CODE_OAUTH_TOKEN",
+    "CLAUDE_CODE_USE_BEDROCK",
+    "CLAUDE_CODE_USE_VERTEX",
+    "CLAUDE_CODE_USE_FOUNDRY",
+}
+assert not [name for name in blockers if name in env]
+assert data.get("disableRemoteControl") is not True
+for rule in [
+    "Read(./.env)",
+    "Read(./.env.*)",
+    "Read(./.claude/settings.local.json)",
+    "Read(./.claude/*.local.json)",
+    "Read(./secrets/**)",
+]:
+    assert rule in data.get("permissions", {}).get("deny", [])
+PY
+    REMOTE_CONTROL_OK=false
+fi
+if [ "$REMOTE_CONTROL_OK" = true ] && \
+   grep -Fq "remote-control" scripts/harness-capability-map.sh 2>/dev/null && \
+   grep -Fq "remote-control-smoke" scripts/harness-eval.sh scripts/release-check.sh 2>/dev/null && \
+   bash scripts/remote-control-doctor.sh --static --json >/dev/null 2>&1 && \
+   bash scripts/remote-control-smoke.sh --fixtures >/dev/null 2>&1; then
+    test_pass "/remote-control uses native Claude Code RC without static runtime overclaims"
+else
+    test_fail "/remote-control contract, docs, fixtures, or static checks are incomplete"
+fi
+
 # Test 3g-capmap: Generated Harness Capability Map
 echo "[3g-capmap] Generated Harness Capability Map"
 CAPMAP_OK=true
@@ -685,7 +773,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 35 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 36 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -1455,25 +1543,25 @@ else
 fi
 
 # ========================================
-# Skills (35 Expected)
+# Skills (36 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 35 Expected]"
+echo "[Skills - 36 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 35 ]; then
+if [ "$SKILL_COUNT" -ge 36 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 35+ skills, found $SKILL_COUNT"
+    test_fail "Expected 36+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1543,7 +1631,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else
