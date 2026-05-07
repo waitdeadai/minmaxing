@@ -86,6 +86,28 @@ How to undo if this breaks production?
 2. Step 2: [database rollback if needed]
 3. Step 3: [verification command]
 
+## SPEC-Driven Generated Images
+
+When `SPEC.md` asks for generated or edited raster images, treat each image as
+a concrete product artifact, not optional visual inspiration. The spec must
+include:
+
+- target path and file format
+- dimensions or aspect ratio
+- intended use in the product or docs
+- style and brand constraints
+- exact embedded text, or `no embedded text`
+- acceptance checks for file existence, dimensions, subject fidelity, and text
+  legibility when relevant
+- billing/auth route: `Codex subscription via codex-imagegen`, unless the user
+  explicitly approves API billing
+
+Use the repo-scoped Codex skill `.agents/skills/codex-imagegen/SKILL.md` for
+this lane. Do not use OpenAI API keys, API scripts, or API-priced fallbacks for
+SPEC image assets when the spec says Codex subscription. If Codex image
+generation is unavailable, write a handoff prompt and mark the asset blocked;
+do not claim the image was generated.
+
 ## Spec Enforcement
 
 | Failure | Response |
@@ -97,6 +119,7 @@ How to undo if this breaks production?
 | Out-of-scope not listed | FAIL — scope must be explicit |
 | Missing Agent-Native Estimate for non-trivial work | FAIL — must estimate in agent-native wall-clock terms |
 | Human-equivalent-only estimate | FAIL — must be secondary only |
+| SPEC image asset lacks path/checks/billing route | FAIL — must define the artifact contract before generating |
 
 ## When to Update Spec
 

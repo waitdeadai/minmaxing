@@ -53,7 +53,18 @@
     ],
     "path": ".codex"
   },
+  "codex_skills": [
+    {
+      "agents_metadata": ".agents/skills/codex-imagegen/agents/openai.yaml",
+      "description": "Generate or edit raster image assets requested by SPEC.md using Codex subscription or ChatGPT-included image generation, not OpenAI API keys. Use when a task, SPEC.md, visualization package, README, landing page, app, game, brand, product demo, or asset manifest asks Codex to create image files, hero images, UI mockups, sprites, diagrams-as-images, thumbnails, or image edits and the operator wants Codex subscription usage instead of API billing.",
+      "line_count": 93,
+      "name": "codex-imagegen",
+      "path": ".agents/skills/codex-imagegen/SKILL.md",
+      "sha256": "719bdb5b4f2016468c4e3be48b3e1f9ccf6709802c9f42b2539ab2e7a381be48"
+    }
+  ],
   "counts": {
+    "codex_skills": 1,
     "eval_tasks": 22,
     "rules": 15,
     "scripts": 56,
@@ -340,10 +351,10 @@
       "title": "Security Rules"
     },
     {
-      "line_count": 123,
+      "line_count": 146,
       "name": "spec",
       "path": ".claude/rules/spec.rules.md",
-      "sha256": "ef72f707a965be43486c77626206e77efcd6794fe7b7f5148306f90f910e3ca3",
+      "sha256": "98f6593ea8e851b73c73b89657d567d633de97c9f4d9ada3788715b6a72a935c",
       "title": "Spec Rules"
     },
     {
@@ -361,10 +372,10 @@
       "title": "Verify Rules"
     },
     {
-      "line_count": 94,
+      "line_count": 109,
       "name": "visualization",
       "path": ".claude/rules/visualization.rules.md",
-      "sha256": "c2b2c1cea8bac19f61d326b42cda6ae20534836639ebf34350f88b9be22873b2",
+      "sha256": "9a1829f5c06bbe0547c46e06a25fd93ceb7d47cd9dbcdebda2ff3122b8192a24",
       "title": "Visualization Rules"
     }
   ],
@@ -475,12 +486,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 665,
+      "line_count": 713,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "dafc0194daf486a584f0c6e74ddee3e992e25d97fd0432ab05ffa5711b2b86e3"
+      "sha256": "a39852ab33f338fadadc2c48098ea7a73d03cc3ee4bcac19bf0b1fa80ccbae21"
     },
     {
       "line_count": 640,
@@ -826,6 +837,7 @@
       ".claude/settings.json",
       ".claude/hooks/",
       ".codex/",
+      ".agents/skills/",
       "CLAUDE.md",
       "AGENTS.md",
       "README.md",
@@ -1659,7 +1671,7 @@
       "core_route": true,
       "description": "Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.",
       "group": "execution",
-      "line_count": 784,
+      "line_count": 785,
       "model_invocation": false,
       "name": "workflow",
       "path": ".claude/skills/workflow/SKILL.md",
@@ -1681,7 +1693,7 @@
         "scripts/test-harness.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "83927d43d49726ca0ad54bd240e08fa685b0c6bef86a40e452123c213ce7176f",
+      "sha256": "8af32a68b2cc13e5cd70f821b86aa6d3b187dc45626e61d82204bfa2464f087b",
       "slash": "/workflow",
       "user_invocable": true
     }
@@ -1696,6 +1708,7 @@
       ".claude/settings.json",
       ".claude/hooks/*",
       ".codex/**/*.toml",
+      ".agents/skills/*/SKILL.md",
       "README.md",
       "CLAUDE.md",
       "AGENTS.md"
@@ -1704,6 +1717,7 @@
   },
   "summary": {
     "codex_file_count": 4,
+    "codex_skill_count": 1,
     "core_route_count": 15,
     "eval_task_count": 22,
     "groups": {

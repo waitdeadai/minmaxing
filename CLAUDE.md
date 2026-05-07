@@ -113,6 +113,12 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
   canonical self-lookup index for skills, route groups, rules, script gates,
   evals, hooks, and Codex surfaces. Verify freshness with
   `bash scripts/harness-capability-map.sh --check`.
+- **Codex ImageGen Lane**: When `SPEC.md` requests generated or edited raster
+  assets, route the asset work through the repo Codex skill
+  `.agents/skills/codex-imagegen/SKILL.md`. Use Codex subscription/ChatGPT auth
+  when available, do not use OpenAI API keys or API-priced fallbacks unless the
+  user explicitly changes billing route, and close only with real artifact
+  paths or blocked handoff prompts.
 - **Planning Time Awareness**: Non-trivial plans estimate in agent-native wall-clock by default before the plan or `SPEC.md` is frozen. Every estimate must state whether it is `agent-native`, `human-equivalent`, or `blocked/unknown`; cite `scripts/parallel-capacity.sh --json` or another capacity source; separate agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence; and treat human-equivalent estimates as secondary only.
 - **Visualization Approval**: `/workflow` remains autonomous. Use `/visualize` for standalone comprehension artifacts and `/visualizeworkflow` when the user wants to approve a visual or operational understanding before implementation.
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help

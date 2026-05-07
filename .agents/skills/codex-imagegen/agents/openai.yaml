@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex ImageGen"
+  short_description: "Generate SPEC-requested images with Codex subscription tools"
+  default_prompt: "Use $codex-imagegen to produce the image assets requested by SPEC.md without using OpenAI API keys."
