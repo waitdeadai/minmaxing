@@ -7,16 +7,22 @@ Pick the command that matches the folder.
 Clean/new folder:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'
 ```
 
 Existing project or harness update:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'
 ```
 
 Get your key from [platform.minimax.io](https://platform.minimax.io).
+
+After install, start Claude yourself when you are ready:
+
+```bash
+claude
+```
 
 <h1 align="center">
   <img src="https://img.shields.io/badge/MiniMax-2.7%20Highspeed-FF6B35?style=for-the-badge&logo=lightning&logoColor=white" alt="MiniMax M2.7 Highspeed" />
@@ -122,7 +128,8 @@ adversary, and final reviewer when runtime identity is proven;
 MiniMax-M2.7-highspeed is the bounded executor for bulk coding and repair. The installer
 configures the ignored local MiniMax executor profile, keeps the Opus planner
 profile provider-clean, uses the default trusted-local `bypassPermissions`
-posture, and opens Claude when setup finishes.
+posture, and then exits. Open Claude yourself with `claude` after setup
+finishes, so install failures, warnings, and conflict messages stay visible.
 
 Inline token commands can land in shell history. That is the intentional
 fast path for trusted solo work; environment-variable, hidden-input, key-file, and explicit

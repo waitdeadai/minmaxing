@@ -1382,8 +1382,9 @@ echo "[3y] Smart Autorouting UX"
 if grep -Fq "## Install" README.md 2>/dev/null && \
    grep -Fq "Clean/new folder:" README.md 2>/dev/null && \
    grep -Fq "Existing project or harness update:" README.md 2>/dev/null && \
-   grep -Fq "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude" README.md 2>/dev/null && \
-   grep -Fq "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude" README.md 2>/dev/null && \
+   grep -Fq "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md 2>/dev/null && \
+   grep -Fq "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md 2>/dev/null && \
+   grep -Fq "After install, start Claude yourself when you are ready" README.md 2>/dev/null && \
    grep -Fq 'MODE="opusworkflow"' setup.sh 2>/dev/null && \
    grep -Fq '$Mode = "opusworkflow"' setup.ps1 2>/dev/null && \
    grep -Fq "settings.minimax-executor.local.json" setup.ps1 2>/dev/null && \

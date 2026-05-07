@@ -2,9 +2,9 @@
 # minmaxing - One-Command Setup
 # Default mode is opusworkflow: Claude/Opus judgment + MiniMax execution.
 # Clean/new folder:
-# curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude
+# curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'
 # Existing project / updater:
-# curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude
+# curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'
 
 set -e
 
@@ -64,10 +64,12 @@ else
             "-h"|"--help")
                 cat <<'EOF'
 Clean/new folder:
-  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude
+  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'
 
 Existing project / updater:
-  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude
+  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'
+
+After setup finishes, run: claude
 
 Options:
   --mode minimax|opusworkflow|opusminimax  (default: opusworkflow)
@@ -362,7 +364,7 @@ elif [ ! -d ".git" ]; then
         echo "[0/7] Existing non-empty folder detected."
         echo "  [FAIL] Clean install refuses to copy the template into a non-empty folder."
         echo "  Use the existing-project/updater command instead:"
-        echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude"
+        echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'"
         exit 2
     fi
     echo "[0/7] Cloning minmaxing repository..."
@@ -397,7 +399,7 @@ else
         echo "[0/7] Existing git project detected."
         echo "  [FAIL] Clean install will not import into an existing project."
         echo "  Use the existing-project/updater command instead:"
-        echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude"
+        echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'"
         exit 2
     fi
 fi
@@ -678,10 +680,10 @@ else
     echo "To complete setup, rerun with your MiniMax Token Plan key:"
     echo ""
     echo "Clean/new folder:"
-    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude"
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'"
     echo ""
     echo "Existing project / updater:"
-    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY' && claude"
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'"
     echo ""
     echo "Get your key from: platform.minimax.io"
 fi
