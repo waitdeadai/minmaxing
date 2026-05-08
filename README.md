@@ -224,25 +224,28 @@ fake your Claude subscription session.
 ### Native Claude Code Remote Control
 
 Claude Code has native Remote Control for continuing a local session from
-`claude.ai/code` or the Claude mobile app. Use the native commands only:
+`claude.ai/code` or the Claude mobile app. In this harness, `/remote-control`
+is a readiness/troubleshooting skill, not the live activator, because the
+project skill can shadow a native slash command with the same name.
 
-```text
-/remote-control
-/rc
-```
-
-From the CLI:
+Use this shell command to start the live native Remote Control server:
 
 ```bash
-claude --remote-control
 claude remote-control
 ```
 
-This is different from `claude --remote` or Claude Code on the web. Remote
-Control keeps the Claude Code process running locally, with this repo's hooks,
-tools, project settings, and trusted-local `bypassPermissions` posture. The
-harness intentionally does not create a custom remote server, websocket bridge,
-or API-key control path.
+For this trusted-local workspace, an explicit launch is:
+
+```bash
+claude remote-control --name ultimateminimax --permission-mode bypassPermissions
+```
+
+Keep that process running, then connect from `https://claude.ai/code` or the
+Claude mobile app. This is different from `claude --remote` or Claude Code on
+the web. Remote Control keeps the Claude Code process running locally, with
+this repo's hooks, tools, project settings, and trusted-local
+`bypassPermissions` posture. The harness intentionally does not create a custom
+remote server, websocket bridge, or API-key control path.
 
 Before using it, run the no-secret static doctor:
 
@@ -841,7 +844,7 @@ Use this rule of thumb:
 | `/defineicp` | You need to define the ICP or ICPs and tailor `taste.md` / `taste.vision` to that customer profile. | Deepresearch plan, primary/secondary/anti-ICPs, source and claim ledgers, taste patch proposal, explicit apply approval, backups, hashes, validation, and rollback evidence. |
 | `/opusminimax` | You are maintaining the engine itself: provider split, packet control, repair mode, benchmark mode, or low-level routing evidence. | Provider split doctor, Opus planner artifact, MiniMax executor packets, quota-aware concurrency, parent verification, and no benchmark overclaims. |
 | `/claudeproduct` | The question is about Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, availability, limits, models, or setup. | Official Anthropic/Claude docs first, surface separation, source ledger, connector permission/trust caveats, confidence downgrade when current docs are missing. |
-| `/remote-control` | You want Claude Code native Remote Control for an already trusted local harness session. | `/remote-control`, `/rc`, `claude --remote-control`, or `claude remote-control`; claude.ai subscription login; no custom server; no static runtime-proof claim. |
+| `/remote-control` | You want to diagnose Claude Code native Remote Control for an already trusted local harness session. | `/remote-control` runs the harness readiness skill; `claude remote-control` starts the live native server; claude.ai subscription login; no custom server; no static runtime-proof claim. |
 | `/parallel` | The work splits into independent packets with clear owned files/surfaces and aggregate verification. | Packet DAG, ownership matrix, sync barriers, worker sidecars, `parallel-aggregate`. |
 | `/hive` | The task needs multiple perspectives but may not need a full file-changing workflow: research branches, adversarial review, planning alternatives, risk ranking, or synthesis. | Queen/supervisor, role map, blackboard, dissent/conflict log, evidence-backed synthesis. |
 | `/hiveworkflow` | The entire implementation lifecycle benefits from hive coordination and packet execution: broad audit plus implementation, multi-surface build, high-stakes verification, or agent/fleet design. | Use through `/opusworkflow` by default with `inner_contract=hiveworkflow`, plus hive artifact, `hive-run.json`, optional `/parallel` packets, `hive-aggregate`, `/introspect`, `/verify`. |
@@ -876,12 +879,13 @@ or secrets for product-doc answers. Use
 `bash scripts/claudeproduct-scorecard.sh --fixtures --json` to prove stale
 memory answers and unsupported Claude claims are rejected.
 
-**Native Remote Control:** `/remote-control`, `/rc`, `claude --remote-control`,
-and `claude remote-control` are the supported paths for steering a local Claude
-Code session from `claude.ai/code` or mobile. Use the native Claude Code feature
-only; do not add a custom remote server, websocket bridge, MCP control plane, or
-API-key fallback. Static harness evidence is compatibility evidence, not proof
-that a live browser or mobile session connected. Use
+**Native Remote Control:** in this harness, `/remote-control` runs readiness
+and troubleshooting checks. Start the live native server with
+`claude remote-control`, then connect from `https://claude.ai/code` or mobile.
+Use the native Claude Code feature only; do not add a custom remote server,
+websocket bridge, MCP control plane, or API-key fallback. Static harness
+evidence is compatibility evidence, not proof that a live browser or mobile
+session connected. Use
 `bash scripts/remote-control-doctor.sh --static --json` and
 `bash scripts/remote-control-smoke.sh --fixtures` before blaming the harness.
 

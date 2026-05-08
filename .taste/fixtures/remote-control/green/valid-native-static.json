@@ -14,10 +14,12 @@
     }
   ],
   "commands": [
-    "/remote-control",
-    "/rc",
-    "claude --remote-control",
-    "claude remote-control"
+    "claude remote-control",
+    "claude remote-control --help",
+    "https://claude.ai/code"
+  ],
+  "harness_skill_aliases": [
+    "/remote-control"
   ],
   "custom_network_control_plane": false,
   "mode": "ci-static",

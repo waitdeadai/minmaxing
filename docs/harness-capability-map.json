@@ -711,20 +711,20 @@
       "sha256": "27ab8b97947dbf0e432a58147702b662ea0d66dab8fe8f209f8acfef2ac2f8b3"
     },
     {
-      "line_count": 279,
+      "line_count": 311,
       "name": "remote-control-doctor",
       "path": "scripts/remote-control-doctor.sh",
       "purpose": "Static readiness doctor for Claude Code native Remote Control.",
       "required_gate": false,
-      "sha256": "f546cd3f76ad58958347382a1145eed228196ffb0c91a1f071634ec493f506a2"
+      "sha256": "53cc88724c9f3c0e84fba1d80d17f78cb42550207d710a5cdb79ea49c5c46d0e"
     },
     {
-      "line_count": 331,
+      "line_count": 334,
       "name": "remote-control-smoke",
       "path": "scripts/remote-control-smoke.sh",
       "purpose": "native Claude Code Remote Control compatibility gate",
       "required_gate": true,
-      "sha256": "7b2620306997b9b1111dde08d364bac0e48249dd6727db05cda19778e867ac83"
+      "sha256": "becbfbbf38925f2e479a2ad11d35917e2d3c9a33b9b5266742d29bf7b6fc550e"
     },
     {
       "line_count": 144,
@@ -812,7 +812,7 @@
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "4329096851b645de4395deaf012bbb5709f310ce20d2984da1ecca122189c30f"
+      "sha256": "796f0c5b5990496ab3578f30fb29906d75d9e960d8a6c970e4cb85d1bfc7570f"
     },
     {
       "line_count": 127,
@@ -1550,9 +1550,9 @@
     {
       "argument_hint": "[name/status/troubleshoot]",
       "core_route": true,
-      "description": "Use Claude Code native Remote Control (/remote-control, /rc, claude --remote-control, claude remote-control) safely inside the minmaxing harness without custom network control planes, API-key auth, or static runtime overclaims.",
+      "description": "Diagnose Claude Code native Remote Control safely inside the minmaxing harness. In this project, /remote-control is a readiness/troubleshooting skill; start the live native Remote Control server from a shell with claude remote-control.",
       "group": "operations",
-      "line_count": 127,
+      "line_count": 147,
       "model_invocation": false,
       "name": "remote-control",
       "path": ".claude/skills/remote-control/SKILL.md",
@@ -1564,7 +1564,7 @@
         "scripts/remote-control-doctor.sh",
         "scripts/remote-control-smoke.sh"
       ],
-      "sha256": "30b8a3d03bf3ea8f6fc94f7ea6df6f3c133921d2242a335940e10a0bd4770cdb",
+      "sha256": "40f146b83de90335737783e6985945a83ee9d80db53b141681792882f269477b",
       "slash": "/remote-control",
       "user_invocable": true
     },

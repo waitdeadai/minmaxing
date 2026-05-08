@@ -97,10 +97,9 @@ SECRET_RE = re.compile(
 )
 
 REQUIRED_COMMANDS = {
-    "/remote-control",
-    "/rc",
-    "claude --remote-control",
     "claude remote-control",
+    "claude remote-control --help",
+    "https://claude.ai/code",
 }
 
 
@@ -195,9 +194,10 @@ run_static_contract_checks() {
     "# /remote-control" \
     "native Remote Control" \
     "/remote-control" \
-    "/rc" \
-    "claude --remote-control" \
     "claude remote-control" \
+    "readiness and troubleshooting skill" \
+    "shadow any" \
+    "https://claude.ai/code" \
     "claude --remote" \
     "custom remote server" \
     "MCP control plane" \
@@ -241,6 +241,9 @@ run_static_contract_checks() {
     require_grep "/remote-control" "$ROOT_DIR/$file"
     require_grep "claude remote-control" "$ROOT_DIR/$file"
   done
+  require_not_grep "claude --remote-control" "$ROOT_DIR/README.md"
+  require_not_grep "claude --remote-control" "$ROOT_DIR/CLAUDE.md"
+  require_not_grep "claude --remote-control" "$ROOT_DIR/AGENTS.md"
 
   require_grep "remote-control" "$ROOT_DIR/scripts/harness-capability-map.sh"
   require_grep "remote-control-smoke" "$ROOT_DIR/scripts/harness-eval.sh"

@@ -1,28 +1,42 @@
 ---
 name: remote-control
-description: Use Claude Code native Remote Control (/remote-control, /rc, claude --remote-control, claude remote-control) safely inside the minmaxing harness without custom network control planes, API-key auth, or static runtime overclaims.
+description: Diagnose Claude Code native Remote Control safely inside the minmaxing harness. In this project, /remote-control is a readiness/troubleshooting skill; start the live native Remote Control server from a shell with claude remote-control.
 argument-hint: [name/status/troubleshoot]
 disable-model-invocation: true
 ---
 
 # /remote-control
 
-Use Claude Code's native Remote Control. This route exists to keep the harness
-compatible with the official Claude Code and Claude Code CLI feature, not to
-build a separate remote-control server.
+Use Claude Code's native Remote Control. This project route is a readiness and
+troubleshooting skill; in other words, a readiness and troubleshooting skill
+only. It does not start a live Remote Control session.
+
+In this harness, typing `/remote-control` runs this skill, so it can shadow any
+native slash command with the same name. To actually activate live Remote
+Control, run the native CLI server command from a shell:
+
+```bash
+claude remote-control
+```
+
+Then open `https://claude.ai/code` or the Claude mobile app and connect to the
+local session.
 
 ## Native Commands
 
-Claude Code exposes the same native Remote Control surface in three useful
-modes:
+Claude Code exposes the native Remote Control server from the CLI:
 
-- Existing interactive session: `/remote-control` or `/rc`
-- Interactive CLI launch with RC enabled: `claude --remote-control` or `claude --rc`
-- CLI server mode waiting for browser/mobile connections: `claude remote-control`
+- Live server waiting for browser/mobile connections: `claude remote-control`
+- Useful options: `--name`, `--permission-mode`, `--spawn`, and `--capacity`
+- Local readiness/troubleshooting in this harness: `/remote-control`
 
 The remote surface is `claude.ai/code` or the Claude mobile app. The Claude Code
 process keeps running locally on this machine, with the same filesystem, tools,
 MCP servers, project settings, hooks, and permissions as the local session.
+
+Do not rely on `claude --remote-control` or `claude --rc` unless your local
+`claude --help` explicitly lists those flags. Claude Code 2.1.118 exposes
+`claude remote-control` as the native live server command.
 
 ## Native-Only Boundary
 
@@ -71,19 +85,25 @@ fixtures, and eval metadata do not block or misrepresent native RC.
 
 ## Runtime Use
 
-From inside an existing Claude Code session:
+From inside this harness session, `/remote-control` is diagnostic only:
 
 ```text
 /remote-control
-/rc
 ```
 
-From a shell in the project root:
+To start live Remote Control, run this from a shell in the project root:
 
 ```bash
-claude --remote-control
 claude remote-control
 ```
+
+For this trusted-local workspace, a typical explicit launch is:
+
+```bash
+claude remote-control --name ultimateminimax --permission-mode bypassPermissions
+```
+
+Keep that command running, then connect from `https://claude.ai/code`.
 
 Use `claude --version` and `/status` locally when troubleshooting account,
 organization, or auth state. If Claude reports API-key, Console, third-party

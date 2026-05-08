@@ -84,7 +84,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /parallel | Hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | /metacognition | Parallel-aware routing and evidence-grounded self-calibration before execution |
 | /claudeproduct | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, and subagents |
-| /remote-control | Native Claude Code Remote Control via `/remote-control`, `/rc`, `claude --remote-control`, or `claude remote-control` without custom network control planes |
+| /remote-control | Native Claude Code Remote Control readiness skill; live server starts with `claude remote-control`, without custom network control planes |
 | /hive | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
 | /hiveworkflow | Full workflow mode that uses hive coordination before packet execution, aggregation, introspection, and verify |
 | /verify | Check output against SPEC |
@@ -113,12 +113,13 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
   Anthropic/Claude docs. It separates Claude product surfaces, includes
   connector permission/trust caveats, and never reads `.env` or secrets for
   product-doc answers.
-- **Native Remote Control**: `/remote-control`, `/rc`,
-  `claude --remote-control`, and `claude remote-control` use Claude Code's
-  native Remote Control only. Do not build a custom remote server, websocket
-  bridge, MCP control plane, or API-key fallback. Static harness evidence is
-  compatibility evidence; live RC still requires claude.ai subscription login,
-  current Claude Code CLI, workspace trust, and no blocker variables such as
+- **Native Remote Control**: `/remote-control` is the harness readiness and
+  troubleshooting skill. Start the live native Remote Control server with
+  `claude remote-control`, then connect from `https://claude.ai/code` or
+  mobile. Do not build a custom remote server, websocket bridge, MCP control
+  plane, or API-key fallback. Static harness evidence is compatibility
+  evidence; live RC still requires claude.ai subscription login, current Claude
+  Code CLI, workspace trust, and no blocker variables such as
   `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, `DISABLE_TELEMETRY`,
   `ANTHROPIC_API_KEY`, or `CLAUDE_CODE_OAUTH_TOKEN`.
 - **Harness Capability Map**: `docs/harness-capability-map.md` and

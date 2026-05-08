@@ -235,6 +235,36 @@ else:
                 )
             )
 
+    try:
+        proc = subprocess.run(
+            [claude_bin, "remote-control", "--help"],
+            text=True,
+            capture_output=True,
+            timeout=5,
+            check=False,
+        )
+        help_text = (proc.stdout or proc.stderr or "").strip()
+    except Exception as exc:
+        checks.append(check("claude-remote-control-command", "warn", f"Could not inspect claude remote-control --help: {exc}"))
+    else:
+        if proc.returncode == 0 and "Remote Control" in help_text and "claude.ai/code" in help_text:
+            checks.append(
+                check(
+                    "claude-remote-control-command",
+                    "pass",
+                    "Claude Code exposes native `claude remote-control` server command",
+                )
+            )
+        else:
+            checks.append(
+                check(
+                    "claude-remote-control-command",
+                    "warn",
+                    "Claude Code CLI did not expose a recognizable `claude remote-control` command",
+                    {"returncode": proc.returncode},
+                )
+            )
+
 statuses = {item["status"] for item in checks}
 overall = "fail" if "fail" in statuses else "warn" if "warn" in statuses else "pass"
 payload = {
@@ -252,10 +282,12 @@ payload = {
         "oauth_login_required": True,
     },
     "commands": [
-        "/remote-control",
-        "/rc",
-        "claude --remote-control",
         "claude remote-control",
+        "claude remote-control --help",
+        "https://claude.ai/code",
+    ],
+    "harness_skill_aliases": [
+        "/remote-control",
     ],
     "shared_project_env_blockers": [name for name in SHARED_BLOCKERS if name in env],
     "process_env_blocker_names_present": process_present,

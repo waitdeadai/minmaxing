@@ -3,4 +3,4 @@ title: Native Claude Code Remote Control compatibility smoke
 gate: scripts/remote-control-smoke.sh --fixtures
 expected_result: pass
 golden: evals/harness/golden/m12-remote-control-smoke.json
-evidence: validates native Remote Control commands, settings blockers, static runtime-proof boundaries, fixtures, and release wiring
+evidence: validates claude remote-control live command, readiness skill behavior, settings blockers, static runtime-proof boundaries, fixtures, and release wiring

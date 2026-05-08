@@ -647,9 +647,9 @@ done
 for pattern in \
     "native Remote Control" \
     "/remote-control" \
-    "/rc" \
-    "claude --remote-control" \
     "claude remote-control" \
+    "readiness and troubleshooting" \
+    "https://claude.ai/code" \
     "claude --remote" \
     "custom remote server" \
     "claude.ai subscription" \

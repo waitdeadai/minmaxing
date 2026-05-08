@@ -68,7 +68,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/overnight` | `operations` | yes | no | `.claude/skills/overnight/SKILL.md` | /overnight |
 | `/parallel` | `parallelism` | manual | yes | `.claude/skills/parallel/SKILL.md` | Run dense minmaxing work as a hardware-aware, main-orchestrated parallel workflow with bounded packets, explicit ownership, sync barriers, aggregation, and independent verification. |
 | `/qa` | `quality` | yes | no | `.claude/skills/qa/SKILL.md` | /qa |
-| `/remote-control` | `operations` | manual | yes | `.claude/skills/remote-control/SKILL.md` | Use Claude Code native Remote Control (/remote-control, /rc, claude --remote-control, claude remote-control) safely inside the minmaxing harness without custom network control planes, API-key auth, or static runtime overclaims. |
+| `/remote-control` | `operations` | manual | yes | `.claude/skills/remote-control/SKILL.md` | Diagnose Claude Code native Remote Control safely inside the minmaxing harness. In this project, /remote-control is a readiness/troubleshooting skill; start the live native Remote Control server from a shell with claude remote-control. |
 | `/review` | `quality` | yes | no | `.claude/skills/review/SKILL.md` | /review |
 | `/ship` | `release` | yes | no | `.claude/skills/ship/SKILL.md` | /ship |
 | `/sprint` | `parallelism` | yes | no | `.claude/skills/sprint/SKILL.md` | /sprint |

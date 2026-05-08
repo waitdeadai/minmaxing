@@ -1,5 +1,5 @@
 {
-  "expected_evidence": "scripts/remote-control-smoke.sh --fixtures validates the /remote-control skill contract, static doctor, shared-settings blocker removal, no-secret fixtures, and native-only Claude Code Remote Control boundaries",
+  "expected_evidence": "scripts/remote-control-smoke.sh --fixtures validates the /remote-control readiness skill contract, claude remote-control live command, static doctor, shared-settings blocker removal, no-secret fixtures, and native-only Claude Code Remote Control boundaries",
   "expected_result": "pass",
   "gate": "remote-control-smoke",
   "id": "m12-remote-control-smoke",
