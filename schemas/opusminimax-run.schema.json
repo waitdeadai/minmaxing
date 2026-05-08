@@ -8,6 +8,8 @@
     "run_id",
     "provider_profiles",
     "model_ids",
+    "outcome_policy",
+    "workflow_contract",
     "capacity",
     "packets",
     "verification",
@@ -39,6 +41,24 @@
     },
     "model_route": {
       "type": "object"
+    },
+    "outcome_policy": {
+      "enum": ["verified-partial-or-blocked-with-repair", "advanced-engine-artifact"]
+    },
+    "workflow_contract": {
+      "type": "object",
+      "required": ["definitive_command", "route_role", "effectiveness_policy", "allowed_closeout_statuses", "blocked_requires_repair"],
+      "properties": {
+        "definitive_command": {"type": "boolean"},
+        "route_role": {"type": "string"},
+        "effectiveness_policy": {"type": "string"},
+        "default_model_split": {"type": "string"},
+        "allowed_closeout_statuses": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "blocked_requires_repair": {"type": "boolean"}
+      }
     },
     "capacity": {
       "type": "object",

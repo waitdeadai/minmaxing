@@ -1,22 +1,41 @@
 ---
 name: opusworkflow
-description: Run the cost-optimized Opus planner plus MiniMax-M2.7-highspeed executor workflow end to end. Use when the user invokes /opusworkflow or wants the recommended daily mode for a Claude subscription plus MiniMax Plus-Highspeed Token Plan.
+description: Use this as the definitive workflow command for mutating work: Opus 4.7 high/xhigh plans and reviews when proven available, and MiniMax-M2.7-highspeed executes bounded packets. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.
 argument-hint: [task]
 disable-model-invocation: true
 ---
 
 # /opusworkflow
 
-Run the default cost-optimized workflow for:
+Run the definitive effectiveness-first, cost-aware workflow for:
 
 $ARGUMENTS
+
+Definitive workflow command:
+
+```text
+Use /opusworkflow for normal build, fix, refactor, docs, and specialist work.
+It means: Opus 4.7 high/xhigh thinks and reviews when proven available.
+MiniMax-M2.7-highspeed is the executor for the bulk implementation work.
+The run must end as a verified result, partial result, or blocked repair path.
+Use /opusworkflow unless you are debugging the engine.
+```
+
+The two names:
+
+```text
+/opusworkflow = the product command humans should use.
+/opusminimax is the advanced engine inside /opusworkflow.
+They are not competing commands.
+```
 
 Mode banner:
 
 ```text
-Claude/Opus is planner, adversary, and final reviewer when proven available.
+Opus 4.7 high/xhigh is planner, adversary, and final reviewer when proven available.
 MiniMax-M2.7-highspeed is the executor for bulk coding and repair.
 Default executor concurrency is 1 until provider evidence proves otherwise.
+Closeout policy is verified, partial, or blocked-with-repair. No vibes.
 ```
 
 Optional Claude-only sibling:
@@ -39,8 +58,19 @@ Model-profile selector:
 
 ## Contract
 
+- Treat `/opusworkflow` as the definitive workflow command and the one normal
+  command for mutating work.
+- Optimize for results, not only cost: keep going through research, plan,
+  packet execution, repair loops, verification, and introspection until the run
+  can honestly close as `verified`, `partial`, or `blocked`.
+- If blocked, record the blocker and the next repair action. Never close with
+  evidence-free optimism.
+- Record `outcome_policy=verified-partial-or-blocked-with-repair` in run
+  artifacts produced under the `/opusworkflow` outer route.
 - Treat `/opusworkflow` as `/opusminimax --mode workflow` with stricter budget
-  defaults and as the normal daily route for all mutating work in this harness.
+  defaults. `/opusminimax` is the advanced packet/provider engine behind it.
+- Do not present `/opusminimax` as a second daily workflow choice unless the
+  operator is debugging engine, provider, packet, repair, or benchmark behavior.
 - Keep MiniMax as the standard executor provider. Use `/opussonnet` or
   `--executor-provider claude-sonnet` only when the operator explicitly wants
   the optional Claude-only route.
@@ -77,17 +107,17 @@ Use Claude/Opus only at high-leverage judgment gates:
 | --- | --- | --- |
 | Intake and taste check | Claude normal effort | Keep concise. |
 | Repo audit and exploration | local tools or MiniMax packet | Avoid Opus-wide repo reads. |
-| Plan and SPEC freeze | Opus if proven available | Use high/xhigh only here when warranted. |
+| Plan and SPEC freeze | Opus 4.7 if proven available | Use high/xhigh only here when warranted. |
 | Implementation | MiniMax-M2.7-highspeed | Bounded packets only. |
 | Test failure loop | MiniMax first | Limit retries per packet. |
-| Adversarial review | Opus if proven available | Challenge architecture, risk, and evidence. |
-| Final ship/no-ship | Claude/Opus if proven available | Verify claims, do not rubber-stamp. |
+| Adversarial review | Opus 4.7 if proven available | Challenge architecture, risk, and evidence. |
+| Final ship/no-ship | Opus 4.7 if proven available | Verify claims, do not rubber-stamp. |
 
 Practical target for the $20 Claude + $40 MiniMax setup:
 
 ```text
 80-90% mechanical work: MiniMax-M2.7-highspeed
-10-20% judgment work: Claude/Opus when account state proves it
+10-20% judgment work: Opus 4.7 high/xhigh when account state proves it
 executor lanes: 1 default, 2 only after explicit runtime proof
 ```
 

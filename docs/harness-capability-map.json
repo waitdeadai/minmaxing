@@ -276,7 +276,7 @@
       "golden_path": "evals/harness/golden/m9-opusworkflow-cost-budget.json",
       "id": "m9-opusworkflow-cost-budget",
       "task_path": "evals/harness/tasks/m9-opusworkflow-cost-budget.yaml",
-      "title": "/opusworkflow cost-optimized budget route"
+      "title": "/opusworkflow definitive effectiveness route"
     }
   ],
   "generated_at": "static",
@@ -399,12 +399,12 @@
       "sha256": "4dcbd22f5493e69884e2918455ca1aa0964bd31490681ef49d80e9c5a4069742"
     },
     {
-      "line_count": 697,
+      "line_count": 709,
       "name": "artifact-lint",
       "path": "scripts/artifact-lint.sh",
       "purpose": "machine sidecar validator",
       "required_gate": true,
-      "sha256": "a40ca55cf76a2ed9fdb5b94ce4e2d389012d4e303eac16a3abb1488a02d0a056"
+      "sha256": "68d19e3824ef5a46892a672898f57748ced4e892ee784d51431341e35d260431"
     },
     {
       "line_count": 189,
@@ -631,12 +631,12 @@
       "sha256": "cb5fe25369342ebe8d517507170a5b64b01fba48e69b85f827ce38335dccbcbd"
     },
     {
-      "line_count": 400,
+      "line_count": 409,
       "name": "opusminimax",
       "path": "scripts/opusminimax.sh",
       "purpose": "Prepare or explicitly launch the /opusminimax planner workflow.",
       "required_gate": false,
-      "sha256": "6e26c3071ea92f85e7b1eb55fa3608531d7967cb5fd065e40242a0274211b3be"
+      "sha256": "f58ef236e9e853e4def29f226f57ad2806b6bc6f255322432c82f19969b25b39"
     },
     {
       "line_count": 30,
@@ -647,20 +647,20 @@
       "sha256": "199a1e495da27067db293bda488b10b8938968565b2d96646380d88c187728c4"
     },
     {
-      "line_count": 208,
+      "line_count": 226,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "dd1c96b147fd8fe84e0cbedc13720a77f4f90d237d5d35d37c9ba9237462b4ab"
+      "sha256": "f796b51ac9260aedd03110bc89c4f13c940b128fbc6c118db2811a16948a96e3"
     },
     {
-      "line_count": 139,
+      "line_count": 143,
       "name": "opusworkflow",
       "path": "scripts/opusworkflow.sh",
-      "purpose": "Prepare or explicitly launch the cost-optimized /opusworkflow route.",
+      "purpose": "Prepare or explicitly launch the definitive /opusworkflow route.",
       "required_gate": false,
-      "sha256": "543e1a86fb6452ab740d5074cfbeaef5bbad4d039b3cd30b2154c3a2f3a86c4d"
+      "sha256": "0882f3210e6bf7e08509321f4daae9c1766b1f542201902b982f8ae4786557e0"
     },
     {
       "line_count": 113,
@@ -807,12 +807,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 2000,
+      "line_count": 2010,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "669ee0474864ce2aede91e1b04aaf3ff3aecf4eca23c2bce177d7f3376eaa52f"
+      "sha256": "4329096851b645de4395deaf012bbb5709f310ce20d2984da1ecca122189c30f"
     },
     {
       "line_count": 127,
@@ -1426,9 +1426,9 @@
     {
       "argument_hint": "[task, mode: workflow|benchmark|repair]",
       "core_route": true,
-      "description": "Run the Opus planner plus MiniMax-M2.7-highspeed executor workflow. Use when the user invokes /opusminimax or wants Claude/Opus to plan, adversarially review, and verify while MiniMax executes bounded coding packets.",
+      "description": "Advanced engine behind /opusworkflow for provider split, packet, repair, and benchmark work. Normal build/fix/refactor work should use /opusworkflow, which asks Opus 4.7 to plan/review when proven available and MiniMax-M2.7-highspeed to execute.",
       "group": "execution",
-      "line_count": 265,
+      "line_count": 273,
       "model_invocation": false,
       "name": "opusminimax",
       "path": ".claude/skills/opusminimax/SKILL.md",
@@ -1442,7 +1442,7 @@
         "scripts/opusminimax-benchmark-smoke.sh",
         "scripts/opusminimax-doctor.sh"
       ],
-      "sha256": "57caa96ea0e7720f4793e1f8e5b29b51cc38e0eb8d8a97c175c6211019a3c43b",
+      "sha256": "a400637b964534f3ddb37c0808b1c27eb5a8b6554189f81be054d19240102bf9",
       "slash": "/opusminimax",
       "user_invocable": true
     },
@@ -1467,9 +1467,9 @@
     {
       "argument_hint": "[task]",
       "core_route": true,
-      "description": "Run the cost-optimized Opus planner plus MiniMax-M2.7-highspeed executor workflow end to end. Use when the user invokes /opusworkflow or wants the recommended daily mode for a Claude subscription plus MiniMax Plus-Highspeed Token Plan.",
+      "description": "Use this as the definitive workflow command for mutating work: Opus 4.7 high/xhigh plans and reviews when proven available, and MiniMax-M2.7-highspeed executes bounded packets. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.",
       "group": "execution",
-      "line_count": 194,
+      "line_count": 224,
       "model_invocation": false,
       "name": "opusworkflow",
       "path": ".claude/skills/opusworkflow/SKILL.md",
@@ -1484,7 +1484,7 @@
         "scripts/opusworkflow-smoke.sh",
         "scripts/opussonnetworkflow.sh"
       ],
-      "sha256": "48dc32a99e617bc9f61911fe61b9ec8c63c2361d9c64ef0f3a48413ae4a00602",
+      "sha256": "dc20eea58aed5e4bd0dbc3c67270a715867eb01a5e1db5dd9e1415a5691cfdc5",
       "slash": "/opusworkflow",
       "user_invocable": true
     },

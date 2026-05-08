@@ -11,7 +11,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 ## Core Workflow
 
 1. **SPEC-First**: File-changing tasks get a concrete `SPEC.md` before edits
-2. **Research-First**: `/opusworkflow` is the default daily route and uses the normal `/workflow` lifecycle underneath: live MiniMax MCP-backed research before planning or edits, as many distinct tracks as materially help, and the repo’s effectiveness-first `deepresearch` protocol: collaborative research plan -> search -> read -> refine, with source ledger, contradiction handling, and follow-up passes
+2. **Research-First**: `/opusworkflow` is the definitive default route and uses the normal `/workflow` lifecycle underneath: live MiniMax MCP-backed research before planning or edits, as many distinct tracks as materially help, and the repo’s effectiveness-first `deepresearch` protocol: collaborative research plan -> search -> read -> refine, with source ledger, contradiction handling, and follow-up passes
 3. **Temporal Anchor**: Claude Code hooks inject the local system-clock time anchor at session start and before each prompt. Treat that as the current date/hour source; for latest/current/SOTA 2026 claims, use live sources and cite dates instead of pretrained memory.
 4. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
 5. **Introspect Before Confidence**: `/workflow` runs hard-gate `/introspect` before plan freeze, after implementation, after failed verification, and before push/ship moments
@@ -27,16 +27,17 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 15. **Run Metrics Honesty**: `scripts/run-metrics.sh` and `scripts/session-insights.sh` summarize local artifacts, flag unhealthy runs, and report unavailable provider/cost/token data as `insufficient_data`
 16. **Security Profiles**: This operator workspace defaults to trusted-local `bypassPermissions` by design. Keep `solo-fast`, `team-safe`, `ci-static`, and `ci-runtime` distinct; `team-safe` remains the shared-work fallback.
 17. **Release Governance**: Public harness changes must pass `scripts/release-check.sh --static-only`; authenticated runtime checks stay explicit and secret-gated
-18. **OpusMiniMax Split**: `/opusminimax` uses Claude/Opus for bounded planning, adversarial review, and verification while MiniMax-M2.7-highspeed executes bounded packets. Provider identity lives in ignored local profiles, not shared `.claude/settings.json`.
-19. **OpusWorkflow Default**: `/opusworkflow` is the cost-optimized daily route over `/opusminimax --mode workflow` and the default for all mutating work: Opus only at judgment gates when proven available, MiniMax for bulk execution, executor concurrency 1 by default for Plus-Highspeed. Mutating specialist routes keep their own contracts as `inner_contract` values under this outer route.
-20. **Model Profile Freedom**: `/opusworkflow --model-profile minimax|opussonnet|sonnet|opus|default|custom` lets the operator choose Claude model routing without changing the default. Anthropic-only profiles must stay provider-neutral and never claim runtime identity without proof.
-21. **OpusSonnet Option**: `/opussonnet` is an optional Claude-only suggested route for installs created with `setup.sh --mode opussonnet`. It requests Claude Code `opusplan`, pins Opus 4.7 for planning/judgment and Sonnet 4.6 for execution, and requires no MiniMax token. Do not present it as the default MiniMax-backed budget strategy or claim runtime model identity without proof.
+18. **Definitive Workflow Command**: `/opusworkflow` is the command developers should use for normal mutating work. It means Opus 4.7 high/xhigh planner/reviewer when proven available plus MiniMax-M2.7-highspeed executor for bounded bulk work, and it must close as verified, partial, or blocked-with-repair.
+19. **OpusMiniMax Engine**: `/opusminimax` is the advanced provider-split engine underneath `/opusworkflow`, not a competing daily command. Use it directly only for provider, packet, repair, or benchmark debugging. Provider identity lives in ignored local profiles, not shared `.claude/settings.json`.
+20. **OpusWorkflow Default**: `/opusworkflow` is the definitive effectiveness-first, cost-aware route over `/opusminimax --mode workflow` and the default for all mutating work: Opus 4.7 high/xhigh only at judgment gates when proven available, MiniMax for bulk execution, executor concurrency 1 by default for Plus-Highspeed, and closeout only as verified, partial, or blocked-with-repair. Mutating specialist routes keep their own contracts as `inner_contract` values under this outer route.
+21. **Model Profile Freedom**: `/opusworkflow --model-profile minimax|opussonnet|sonnet|opus|default|custom` lets the operator choose Claude model routing without changing the default. Anthropic-only profiles must stay provider-neutral and never claim runtime identity without proof.
+22. **OpusSonnet Option**: `/opussonnet` is an optional Claude-only suggested route for installs created with `setup.sh --mode opussonnet`. It requests Claude Code `opusplan`, pins Opus 4.7 for planning/judgment and Sonnet 4.6 for execution, and requires no MiniMax token. Do not present it as the default MiniMax-backed budget strategy or claim runtime model identity without proof.
 
 ## Default Behavior
 
 **When you say "plan this", "build this", or request any file-changing work:**
 1. In a fresh repo, run `/tastebootstrap` once to define the kernel
-2. Use `/opusworkflow` as the outer route by default: Claude/Opus handles judgment gates when identity is proven, and MiniMax-M2.7-highspeed handles bounded bulk execution
+2. Use `/opusworkflow` as the outer route by default: Opus 4.7 high/xhigh handles judgment gates when identity is proven, and MiniMax-M2.7-highspeed handles bounded bulk execution
 3. `/opusworkflow` reuses the `/workflow` lifecycle and records specialist mutation as `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow`
 4. Audit the current codebase, run `/introspect pre-plan`, write the plan, and record an `Agent-Native Estimate`
 5. Create `SPEC.md`, execute through bounded packets when useful, run post-implementation introspection, verify, record actual timing evidence when known, and only then close out
@@ -47,9 +48,9 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 
 **When you say `/deepretaste`:** detect product intent, run SOTA-2026 deepresearch only for taste-driving evidence, define ICPs, and bootstrap or retaste the kernel. `/deepresearch` remains the general research engine for architecture, debugging, benchmarks, providers, markets, and product strategy; `/deepretaste` routes fresh kernels through `/tastebootstrap` and existing-kernel mutation through `/defineicp` proposal/apply semantics.
 
-**When you say `/opusminimax`:** run the same SPEC-first spine, but make provider roles explicit: Claude/Opus plans and reviews, MiniMax executes bounded packets, and parent verification treats executor summaries as claims until evidence proves them.
+**When you say `/opusminimax`:** treat this as an advanced engine request, not normal product work. Use it directly for provider split, packet, repair, or benchmark debugging; otherwise route the same need through `/opusworkflow`.
 
-**When you say `/opusworkflow` or give a normal build/plan task:** run `/opusminimax` in workflow mode with stricter cost policy: use Opus only for plan/spec freeze, adversarial review, and final judgment when identity is proven; use MiniMax-M2.7-highspeed for coding packets and repair loops; keep Plus-Highspeed executor concurrency at 1 unless provider evidence proves more.
+**When you say `/opusworkflow` or give a normal build/plan task:** run `/opusminimax` in workflow mode with stricter cost policy: request Opus 4.7 high/xhigh only for plan/spec freeze, adversarial review, and final judgment when identity is proven; use MiniMax-M2.7-highspeed for coding packets and repair loops; keep Plus-Highspeed executor concurrency at 1 unless provider evidence proves more; close only as verified, partial, or blocked-with-repair.
 
 **When you specify a model profile:** honor `/opusworkflow --model-profile sonnet|opus|opussonnet|default|custom` as an explicit operator choice while keeping the same SPEC, introspection, verification, no-secret, and runtime-identity-proof rules.
 
@@ -66,8 +67,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 |-------|---------|
 | /tastebootstrap | Fresh-repo kernel interview that writes taste.md + taste.vision |
 | /workflow | Underlying governed lifecycle and explicit fallback — taste-first, runs the full phases inline with Agent-Native Estimate gating |
-| /opusworkflow | Recommended cost-optimized end-to-end route: Opus judgment checkpoints plus MiniMax-M2.7-highspeed execution through `/opusminimax --mode workflow` |
-| /opusminimax | Opus planner + MiniMax-M2.7-highspeed executor mode with provider split, packet artifacts, quota-aware concurrency, and parent verification |
+| /opusworkflow | Definitive workflow command for mutating work: Opus 4.7 high/xhigh planner/reviewer when proven available plus MiniMax-M2.7-highspeed execution through `/opusminimax --mode workflow`; closes as verified, partial, or blocked-with-repair |
+| /opusminimax | Advanced engine behind `/opusworkflow` for provider split, packet artifacts, repair mode, benchmark mode, quota-aware concurrency, and parent verification |
 | /opussonnet | Optional Claude-only route: Claude Code `opusplan` with Opus 4.7 planning and Sonnet 4.6 execution, no MiniMax token required |
 | /visualize | Taste-to-artifact comprehension check; creates ignored visual, diagram, or narrative artifacts without implementation |
 | /visualizeworkflow | Approval-first workflow; drafts SPEC + visualization, stops at WAITING_FOR_VISUAL_APPROVAL, then continues only with `--continue` |
@@ -147,7 +148,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Session Insights**: `bash scripts/session-insights.sh --json` flags missing estimates, missing verification evidence, evidence-free closeout risk, missing eval score, and high rework indicators from local artifacts.
 - **Security Profiles**: Validate profile examples with `bash scripts/security-smoke.sh`; the committed project default is trusted-local `bypassPermissions`, while `team-safe` remains the shared-work fallback and `solo-fast` documents the fast solo posture.
 - **OpusMiniMax Profiles**: `.claude/settings.json` is provider-neutral. Use ignored planner/executor local profiles copied from `.claude/settings.opusminimax-planner.example.json` and `.claude/settings.minimax-executor.example.json`; never claim Opus involvement unless runtime identity is proven.
-- **OpusWorkflow Budget**: `/opusworkflow` is the mutating-work default for the $20 Claude + $40 MiniMax strategy. It must not run Opus as a bulk executor, must not silently use PAYG, and must record `outer_route`, `inner_contract`, `planner_identity_status`, `executor_identity_status`, `fallback_status`, and `provider_ceiling=1` until runtime MiniMax tier evidence proves a higher safe executor budget.
+- **OpusWorkflow Budget**: `/opusworkflow` is the mutating-work default for the $20 Claude + $40 MiniMax strategy. It must not run Opus as a bulk executor, must not silently use PAYG, and must record `outer_route`, `inner_contract`, `outcome_policy=verified-partial-or-blocked-with-repair`, `planner_identity_status`, `executor_identity_status`, `fallback_status`, and `provider_ceiling=1` until runtime MiniMax tier evidence proves a higher safe executor budget.
 - **Governed Model Profiles**: Explicit `--model-profile sonnet|opus|opussonnet|default|custom` overrides are allowed, but the artifact must record `model_profile`, `model_route`, requested planner/executor models, provider boundaries, and identity status. Static profile selection is not runtime proof.
 - **OpusSonnet Suggested Profile**: `.claude/settings.opussonnet.example.json` and `.claude/settings.sonnet-executor.example.json` are optional Claude-only profiles. They pin `opusplan`, `claude-opus-4-7`, and `claude-sonnet-4-6`, and must not contain MiniMax base URLs or credentials.
 - **Opus Runtime Proof**: A Claude subscription login plus exact `OPUSWORKFLOW_AUTH_OK` sentinel from `claude --model claude-opus-4-7` proves the planner side for the current account state. MiniMax executor runtime is a separate proof and must not be implied by the Opus check.

@@ -1,6 +1,6 @@
 #!/bin/bash
 # minmaxing - One-Command Setup
-# Default mode is opusworkflow: Claude/Opus judgment + MiniMax execution.
+# Default mode is opusworkflow: Opus 4.7 judgment + MiniMax execution.
 # Suggested Claude-only mode:
 # curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opussonnet
 # Clean/new folder:
@@ -370,7 +370,9 @@ echo "  minmaxing Setup"
 echo "=========================================="
 echo "Mode: $MODE"
 if [ "$MODE" = "opusworkflow" ]; then
-    echo "Default route: /opusworkflow (Claude/Opus judgment + MiniMax execution)"
+    echo "Definitive route: /opusworkflow (Opus 4.7 judgment + MiniMax execution)"
+elif [ "$MODE" = "opusminimax" ]; then
+    echo "Advanced engine mode selected; normal route remains /opusworkflow."
 elif [ "$MODE" = "opussonnet" ]; then
     echo "Suggested route: /opusworkflow with Claude opusplan (Opus planning + Sonnet execution)"
 fi
@@ -942,7 +944,8 @@ echo "  2. If this is a fresh repo, run: /tastebootstrap"
 if [ "$MODE" = "opusworkflow" ]; then
     echo "  3. Then try: /opusworkflow 'build a REST API'"
 elif [ "$MODE" = "opusminimax" ]; then
-    echo "  3. Then try: /opusminimax 'build a REST API'"
+    echo "  3. Then try: /opusworkflow 'build a REST API'"
+    echo "     /opusminimax is the advanced engine for provider, packet, repair, or benchmark debugging."
 elif [ "$MODE" = "opussonnet" ]; then
     echo "  3. Then try: /opusworkflow 'build a REST API'"
     echo "     This uses the optional Claude-only opusplan profile: Opus planning + Sonnet execution."

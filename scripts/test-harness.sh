@@ -244,7 +244,13 @@ for script in opusworkflow opusworkflow-smoke; do
     fi
 done
 for pattern in \
-    "cost-optimized" \
+    "Definitive workflow command" \
+    "Opus 4.7 high/xhigh" \
+    "verified result, partial result, or blocked repair path" \
+    "outcome_policy=verified-partial-or-blocked-with-repair" \
+    "/opusminimax is the advanced engine" \
+    "Use /opusworkflow unless you are debugging the engine" \
+    "cost-aware" \
     "Default executor concurrency is 1" \
     "Do not claim Opus planned" \
     "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow" \
@@ -275,7 +281,7 @@ for pattern in \
 done
 if [ "$OPUSWORKFLOW_OK" = true ] && \
    bash scripts/opusworkflow-smoke.sh >/dev/null 2>&1; then
-    test_pass "/opusworkflow exposes cost-optimized daily Opus/MiniMax workflow with static budget gate"
+    test_pass "/opusworkflow exposes definitive Opus/MiniMax workflow with static budget gate"
 else
     test_fail "/opusworkflow skill, setup alias, scripts, docs, eval, or static gate is incomplete"
 fi
@@ -1524,12 +1530,16 @@ if grep -Fq "## Install" README.md 2>/dev/null && \
    grep -Fq "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md 2>/dev/null && \
    grep -Fq "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md 2>/dev/null && \
    grep -Fq "After install, start Claude yourself when you are ready" README.md 2>/dev/null && \
+   grep -Fq "Then use the definitive workflow command" README.md 2>/dev/null && \
+   grep -Fq "\`/opusminimax\` is the advanced engine underneath" README.md 2>/dev/null && \
+   grep -Fq "verified result, partial result, or blocked repair path" README.md 2>/dev/null && \
    grep -Fq 'MODE="opusworkflow"' setup.sh 2>/dev/null && \
    grep -Fq '$Mode = "opusworkflow"' setup.ps1 2>/dev/null && \
    grep -Fq "settings.minimax-executor.local.json" setup.ps1 2>/dev/null && \
    grep -Fq "settings.opusminimax-planner.local.json" setup.ps1 2>/dev/null && \
    grep -Fq "## Smart Autorouting" README.md 2>/dev/null && \
-   grep -Fq "/opusworkflow as the daily default" README.md 2>/dev/null && \
+   grep -Fq "/opusworkflow as the definitive workflow command" README.md 2>/dev/null && \
+   grep -Fq "/opusminimax only for advanced engine work" README.md 2>/dev/null && \
    grep -Fq "local /workflow when the hybrid provider split is unavailable" README.md 2>/dev/null && \
    grep -Fq "/parallel when independent execution packets are enough" README.md 2>/dev/null && \
    grep -Fq "inner_contract=hiveworkflow" README.md 2>/dev/null && \

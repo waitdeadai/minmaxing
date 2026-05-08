@@ -346,6 +346,18 @@ def validate_opusminimax_run(data: dict[str, Any], errors: list[str]) -> None:
 
     if data.get("outer_route") not in {"opusworkflow", "opusminimax"}:
         error(errors, "opusminimax-run outer_route is unsupported")
+    if data.get("outer_route") == "opusworkflow":
+        if data.get("outcome_policy") != "verified-partial-or-blocked-with-repair":
+            error(errors, "opusworkflow run must declare outcome_policy=verified-partial-or-blocked-with-repair")
+        workflow_contract = data.get("workflow_contract") if isinstance(data.get("workflow_contract"), dict) else {}
+        if workflow_contract.get("definitive_command") is not True:
+            error(errors, "opusworkflow run must mark workflow_contract.definitive_command true")
+        allowed_closeout = workflow_contract.get("allowed_closeout_statuses")
+        allowed_set = set(allowed_closeout) if isinstance(allowed_closeout, list) else set()
+        if not {"verified", "partial", "blocked"}.issubset(allowed_set):
+            error(errors, "opusworkflow run must allow verified, partial, and blocked closeout statuses")
+        if workflow_contract.get("blocked_requires_repair") is not True:
+            error(errors, "opusworkflow blocked closeout must require a repair action")
     if data.get("inner_contract") not in {"workflow", "agentfactory", "hiveworkflow", "parallel", "defineicp", "deepretaste", "demo", "visualizeworkflow"}:
         error(errors, "opusminimax-run inner_contract is unsupported")
     if data.get("planner_identity_status") not in {"proven", "diagnosed_fixed", "blocked", "not_required"}:

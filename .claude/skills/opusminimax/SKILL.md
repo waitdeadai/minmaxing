@@ -1,6 +1,6 @@
 ---
 name: opusminimax
-description: Run the Opus planner plus MiniMax-M2.7-highspeed executor workflow. Use when the user invokes /opusminimax or wants Claude/Opus to plan, adversarially review, and verify while MiniMax executes bounded coding packets.
+description: Advanced engine behind /opusworkflow for provider split, packet, repair, and benchmark work. Normal build/fix/refactor work should use /opusworkflow, which asks Opus 4.7 to plan/review when proven available and MiniMax-M2.7-highspeed to execute.
 argument-hint: [task, mode: workflow|benchmark|repair]
 disable-model-invocation: true
 ---
@@ -10,6 +10,14 @@ disable-model-invocation: true
 Run the governed Opus planner + MiniMax executor mode for:
 
 $ARGUMENTS
+
+Plain rule:
+
+```text
+If you are trying to build, fix, refactor, or ship a product, use /opusworkflow.
+Use /opusminimax directly only for engine, provider, packet, repair, or benchmark work.
+/opusworkflow is the human command; /opusminimax is the advanced engine.
+```
 
 Mode banner:
 

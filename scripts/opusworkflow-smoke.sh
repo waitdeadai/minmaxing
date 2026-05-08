@@ -1,5 +1,5 @@
 #!/bin/bash
-# Static smoke gate for /opusworkflow cost-optimized routing.
+# Static smoke gate for /opusworkflow definitive routing.
 
 set -euo pipefail
 
@@ -35,7 +35,13 @@ require_executable "scripts/opusworkflow.sh"
 require_executable "scripts/opussonnetworkflow.sh"
 
 for pattern in \
-  "cost-optimized" \
+  "Definitive workflow command" \
+  "Opus 4.7 high/xhigh" \
+  "verified result, partial result, or blocked repair path" \
+  "outcome_policy=verified-partial-or-blocked-with-repair" \
+  "/opusminimax is the advanced engine" \
+  "Use /opusworkflow unless you are debugging the engine" \
+  "cost-aware" \
   "MiniMax-M2.7-highspeed is the executor" \
   "Default executor concurrency is 1" \
   "Do not claim Opus planned" \
@@ -76,9 +82,13 @@ require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/
 require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md
 require_text "After install, start Claude yourself when you are ready" README.md
 require_text "Existing project or harness update" README.md
-require_text "Both commands default to \`/opusworkflow\`" README.md
+require_text "Then use the definitive workflow command" README.md
+require_text "Both install commands land on the same simple UX: use \`/opusworkflow\`" README.md
+require_text "\`/opusminimax\` is the advanced engine underneath" README.md
+require_text "verified result, partial result, or blocked repair path" README.md
 require_text "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow" README.md
-require_text 'Default route: /opusworkflow' setup.sh
+require_text 'Definitive route: /opusworkflow' setup.sh
+require_text 'Advanced engine mode selected; normal route remains /opusworkflow.' setup.sh
 require_text '$Mode = "opusworkflow"' setup.ps1
 require_text "settings.minimax-executor.local.json" setup.ps1
 require_text "settings.opusminimax-planner.local.json" setup.ps1
@@ -94,6 +104,9 @@ if printf '%s' "$HELP_OUTPUT" | grep -Fq "[0/7]"; then
 fi
 if grep -Fq "Then try: /workflow" setup.sh setup.ps1 README.md 2>/dev/null; then
   fail "default-facing setup/docs must not suggest /workflow as the normal next route"
+fi
+if grep -Fq "Then try: /opusminimax" setup.sh setup.ps1 README.md 2>/dev/null; then
+  fail "default-facing setup/docs must not suggest /opusminimax as the normal next route"
 fi
 
 RUN_ID="opusworkflow-smoke"
@@ -145,6 +158,11 @@ for raw_path, contract in zip(sys.argv[1:], expected):
     assert data.get("artifact_type") == "opusminimax-run"
     assert data.get("outer_route") == "opusworkflow"
     assert data.get("inner_contract") == contract
+    assert data.get("outcome_policy") == "verified-partial-or-blocked-with-repair"
+    workflow_contract = data.get("workflow_contract", {})
+    assert workflow_contract.get("definitive_command") is True
+    assert workflow_contract.get("blocked_requires_repair") is True
+    assert {"verified", "partial", "blocked"}.issubset(set(workflow_contract.get("allowed_closeout_statuses", [])))
     assert data.get("planner_identity_status") == "blocked"
     assert data.get("executor_identity_status") == "configured"
     assert data.get("fallback_status") == "none"
@@ -205,4 +223,4 @@ bash scripts/artifact-lint.sh "$SONNET_RUN_DIR/opusminimax-run.json" >/dev/null
 bash scripts/artifact-lint.sh "$ALL_SONNET_RUN_DIR/opusminimax-run.json" >/dev/null
 bash scripts/artifact-lint.sh "$ALL_OPUS_RUN_DIR/opusminimax-run.json" >/dev/null
 
-echo "[PASS] /opusworkflow cost-optimized smoke passed"
+echo "[PASS] /opusworkflow definitive route smoke passed"

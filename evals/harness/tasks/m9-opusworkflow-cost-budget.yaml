@@ -1,5 +1,5 @@
 id: m9-opusworkflow-cost-budget
-title: /opusworkflow cost-optimized budget route
+title: /opusworkflow definitive effectiveness route
 gate: scripts/opusworkflow-smoke.sh
 expected_result: pass
 golden: evals/harness/golden/m9-opusworkflow-cost-budget.json

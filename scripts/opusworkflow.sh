@@ -1,5 +1,5 @@
 #!/bin/bash
-# Prepare or explicitly launch the cost-optimized /opusworkflow route.
+# Prepare or explicitly launch the definitive /opusworkflow route.
 
 set -euo pipefail
 
@@ -10,9 +10,10 @@ usage() {
 Usage:
   bash scripts/opusworkflow.sh --task "..." [--inner-contract CONTRACT] [--run-id ID] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
 
-/opusworkflow is the cost-optimized workflow entrypoint. It reuses
-scripts/opusminimax.sh in workflow mode, keeping Claude/Opus for judgment and
-MiniMax-M2.7-highspeed for bounded execution packets.
+/opusworkflow is the definitive effectiveness-first workflow entrypoint. It
+reuses scripts/opusminimax.sh in workflow mode, requesting Opus 4.7 for
+judgment and MiniMax-M2.7-highspeed for bounded execution packets. A real
+closeout must be verified, partial, or blocked-with-repair.
 
 The optional claude-sonnet executor provider keeps the same workflow governance
 but uses Claude Code opusplan/Sonnet 4.6 instead of MiniMax.
@@ -85,6 +86,9 @@ if [ "$EXECUTOR_PROVIDER_SET" -eq 0 ]; then
     sonnet|opus|default|custom) EXECUTOR_PROVIDER="anthropic" ;;
   esac
 fi
+
+echo "[opusworkflow] definitive route: Opus 4.7 judgment + MiniMax-M2.7-highspeed execution"
+echo "[opusworkflow] closeout policy: verified, partial, or blocked-with-repair"
 
 case "$MODEL_PROFILE" in
   minimax)

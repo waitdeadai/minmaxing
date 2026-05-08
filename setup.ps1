@@ -183,7 +183,9 @@ Write-Host "  minmaxing Setup (Windows)" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "Mode: $Mode" -ForegroundColor White
 if ($Mode -eq "opusworkflow") {
-    Write-Host "Default route: /opusworkflow (Claude/Opus judgment + MiniMax execution)" -ForegroundColor White
+    Write-Host "Definitive route: /opusworkflow (Opus 4.7 judgment + MiniMax execution)" -ForegroundColor White
+} elseif ($Mode -eq "opusminimax") {
+    Write-Host "Advanced engine mode selected; normal route remains /opusworkflow." -ForegroundColor White
 } elseif ($Mode -eq "opussonnet") {
     Write-Host "Suggested route: /opusworkflow with Claude opusplan (Opus planning + Sonnet execution)" -ForegroundColor White
 }
@@ -302,7 +304,8 @@ Write-Host "Next steps:" -ForegroundColor White
 Write-Host "  1. Run: claude" -ForegroundColor Gray
 Write-Host "  2. If this is a fresh repo, run: /tastebootstrap" -ForegroundColor Gray
 if ($Mode -eq "opusminimax") {
-    Write-Host "  3. Then try: /opusminimax 'build a REST API'" -ForegroundColor Gray
+    Write-Host "  3. Then try: /opusworkflow 'build a REST API'" -ForegroundColor Gray
+    Write-Host "     /opusminimax is the advanced engine for provider, packet, repair, or benchmark debugging." -ForegroundColor Gray
 } elseif ($Mode -eq "minimax") {
     Write-Host "  3. Legacy MiniMax-only override: /workflow 'build a REST API'" -ForegroundColor Gray
 } elseif ($Mode -eq "opussonnet") {
