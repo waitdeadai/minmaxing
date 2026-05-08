@@ -711,12 +711,12 @@
       "sha256": "27ab8b97947dbf0e432a58147702b662ea0d66dab8fe8f209f8acfef2ac2f8b3"
     },
     {
-      "line_count": 280,
+      "line_count": 279,
       "name": "remote-control-doctor",
       "path": "scripts/remote-control-doctor.sh",
       "purpose": "Static readiness doctor for Claude Code native Remote Control.",
       "required_gate": false,
-      "sha256": "96df5ac58d7b078915729d3b7a86e556b6674a46ea868f3f97d4e958450fa925"
+      "sha256": "f546cd3f76ad58958347382a1145eed228196ffb0c91a1f071634ec493f506a2"
     },
     {
       "line_count": 331,
