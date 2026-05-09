@@ -50,6 +50,12 @@ For non-trivial planning work, also read `## Agent-Native Estimate`. If it is
 missing, human-equivalent only, or omits confidence, verification/review time,
 or blockers, mark the planning contract incomplete before accepting closeout.
 
+For non-trivial file-changing work, also read `## Spec QA` in the workflow
+artifact or the matching `.taste/specqa/{run_id}/spec-qa.json`. If `/specqa`
+is missing, if it did not run after `SPEC.md` and before implementation, if it
+blocked execution, or if it claims Opus 4.7 review without runtime identity
+proof, mark the planning contract incomplete before accepting closeout.
+
 ### Step 3: Verify Each Criterion
 
 For each criterion, perform verification:
@@ -191,6 +197,7 @@ effective lanes, bottleneck, worker result count, and critical path.
 - Silent fail is not allowed — show exactly what failed
 - No SPEC.md = automatic FAIL
 - Non-trivial planning work without a valid `Agent-Native Estimate` = FAIL
+- Non-trivial file-changing work without valid `/specqa` evidence = FAIL
 - Evidence-free closeout, failed-verification positive closeout, fake source
   ledgers, and "tests passed" without command output or equivalent durable
   evidence = FAIL

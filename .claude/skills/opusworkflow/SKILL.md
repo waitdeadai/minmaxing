@@ -78,6 +78,10 @@ Model-profile selector:
   governed route request, not runtime identity proof.
 - Record the specialist being executed as
   `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow`.
+- Run `/specqa` after `SPEC.md` is created, updated, or reused and before
+  implementation. Spec QA is an Opus 4.7 high/xhigh judgment gate when runtime
+  identity is proven; otherwise record the missing proof and downgrade or block
+  honestly.
 - If the task asks for Hermes, Hive, ICP/taste mutation, approved
   visualization implementation, demo artifact production, or dense packet work,
   preserve that specialist contract under the `/opusworkflow` outer route.
@@ -108,6 +112,7 @@ Use Claude/Opus only at high-leverage judgment gates:
 | Intake and taste check | Claude normal effort | Keep concise. |
 | Repo audit and exploration | local tools or MiniMax packet | Avoid Opus-wide repo reads. |
 | Plan and SPEC freeze | Opus 4.7 if proven available | Use high/xhigh only here when warranted. |
+| Spec QA | Opus 4.7 if proven available | Review requirements quality, SOTA/currentness, critical risks, and improvement suggestions before execution. |
 | Implementation | MiniMax-M2.7-highspeed | Bounded packets only. |
 | Test failure loop | MiniMax first | Limit retries per packet. |
 | Adversarial review | Opus 4.7 if proven available | Challenge architecture, risk, and evidence. |
@@ -150,7 +155,13 @@ bash scripts/parallel-capacity.sh --json
 2. Create or update the workflow artifact and `SPEC.md` using the normal
    `/workflow` lifecycle.
 
-3. Route implementation through `/opusminimax` packet artifacts:
+3. Run `/specqa` against the active `SPEC.md`. Record
+   `spec_qa_model_identity_status`, requested/proven reviewer model,
+   webresearched actual-time data source ledger, critical findings,
+   improvement suggestions, and execution-allowed decision. Do not claim Opus
+   4.7 reviewed the spec unless runtime identity evidence proves it.
+
+4. Route implementation through `/opusminimax` packet artifacts:
 
 ```bash
 bash scripts/opusworkflow.sh --task "$ARGUMENTS"
@@ -177,11 +188,11 @@ bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile opus
 bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile custom --planner-model claude-sonnet-4-6 --executor-model claude-sonnet-4-6
 ```
 
-4. MiniMax executes only planner-approved packets with owned paths,
+5. MiniMax executes only planner-approved packets with owned paths,
    forbidden paths, allowed commands, acceptance checks, rollback notes, and
    stop conditions.
 
-5. Parent Claude verifies:
+6. Parent Claude verifies:
 
 - diffs and touched files
 - command evidence
@@ -212,6 +223,10 @@ proven. If Claude Code falls back to Sonnet or the subscription does not expose
 Opus, record that honestly and continue with downgraded confidence or ask for
 runtime/account action.
 
+Spec QA uses the same proof rule. `requested_reviewer=claude-opus-4-7` is not
+runtime proof; only `/status`, a sentinel, or a durable model-identity artifact
+can set `claims_opus_review=true`.
+
 ## Anti-Patterns
 
 - "One command install plugs my subscription in" without `claude auth login`.
@@ -221,4 +236,5 @@ runtime/account action.
   local agents.
 - Opus doing every edit because it feels smarter.
 - MiniMax summaries accepted without parent verification.
+- `/specqa` skipped after `SPEC.md` and before execution.
 - Pay-as-you-go fallback enabled silently.

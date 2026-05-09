@@ -503,7 +503,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "36 skills" README.md 2>/dev/null && \
+   grep -Fq "37 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -714,6 +714,59 @@ else
     test_fail "/remote-control contract, docs, fixtures, or static checks are incomplete"
 fi
 
+# Test 3g-specqa: Automated SOTA Spec QA Contract
+echo "[3g-specqa] Automated SOTA Spec QA Contract"
+SPECQA_OK=true
+for required_file in \
+    ".claude/skills/specqa/SKILL.md" \
+    "scripts/specqa-smoke.sh" \
+    "evals/harness/tasks/m13-specqa-sota-gate.yaml" \
+    "evals/harness/golden/m13-specqa-sota-gate.json" \
+    ".taste/fixtures/specqa/green/valid-spec-qa.json"; do
+    if [ ! -e "$required_file" ]; then
+        SPECQA_OK=false
+    fi
+done
+if [ ! -x "scripts/specqa-smoke.sh" ]; then
+    SPECQA_OK=false
+fi
+for pattern in \
+    "Spec QA Agent" \
+    "/specqa" \
+    'runs after `SPEC.md` is created or updated and before implementation' \
+    "Opus 4.7 high/xhigh reviewer when runtime-proven" \
+    "webresearched actual-time data" \
+    "SOTA 2026" \
+    "source ledger" \
+    "improvement suggestions" \
+    ".taste/specqa/{run_id}/spec-qa.md" \
+    "repo-verified" \
+    "web-verified" \
+    "report-derived" \
+    "unverified"; do
+    if ! grep -Fq "$pattern" .claude/skills/specqa/SKILL.md README.md CLAUDE.md AGENTS.md 2>/dev/null; then
+        SPECQA_OK=false
+    fi
+done
+for pattern in \
+    "claims_opus_review" \
+    "source_ledger" \
+    "critical findings" \
+    "improvement_suggestions" \
+    "artifact_paths"; do
+    if ! grep -Fq "$pattern" scripts/specqa-smoke.sh .taste/fixtures/specqa/green/valid-spec-qa.json 2>/dev/null; then
+        SPECQA_OK=false
+    fi
+done
+if [ "$SPECQA_OK" = true ] && \
+   grep -Fq "specqa" scripts/harness-capability-map.sh 2>/dev/null && \
+   grep -Fq "specqa-smoke" scripts/harness-eval.sh scripts/release-check.sh 2>/dev/null && \
+   bash scripts/specqa-smoke.sh --fixtures >/dev/null 2>&1; then
+    test_pass "/specqa gates every SPEC.md with current SOTA evidence and Opus identity boundaries"
+else
+    test_fail "/specqa contract, docs, fixtures, or static checks are incomplete"
+fi
+
 # Test 3g-capmap: Generated Harness Capability Map
 echo "[3g-capmap] Generated Harness Capability Map"
 CAPMAP_OK=true
@@ -779,7 +832,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 36 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 37 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -1553,25 +1606,25 @@ else
 fi
 
 # ========================================
-# Skills (36 Expected)
+# Skills (37 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 36 Expected]"
+echo "[Skills - 37 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 36 ]; then
+if [ "$SKILL_COUNT" -ge 37 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 36+ skills, found $SKILL_COUNT"
+    test_fail "Expected 37+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control specqa deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1641,7 +1694,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

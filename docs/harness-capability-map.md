@@ -8,14 +8,14 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 36
+- Skills: 37
 - Rules: 15
-- Scripts: 58
-- Static eval tasks: 23
+- Scripts: 59
+- Static eval tasks: 24
 - Hook entries: 12
 - Codex config files: 4
 - Codex repo skills: 1
-- Core routes: 16
+- Core routes: 17
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
   runtime secrets.
@@ -32,7 +32,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `operations`: `/overnight`, `/remote-control`
 - `parallelism`: `/hive`, `/parallel`, `/sprint`
 - `planning`: `/autoplan`, `/council`
-- `quality`: `/audit`, `/introspect`, `/qa`, `/review`, `/verify`
+- `quality`: `/audit`, `/introspect`, `/qa`, `/review`, `/specqa`, `/verify`
 - `release`: `/ship`
 - `research`: `/browse`, `/deepresearch`, `/defineicp`, `/digestflow`, `/icpweek`, `/webresearch`
 - `routing`: `/metacognition`
@@ -71,6 +71,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/remote-control` | `operations` | manual | yes | `.claude/skills/remote-control/SKILL.md` | Diagnose Claude Code native Remote Control safely inside the minmaxing harness. In this project, /remote-control is a readiness/troubleshooting skill; start the live native Remote Control server from a shell with claude remote-control. |
 | `/review` | `quality` | yes | no | `.claude/skills/review/SKILL.md` | /review |
 | `/ship` | `release` | yes | no | `.claude/skills/ship/SKILL.md` | /ship |
+| `/specqa` | `quality` | manual | yes | `.claude/skills/specqa/SKILL.md` | QA every newly created, updated, or reused SPEC.md before implementation using current webresearch for SOTA/time-sensitive claims and an Opus 4.7 high/xhigh reviewer when runtime identity is proven. |
 | `/sprint` | `parallelism` | yes | no | `.claude/skills/sprint/SKILL.md` | /sprint |
 | `/tastebootstrap` | `kernel` | yes | no | `.claude/skills/tastebootstrap/SKILL.md` | /tastebootstrap |
 | `/verify` | `quality` | yes | yes | `.claude/skills/verify/SKILL.md` | /verify |
@@ -100,7 +101,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `pev-loop` | `.claude/rules/pev-loop.rules.md` | 2 |
 | `quality` | `.claude/rules/quality.rules.md` | 65 |
 | `security` | `.claude/rules/security.rules.md` | 45 |
-| `spec` | `.claude/rules/spec.rules.md` | 146 |
+| `spec` | `.claude/rules/spec.rules.md` | 150 |
 | `speed` | `.claude/rules/speed.rules.md` | 3 |
 | `verify` | `.claude/rules/verify.rules.md` | 127 |
 | `visualization` | `.claude/rules/visualization.rules.md` | 109 |
@@ -129,6 +130,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `parallel-plan-lint` | parallel plan fixture lint | `scripts/parallel-plan-lint.sh` |
 | `release-check` | public release/static gate | `scripts/release-check.sh` |
 | `remote-control-smoke` | native Claude Code Remote Control compatibility gate | `scripts/remote-control-smoke.sh` |
+| `specqa-smoke` | automated SOTA Spec QA gate | `scripts/specqa-smoke.sh` |
 | `test-harness` | full local harness regression suite | `scripts/test-harness.sh` |
 
 ## Static Eval Gates
@@ -138,6 +140,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `m10-defineicp-taste-evolution` | `scripts/defineicp-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m10-defineicp-taste-evolution.yaml` | `evals/harness/golden/m10-defineicp-taste-evolution.json` |
 | `m11-deepretaste-intent-icp-bootstrap` | `scripts/deepretaste-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m11-deepretaste-intent-icp-bootstrap.yaml` | `evals/harness/golden/m11-deepretaste-intent-icp-bootstrap.json` |
 | `m12-remote-control-smoke` | `scripts/remote-control-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m12-remote-control-smoke.yaml` | `evals/harness/golden/m12-remote-control-smoke.json` |
+| `m13-specqa-sota-gate` | `scripts/specqa-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m13-specqa-sota-gate.yaml` | `evals/harness/golden/m13-specqa-sota-gate.json` |
 | `m4-agentfactory-kill-switch-evidence` | `scripts/agentfactory-smoke.sh` | `pass` | `evals/harness/tasks/m4-agentfactory-kill-switch-evidence.yaml` | `evals/harness/golden/m4-agentfactory-kill-switch-evidence.json` |
 | `m4-artifact-sidecar-lint` | `scripts/artifact-lint.sh --fixtures` | `pass` | `evals/harness/tasks/m4-artifact-sidecar-lint.yaml` | `evals/harness/golden/m4-artifact-sidecar-lint.json` |
 | `m4-codex-run-artifact-proof` | `scripts/codex-run-smoke.sh` | `pass` | `evals/harness/tasks/m4-codex-run-artifact-proof.yaml` | `evals/harness/golden/m4-codex-run-artifact-proof.json` |

@@ -1,0 +1,48 @@
+{
+  "artifact_type": "spec-qa-result",
+  "artifact_paths": {
+    "json": "spec-qa.json",
+    "markdown": "spec-qa.md"
+  },
+  "current_research": {
+    "required": true,
+    "sota_target": true,
+    "source_ledger": [
+      {
+        "accessed_at": "2026-05-09",
+        "evidence_state": "web-verified",
+        "title": "Claude Code subagents",
+        "url": "https://code.claude.com/docs/en/sub-agents"
+      }
+    ]
+  },
+  "decision": "PASS",
+  "execution_allowed": true,
+  "findings": [],
+  "improvement_suggestions": [
+    {
+      "evidence": "Artifacts must be durable under .taste/specqa.",
+      "severity": "HIGH",
+      "suggestion": "Write both spec-qa.md and spec-qa.json under .taste/specqa/{run_id}/."
+    }
+  ],
+  "model": {
+    "claims_opus_review": false,
+    "identity_status": "blocked",
+    "proof_source": "none",
+    "requested_reviewer": "claude-opus-4-7"
+  },
+  "security": {
+    "no_secret_paths_read": true
+  },
+  "spec": {
+    "path": "SPEC.md",
+    "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "status": "created"
+  },
+  "status": "pass",
+  "workflow_integration": {
+    "before_implementation": true,
+    "runs_after_spec_creation": true
+  }
+}

@@ -93,6 +93,7 @@ ROUTE_GROUPS = {
     "audit": "quality",
     "review": "quality",
     "qa": "quality",
+    "specqa": "quality",
     "verify": "quality",
     "introspect": "quality",
     "agentfactory": "agent-systems",
@@ -126,6 +127,7 @@ CORE_ROUTES = {
     "agentfactory",
     "demo",
     "remote-control",
+    "specqa",
 }
 
 REQUIRED_COMMANDS = {
@@ -146,6 +148,7 @@ REQUIRED_COMMANDS = {
     "opusworkflow-smoke": "OpusWorkflow cost-optimized route gate",
     "opussonnetworkflow": "optional Claude-only Opus plus Sonnet workflow wrapper",
     "remote-control-smoke": "native Claude Code Remote Control compatibility gate",
+    "specqa-smoke": "automated SOTA Spec QA gate",
     "parallel-capacity": "local parallel capacity profile",
     "parallel-aggregate": "parallel worker aggregate validator",
     "parallel-plan-lint": "parallel plan fixture lint",
@@ -160,8 +163,8 @@ RULE_OWNERS = {
     "parallelism": ["parallel", "sprint", "hive", "hiveworkflow"],
     "memory": ["memory"],
     "estimation": ["workflow", "autoplan", "parallel", "sprint"],
-    "verify": ["verify", "workflow"],
-    "spec": ["workflow", "autoplan", "ship"],
+    "verify": ["verify", "workflow", "specqa"],
+    "spec": ["workflow", "autoplan", "ship", "specqa"],
     "security": ["workflow", "ship", "agentfactory"],
 }
 
@@ -190,6 +193,7 @@ SCRIPT_OWNERS = {
     "opussonnetworkflow": ["opussonnet", "opusworkflow"],
     "remote-control-doctor": ["remote-control"],
     "remote-control-smoke": ["remote-control"],
+    "specqa-smoke": ["specqa", "workflow", "opusworkflow", "digestflow", "verify"],
     "harness-eval": ["workflow"],
     "release-check": ["ship", "workflow"],
     "test-harness": ["workflow"],

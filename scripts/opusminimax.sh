@@ -293,6 +293,19 @@ run = {
         },
         "fallback_policy": "fail-closed-unless-explicit",
     },
+    "spec_qa": {
+        "required": outer_route == "opusworkflow",
+        "runs_after_spec_creation": True,
+        "before_implementation": True,
+        "requested_reviewer": "claude-opus-4-7",
+        "identity_status": "blocked",
+        "claims_opus_review": False,
+        "source_ledger_required_for_sota": True,
+        "artifact_paths": {
+            "markdown": f".taste/specqa/{run_id}/spec-qa.md",
+            "json": f".taste/specqa/{run_id}/spec-qa.json",
+        },
+    },
     "capacity": {
         "local_ceiling": 10,
         "provider_ceiling": 1,
@@ -312,6 +325,7 @@ run = {
     "model_identity_confirmed": False,
     "claims": {
         "opus_planned": False,
+        "spec_qa_opus_reviewed": False,
         "runtime_model_calls": False,
     },
 }

@@ -1,245 +1,295 @@
-# SPEC: Claude Code Native Remote Control Harness
+# SPEC: Automated SOTA Spec QA Agent
 
 ## Problem Statement
 
-Claude Code has native Remote Control (`/remote-control`, `/rc`,
-`claude --remote-control`, and `claude remote-control`) for continuing a local
-session from web or mobile. The minmaxing harness currently makes that path
-fragile because the shared project settings set
-`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`, and official Claude Code Remote
-Control troubleshooting says that variable can make Remote Control eligibility
-fail.
+The harness creates and updates `SPEC.md` as the active contract, but it does
+not yet have an automatic quality reviewer that audits every new spec before
+implementation. The user wants this review to be automatic in the normal
+workflow, aimed at SOTA results, grounded in current webresearch data, and
+handled by Opus 4.7 high/xhigh when runtime identity proves that model is
+actually available.
 
-The harness should support Claude Code's native Remote Control without building
-a separate network control plane, weakening secret protections, or claiming
-runtime proof from static checks.
+## Codebase Anchors
+
+- `.claude/skills/workflow/SKILL.md` owns the default lifecycle and must add
+  Spec QA between `SPEC.md` creation/update and execution.
+- `.claude/skills/opusworkflow/SKILL.md` owns the default outer route for
+  mutating work and must assign the Spec QA judgment gate to Opus 4.7 high/xhigh
+  only when model identity is proven.
+- `.claude/skills/digestflow/SKILL.md` must run Spec QA after report-derived
+  claims become spec content, so external AI reports cannot drive execution
+  without current/source-backed validation.
+- `.claude/skills/verify/SKILL.md` verifies implementation against `SPEC.md`;
+  it should also treat missing non-trivial Spec QA as a planning-contract
+  failure before closeout.
+- `scripts/release-check.sh`, `scripts/test-harness.sh`,
+  `scripts/harness-eval.sh`, and `scripts/harness-capability-map.sh` are the
+  static public harness gates that must discover and enforce the new route.
+- `docs/harness-capability-map.md` and `docs/harness-capability-map.json` are
+  generated truth surfaces and must be regenerated after route/script/eval
+  registration.
+- Active spec lifecycle requires archiving replaced root specs through
+  `scripts/spec-archive.sh`.
+
+## Current Research Brief
+
+Investigation mode: comprehensive.
+
+Effective research budget: 5 tracks of ceiling 10, based on
+`bash scripts/parallel-capacity.sh --json` reporting `codex_max_threads=10`,
+`recommended_ceiling=10`, `cores=16`, `ram_gb=32`, and
+`agent_teams_available=false`. The useful tracks were current Anthropic model
+facts, Claude Code skills/subagents/hooks behavior, Spec Kit quality gates,
+recent SDD research, and local harness wiring.
+
+Loop log:
+
+1. Discovery found current Anthropic model docs, Claude Code skill/subagent
+   docs, GitHub Spec Kit docs, and recent SDD papers.
+2. Deep read confirmed Opus 4.7 and Sonnet 4.6 are current documented model
+   IDs, Claude Code project skills create slash commands, custom subagents can
+   specialize context and model selection, hooks can trigger lifecycle scripts,
+   and Spec Kit uses quality checklists plus non-destructive cross-artifact
+   analysis before implementation.
+3. Pressure test resolved the main risk: the harness may request Opus 4.7 for
+   the reviewer, but it must not claim Opus executed unless `/status`, a
+   sentinel, or a run artifact proves runtime identity.
+
+Source ledger, accessed 2026-05-09:
+
+- Anthropic model overview:
+  https://platform.claude.com/docs/en/about-claude/models/overview
+  - Current docs list Claude Opus 4.7 as the most capable generally available
+    model for complex reasoning and agentic coding, with API ID
+    `claude-opus-4-7`; Sonnet 4.6 is listed as `claude-sonnet-4-6`.
+- Claude Code skills:
+  https://code.claude.com/docs/en/slash-commands
+  - Project skills in `.claude/skills/<name>/SKILL.md` create invocable
+    slash-command workflows and can load only when relevant.
+- Claude Code subagents:
+  https://code.claude.com/docs/en/sub-agents
+  - Custom subagents are specialized assistants with independent context,
+    tool access, and model routing, suitable for a repeated QA reviewer role.
+- Claude Code settings and hooks:
+  https://code.claude.com/docs/en/settings
+  - Settings expose model and effort configuration, skills, subagents, and hook
+    surfaces; sensitive files can be denied through settings.
+- GitHub Spec Kit `analyze` template:
+  https://raw.githubusercontent.com/github/spec-kit/main/templates/commands/analyze.md
+  - Spec analysis is a read-only quality gate that detects ambiguity,
+    underspecification, duplication, coverage gaps, and constitution conflicts
+    before implementation.
+- GitHub Spec Kit `specify` template:
+  https://raw.githubusercontent.com/github/spec-kit/main/templates/commands/specify.md
+  - Spec generation validates testability, measurable success criteria,
+    stakeholder clarity, scope, dependencies, assumptions, and unresolved
+    clarifications before planning.
+- GitHub Spec Kit SDD overview:
+  https://github.com/github/spec-kit/blob/main/spec-driven.md
+  - SDD treats the specification as the source of truth and folds testing and
+    quality into the spec-driven workflow.
+- Spec Kit Agents paper:
+  https://arxiv.org/abs/2604.05278
+  - Recent SDD work reports better judged quality when phase-level
+    context-grounding and validation hooks are added to agentic spec workflows.
+- Constitutional SDD paper:
+  https://arxiv.org/abs/2602.02584
+  - Recent security-focused SDD work argues for non-negotiable constraints in
+    the specification layer, not only reactive verification after code.
+
+Reviewed but not cited in the implementation decision:
+
+- GitHub blog article on Spec Kit, because the repo templates provided the more
+  precise implementation surface.
+- General Claude Code overview, because the skills/settings/subagent docs were
+  more specific.
+
+Conflicting evidence:
+
+- None that changes the implementation. The only material caveat is that local
+  repo policy names Opus 4.7 as preferred reviewer, while runtime access remains
+  account-dependent. The implementation must record requested model separately
+  from proven model.
 
 ## Success Criteria
 
-- [x] Shared project settings no longer set Remote Control blocker variables
-  such as `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` or `DISABLE_TELEMETRY`.
-- [x] The harness exposes an operator-facing `remote-control` route that
-  explains the native Claude Code commands and boundaries.
-- [x] A no-secret static doctor detects local blockers for native Remote
-  Control and returns machine-readable JSON.
-- [x] A smoke gate prevents regressions: blocker variables in shared settings,
-  API-key-precedence over subscription auth, missing version evidence, and
-  static runtime overclaims must fail.
-- [x] The generated capability map discovers the route, script, and eval gate.
-- [x] Docs distinguish native Remote Control from `claude --remote` cloud
-  sessions and from any custom network control plane.
+- [x] A new project skill `.claude/skills/specqa/SKILL.md` defines `/specqa` as
+  the Spec QA Agent for every created or updated `SPEC.md`.
+- [x] `/workflow` runs Spec QA after `SPEC.md` creation/update/reuse and before
+  execution for non-trivial file-changing work.
+- [x] `/opusworkflow` assigns the Spec QA reviewer to Opus 4.7 high/xhigh when
+  runtime identity is proven and blocks Opus claims when it is not.
+- [x] `/digestflow` requires report-derived claims embedded into `SPEC.md` to
+  pass Spec QA through repo evidence or live-source evidence before execution.
+- [x] `/verify` treats missing non-trivial Spec QA evidence as an incomplete
+  planning contract before closeout.
+- [x] Spec QA requires current webresearch for SOTA, model/provider, pricing,
+  legal/regulatory, security, platform, or other time-sensitive claims.
+- [x] Spec QA outputs both human-readable and machine-readable artifacts under
+  `.taste/specqa/{run_id}/spec-qa.md` and `.taste/specqa/{run_id}/spec-qa.json`.
+- [x] Spec QA blocks execution on critical findings and records actionable
+  improvement suggestions for non-critical findings.
+- [x] Static fixtures and `scripts/specqa-smoke.sh --fixtures` reject overclaims:
+  no webresearch ledger, Opus claim without identity proof, critical findings
+  that do not block, missing improvement suggestions, and missing artifacts.
+- [x] `scripts/harness-eval.sh`, `scripts/release-check.sh`,
+  `scripts/test-harness.sh`, and the generated capability map include the
+  Spec QA gate.
+- [x] Public docs and project instructions explain that `/opusworkflow` is still
+  the default workflow and `/specqa` is the automatic spec-review gate inside it.
 - [x] No `.env`, `.env.*`, `.claude/*.local.json`, key files, credentials, or
   private tokens are read or committed.
 
 ## Scope
 
-In Scope:
+### In Scope
 
-- Use official Claude Code docs to research native Remote Control behavior.
-- Patch shared harness settings to avoid known Remote Control blockers.
-- Add a `remote-control` skill/route, static doctor, smoke gate, fixtures,
-  eval metadata, and docs.
-- Regenerate generated capability map artifacts.
+- Add the `/specqa` project skill and static contract.
+- Add fixtures, a smoke gate, and a static eval task.
+- Wire `/specqa` into `/workflow`, `/opusworkflow`, `/digestflow`, and `/verify`.
+- Update README, CLAUDE, AGENTS, startup skill counts, test harness expectations,
+  release gates, and capability-map registration.
+- Regenerate generated capability-map artifacts.
 
-Out of Scope:
+### Out of Scope
 
-- Starting a live Remote Control session during static CI.
-- Reading Claude local credentials, `.env`, `.claude/*.local.json`, or managed
-  organization settings.
-- Building a custom HTTP/LAN/mobile control server.
-- Claiming that the operator's account, organization, or mobile app is eligible
-  without live authenticated runtime evidence.
+- Building a custom Claude API service, paid API fallback, or external reviewer
+  daemon.
+- Proving live Opus 4.7 runtime identity in static CI.
+- Automatically rewriting every failing spec; V1 suggests improvements and
+  blocks critical findings, while workflow execution applies repairs in the
+  normal plan/spec loop.
+- Reading secrets, local auth tokens, `.env`, or provider-local configuration.
 
-## DeepResearch Brief
+## Spec QA Contract
 
-### Investigation Mode
+Spec QA must review the active `SPEC.md` before implementation and produce:
 
-Comprehensive, with a parallel research ceiling of 10 from
-`bash scripts/parallel-capacity.sh --json`. Effective lanes used: 6 distinct
-sidecar lanes plus local implementation, because the useful branches were repo
-mapping, capability-map wiring, analogous route patterns, test/eval gates,
-official docs, and adversarial review.
+- Spec identity: path, SHA-256, generated/updated/reused status, and task.
+- Model evidence: requested reviewer model, proven reviewer model if known,
+  identity proof source, and `spec_qa_model_identity_status`.
+- Current-fact evidence: source ledger for webresearch, access dates, reviewed
+  but not cited sources, rejected/downweighted sources, and unresolved
+  uncertainty.
+- Evidence states: `repo-verified`, `web-verified`, `report-derived`,
+  `conflicting`, and `unverified`.
+- Quality findings: requirements clarity, testability, acceptance coverage,
+  success metrics, SOTA/currentness, security/compliance, UX/product taste,
+  implementation risk, rollback/verification adequacy, and changed-line trace
+  readiness.
+- Improvement suggestions: concrete, spec-level changes with severity,
+  rationale, source/evidence link, and whether they are blocking.
+- Decision: `PASS`, `PASS_WITH_SUGGESTIONS`, `FIX_REQUIRED`, or `BLOCKED`.
 
-### Collaborative Research Plan
+Critical findings must force `FIX_REQUIRED` or `BLOCKED`. A run with any
+critical finding must not allow execution to begin until the spec is repaired or
+the blocker is explicitly reclassified with evidence.
 
-- Deliverable: a static, release-gated harness patch that makes Claude Code
-  native Remote Control compatible with minmaxing.
-- Branches:
-  - official Claude Code Remote Control docs
-  - official Claude Code settings/env docs
-  - Codex project config and agent parallelism docs
-  - local harness capability registration
-  - local smoke/eval/release patterns
-  - security review for remote-facing authority
-- Source classes:
-  - official Claude docs
-  - official OpenAI Codex docs
-  - repo truth surfaces
-  - read-only subagent audits
-- Stop condition: identify a concrete blocker and implement the smallest
-  verified patch that removes it while preserving secret safety and release
-  gates.
+## Surgical Diff Discipline
 
-### Local Evidence
-
-- `.claude/settings.json` currently sets
-  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`.
-- No `.claude/skills/remote-control/SKILL.md`, route entry, smoke script, or
-  eval gate currently exists.
-- `scripts/harness-capability-map.sh` discovers `.claude/skills/*/SKILL.md`,
-  route groups, related scripts, and eval tasks.
-- `scripts/release-check.sh` is the static release gate that must include new
-  route smokes.
-
-### Current Product Evidence
-
-- Claude Code Remote Control exists as native commands:
-  `/remote-control`, `/rc`, `claude --remote-control`, and
-  `claude remote-control`.
-- Remote Control runs Claude Code locally and exposes that local session to
-  Claude web/mobile; it is distinct from `claude --remote`, which starts a
-  cloud session.
-- Claude Code Remote Control troubleshooting lists
-  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` and `DISABLE_TELEMETRY` as
-  environment variables that can make eligibility checks fail.
-- Remote Control requires claude.ai subscription/OAuth-style login; API-key
-  authentication and long-lived inference-only tokens are not sufficient.
-- Claude Code settings support shared project `env` values and settings
-  precedence, so shared project settings can create repo-wide runtime blockers.
-
-### Source Ledger
-
-- Claude Code Remote Control, accessed 2026-05-07:
-  https://code.claude.com/docs/en/remote-control
-- Claude Code on the web, accessed 2026-05-07:
-  https://code.claude.com/docs/en/claude-code-on-the-web
-- Claude Code settings/configuration, accessed 2026-05-07:
-  https://code.claude.com/docs/en/settings
-- OpenAI Codex config reference, accessed 2026-05-07:
-  https://developers.openai.com/codex/config-reference
+- Smallest sufficient implementation: add a project skill, static fixtures,
+  static smoke/eval wiring, and targeted docs/workflow integration.
+- No speculative abstractions: do not build a runtime service, hosted reviewer,
+  API billing route, or new schema framework beyond the lightweight fixture
+  validator needed for the smoke gate.
+- No drive-by refactors: do not reorganize existing skills, commands, docs,
+  provider scripts, or archived specs outside the touched route.
+- Changed-line trace:
+  - Skill/docs edits map to success criteria 1-7 and 10-11.
+  - Smoke/eval/release/test edits map to success criteria 8-10.
+  - Capability-map regeneration maps to success criterion 10.
+  - Active `SPEC.md` replacement maps to this requested implementation plan.
 
 ## Agent-Native Estimate
 
-- Estimate type: agent-native.
-- Capacity evidence: `bash scripts/parallel-capacity.sh --json` reported
-  `codex_max_threads=10`, `recommended_ceiling=10`, `hardware_class=workstation`,
-  `cores=16`, `ram_gb=32`, and `agent_teams_available=false` on 2026-05-07.
-- Effective parallel budget: 6 research lanes, 1 local implementation lane.
-- Agent wall-clock: 60-120 minutes.
-- Agent-hours: 2-4 across research, patch, and verification.
-- Human touch time: none for static implementation; live `rc` proof requires
-  the operator's Claude account and mobile/web connection.
-- Calendar blockers: none for static release.
-- Confidence: medium-high for the blocker removal and static gate; medium for
-  live account eligibility because Team/Enterprise admin policy and login state
-  are external.
+- Estimate type: agent-native wall-clock.
+- Execution topology: local supervisor, no spawned subagents in this Codex turn.
+- Capacity evidence: `bash scripts/parallel-capacity.sh --json` returned
+  `codex_max_threads=10`, `recommended_ceiling=10`, `cores=16`, `ram_gb=32`,
+  `default_substrate=subagents`, and `agent_teams_available=false`.
+- Effective lanes: 5 research tracks of ceiling 10; 1 implementation lane.
+- Critical path: current-source research -> spec/archive -> skill + smoke
+  implementation -> workflow/docs wiring -> static gates -> capability map.
+- Agent wall-clock: optimistic 75 minutes / likely 2.5 hours / pessimistic 4
+  hours.
+- Agent-hours: 3-5 active hours across research, edits, verification, and
+  repair loops.
+- Human touch time: none for static harness implementation; live Opus identity
+  proof remains operator/account-dependent.
+- Calendar blockers: none for static local release; runtime Opus proof may be
+  blocked by subscription/account availability.
+- Confidence: medium-high for static automation; medium for live Opus execution
+  claims because they require runtime evidence outside static CI.
+- Human-equivalent baseline: roughly 1 working day for a careful developer
+  because the change touches workflow docs, tests, fixtures, generated maps, and
+  release gates.
 
 ## Implementation Plan
 
-### Task 1: Remove shared Remote Control blockers
-
-Definition of Done:
-
-- [x] `.claude/settings.json` no longer sets
-  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` or `DISABLE_TELEMETRY`.
-- [x] The settings still avoid secrets and keep project hooks/denies intact.
-
-### Task 2: Add native Remote Control harness route
-
-Definition of Done:
-
-- [x] `.claude/skills/remote-control/SKILL.md` documents native `rc` commands,
-  prerequisites, troubleshooting, and static/runtime evidence boundaries.
-- [x] README, CLAUDE, and AGENTS mention native Remote Control support.
-- [x] Capability map groups `remote-control` under operations and links the
-  doctor/smoke script.
-
-### Task 3: Add static doctor and regression gate
-
-Definition of Done:
-
-- [x] `scripts/remote-control-doctor.sh --static --json` checks version,
-  shared settings blockers, API-key-precedence warnings, and runtime proof
-  status without reading secrets.
-- [x] `scripts/remote-control-smoke.sh --fixtures` validates green/red fixture
-  contracts.
-- [x] `scripts/harness-eval.sh`, `scripts/release-check.sh`, and
-  `scripts/test-harness.sh` include the route gate.
-- [x] Generated capability map artifacts are regenerated.
+1. Add `.claude/skills/specqa/SKILL.md` with a concise, evidence-bound Spec QA
+   procedure.
+2. Add `.taste/fixtures/specqa/*` fixture artifacts and
+   `scripts/specqa-smoke.sh` to validate the static contract.
+3. Register `specqa-smoke` in `scripts/harness-eval.sh`,
+   `scripts/release-check.sh`, `scripts/test-harness.sh`, and
+   `scripts/harness-capability-map.sh`.
+4. Add `m13-specqa-sota-gate` eval task and golden metadata.
+5. Wire Spec QA into `/workflow`, `/opusworkflow`, `/digestflow`, and `/verify`.
+6. Update README, CLAUDE, AGENTS, `scripts/start-session.sh`, and skill-count
+   expectations from 36 to 37.
+7. Regenerate `docs/harness-capability-map.md` and
+   `docs/harness-capability-map.json`.
+8. Run static verification and repair failures.
 
 ## Verification
 
-- [x] `bash -n scripts/remote-control-doctor.sh scripts/remote-control-smoke.sh scripts/harness-eval.sh scripts/release-check.sh scripts/test-harness.sh scripts/harness-capability-map.sh scripts/opusminimax-doctor.sh setup.sh`
-- [x] `python3 -m json.tool` on changed settings examples, remote-control fixtures, and eval golden JSON.
-- [x] `bash scripts/remote-control-doctor.sh --static --json`
-  - Result: pass. Claude Code CLI version detected as `2.1.118`; no shared
-    blocker variables; runtime proof status `not_run_static_only`.
-- [x] `bash scripts/remote-control-smoke.sh --fixtures`
-  - Result: pass. Green fixture accepted; red fixtures for shared blocker env,
-    API-key auth, custom network control plane, static runtime proof claim, and
-    token-in-URL were rejected.
-- [x] `bash scripts/harness-capability-map.sh --write`
-- [x] `bash scripts/harness-capability-map.sh --check --json`
-  - Result: pass. Counts include 36 skills, 58 scripts, 23 eval tasks.
-- [x] `bash scripts/harness-eval.sh --json`
-  - Result: pass. 23 tasks, 20 gates, no mismatches; `remote-control-smoke`
-    passed.
-- [x] `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`
-  - Result: pass. 145 passed, 0 failed.
-- [x] `bash scripts/security-smoke.sh`
-  - Result: pass.
-- [x] `bash scripts/visualize-smoke.sh`
-  - Result: pass after updating expected skill count to 36.
-- [x] `bash scripts/release-check.sh --static-only`
-  - Result: pass, including full static harness and `git diff --check`.
+- Success criteria 1-8 -> `bash scripts/specqa-smoke.sh --fixtures`
+- Success criterion 9 -> negative fixture rejection in `specqa-smoke`
+- Success criterion 10 -> `bash scripts/harness-eval.sh --json`,
+  `bash scripts/harness-capability-map.sh --check --json`, and
+  `bash scripts/release-check.sh --static-only`
+- Success criterion 11 -> `rg -n "specqa|Spec QA|37 skills" README.md CLAUDE.md AGENTS.md .claude/skills`
+- Success criterion 12 -> `git diff --check` plus no reads of `.env` or local
+  secret paths
+- Script syntax -> `bash -n scripts/*.sh`
+- JSON validity -> `python3 -m json.tool` on added fixtures and golden JSON
 
-## Implementation Notes
+Verification results:
 
-- Removed `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` from shared settings and
-  profile examples, replacing it with narrower non-RC-blocking toggles:
-  `DISABLE_AUTOUPDATER`, `DISABLE_FEEDBACK_COMMAND`, and
-  `DISABLE_ERROR_REPORTING`.
-- Updated `setup.sh`, `setup.ps1`, and `scripts/opusminimax-doctor.sh` so local
-  profile generation/repair does not reintroduce the Remote Control blocker.
-- Added `.claude/skills/remote-control/SKILL.md`,
-  `scripts/remote-control-doctor.sh`, `scripts/remote-control-smoke.sh`,
-  `.taste/fixtures/remote-control/*`, and `evals/harness/*/m12-*`.
-- Registered the route in `scripts/harness-capability-map.sh`,
-  `scripts/harness-eval.sh`, `scripts/release-check.sh`,
-  `scripts/test-harness.sh`, `scripts/start-session.sh`, README, CLAUDE, and
-  AGENTS.
+- [x] `bash scripts/specqa-smoke.sh --fixtures` passed.
+- [x] `bash scripts/opusworkflow-smoke.sh` passed with the new `spec_qa`
+  artifact contract.
+- [x] `bash scripts/visualize-smoke.sh` passed after the skill-count update.
+- [x] `bash scripts/harness-capability-map.sh --write` regenerated generated
+  docs.
+- [x] `bash scripts/harness-capability-map.sh --check --json` passed with 37
+  skills, 59 scripts, and 24 eval tasks.
+- [x] `bash scripts/harness-eval.sh --json` passed with 24 tasks and 21 gates,
+  including `specqa-smoke`.
+- [x] `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh` passed: 148
+  passed, 0 failed.
+- [x] `bash scripts/release-check.sh --static-only` passed, including
+  `git diff --check`.
 
 ## Rollback Plan
 
-1. Revert this commit.
-2. Regenerate the capability map if needed.
-3. Re-run `bash scripts/release-check.sh --static-only`.
+1. Revert this commit or restore the touched files from git.
+2. Run `bash scripts/harness-capability-map.sh --write` if generated map files
+   were changed.
+3. Run `bash scripts/release-check.sh --static-only`.
+4. Restore the previous active spec from the archive if needed:
+   `.taste/specs/20260509-015957-claude-code-native-remote-control-harness-superseded-before-new-spec.md`.
 
 ## Introspection: Pre-Implementation
 
-- Likely mistake: accidentally building a custom remote-control server. The
-  fix must stay on Claude Code native `rc`.
-- Likely mistake: removing privacy settings too broadly. Mitigation: only
-  remove known Remote Control blockers from shared project settings and keep
-  deny rules intact.
-- Likely mistake: static doctor overclaims runtime success. Mitigation: doctor
-  reports runtime proof as `not_run_static_only` unless the operator runs live
-  Remote Control.
-- Likely mistake: adding a skill count without updating hardcoded truth
-  surfaces. Mitigation: update startup/test/visualize checks and regenerate the
-  capability map.
-
-## Introspection: Post-Implementation
-
-- Verified mistake avoided: no custom remote-control server or network bridge
-  was added. The route documents and gates only native Claude Code RC.
-- Verified mistake avoided: static checks do not claim live browser/mobile
-  connection. Doctor artifacts report `runtime_remote_control_started=false`
-  and `runtime_proof_status=not_run_static_only`.
-- Verified mistake avoided: secret protections remained intact. Shared and
-  example profiles still deny `.env`, `.env.*`, `.claude/*.local.json`, and
-  `secrets/**`; no secret files were read.
-- Remaining live-runtime caveat: this proves harness compatibility, not the
-  operator account's live RC eligibility. Team/Enterprise admin policy,
-  claude.ai login state, mobile app state, and network access still require a
-  manual authenticated RC run by the operator.
+- Likely mistake: overclaiming that Opus 4.7 actually performed the QA review.
+  Mitigation: require identity evidence fields and make static gates reject
+  Opus claims without proof.
+- Likely mistake: turning Spec QA into a manual side route that workflows forget.
+  Mitigation: wire it into `/workflow`, `/opusworkflow`, `/digestflow`,
+  `/verify`, release checks, and eval metadata.
+- Likely mistake: using stale "SOTA" knowledge. Mitigation: require current
+  webresearch and source ledger when SOTA or time-sensitive claims matter.
+- Likely mistake: blocking every minor suggestion. Mitigation: use severity and
+  decision states so critical issues block, while lower-severity improvements
+  become actionable suggestions.

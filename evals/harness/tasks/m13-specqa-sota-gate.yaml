@@ -1,0 +1,6 @@
+id: m13-specqa-sota-gate
+title: Automated SOTA Spec QA gate
+gate: scripts/specqa-smoke.sh --fixtures
+expected_result: pass
+golden: evals/harness/golden/m13-specqa-sota-gate.json
+evidence: validates /specqa workflow wiring, current webresearch source ledger requirements, Opus 4.7 identity-proof boundaries, critical-finding blocking, fixture rejection, and release registration

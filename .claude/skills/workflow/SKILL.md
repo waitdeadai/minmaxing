@@ -28,7 +28,7 @@ and record the specialist as `inner_contract=agentfactory|hiveworkflow|parallel|
 ## Non-Negotiable Contract
 
 - Finish the task in this command whenever it is feasible.
-- For file-changing work, follow this order: deep research -> code audit -> plan -> `SPEC.md` -> execute -> verify.
+- For file-changing work, follow this order: deep research -> code audit -> plan -> `SPEC.md` -> Spec QA -> execute -> verify.
 - Do efficacy-first deep research for every task before planning or execution.
 - Audit the current codebase before planning or writing `SPEC.md`.
 - Run hard-gate introspection after code audit and before freezing the plan.
@@ -36,6 +36,9 @@ and record the specialist as `inner_contract=agentfactory|hiveworkflow|parallel|
 - Record an `Agent-Native Estimate` before writing, replacing, or reusing
   `SPEC.md`. The estimate must be agent-native wall-clock by default, not a
   bare human-equivalent calendar estimate.
+- After `SPEC.md` is created, updated, or intentionally reused, run `/specqa`
+  before implementation. Spec QA is the SOTA/currentness and requirements
+  quality gate for the active spec, not a post-implementation review.
 - Run hard-gate introspection after implementation and before closeout.
 - Record a parallel-aware metacognitive route before research planning for
   file-changing work: task class, capacity evidence, effective parallel budget,
@@ -140,6 +143,7 @@ Choose the route from user intent:
 | define ICP, ideal customer profile, tailor taste to customer, update taste.md or taste.vision from ICP | route through `/opusworkflow` with `inner_contract=defineicp` when files may change; keep proposal-first unless explicit apply approval is present |
 | Claude product, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, plan availability, limits, setup | route product facts through `/claudeproduct` before generic research; continue into `/workflow` only if files change |
 | remote control, rc, continue Claude Code from phone, claude.ai/code local session | route to `/remote-control`; use native Claude Code RC commands only (`/remote-control`, `/rc`, `claude --remote-control`, `claude remote-control`) and never build a custom control server |
+| spec QA, spec review, specification QA, SOTA spec audit | route to `/specqa`; review the active `SPEC.md` after creation/update/reuse and before implementation, using current webresearch when SOTA or time-sensitive facts matter |
 | parallel, mode parallel, dense workflow, orchestrate subagents, split across instances | route through `/opusworkflow` with `inner_contract=parallel` for file-changing packet execution; run the `/parallel` eligibility audit and use packets only when capacity, ownership, and verification pass |
 | hive, hive mind, coordinated agents, swarm, multi-agent synthesis | route through `/opusworkflow` with `inner_contract=hiveworkflow` for file-changing hive work only when roles, blackboard, dissent, ownership, capacity, and verification pass; otherwise downgrade to `/workflow` or `/parallel` fallback |
 | explain | inspect and explain directly |
@@ -212,6 +216,7 @@ Required section order:
 ## Plan
 ## Agent-Native Estimate
 ## SPEC Decision
+## Spec QA
 ## Execution Notes
 ## Verification Evidence
 ## Outcome
@@ -234,6 +239,11 @@ Required content inside the sections:
   capacity evidence, effective lanes, critical path, agent wall-clock,
   agent-hours, human touch time, calendar blockers, confidence, and any
   human-equivalent baseline as secondary only.
+- `## Spec QA` must record `/specqa` decision, requested reviewer model,
+  proven reviewer model if any, `spec_qa_model_identity_status`, current
+  webresearch source ledger when SOTA/time-sensitive claims matter, critical
+  finding count, improvement suggestions, artifact paths, and whether execution
+  is allowed.
 - `## Execution Notes` must record any freshness re-checks and the final owned files touched by each delegated packet.
 - If parallel run artifacts exist, `## Execution Notes` must record the
   `.taste/parallel/{run_id}` path and `scripts/parallel-aggregate.sh` output,
@@ -247,7 +257,7 @@ Required content inside the sections:
   artifacts, add the matching minimal JSON sidecar and validate it with
   `scripts/artifact-lint.sh` before closeout.
 
-When this lifecycle is reused by `/digestflow`, insert `## Report Intake` between `## Taste Gate` and `## Research Brief`. The intake section must record a report manifest, claim ledger, contradictions, injection quarantine, and the default `no-persist report bodies` decision. Imported claims remain `report-derived` until the repo's own deepresearch, live sources, or repo inspection upgrade them to `web-verified` or `repo-verified`.
+When this lifecycle is reused by `/digestflow`, insert `## Report Intake` between `## Taste Gate` and `## Research Brief`. The intake section must record a report manifest, claim ledger, contradictions, injection quarantine, and the default `no-persist report bodies` decision. Imported claims remain `report-derived` until the repo's own deepresearch, live sources, repo inspection, and `/specqa` upgrade them to `web-verified` or `repo-verified`.
 
 ## Phase 2: Deep Research
 
@@ -602,6 +612,23 @@ bash scripts/spec-archive.sh prepare "$ARGUMENTS" "superseded-before-new-spec" 2
 7. For tiny local tasks, keep the spec intentionally small rather than inflating it, but do not omit `## Codebase Anchors`.
 8. Update the `## SPEC Decision` section in `WORKFLOW_ARTIFACT` with whether `SPEC.md` was created, updated, or reused, record the file path, and record the archive path or "not needed because reused/new workspace".
 
+9. Run the `/specqa` playbook inline immediately after the spec decision and
+   before implementation. Append `## Spec QA` to `WORKFLOW_ARTIFACT` with:
+- requested reviewer: `claude-opus-4-7` high/xhigh when `/opusworkflow` policy
+  applies
+- proven reviewer model or `unknown`
+- `spec_qa_model_identity_status`
+- current source ledger for webresearched actual-time data when SOTA or
+  time-sensitive facts matter
+- critical findings and improvement suggestions
+- artifact paths under `.taste/specqa/{run_id}/`
+- decision: `PASS`, `PASS_WITH_SUGGESTIONS`, `FIX_REQUIRED`, or `BLOCKED`
+- execution allowed: yes/no
+
+If `/specqa` returns `FIX_REQUIRED` or `BLOCKED`, repair the spec or report the
+blocker before implementation. Do not execute from a spec with unresolved
+critical findings.
+
 Do not stop after `SPEC.md` is written.
 
 ## Phase 6: Execute
@@ -666,6 +693,8 @@ Before you emit `## Workflow Complete` for a file-changing task, confirm all of 
 - `Agent-Native Estimate` exists, is agent-native by default, includes
   confidence, and is not only a human-equivalent baseline.
 - `SPEC.md` exists on disk as a real file.
+- `Spec QA` exists for non-trivial file-changing work, records current-source
+  evidence when SOTA/time-sensitive claims matter, and allows execution.
 - `WORKFLOW_ARTIFACT` exists and its phase sections are filled in.
 - Implementation is done or explicitly not required.
 - Verification includes concrete evidence.
@@ -713,7 +742,7 @@ bash scripts/spec-archive.sh closeout "$ARGUMENTS" "shipped: [short outcome]" 2>
 
 ## Specialist Skills
 
-The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepretaste`, `/defineicp`, `/claudeproduct`, `/remote-control`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/hive`, `/hiveworkflow`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
+The project still provides specialist commands like `/autoplan`, `/digestflow`, `/deepretaste`, `/defineicp`, `/claudeproduct`, `/remote-control`, `/specqa`, `/deepresearch`, `/webresearch`, `/browse`, `/introspect`, `/parallel`, `/hive`, `/hiveworkflow`, `/sprint`, `/verify`, `/audit`, `/visualize`, `/visualizeworkflow`, and `/ship`.
 
 Use them like this:
 - as direct user-invoked helpers
@@ -739,6 +768,7 @@ When complete, return:
 - Plan: [completed / skipped / blocked]
 - Agent-Native Estimate: [completed / blocked / not applicable for tiny direct task]
 - SPEC.md: [created / updated / reused / blocked]
+- Spec QA: [PASS / PASS_WITH_SUGGESTIONS / FIX_REQUIRED / BLOCKED / not applicable]
 - Surgical Diff: [PASS / FIX_REQUIRED / not applicable]
 - Spec Archive: [archived / already archived / not needed / blocked]
 - Implementation: [done / not needed]
@@ -752,6 +782,7 @@ When complete, return:
 ## Anti-Patterns
 
 - stopping after writing `SPEC.md`
+- executing before `/specqa` reviewed the active `SPEC.md`
 - overwriting a non-reused `SPEC.md` without archiving it to `.taste/specs/`
 - planning from memory alone without a research brief
 - skipping MiniMax MCP research when current external facts matter and the tool is available

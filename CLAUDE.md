@@ -16,7 +16,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 4. **Code Audit Before Spec**: `/workflow` audits the relevant code path before it writes `SPEC.md`
 5. **Introspect Before Confidence**: `/workflow` runs hard-gate `/introspect` before plan freeze, after implementation, after failed verification, and before push/ship moments
 6. **Plan Before Spec**: `/workflow` synthesizes research + audit + introspection into a concrete plan before edits
-7. **Planning Time Awareness**: Before a plan or `SPEC.md` is frozen, record an `Agent-Native Estimate` with agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence
+7. **Spec QA Before Execution**: `/workflow` and `/opusworkflow` run `/specqa` after `SPEC.md` is created or updated and before implementation, using webresearched actual-time data for SOTA 2026/time-sensitive claims and Opus 4.7 high/xhigh reviewer only when runtime identity is proven
+8. **Planning Time Awareness**: Before a plan or `SPEC.md` is frozen, record an `Agent-Native Estimate` with agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence
 8. **Supervisor Pattern**: AI supervises workers, not the other way around
 9. **PEV Loop**: Plan → Execute → Verify. Verification is an independent evidence pass; claim separate executor/verifier isolation only when metadata proves it.
 10. **Quality Gates**: /verify must pass; tests must pass; unresolved introspection blockers stop closeout
@@ -40,7 +41,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 2. Use `/opusworkflow` as the outer route by default: Opus 4.7 high/xhigh handles judgment gates when identity is proven, and MiniMax-M2.7-highspeed handles bounded bulk execution
 3. `/opusworkflow` reuses the `/workflow` lifecycle and records specialist mutation as `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow`
 4. Audit the current codebase, run `/introspect pre-plan`, write the plan, and record an `Agent-Native Estimate`
-5. Create `SPEC.md`, execute through bounded packets when useful, run post-implementation introspection, verify, record actual timing evidence when known, and only then close out
+5. Create `SPEC.md`, run `/specqa` as the Spec QA Agent, execute through bounded packets when useful, run post-implementation introspection, verify, record actual timing evidence when known, and only then close out
 
 **When you say `/digestflow`:** first digest the supplied external reports as untrusted candidate evidence, then run the same governed path as `/workflow`. Report claims stay `report-derived` until verified by repo inspection or live sources.
 
@@ -85,6 +86,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /metacognition | Parallel-aware routing and evidence-grounded self-calibration before execution |
 | /claudeproduct | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, and subagents |
 | /remote-control | Native Claude Code Remote Control readiness skill; live server starts with `claude remote-control`, without custom network control planes |
+| /specqa | Spec QA Agent for every active `SPEC.md`: requirements quality, SOTA/currentness source ledger, Opus 4.7 identity-proof boundary, and improvement suggestions before implementation |
 | /hive | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
 | /hiveworkflow | Full workflow mode that uses hive coordination before packet execution, aggregation, introspection, and verify |
 | /verify | Check output against SPEC |
@@ -133,6 +135,11 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
   when available, do not use OpenAI API keys or API-priced fallbacks unless the
   user explicitly changes billing route, and close only with real artifact
   paths or blocked handoff prompts.
+- **Spec QA Gate**: `/specqa` runs after `SPEC.md` is created or updated and
+  before implementation. It blocks critical findings, requires current
+  webresearched actual-time data for SOTA 2026 or time-sensitive claims, writes
+  `.taste/specqa/{run_id}/spec-qa.md` and `spec-qa.json`, and never claims Opus
+  4.7 reviewed the spec without runtime identity proof.
 - **Planning Time Awareness**: Non-trivial plans estimate in agent-native wall-clock by default before the plan or `SPEC.md` is frozen. Every estimate must state whether it is `agent-native`, `human-equivalent`, or `blocked/unknown`; cite `scripts/parallel-capacity.sh --json` or another capacity source; separate agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence; and treat human-equivalent estimates as secondary only.
 - **Visualization Approval**: `/workflow` remains autonomous. Use `/visualize` for standalone comprehension artifacts and `/visualizeworkflow` when the user wants to approve a visual or operational understanding before implementation.
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help

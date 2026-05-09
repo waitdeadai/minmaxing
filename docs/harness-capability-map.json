@@ -65,10 +65,10 @@
   ],
   "counts": {
     "codex_skills": 1,
-    "eval_tasks": 23,
+    "eval_tasks": 24,
     "rules": 15,
-    "scripts": 58,
-    "skills": 36
+    "scripts": 59,
+    "skills": 37
   },
   "evals": [
     {
@@ -97,6 +97,15 @@
       "id": "m12-remote-control-smoke",
       "task_path": "evals/harness/tasks/m12-remote-control-smoke.yaml",
       "title": "Native Claude Code Remote Control compatibility smoke"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/specqa-smoke.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m13-specqa-sota-gate.json",
+      "id": "m13-specqa-sota-gate",
+      "task_path": "evals/harness/tasks/m13-specqa-sota-gate.yaml",
+      "title": "Automated SOTA Spec QA gate"
     },
     {
       "expected_result": "pass",
@@ -360,10 +369,10 @@
       "title": "Security Rules"
     },
     {
-      "line_count": 146,
+      "line_count": 150,
       "name": "spec",
       "path": ".claude/rules/spec.rules.md",
-      "sha256": "98f6593ea8e851b73c73b89657d567d633de97c9f4d9ada3788715b6a72a935c",
+      "sha256": "5851a89566849b6f23c3af01f6849d3d4c4ca12c4c6dff82ba3285375c038bd4",
       "title": "Spec Rules"
     },
     {
@@ -495,12 +504,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 718,
+      "line_count": 722,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "95994dddf6a8e676f0b08df3fad96a5a7e76c889bebe8c1005b7e5dfa02365b5"
+      "sha256": "4d1243b7d8fedf4078cc2412b7fa67314918c83521510dbbde5f902d64e45d77"
     },
     {
       "line_count": 640,
@@ -519,12 +528,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 811,
+      "line_count": 820,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "67d99afab21fd9b3f351232643551dc4bf35d689823517d900d0ac91fd56e6bb"
+      "sha256": "8b76734422d3dbb928e2c7204775efc99c98deaf8fd1929e1b876ba1faec4c70"
     },
     {
       "line_count": 322,
@@ -631,12 +640,12 @@
       "sha256": "cb5fe25369342ebe8d517507170a5b64b01fba48e69b85f827ce38335dccbcbd"
     },
     {
-      "line_count": 409,
+      "line_count": 423,
       "name": "opusminimax",
       "path": "scripts/opusminimax.sh",
       "purpose": "Prepare or explicitly launch the /opusminimax planner workflow.",
       "required_gate": false,
-      "sha256": "f58ef236e9e853e4def29f226f57ad2806b6bc6f255322432c82f19969b25b39"
+      "sha256": "319e26c5dfc176f89b03c924160d2801f04e7784d2e69dc0b7b049b4a820b613"
     },
     {
       "line_count": 30,
@@ -647,20 +656,20 @@
       "sha256": "199a1e495da27067db293bda488b10b8938968565b2d96646380d88c187728c4"
     },
     {
-      "line_count": 226,
+      "line_count": 236,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "f796b51ac9260aedd03110bc89c4f13c940b128fbc6c118db2811a16948a96e3"
+      "sha256": "4c28a87af707c5767fabc59824abdd78b1fa1009924ee3d993282d2c1ca9cb45"
     },
     {
-      "line_count": 143,
+      "line_count": 144,
       "name": "opusworkflow",
       "path": "scripts/opusworkflow.sh",
       "purpose": "Prepare or explicitly launch the definitive /opusworkflow route.",
       "required_gate": false,
-      "sha256": "0882f3210e6bf7e08509321f4daae9c1766b1f542201902b982f8ae4786557e0"
+      "sha256": "53c629943964304983c2e480a2bfa72de178ee1b1172bc3cc27f69f304b07ff4"
     },
     {
       "line_count": 113,
@@ -703,12 +712,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 93,
+      "line_count": 94,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "27ab8b97947dbf0e432a58147702b662ea0d66dab8fe8f209f8acfef2ac2f8b3"
+      "sha256": "df6ef044c668995cd6394f974a62a57a34a70513ae5171310c75168766291af6"
     },
     {
       "line_count": 311,
@@ -775,6 +784,14 @@
       "sha256": "f54675c863977cc23a1d7356db0bfd80d4b7213797e9fc6fbe4cc5d00cd59adc"
     },
     {
+      "line_count": 311,
+      "name": "specqa-smoke",
+      "path": "scripts/specqa-smoke.sh",
+      "purpose": "automated SOTA Spec QA gate",
+      "required_gate": true,
+      "sha256": "de85a5a0caf321b9d8d7a76ca6d4528223b7484f7b616afea960a0cc8e47a308"
+    },
+    {
       "line_count": 85,
       "name": "sprint",
       "path": "scripts/sprint.sh",
@@ -783,12 +800,12 @@
       "sha256": "3e80abf5a2f2a5dc3532dbb294cf6f554c4acfa39189baaee2e46fcc3ff3a5f4"
     },
     {
-      "line_count": 118,
+      "line_count": 119,
       "name": "start-session",
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "81c6da767be4e12a0781ac6771df1aa6dae2897e83eb8a9f82870de6c6c59e89"
+      "sha256": "3a58203df2ff9c1b9486a13f91bf73f97755c1ee61da88a2510dd5be69208e6e"
     },
     {
       "line_count": 400,
@@ -807,12 +824,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 2010,
+      "line_count": 2063,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "796f0c5b5990496ab3578f30fb29906d75d9e960d8a6c970e4cb85d1bfc7570f"
+      "sha256": "51889d87435b9455e6fd10a4be132d0c4e3752d7d73a47f3280aac3bc917b325"
     },
     {
       "line_count": 127,
@@ -836,7 +853,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "d703f1466b573a3644921c6bdcedb64c1a4bcfe106320c32e29d9ab6dd96250e"
+      "sha256": "d30b520305b7049244485bfd9c7007a9716186de18bf61d1543d7c6e40ddf9a1"
     },
     {
       "line_count": 117,
@@ -1272,7 +1289,7 @@
       "core_route": false,
       "description": "Run the full minmaxing workflow from external AI research reports. Use when the task begins with Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, or similar reports that must be digested before the repo's own deepresearch and governed workflow.",
       "group": "research",
-      "line_count": 304,
+      "line_count": 316,
       "model_invocation": false,
       "name": "digestflow",
       "path": ".claude/skills/digestflow/SKILL.md",
@@ -1280,8 +1297,10 @@
         "evals/harness/tasks/m4-digestflow-report-derived-evidence.yaml"
       ],
       "related_rules": [],
-      "related_scripts": [],
-      "sha256": "d728eaecd477d3ff04671a8bd82d5a0fdb652afb5a598af4ddb9dd454140928e",
+      "related_scripts": [
+        "scripts/specqa-smoke.sh"
+      ],
+      "sha256": "7403954b58ab997c457a5df37f401b6797e0d838b7fa8acb6075e26667f0397e",
       "slash": "/digestflow",
       "user_invocable": true
     },
@@ -1469,7 +1488,7 @@
       "core_route": true,
       "description": "Use this as the definitive workflow command for mutating work: Opus 4.7 high/xhigh plans and reviews when proven available, and MiniMax-M2.7-highspeed executes bounded packets. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.",
       "group": "execution",
-      "line_count": 224,
+      "line_count": 240,
       "model_invocation": false,
       "name": "opusworkflow",
       "path": ".claude/skills/opusworkflow/SKILL.md",
@@ -1482,9 +1501,10 @@
         "scripts/opusminimax-doctor.sh",
         "scripts/opusworkflow.sh",
         "scripts/opusworkflow-smoke.sh",
-        "scripts/opussonnetworkflow.sh"
+        "scripts/opussonnetworkflow.sh",
+        "scripts/specqa-smoke.sh"
       ],
-      "sha256": "dc20eea58aed5e4bd0dbc3c67270a715867eb01a5e1db5dd9e1415a5691cfdc5",
+      "sha256": "05b4d84374cb81b69444f499c97c722a6ccec4eca3934969da9d9a7dd9050cb0",
       "slash": "/opusworkflow",
       "user_invocable": true
     },
@@ -1540,7 +1560,9 @@
       "model_invocation": true,
       "name": "qa",
       "path": ".claude/skills/qa/SKILL.md",
-      "related_eval_tasks": [],
+      "related_eval_tasks": [
+        "evals/harness/tasks/m13-specqa-sota-gate.yaml"
+      ],
       "related_rules": [],
       "related_scripts": [],
       "sha256": "44bdbfad5a617234b7ac6224a4d8b6fd7c31500bbbfd053ebd133f2f6b2db1bb",
@@ -1606,6 +1628,29 @@
       "user_invocable": true
     },
     {
+      "argument_hint": "[SPEC path or task]",
+      "core_route": true,
+      "description": "QA every newly created, updated, or reused SPEC.md before implementation using current webresearch for SOTA/time-sensitive claims and an Opus 4.7 high/xhigh reviewer when runtime identity is proven.",
+      "group": "quality",
+      "line_count": 172,
+      "model_invocation": false,
+      "name": "specqa",
+      "path": ".claude/skills/specqa/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m13-specqa-sota-gate.yaml"
+      ],
+      "related_rules": [
+        ".claude/rules/verify.rules.md",
+        ".claude/rules/spec.rules.md"
+      ],
+      "related_scripts": [
+        "scripts/specqa-smoke.sh"
+      ],
+      "sha256": "3f4cab00b76cdbcfae3f6f7de2ff9d67ada6ac264a55c307d546a0e790972361",
+      "slash": "/specqa",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "",
       "core_route": false,
       "description": "/sprint",
@@ -1645,7 +1690,7 @@
       "core_route": true,
       "description": "/verify",
       "group": "quality",
-      "line_count": 241,
+      "line_count": 248,
       "model_invocation": true,
       "name": "verify",
       "path": ".claude/skills/verify/SKILL.md",
@@ -1653,8 +1698,10 @@
       "related_rules": [
         ".claude/rules/verify.rules.md"
       ],
-      "related_scripts": [],
-      "sha256": "013f9df5f738b7b9ae9c3a11605dbd74bf91e09efcf5b6fe8fdb4b6ad86e35d2",
+      "related_scripts": [
+        "scripts/specqa-smoke.sh"
+      ],
+      "sha256": "75f571854e05280d26955efd4a766df61e3978c942cd502ac2a93985c9205af9",
       "slash": "/verify",
       "user_invocable": true
     },
@@ -1719,7 +1766,7 @@
       "core_route": true,
       "description": "Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.",
       "group": "execution",
-      "line_count": 786,
+      "line_count": 817,
       "model_invocation": false,
       "name": "workflow",
       "path": ".claude/skills/workflow/SKILL.md",
@@ -1736,12 +1783,13 @@
         "scripts/parallel-capacity.sh",
         "scripts/estimate-smoke.sh",
         "scripts/artifact-lint.sh",
+        "scripts/specqa-smoke.sh",
         "scripts/harness-eval.sh",
         "scripts/release-check.sh",
         "scripts/test-harness.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "4cfd883f190b08c8c2b639cb9f54fb3359be57e155696c33894cded814fa2f92",
+      "sha256": "89b7e199909bb3e68ad22a5a918f7a7acbff4c183b36fe063bcf22a5a2d6aa7b",
       "slash": "/workflow",
       "user_invocable": true
     }
@@ -1766,8 +1814,8 @@
   "summary": {
     "codex_file_count": 4,
     "codex_skill_count": 1,
-    "core_route_count": 16,
-    "eval_task_count": 23,
+    "core_route_count": 17,
+    "eval_task_count": 24,
     "groups": {
       "agent-systems": [
         "/agentfactory"
@@ -1816,6 +1864,7 @@
         "/introspect",
         "/qa",
         "/review",
+        "/specqa",
         "/verify"
       ],
       "release": [
@@ -1838,7 +1887,7 @@
     },
     "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 58,
-    "skill_count": 36
+    "script_count": 59,
+    "skill_count": 37
   }
 }

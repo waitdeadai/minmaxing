@@ -89,6 +89,7 @@ fi
 
 echo "[opusworkflow] definitive route: Opus 4.7 judgment + MiniMax-M2.7-highspeed execution"
 echo "[opusworkflow] closeout policy: verified, partial, or blocked-with-repair"
+echo "[opusworkflow] spec qa: required after SPEC.md and before implementation"
 
 case "$MODEL_PROFILE" in
   minimax)

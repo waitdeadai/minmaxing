@@ -42,6 +42,8 @@ Mental model:
   definitive route for this workflow.
 - It requests Opus 4.7 high/xhigh for planning/review when the account proves
   that model is available.
+- It runs `/specqa` after `SPEC.md` and before implementation, so the active
+  spec gets SOTA/currentness QA before code starts.
 - It uses MiniMax-M2.7-highspeed as the bounded executor for bulk edits and
   repair loops.
 - It must drive to a verified result, partial result, or blocked repair path.
@@ -57,7 +59,7 @@ Mental model:
 
 **Delegate execution. Keep judgment. Require evidence.**
 
-Setup adds a governed Claude Code harness where AI researches with an efficacy-first agent budget, audits the codebase, writes a concrete plan and `SPEC.md`, implements with clear ownership, and produces evidence before you trust the result.
+Setup adds a governed Claude Code harness where AI researches with an efficacy-first agent budget, audits the codebase, writes a concrete plan and `SPEC.md`, runs Spec QA, implements with clear ownership, and produces evidence before you trust the result.
 
 <p align="center">
   <a href="https://github.com/waitdeadai/minmaxing/stargazers"><img src="https://img.shields.io/github/stars/waitdeadai/minmaxing?style=flat-square&logo=github" alt="Stars"></a>
@@ -170,7 +172,7 @@ above from the project root. In `/opusworkflow` split mode, MiniMax is configure
 in the ignored executor profile `.claude/settings.minimax-executor.local.json`;
 it is not automatically added as a user-scope Claude MCP server.
 
-That's it. Memory system, governed runtime profiles, and 36 skills are
+That's it. Memory system, governed runtime profiles, and 37 skills are
 configured.
 
 ### Suggested Claude-Only Install
@@ -447,6 +449,11 @@ security, registry, or final verification decisions.
 File-changing tasks start with research, code audit, and a concrete plan. `SPEC.md` is the formal contract that comes out of that work, and AI implements to spec.
 
 Even tiny local file-changing tasks should still produce a small `SPEC.md` when you invoke the full `/workflow` contract.
+
+### Spec QA
+`/specqa` is the Spec QA Agent that runs after `SPEC.md` is created or updated and before implementation. It checks requirements quality, measurable success criteria, SOTA 2026/currentness, security and governance risk, verification readiness, and improvement suggestions.
+
+Under `/opusworkflow`, Spec QA requests an Opus 4.7 high/xhigh reviewer when runtime identity is proven. The harness must not claim Opus 4.7 reviewed a spec unless `/status`, a sentinel, or a durable artifact proves it. When SOTA or other time-sensitive facts matter, Spec QA requires webresearched actual-time data and a source ledger before execution can proceed.
 
 ### Surgical Diff Discipline
 minmaxing does not just ask the model to "be careful." It requires the smallest sufficient implementation, no speculative abstractions, no drive-by refactors, and a changed-line trace from meaningful diff hunks back to `SPEC.md`.
@@ -786,6 +793,7 @@ between `/opusworkflow` and `/opusminimax`:
 | `/metacognition` | Parallel-aware control plane for task routing, evidence-grounded reflection, confidence calibration, and verified learning |
 | `/claudeproduct` | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, and subagents |
 | `/remote-control` | Native Claude Code Remote Control route with a static doctor, no custom network control plane, and no API-key auth fallback |
+| `/specqa` | Spec QA Agent for every active `SPEC.md`: requirements quality, SOTA/currentness webresearch, Opus 4.7 identity-proof boundary, and improvement suggestions before implementation |
 | `/hive` | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
 | `/hiveworkflow` | Full workflow mode for hive-coordinated planning, execution, aggregation, introspection, and verification |
 | `/sprint` | Run an ownership-safe parallel execution wave |
@@ -826,6 +834,8 @@ The routing ladder is:
    skill, hook, MCP, subagent, availability, limit, model, or setup questions
 -> /remote-control when the operator wants native Claude Code RC from
    claude.ai/code or mobile without building a custom control plane
+-> /specqa after SPEC.md and before implementation when the active spec needs
+   SOTA/currentness, requirements quality, and improvement-suggestion review
 -> /hive for read-only coordination, or /opusworkflow with inner_contract=hiveworkflow
    when coordinated roles, blackboard state, dissent, synthesis, and mutation
    materially improve the outcome
@@ -845,6 +855,7 @@ Use this rule of thumb:
 | `/opusminimax` | You are maintaining the engine itself: provider split, packet control, repair mode, benchmark mode, or low-level routing evidence. | Provider split doctor, Opus planner artifact, MiniMax executor packets, quota-aware concurrency, parent verification, and no benchmark overclaims. |
 | `/claudeproduct` | The question is about Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, availability, limits, models, or setup. | Official Anthropic/Claude docs first, surface separation, source ledger, connector permission/trust caveats, confidence downgrade when current docs are missing. |
 | `/remote-control` | You want to diagnose Claude Code native Remote Control for an already trusted local harness session. | `/remote-control` runs the harness readiness skill; `claude remote-control` starts the live native server; claude.ai subscription login; no custom server; no static runtime-proof claim. |
+| `/specqa` | A `SPEC.md` was created, updated, or reused before implementation. | Spec QA Agent checks requirements quality, SOTA 2026/currentness source ledger, critical blockers, Opus 4.7 proof boundary, and concrete improvement suggestions before execution. |
 | `/parallel` | The work splits into independent packets with clear owned files/surfaces and aggregate verification. | Packet DAG, ownership matrix, sync barriers, worker sidecars, `parallel-aggregate`. |
 | `/hive` | The task needs multiple perspectives but may not need a full file-changing workflow: research branches, adversarial review, planning alternatives, risk ranking, or synthesis. | Queen/supervisor, role map, blackboard, dissent/conflict log, evidence-backed synthesis. |
 | `/hiveworkflow` | The entire implementation lifecycle benefits from hive coordination and packet execution: broad audit plus implementation, multi-surface build, high-stakes verification, or agent/fleet design. | Use through `/opusworkflow` by default with `inner_contract=hiveworkflow`, plus hive artifact, `hive-run.json`, optional `/parallel` packets, `hive-aggregate`, `/introspect`, `/verify`. |
@@ -889,6 +900,13 @@ session connected. Use
 `bash scripts/remote-control-doctor.sh --static --json` and
 `bash scripts/remote-control-smoke.sh --fixtures` before blaming the harness.
 
+**Spec QA Agent:** `/specqa` runs after `SPEC.md` and before implementation in
+the governed workflow. It blocks critical spec defects, requires current
+webresearch source ledgers for SOTA 2026 or time-sensitive claims, writes
+`.taste/specqa/{run_id}/spec-qa.md` plus `spec-qa.json`, and keeps Opus 4.7
+reviewer claims tied to runtime identity proof. Use
+`bash scripts/specqa-smoke.sh --fixtures` to prove the static contract.
+
 **Harness capability map:** `docs/harness-capability-map.md` and
 `docs/harness-capability-map.json` are generated from repo truth surfaces and
 act as the canonical self-lookup index for minmaxing capabilities. They list
@@ -919,7 +937,7 @@ OpenAI API keys or API-priced fallbacks unless you explicitly change that
 billing route. If the runtime cannot generate an image, the harness writes a
 handoff prompt and marks the asset blocked rather than pretending a file exists.
 
-**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, stale Claude product answers, shallow hive consensus, and linear lane-scaling claims. The Stop hook uses Claude Code's intentional blocking path: a blocked closeout is repair feedback, not a crash. Positive closeout must cite commands or verification; read-only/audit closeout may cite files inspected or sources reviewed. "Tests not run", "unverified", or equivalent wording must close as partial/blocked rather than done. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/claudeproduct-scorecard.sh --fixtures --json`, `bash scripts/hive-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
+**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, stale Claude product answers, missing Spec QA, shallow hive consensus, and linear lane-scaling claims. The Stop hook uses Claude Code's intentional blocking path: a blocked closeout is repair feedback, not a crash. Positive closeout must cite commands or verification; read-only/audit closeout may cite files inspected or sources reviewed. "Tests not run", "unverified", or equivalent wording must close as partial/blocked rather than done. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/claudeproduct-scorecard.sh --fixtures --json`, `bash scripts/specqa-smoke.sh --fixtures`, `bash scripts/hive-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
 
 **Artifact sidecars:** Markdown remains the human contract, but machine gates can consume minimal JSON sidecars for agent-native estimates, verification results, and worker results. Validate the local fixtures with `bash scripts/artifact-lint.sh --fixtures`.
 
@@ -1119,7 +1137,7 @@ minmaxing/
 │   ├── settings.opussonnet.example.json
 │   ├── settings.sonnet-executor.example.json
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 36 skills (system calls)
+│   ├── skills/                 # 37 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── opusworkflow/       # One normal Opus + MiniMax product route
 │   │   ├── opusminimax/        # Advanced provider/packet engine

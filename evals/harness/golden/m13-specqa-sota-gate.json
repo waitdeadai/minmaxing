@@ -1,0 +1,13 @@
+{
+  "expected_evidence": "scripts/specqa-smoke.sh --fixtures validates the /specqa Spec QA Agent contract, workflow integration after SPEC.md and before implementation, current webresearch source ledger requirements, Opus 4.7 identity-proof boundaries, blocking critical findings, improvement suggestions, durable .taste/specqa artifacts, and release/eval registration",
+  "expected_result": "pass",
+  "gate": "specqa-smoke",
+  "id": "m13-specqa-sota-gate",
+  "requires": [
+    ".claude/skills/specqa/SKILL.md",
+    "scripts/specqa-smoke.sh",
+    ".taste/fixtures/specqa",
+    ".claude/skills/workflow/SKILL.md",
+    ".claude/skills/opusworkflow/SKILL.md"
+  ]
+}

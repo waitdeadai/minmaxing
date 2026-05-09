@@ -71,6 +71,8 @@ require_text "executor_identity_status" scripts/opusminimax.sh
 require_text "fallback_status" scripts/opusminimax.sh
 require_text "executor_provider" scripts/opusminimax.sh
 require_text "model_profile" scripts/opusminimax.sh
+require_text "spec_qa" scripts/opusminimax.sh
+require_text "spec qa: required after SPEC.md and before implementation" scripts/opusworkflow.sh
 require_text "--model-profile" scripts/opusworkflow.sh
 require_text "anthropic" scripts/opusworkflow.sh
 require_text "claude-sonnet" scripts/opusworkflow.sh
@@ -167,6 +169,14 @@ for raw_path, contract in zip(sys.argv[1:], expected):
     assert data.get("executor_identity_status") == "configured"
     assert data.get("fallback_status") == "none"
     assert data.get("model_profile") == "minimax"
+    spec_qa = data.get("spec_qa", {})
+    assert spec_qa.get("required") is True
+    assert spec_qa.get("runs_after_spec_creation") is True
+    assert spec_qa.get("before_implementation") is True
+    assert spec_qa.get("requested_reviewer") == "claude-opus-4-7"
+    assert spec_qa.get("identity_status") == "blocked"
+    assert spec_qa.get("claims_opus_review") is False
+    assert spec_qa.get("source_ledger_required_for_sota") is True
     assert models.get("executor_requested") == "MiniMax-M2.7-highspeed"
     assert capacity.get("provider_ceiling") == 1
     assert capacity.get("effective_concurrency") == 1

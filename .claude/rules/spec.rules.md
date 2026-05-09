@@ -12,9 +12,10 @@ so a new task can get a fresh active spec without erasing what already shipped.
 2. If vague → Invoke /align first
 3. Invoke /autoplan to generate SPEC.md
 4. SPEC.md is written and approved
-5. Implementation follows
-6. Verification against SPEC.md
-7. SPEC.md is the contract — implementation must match
+5. `/specqa` reviews the active spec before implementation
+6. Implementation follows
+7. Verification against SPEC.md
+8. SPEC.md is the contract — implementation must match
 
 ## Valid Spec Requirements
 
@@ -119,6 +120,8 @@ do not claim the image was generated.
 | Out-of-scope not listed | FAIL — scope must be explicit |
 | Missing Agent-Native Estimate for non-trivial work | FAIL — must estimate in agent-native wall-clock terms |
 | Human-equivalent-only estimate | FAIL — must be secondary only |
+| Missing Spec QA before implementation | FAIL — run `/specqa` after SPEC.md and before execution |
+| SOTA/current claims without source ledger | FAIL — add webresearched actual-time data or remove the claim |
 | SPEC image asset lacks path/checks/billing route | FAIL — must define the artifact contract before generating |
 
 ## When to Update Spec
@@ -139,6 +142,7 @@ do not claim the image was generated.
 ## Anti-Patterns
 
 - Writing code before SPEC.md → BLOCK
+- Writing code before Spec QA on non-trivial file-changing work → BLOCK
 - Overwriting a non-reused SPEC.md without archiving it → BLOCK
 - Accepting vague criteria ("looks good") → BLOCK
 - Skipping rollback plan → BLOCK

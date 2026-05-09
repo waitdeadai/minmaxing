@@ -1,0 +1,41 @@
+{
+  "artifact_type": "spec-qa-result",
+  "artifact_paths": {
+    "json": ".taste/specqa/20260509-no-ledger/spec-qa.json",
+    "markdown": ".taste/specqa/20260509-no-ledger/spec-qa.md"
+  },
+  "current_research": {
+    "required": true,
+    "sota_target": true,
+    "source_ledger": []
+  },
+  "decision": "PASS_WITH_SUGGESTIONS",
+  "execution_allowed": true,
+  "findings": [],
+  "improvement_suggestions": [
+    {
+      "evidence": "missing",
+      "severity": "MEDIUM",
+      "suggestion": "Add current source evidence."
+    }
+  ],
+  "model": {
+    "claims_opus_review": false,
+    "identity_status": "blocked",
+    "proof_source": "none",
+    "requested_reviewer": "claude-opus-4-7"
+  },
+  "security": {
+    "no_secret_paths_read": true
+  },
+  "spec": {
+    "path": "SPEC.md",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "status": "updated"
+  },
+  "status": "pass_with_suggestions",
+  "workflow_integration": {
+    "before_implementation": true,
+    "runs_after_spec_creation": true
+  }
+}
