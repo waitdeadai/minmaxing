@@ -358,7 +358,54 @@ def validate_opusminimax_run(data: dict[str, Any], errors: list[str]) -> None:
             error(errors, "opusworkflow run must allow verified, partial, and blocked closeout statuses")
         if workflow_contract.get("blocked_requires_repair") is not True:
             error(errors, "opusworkflow blocked closeout must require a repair action")
-    if data.get("inner_contract") not in {"workflow", "agentfactory", "hiveworkflow", "parallel", "defineicp", "deepretaste", "demo", "visualizeworkflow"}:
+        plan_mode = data.get("plan_mode") if isinstance(data.get("plan_mode"), dict) else {}
+        if not plan_mode:
+            error(errors, "opusworkflow run missing plan_mode")
+        else:
+            policy = str(plan_mode.get("policy", "")).strip().lower()
+            enabled = plan_mode.get("enabled")
+            auto = plan_mode.get("auto_approval") if isinstance(plan_mode.get("auto_approval"), dict) else {}
+            if policy not in {"auto", "manual", "off"}:
+                error(errors, "opusworkflow plan_mode.policy is unsupported")
+            if plan_mode.get("checkpoint") != "pre-implementation-plan-approval":
+                error(errors, "opusworkflow plan_mode checkpoint is unsupported")
+            if plan_mode.get("approval_scope") != "workflow-transition-only":
+                error(errors, "opusworkflow plan_mode approval_scope is unsupported")
+            if policy in {"auto", "manual"} and enabled is not True:
+                error(errors, "opusworkflow plan_mode must be enabled for auto or manual policy")
+            if policy == "off" and enabled is not False:
+                error(errors, "opusworkflow plan_mode must be disabled when policy is off")
+            if policy == "auto":
+                if auto.get("default") is not True:
+                    error(errors, "opusworkflow plan_mode auto policy must set auto_approval.default true")
+                if auto.get("status") != "auto_approved_when_gates_pass":
+                    error(errors, "opusworkflow plan_mode auto policy has unsupported status")
+            if policy == "manual":
+                if auto.get("default") is not False or auto.get("status") != "manual_required":
+                    error(errors, "opusworkflow plan_mode manual policy must require manual approval")
+            if policy == "off":
+                if auto.get("default") is not False or auto.get("status") != "disabled":
+                    error(errors, "opusworkflow plan_mode off policy must be disabled")
+            required_gates = {
+                "research_brief_recorded",
+                "code_audit_recorded",
+                "pre_plan_introspection_pass",
+                "agent_native_estimate_recorded",
+                "spec_created_updated_or_reused",
+                "specqa_execution_allowed",
+            }
+            gates = {str(item) for item in as_list(auto.get("execution_allowed_after"))}
+            if policy != "off" and not required_gates.issubset(gates):
+                error(errors, "opusworkflow plan_mode auto approval missing required execution gates")
+            required_blocks = {"specqa_fix_required_or_blocked", "operator_boundary_requires_review", "secret_or_protected_path_risk"}
+            blocks = {str(item) for item in as_list(auto.get("blocks"))}
+            if policy != "off" and not required_blocks.issubset(blocks):
+                error(errors, "opusworkflow plan_mode auto approval missing blocking conditions")
+            non_replacements = {str(item) for item in as_list(plan_mode.get("does_not_replace"))}
+            for gate in {"/specqa", "/introspect", "/verify", "runtime_model_identity_proof"}:
+                if gate not in non_replacements:
+                    error(errors, f"opusworkflow plan_mode cannot replace {gate}")
+    if data.get("inner_contract") not in {"workflow", "agentfactory", "hiveworkflow", "parallel", "defineicp", "digestaste", "deepretaste", "demo", "visualizeworkflow"}:
         error(errors, "opusminimax-run inner_contract is unsupported")
     if data.get("planner_identity_status") not in {"proven", "diagnosed_fixed", "blocked", "not_required"}:
         error(errors, "opusminimax-run planner_identity_status is unsupported")

@@ -8,7 +8,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusworkflow.sh --task "..." [--inner-contract CONTRACT] [--run-id ID] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
+  bash scripts/opusworkflow.sh --task "..." [--inner-contract CONTRACT] [--run-id ID] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
 
 /opusworkflow is the definitive effectiveness-first workflow entrypoint. It
 reuses scripts/opusminimax.sh in workflow mode, requesting Opus 4.7 for
@@ -27,16 +27,25 @@ Model profiles:
   custom      Explicit --planner-model and --executor-model values
 
 CONTRACT may be workflow, agentfactory, hiveworkflow, parallel, defineicp,
-deepretaste, demo, or visualizeworkflow.
+digestaste, deepretaste, demo, or visualizeworkflow.
+
+Plan mode policy:
+  auto    Default. Record a plan-mode checkpoint and auto-approve execution
+          after research, code audit, pre-plan introspection, estimate, SPEC,
+          and Spec QA gates allow execution.
+  manual  Record the same checkpoint but require explicit human approval.
+  off     Disable the plan-mode checkpoint for advanced/manual debugging.
 EOF
 }
 
 ARGS=()
 EXECUTOR_PROVIDER="${OPUSWORKFLOW_EXECUTOR_PROVIDER:-minimax}"
 MODEL_PROFILE="${OPUSWORKFLOW_MODEL_PROFILE:-}"
+PLAN_MODE_POLICY="${OPUSWORKFLOW_PLAN_MODE_POLICY:-auto}"
 EXECUTOR_PROVIDER_SET=0
 EXECUTOR_MODEL_SET=0
 MODEL_PROFILE_SET=0
+PLAN_MODE_POLICY_SET=0
 while [ "$#" -gt 0 ]; do
   case "$1" in
     "--mode")
@@ -61,6 +70,12 @@ while [ "$#" -gt 0 ]; do
       ;;
     "--executor-model")
       EXECUTOR_MODEL_SET=1
+      ARGS+=("$1" "$2")
+      shift 2
+      ;;
+    "--plan-mode-policy")
+      PLAN_MODE_POLICY="${2:-}"
+      PLAN_MODE_POLICY_SET=1
       ARGS+=("$1" "$2")
       shift 2
       ;;
@@ -90,6 +105,22 @@ fi
 echo "[opusworkflow] definitive route: Opus 4.7 judgment + MiniMax-M2.7-highspeed execution"
 echo "[opusworkflow] closeout policy: verified, partial, or blocked-with-repair"
 echo "[opusworkflow] spec qa: required after SPEC.md and before implementation"
+
+case "$PLAN_MODE_POLICY" in
+  auto)
+    echo "[opusworkflow] plan-mode auto-approval: execution starts only after research/audit/introspection/estimate/SPEC/Spec QA gates pass"
+    ;;
+  manual)
+    echo "[opusworkflow] plan-mode policy: manual approval required after the plan checkpoint"
+    ;;
+  off)
+    echo "[opusworkflow] plan-mode policy: off"
+    ;;
+  *)
+    echo "[opusworkflow] invalid plan mode policy: $PLAN_MODE_POLICY" >&2
+    exit 2
+    ;;
+esac
 
 case "$MODEL_PROFILE" in
   minimax)
@@ -140,5 +171,8 @@ if [ "$EXECUTOR_PROVIDER_SET" -eq 0 ]; then
 fi
 if [ "$MODEL_PROFILE_SET" -eq 0 ]; then
   ARGS+=("--model-profile" "$MODEL_PROFILE")
+fi
+if [ "$PLAN_MODE_POLICY_SET" -eq 0 ]; then
+  ARGS+=("--plan-mode-policy" "$PLAN_MODE_POLICY")
 fi
 exec bash "$ROOT_DIR/scripts/opusminimax.sh" --mode workflow --outer-route opusworkflow "${ARGS[@]}"

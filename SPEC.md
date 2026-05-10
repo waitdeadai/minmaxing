@@ -1,295 +1,177 @@
-# SPEC: Automated SOTA Spec QA Agent
+# SPEC: OpusWorkflow Plan Mode Auto-Approval
 
 ## Problem Statement
 
-The harness creates and updates `SPEC.md` as the active contract, but it does
-not yet have an automatic quality reviewer that audits every new spec before
-implementation. The user wants this review to be automatic in the normal
-workflow, aimed at SOTA results, grounded in current webresearch data, and
-handled by Opus 4.7 high/xhigh when runtime identity proves that model is
-actually available.
+`/opusworkflow` already wraps the governed `/workflow` lifecycle, but its
+machine-readable run artifact did not prove that the plan-to-execution
+transition was approved by the same gates that make native plan mode effective:
+read-only/codebase analysis, a concrete plan, and approval before edits. The
+user wants `/opusworkflow` to auto-approve that transition by default, without
+turning the general workflow into a manual approval pause.
 
 ## Codebase Anchors
 
-- `.claude/skills/workflow/SKILL.md` owns the default lifecycle and must add
-  Spec QA between `SPEC.md` creation/update and execution.
-- `.claude/skills/opusworkflow/SKILL.md` owns the default outer route for
-  mutating work and must assign the Spec QA judgment gate to Opus 4.7 high/xhigh
-  only when model identity is proven.
-- `.claude/skills/digestflow/SKILL.md` must run Spec QA after report-derived
-  claims become spec content, so external AI reports cannot drive execution
-  without current/source-backed validation.
-- `.claude/skills/verify/SKILL.md` verifies implementation against `SPEC.md`;
-  it should also treat missing non-trivial Spec QA as a planning-contract
-  failure before closeout.
-- `scripts/release-check.sh`, `scripts/test-harness.sh`,
-  `scripts/harness-eval.sh`, and `scripts/harness-capability-map.sh` are the
-  static public harness gates that must discover and enforce the new route.
-- `docs/harness-capability-map.md` and `docs/harness-capability-map.json` are
-  generated truth surfaces and must be regenerated after route/script/eval
-  registration.
-- Active spec lifecycle requires archiving replaced root specs through
-  `scripts/spec-archive.sh`.
+- `.claude/skills/opusworkflow/SKILL.md` owns the user-facing contract for the
+  definitive mutating route.
+- `scripts/opusworkflow.sh` is the wrapper that should expose the operator
+  policy and forward it to the engine.
+- `scripts/opusminimax.sh` creates `.taste/opusminimax/{run_id}/opusminimax-run.json`,
+  so it is the right place to record plan-mode approval state.
+- `scripts/artifact-lint.sh`, `schemas/opusminimax-run.schema.json`,
+  `.taste/fixtures/artifact-lint/*`, and `scripts/opusworkflow-smoke.sh` are the
+  static proof surfaces for governance fields.
+- `.claude/skills/workflow/SKILL.md` already defines research -> code audit ->
+  introspection -> plan -> Agent-Native Estimate -> `SPEC.md` -> `/specqa` ->
+  execution -> verification.
+- `/visualizeworkflow` remains the approval-first visual route and must not be
+  weakened by automatic approval elsewhere.
 
 ## Current Research Brief
 
 Investigation mode: comprehensive.
 
-Effective research budget: 5 tracks of ceiling 10, based on
-`bash scripts/parallel-capacity.sh --json` reporting `codex_max_threads=10`,
+Time anchor: 2026-05-10, America/Argentina/Mendoza.
+
+Effective research budget: 3 tracks of local ceiling 10. Capacity evidence:
+`bash scripts/parallel-capacity.sh --json` reported `codex_max_threads=10`,
 `recommended_ceiling=10`, `cores=16`, `ram_gb=32`, and
-`agent_teams_available=false`. The useful tracks were current Anthropic model
-facts, Claude Code skills/subagents/hooks behavior, Spec Kit quality gates,
-recent SDD research, and local harness wiring.
+`agent_teams_available=false`. The useful tracks were official Claude Code
+plan/permission behavior, repo `/opusworkflow` planning surfaces, and
+artifact/test gate surfaces.
 
-Loop log:
+Source ledger:
 
-1. Discovery found current Anthropic model docs, Claude Code skill/subagent
-   docs, GitHub Spec Kit docs, and recent SDD papers.
-2. Deep read confirmed Opus 4.7 and Sonnet 4.6 are current documented model
-   IDs, Claude Code project skills create slash commands, custom subagents can
-   specialize context and model selection, hooks can trigger lifecycle scripts,
-   and Spec Kit uses quality checklists plus non-destructive cross-artifact
-   analysis before implementation.
-3. Pressure test resolved the main risk: the harness may request Opus 4.7 for
-   the reviewer, but it must not claim Opus executed unless `/status`, a
-   sentinel, or a run artifact proves runtime identity.
+- Claude Code common workflows, accessed 2026-05-10:
+  https://code.claude.com/docs/en/tutorials
+  - Plan before editing is intended for reviewing changes before they touch
+    disk; Claude reads files and proposes a plan before approval.
+- Claude Code permission modes, accessed 2026-05-10:
+  https://code.claude.com/docs/en/permission-modes
+  - Native plan mode can be made a project default with
+    `permissions.defaultMode=plan`. Auto mode is separate, account-dependent,
+    and uses a classifier; it is not the same thing as this harness gate.
+- Claude Code model configuration, accessed 2026-05-10:
+  https://code.claude.com/docs/en/model-config
+  - `opusplan` uses Opus in plan mode and Sonnet in execution mode; current
+    alias/model behavior is provider and account dependent, so runtime identity
+    proof remains required before claiming Opus executed.
 
-Source ledger, accessed 2026-05-09:
+Local evidence:
 
-- Anthropic model overview:
-  https://platform.claude.com/docs/en/about-claude/models/overview
-  - Current docs list Claude Opus 4.7 as the most capable generally available
-    model for complex reasoning and agentic coding, with API ID
-    `claude-opus-4-7`; Sonnet 4.6 is listed as `claude-sonnet-4-6`.
-- Claude Code skills:
-  https://code.claude.com/docs/en/slash-commands
-  - Project skills in `.claude/skills/<name>/SKILL.md` create invocable
-    slash-command workflows and can load only when relevant.
-- Claude Code subagents:
-  https://code.claude.com/docs/en/sub-agents
-  - Custom subagents are specialized assistants with independent context,
-    tool access, and model routing, suitable for a repeated QA reviewer role.
-- Claude Code settings and hooks:
-  https://code.claude.com/docs/en/settings
-  - Settings expose model and effort configuration, skills, subagents, and hook
-    surfaces; sensitive files can be denied through settings.
-- GitHub Spec Kit `analyze` template:
-  https://raw.githubusercontent.com/github/spec-kit/main/templates/commands/analyze.md
-  - Spec analysis is a read-only quality gate that detects ambiguity,
-    underspecification, duplication, coverage gaps, and constitution conflicts
-    before implementation.
-- GitHub Spec Kit `specify` template:
-  https://raw.githubusercontent.com/github/spec-kit/main/templates/commands/specify.md
-  - Spec generation validates testability, measurable success criteria,
-    stakeholder clarity, scope, dependencies, assumptions, and unresolved
-    clarifications before planning.
-- GitHub Spec Kit SDD overview:
-  https://github.com/github/spec-kit/blob/main/spec-driven.md
-  - SDD treats the specification as the source of truth and folds testing and
-    quality into the spec-driven workflow.
-- Spec Kit Agents paper:
-  https://arxiv.org/abs/2604.05278
-  - Recent SDD work reports better judged quality when phase-level
-    context-grounding and validation hooks are added to agentic spec workflows.
-- Constitutional SDD paper:
-  https://arxiv.org/abs/2602.02584
-  - Recent security-focused SDD work argues for non-negotiable constraints in
-    the specification layer, not only reactive verification after code.
-
-Reviewed but not cited in the implementation decision:
-
-- GitHub blog article on Spec Kit, because the repo templates provided the more
-  precise implementation surface.
-- General Claude Code overview, because the skills/settings/subagent docs were
-  more specific.
+- `/workflow` already has the plan-before-spec lifecycle and Spec QA gate.
+- `/autoplan` explicitly says it writes `SPEC.md` directly and does not switch
+  Claude Code into native plan mode.
+- `/opusworkflow` had Spec QA, introspection, and provider split rules but no
+  `plan_mode` artifact field.
+- `artifact-lint` is the semantic gate; the JSON schema allows extra fields, so
+  schema-only changes are not enough.
 
 Conflicting evidence:
 
-- None that changes the implementation. The only material caveat is that local
-  repo policy names Opus 4.7 as preferred reviewer, while runtime access remains
-  account-dependent. The implementation must record requested model separately
-  from proven model.
+- Native Claude Code Plan Mode is read-only until approval, while this harness
+  runs in a trusted-local profile and must continue automatically for normal
+  `/opusworkflow` work. Resolution: model the feature as a workflow transition
+  checkpoint with artifact evidence, not as a global permission-profile change.
 
 ## Success Criteria
 
-- [x] A new project skill `.claude/skills/specqa/SKILL.md` defines `/specqa` as
-  the Spec QA Agent for every created or updated `SPEC.md`.
-- [x] `/workflow` runs Spec QA after `SPEC.md` creation/update/reuse and before
-  execution for non-trivial file-changing work.
-- [x] `/opusworkflow` assigns the Spec QA reviewer to Opus 4.7 high/xhigh when
-  runtime identity is proven and blocks Opus claims when it is not.
-- [x] `/digestflow` requires report-derived claims embedded into `SPEC.md` to
-  pass Spec QA through repo evidence or live-source evidence before execution.
-- [x] `/verify` treats missing non-trivial Spec QA evidence as an incomplete
-  planning contract before closeout.
-- [x] Spec QA requires current webresearch for SOTA, model/provider, pricing,
-  legal/regulatory, security, platform, or other time-sensitive claims.
-- [x] Spec QA outputs both human-readable and machine-readable artifacts under
-  `.taste/specqa/{run_id}/spec-qa.md` and `.taste/specqa/{run_id}/spec-qa.json`.
-- [x] Spec QA blocks execution on critical findings and records actionable
-  improvement suggestions for non-critical findings.
-- [x] Static fixtures and `scripts/specqa-smoke.sh --fixtures` reject overclaims:
-  no webresearch ledger, Opus claim without identity proof, critical findings
-  that do not block, missing improvement suggestions, and missing artifacts.
-- [x] `scripts/harness-eval.sh`, `scripts/release-check.sh`,
-  `scripts/test-harness.sh`, and the generated capability map include the
-  Spec QA gate.
-- [x] Public docs and project instructions explain that `/opusworkflow` is still
-  the default workflow and `/specqa` is the automatic spec-review gate inside it.
-- [x] No `.env`, `.env.*`, `.claude/*.local.json`, key files, credentials, or
-  private tokens are read or committed.
+- [x] `/opusworkflow` exposes default `--plan-mode-policy auto` plus
+  `manual|off` advanced options.
+- [x] `/opusminimax` accepts and records `plan_mode` in every prepared
+  `/opusworkflow` run artifact.
+- [x] The default artifact records
+  `plan_mode.auto_approval.status=auto_approved_when_gates_pass`.
+- [x] The gate lists the required execution prerequisites: research brief, code
+  audit, `/introspect pre-plan`, Agent-Native Estimate, `SPEC.md`, and
+  `/specqa` execution allowance.
+- [x] The gate explicitly does not replace `SPEC.md`, `/specqa`, `/introspect`,
+  `/verify`, runtime model identity proof, or `/visualizeworkflow` human
+  approval.
+- [x] `artifact-lint --fixtures` accepts green `/opusworkflow` run fixtures and
+  rejects a missing-plan-mode red fixture.
+- [x] `scripts/opusworkflow-smoke.sh` asserts the new artifact fields.
+- [x] README, CLAUDE, AGENTS, workflow, and engine docs explain the new behavior
+  without implying native Claude Code Plan Mode or Auto Mode proof.
 
 ## Scope
 
 ### In Scope
 
-- Add the `/specqa` project skill and static contract.
-- Add fixtures, a smoke gate, and a static eval task.
-- Wire `/specqa` into `/workflow`, `/opusworkflow`, `/digestflow`, and `/verify`.
-- Update README, CLAUDE, AGENTS, startup skill counts, test harness expectations,
-  release gates, and capability-map registration.
-- Regenerate generated capability-map artifacts.
+- Add CLI/env policy plumbing to `scripts/opusworkflow.sh` and
+  `scripts/opusminimax.sh`.
+- Add `plan_mode` artifact shape, schema documentation, semantic linting,
+  fixtures, and smoke assertions.
+- Update public route docs and generated capability-map outputs.
 
 ### Out of Scope
 
-- Building a custom Claude API service, paid API fallback, or external reviewer
-  daemon.
-- Proving live Opus 4.7 runtime identity in static CI.
-- Automatically rewriting every failing spec; V1 suggests improvements and
-  blocks critical findings, while workflow execution applies repairs in the
-  normal plan/spec loop.
-- Reading secrets, local auth tokens, `.env`, or provider-local configuration.
-
-## Spec QA Contract
-
-Spec QA must review the active `SPEC.md` before implementation and produce:
-
-- Spec identity: path, SHA-256, generated/updated/reused status, and task.
-- Model evidence: requested reviewer model, proven reviewer model if known,
-  identity proof source, and `spec_qa_model_identity_status`.
-- Current-fact evidence: source ledger for webresearch, access dates, reviewed
-  but not cited sources, rejected/downweighted sources, and unresolved
-  uncertainty.
-- Evidence states: `repo-verified`, `web-verified`, `report-derived`,
-  `conflicting`, and `unverified`.
-- Quality findings: requirements clarity, testability, acceptance coverage,
-  success metrics, SOTA/currentness, security/compliance, UX/product taste,
-  implementation risk, rollback/verification adequacy, and changed-line trace
-  readiness.
-- Improvement suggestions: concrete, spec-level changes with severity,
-  rationale, source/evidence link, and whether they are blocking.
-- Decision: `PASS`, `PASS_WITH_SUGGESTIONS`, `FIX_REQUIRED`, or `BLOCKED`.
-
-Critical findings must force `FIX_REQUIRED` or `BLOCKED`. A run with any
-critical finding must not allow execution to begin until the spec is repaired or
-the blocker is explicitly reclassified with evidence.
+- Changing committed `.claude/settings.json` default permission mode.
+- Enabling Claude Code native Auto Mode or depending on account-specific
+  classifier behavior.
+- Proving live Opus/opusplan runtime identity in static tests.
+- Changing `/visualizeworkflow` approval semantics.
+- Building a new standalone `/plan` skill.
 
 ## Surgical Diff Discipline
 
-- Smallest sufficient implementation: add a project skill, static fixtures,
-  static smoke/eval wiring, and targeted docs/workflow integration.
-- No speculative abstractions: do not build a runtime service, hosted reviewer,
-  API billing route, or new schema framework beyond the lightweight fixture
-  validator needed for the smoke gate.
-- No drive-by refactors: do not reorganize existing skills, commands, docs,
-  provider scripts, or archived specs outside the touched route.
+- Smallest sufficient implementation: add a policy flag and artifact gate to
+  existing `/opusworkflow` -> `/opusminimax` plumbing.
+- No speculative abstractions: no new daemon, hook state machine, permission
+  profile rewrite, or separate smoke script.
+- No drive-by refactors: leave unrelated setup, provider, hook, and visual
+  approval behavior untouched.
 - Changed-line trace:
-  - Skill/docs edits map to success criteria 1-7 and 10-11.
-  - Smoke/eval/release/test edits map to success criteria 8-10.
-  - Capability-map regeneration maps to success criterion 10.
-  - Active `SPEC.md` replacement maps to this requested implementation plan.
+  - Wrapper and engine script edits map to success criteria 1-5.
+  - Lint/schema/fixture/smoke edits map to success criteria 3-7.
+  - Docs and generated map edits map to success criterion 8.
 
 ## Agent-Native Estimate
 
 - Estimate type: agent-native wall-clock.
-- Execution topology: local supervisor, no spawned subagents in this Codex turn.
-- Capacity evidence: `bash scripts/parallel-capacity.sh --json` returned
-  `codex_max_threads=10`, `recommended_ceiling=10`, `cores=16`, `ram_gb=32`,
-  `default_substrate=subagents`, and `agent_teams_available=false`.
-- Effective lanes: 5 research tracks of ceiling 10; 1 implementation lane.
-- Critical path: current-source research -> spec/archive -> skill + smoke
-  implementation -> workflow/docs wiring -> static gates -> capability map.
-- Agent wall-clock: optimistic 75 minutes / likely 2.5 hours / pessimistic 4
+- Execution topology: local supervisor plus 2 read-only repo subagents.
+- Capacity evidence: `bash scripts/parallel-capacity.sh --json`, Codex
+  `max_threads=10`, recommended ceiling 10.
+- Effective lanes: 3 of ceiling 10 for research/audit, 1 implementation lane.
+- Critical path: source research -> repo audit -> spec update -> script/artifact
+  patch -> docs -> generated map -> static release gates -> push.
+- Agent wall-clock: optimistic 50 minutes / likely 90 minutes / pessimistic 3
   hours.
-- Agent-hours: 3-5 active hours across research, edits, verification, and
-  repair loops.
-- Human touch time: none for static harness implementation; live Opus identity
-  proof remains operator/account-dependent.
-- Calendar blockers: none for static local release; runtime Opus proof may be
-  blocked by subscription/account availability.
-- Confidence: medium-high for static automation; medium for live Opus execution
-  claims because they require runtime evidence outside static CI.
-- Human-equivalent baseline: roughly 1 working day for a careful developer
-  because the change touches workflow docs, tests, fixtures, generated maps, and
-  release gates.
+- Agent-hours: 3-5 active hours across research, patching, verification, and
+  repair.
+- Human touch time: none expected for static harness implementation.
+- Calendar blockers: none for local static gates; runtime Claude account access
+  remains outside this static proof.
+- Confidence: medium-high; downgraded because live native Claude Code plan/auto
+  mode availability remains account-dependent and is intentionally not claimed.
 
 ## Implementation Plan
 
-1. Add `.claude/skills/specqa/SKILL.md` with a concise, evidence-bound Spec QA
-   procedure.
-2. Add `.taste/fixtures/specqa/*` fixture artifacts and
-   `scripts/specqa-smoke.sh` to validate the static contract.
-3. Register `specqa-smoke` in `scripts/harness-eval.sh`,
-   `scripts/release-check.sh`, `scripts/test-harness.sh`, and
-   `scripts/harness-capability-map.sh`.
-4. Add `m13-specqa-sota-gate` eval task and golden metadata.
-5. Wire Spec QA into `/workflow`, `/opusworkflow`, `/digestflow`, and `/verify`.
-6. Update README, CLAUDE, AGENTS, `scripts/start-session.sh`, and skill-count
-   expectations from 36 to 37.
-7. Regenerate `docs/harness-capability-map.md` and
-   `docs/harness-capability-map.json`.
-8. Run static verification and repair failures.
+1. Add `--plan-mode-policy auto|manual|off` to `scripts/opusworkflow.sh`, with
+   default `auto` and forwarding to `scripts/opusminimax.sh`.
+2. Add policy validation to `scripts/opusminimax.sh` and emit `plan_mode` in the
+   run artifact.
+3. Add semantic lint checks and fixtures for the new artifact field.
+4. Extend `scripts/opusworkflow-smoke.sh` and `scripts/test-harness.sh` static
+   expectations.
+5. Update `/opusworkflow`, `/opusminimax`, `/workflow`, README, CLAUDE, AGENTS,
+   and startup text.
+6. Regenerate the harness capability map and update m9 golden evidence.
+7. Run focused and release verification, repair any failures, then push.
 
 ## Verification
 
-- Success criteria 1-8 -> `bash scripts/specqa-smoke.sh --fixtures`
-- Success criterion 9 -> negative fixture rejection in `specqa-smoke`
-- Success criterion 10 -> `bash scripts/harness-eval.sh --json`,
-  `bash scripts/harness-capability-map.sh --check --json`, and
-  `bash scripts/release-check.sh --static-only`
-- Success criterion 11 -> `rg -n "specqa|Spec QA|37 skills" README.md CLAUDE.md AGENTS.md .claude/skills`
-- Success criterion 12 -> `git diff --check` plus no reads of `.env` or local
-  secret paths
-- Script syntax -> `bash -n scripts/*.sh`
-- JSON validity -> `python3 -m json.tool` on added fixtures and golden JSON
-
-Verification results:
-
-- [x] `bash scripts/specqa-smoke.sh --fixtures` passed.
-- [x] `bash scripts/opusworkflow-smoke.sh` passed with the new `spec_qa`
-  artifact contract.
-- [x] `bash scripts/visualize-smoke.sh` passed after the skill-count update.
-- [x] `bash scripts/harness-capability-map.sh --write` regenerated generated
-  docs.
-- [x] `bash scripts/harness-capability-map.sh --check --json` passed with 37
-  skills, 59 scripts, and 24 eval tasks.
-- [x] `bash scripts/harness-eval.sh --json` passed with 24 tasks and 21 gates,
-  including `specqa-smoke`.
-- [x] `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh` passed: 148
-  passed, 0 failed.
-- [x] `bash scripts/release-check.sh --static-only` passed, including
-  `git diff --check`.
+- Script syntax: `bash -n scripts/opusworkflow.sh scripts/opusminimax.sh scripts/artifact-lint.sh scripts/opusworkflow-smoke.sh scripts/test-harness.sh`
+- Artifact fixtures: `bash scripts/artifact-lint.sh --fixtures`
+- OpusWorkflow gate: `bash scripts/opusworkflow-smoke.sh`
+- Capability map: `bash scripts/harness-capability-map.sh --check --json`
+- Release gate: `bash scripts/release-check.sh --static-only`
+- JSON validity: `python3 -m json.tool` for changed fixtures, schema, and eval
+  golden files.
+- Diff hygiene: `git diff --check`
 
 ## Rollback Plan
 
-1. Revert this commit or restore the touched files from git.
-2. Run `bash scripts/harness-capability-map.sh --write` if generated map files
-   were changed.
-3. Run `bash scripts/release-check.sh --static-only`.
-4. Restore the previous active spec from the archive if needed:
-   `.taste/specs/20260509-015957-claude-code-native-remote-control-harness-superseded-before-new-spec.md`.
-
-## Introspection: Pre-Implementation
-
-- Likely mistake: overclaiming that Opus 4.7 actually performed the QA review.
-  Mitigation: require identity evidence fields and make static gates reject
-  Opus claims without proof.
-- Likely mistake: turning Spec QA into a manual side route that workflows forget.
-  Mitigation: wire it into `/workflow`, `/opusworkflow`, `/digestflow`,
-  `/verify`, release checks, and eval metadata.
-- Likely mistake: using stale "SOTA" knowledge. Mitigation: require current
-  webresearch and source ledger when SOTA or time-sensitive claims matter.
-- Likely mistake: blocking every minor suggestion. Mitigation: use severity and
-  decision states so critical issues block, while lower-severity improvements
-  become actionable suggestions.
+- Revert this commit to remove the `plan_mode` artifact contract and docs.
+- If only the policy default is problematic, set `OPUSWORKFLOW_PLAN_MODE_POLICY=off`
+  or invoke `scripts/opusworkflow.sh --plan-mode-policy off` while preserving the
+  rest of the `/opusworkflow` provider split.

@@ -252,6 +252,8 @@ for pattern in \
     "Use /opusworkflow unless you are debugging the engine" \
     "cost-aware" \
     "Default executor concurrency is 1" \
+    "Plan-mode auto-approval" \
+    "auto_approved_when_gates_pass" \
     "Do not claim Opus planned" \
     "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow" \
     "80-90% mechanical work" \
@@ -273,6 +275,8 @@ for pattern in \
     "executor_identity_status" \
     "fallback_status" \
     "model_profile" \
+    "plan_mode" \
+    "--plan-mode-policy" \
     "--model-profile" \
     "opusworkflow-smoke"; do
     if ! grep -Fq -- "$pattern" setup.sh scripts/opusminimax.sh scripts/opusminimax-doctor.sh scripts/harness-eval.sh scripts/release-check.sh scripts/harness-capability-map.sh 2>/dev/null; then
@@ -1297,6 +1301,7 @@ for pattern in \
     "unverified-worker-claim" \
     "opusminimax-fake-opus-claim" \
     "opusminimax-planner-minimax-base-url" \
+    "opusworkflow-missing-plan-mode-gate" \
     "valid-sonnet-model-profile-run" \
     "opusminimax-benchmark-aggregate-without-per-task"; do
     if ! find .taste/fixtures/artifact-lint -type f -name "*$pattern*.json" 2>/dev/null | grep -q .; then

@@ -12,6 +12,51 @@
     "allowed_closeout_statuses": ["verified", "partial", "blocked", "runtime-pending"],
     "blocked_requires_repair": true
   },
+  "plan_mode": {
+    "enabled": true,
+    "policy": "auto",
+    "checkpoint": "pre-implementation-plan-approval",
+    "native_permission_mode": "plan",
+    "native_permission_mode_status": "runtime-dependent",
+    "approval_scope": "workflow-transition-only",
+    "auto_approval": {
+      "default": true,
+      "status": "auto_approved_when_gates_pass",
+      "execution_allowed_after": [
+        "research_brief_recorded",
+        "code_audit_recorded",
+        "pre_plan_introspection_pass",
+        "agent_native_estimate_recorded",
+        "spec_created_updated_or_reused",
+        "specqa_execution_allowed"
+      ],
+      "blocks": [
+        "missing_research_brief",
+        "missing_code_audit",
+        "pre_plan_introspection_not_pass",
+        "missing_agent_native_estimate",
+        "missing_spec",
+        "specqa_fix_required_or_blocked",
+        "operator_boundary_requires_review",
+        "secret_or_protected_path_risk"
+      ]
+    },
+    "does_not_replace": [
+      "SPEC.md",
+      "/specqa",
+      "/introspect",
+      "/verify",
+      "runtime_model_identity_proof",
+      "visualizeworkflow_human_approval"
+    ],
+    "human_approval_required_when": [
+      "policy_manual",
+      "visualizeworkflow_waiting_for_visual_approval",
+      "critical_specqa_findings",
+      "operator_boundary_requires_review",
+      "unsafe_external_infrastructure_action"
+    ]
+  },
   "executor_provider": "claude-sonnet",
   "planner_identity_status": "blocked",
   "executor_identity_status": "configured",

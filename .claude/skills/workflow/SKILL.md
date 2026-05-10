@@ -217,6 +217,7 @@ Required section order:
 ## Agent-Native Estimate
 ## SPEC Decision
 ## Spec QA
+## Plan Mode Approval
 ## Execution Notes
 ## Verification Evidence
 ## Outcome
@@ -244,6 +245,12 @@ Required content inside the sections:
   webresearch source ledger when SOTA/time-sensitive claims matter, critical
   finding count, improvement suggestions, artifact paths, and whether execution
   is allowed.
+- `## Plan Mode Approval` must record the `/opusworkflow` plan-mode policy when
+  this workflow runs under that outer route. The default is
+  `plan_mode.policy=auto` with `auto_approved_when_gates_pass`, meaning
+  execution can start only after research, code audit, `/introspect pre-plan`,
+  Agent-Native Estimate, `SPEC.md`, and `/specqa` allow execution. It must also
+  record any manual approval requirement or operator boundary.
 - `## Execution Notes` must record any freshness re-checks and the final owned files touched by each delegated packet.
 - If parallel run artifacts exist, `## Execution Notes` must record the
   `.taste/parallel/{run_id}` path and `scripts/parallel-aggregate.sh` output,
@@ -629,6 +636,14 @@ If `/specqa` returns `FIX_REQUIRED` or `BLOCKED`, repair the spec or report the
 blocker before implementation. Do not execute from a spec with unresolved
 critical findings.
 
+10. When running under `/opusworkflow`, append `## Plan Mode Approval` before
+   implementation. With the default `--plan-mode-policy auto`, record
+   `auto_approved_when_gates_pass` only if research, code audit, pre-plan
+   introspection, Agent-Native Estimate, `SPEC.md`, and `/specqa` all allow
+   execution. This approval does not replace `/specqa`, `/introspect`,
+   `/verify`, runtime model identity proof, or `/visualizeworkflow` human
+   approval.
+
 Do not stop after `SPEC.md` is written.
 
 ## Phase 6: Execute
@@ -695,6 +710,9 @@ Before you emit `## Workflow Complete` for a file-changing task, confirm all of 
 - `SPEC.md` exists on disk as a real file.
 - `Spec QA` exists for non-trivial file-changing work, records current-source
   evidence when SOTA/time-sensitive claims matter, and allows execution.
+- `Plan Mode Approval` is recorded for `/opusworkflow` runs and does not skip
+  required research, audit, `SPEC.md`, `/specqa`, `/introspect`, or `/verify`
+  gates.
 - `WORKFLOW_ARTIFACT` exists and its phase sections are filled in.
 - Implementation is done or explicitly not required.
 - Verification includes concrete evidence.

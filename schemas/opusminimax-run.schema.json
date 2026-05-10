@@ -42,6 +42,46 @@
     "model_route": {
       "type": "object"
     },
+    "plan_mode": {
+      "type": "object",
+      "required": ["enabled", "policy", "checkpoint", "auto_approval", "does_not_replace"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "policy": {
+          "enum": ["auto", "manual", "off"]
+        },
+        "checkpoint": {"type": "string"},
+        "native_permission_mode": {"type": "string"},
+        "native_permission_mode_status": {"type": "string"},
+        "approval_scope": {"type": "string"},
+        "auto_approval": {
+          "type": "object",
+          "required": ["default", "status", "execution_allowed_after", "blocks"],
+          "properties": {
+            "default": {"type": "boolean"},
+            "status": {
+              "enum": ["auto_approved_when_gates_pass", "manual_required", "disabled"]
+            },
+            "execution_allowed_after": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "blocks": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "does_not_replace": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "human_approval_required_when": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
     "outcome_policy": {
       "enum": ["verified-partial-or-blocked-with-repair", "advanced-engine-artifact"]
     },

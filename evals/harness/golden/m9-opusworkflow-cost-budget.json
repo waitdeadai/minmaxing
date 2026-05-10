@@ -6,7 +6,8 @@
   "evidence_summary": [
     "/opusworkflow skill exists and documents the definitive Opus/MiniMax workflow",
     "setup.sh defaults to opusworkflow while preserving --mode overrides",
-    "the wrapper prepares workflow-mode opusminimax artifacts with outer_route, inner_contract, outcome_policy, provider_ceiling=1, and effective_concurrency=1",
+    "the wrapper prepares workflow-mode opusminimax artifacts with outer_route, inner_contract, outcome_policy, provider_ceiling=1, effective_concurrency=1, and plan_mode.policy=auto",
+    "plan-mode auto-approval records auto_approved_when_gates_pass only after research, audit, pre-plan introspection, estimate, SPEC, and Spec QA gates pass",
     "agentfactory and hiveworkflow inner contracts inherit the OpusWorkflow provider split by default",
     "docs and release/eval surfaces discover the route"
   ]

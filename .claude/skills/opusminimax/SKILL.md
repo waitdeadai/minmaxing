@@ -53,6 +53,11 @@ Worker summaries are claims until verified by diffs, logs, tests, or artifacts.
   governed Anthropic-only route: no MiniMax base URL, no MiniMax executor model,
   and no runtime model identity claim without `/status`, sentinel, or artifact
   proof.
+- When `outer_route=opusworkflow`, record `plan_mode` in the run artifact.
+  Default `plan_mode.policy=auto` means `auto_approved_when_gates_pass`: the
+  workflow may transition from plan to execution only after research, code
+  audit, `/introspect pre-plan`, Agent-Native Estimate, `SPEC.md`, and `/specqa`
+  allow execution.
 - Run `/introspect` before plan freeze, after executor execution, after failed
   verification, and before push or ship decisions.
 - Run `/verify` against `SPEC.md` after executor aggregation.
@@ -112,6 +117,8 @@ For file-changing work, follow the repo's normal lifecycle:
 6. Concrete plan.
 7. Agent-Native Estimate.
 8. `SPEC.md` active contract.
+9. `/specqa` execution-allowed decision and `plan_mode` transition checkpoint
+   before implementation packets run.
 
 Do not skip `/workflow` discipline. `/opusminimax` wraps the workflow with a
 provider split and packet contract.
@@ -239,6 +246,23 @@ When `/opusminimax` executes or prepares a real run, produce:
     "planner": {"provider": "anthropic", "requested_model": "claude-opus-4-7", "identity_status": "blocked"},
     "executor": {"provider": "minimax", "requested_model": "MiniMax-M2.7-highspeed", "identity_status": "configured"},
     "fallback_policy": "fail-closed-unless-explicit"
+  },
+  "plan_mode": {
+    "enabled": true,
+    "policy": "auto",
+    "checkpoint": "pre-implementation-plan-approval",
+    "auto_approval": {
+      "status": "auto_approved_when_gates_pass",
+      "execution_allowed_after": [
+        "research_brief_recorded",
+        "code_audit_recorded",
+        "pre_plan_introspection_pass",
+        "agent_native_estimate_recorded",
+        "spec_created_updated_or_reused",
+        "specqa_execution_allowed"
+      ]
+    },
+    "does_not_replace": ["SPEC.md", "/specqa", "/introspect", "/verify", "runtime_model_identity_proof"]
   },
   "capacity": {
     "local_ceiling": 10,

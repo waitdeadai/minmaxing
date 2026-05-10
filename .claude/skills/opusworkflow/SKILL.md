@@ -1,6 +1,6 @@
 ---
 name: opusworkflow
-description: Use this as the definitive workflow command for mutating work: Opus 4.7 high/xhigh plans and reviews when proven available, and MiniMax-M2.7-highspeed executes bounded packets. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.
+description: Use this as the definitive workflow command for mutating work: Opus 4.7 high/xhigh plans and reviews when proven available, MiniMax-M2.7-highspeed executes bounded packets, and plan-mode auto-approval starts execution only when gates pass. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.
 argument-hint: [task]
 disable-model-invocation: true
 ---
@@ -56,6 +56,16 @@ Model-profile selector:
 --model-profile custom --planner-model MODEL --executor-model MODEL
 ```
 
+Plan-mode auto-approval:
+
+```text
+Default policy: --plan-mode-policy auto
+Artifact status: auto_approved_when_gates_pass
+Meaning: /opusworkflow may cross from plan to execution automatically only
+after research, code audit, pre-plan /introspect, Agent-Native Estimate,
+SPEC.md, and /specqa all allow execution.
+```
+
 ## Contract
 
 - Treat `/opusworkflow` as the definitive workflow command and the one normal
@@ -82,6 +92,18 @@ Model-profile selector:
   implementation. Spec QA is an Opus 4.7 high/xhigh judgment gate when runtime
   identity is proven; otherwise record the missing proof and downgrade or block
   honestly.
+- Record a plan-mode checkpoint in the run artifact. The default
+  `--plan-mode-policy auto` auto-approves the workflow transition into
+  implementation only when the plan gates pass: research brief recorded, code
+  audit recorded, `/introspect pre-plan` passed, Agent-Native Estimate
+  recorded, `SPEC.md` created/updated/reused, and `/specqa` allows execution.
+- Treat plan-mode auto-approval as workflow transition approval, not as a
+  replacement for `SPEC.md`, `/specqa`, `/introspect`, `/verify`, runtime model
+  identity proof, or `/visualizeworkflow` human approval. Record the artifact
+  state as `plan_mode.auto_approval.status=auto_approved_when_gates_pass`.
+- Use `--plan-mode-policy manual` when the operator wants a human review after
+  the plan checkpoint, and `--plan-mode-policy off` only for advanced engine
+  debugging.
 - If the task asks for Hermes, Hive, ICP/taste mutation, digest-to-taste
   bootstrap text, approved visualization implementation, demo artifact production, or dense packet work,
   preserve that specialist contract under the `/opusworkflow` outer route.
@@ -161,7 +183,14 @@ bash scripts/parallel-capacity.sh --json
    improvement suggestions, and execution-allowed decision. Do not claim Opus
    4.7 reviewed the spec unless runtime identity evidence proves it.
 
-4. Route implementation through `/opusminimax` packet artifacts:
+4. Record the plan-mode auto-approval checkpoint. With the default
+   `--plan-mode-policy auto`, implementation is approved automatically only if
+   research, code audit, `/introspect pre-plan`, Agent-Native Estimate,
+   `SPEC.md`, and `/specqa` are complete and non-blocking. If any gate is
+   missing, blocked, or manually bounded by the operator, stop before execution
+   and record the repair path.
+
+5. Route implementation through `/opusminimax` packet artifacts:
 
 ```bash
 bash scripts/opusworkflow.sh --task "$ARGUMENTS"
@@ -188,11 +217,17 @@ bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile opus
 bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile custom --planner-model claude-sonnet-4-6 --executor-model claude-sonnet-4-6
 ```
 
-5. MiniMax executes only planner-approved packets with owned paths,
+For manual approval after the plan checkpoint:
+
+```bash
+bash scripts/opusworkflow.sh --task "$ARGUMENTS" --plan-mode-policy manual
+```
+
+6. MiniMax executes only planner-approved packets with owned paths,
    forbidden paths, allowed commands, acceptance checks, rollback notes, and
    stop conditions.
 
-6. Parent Claude verifies:
+7. Parent Claude verifies:
 
 - diffs and touched files
 - command evidence
@@ -237,4 +272,6 @@ can set `claims_opus_review=true`.
 - Opus doing every edit because it feels smarter.
 - MiniMax summaries accepted without parent verification.
 - `/specqa` skipped after `SPEC.md` and before execution.
+- Plan-mode auto-approval used to skip research, audit, `/introspect`,
+  `SPEC.md`, `/specqa`, or `/verify`.
 - Pay-as-you-go fallback enabled silently.

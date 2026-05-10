@@ -44,6 +44,8 @@ for pattern in \
   "cost-aware" \
   "MiniMax-M2.7-highspeed is the executor" \
   "Default executor concurrency is 1" \
+  "Plan-mode auto-approval" \
+  "auto_approved_when_gates_pass" \
   "Do not claim Opus planned" \
   "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow" \
   "ANTHROPIC_API_KEY" \
@@ -71,9 +73,13 @@ require_text "executor_identity_status" scripts/opusminimax.sh
 require_text "fallback_status" scripts/opusminimax.sh
 require_text "executor_provider" scripts/opusminimax.sh
 require_text "model_profile" scripts/opusminimax.sh
+require_text "plan_mode" scripts/opusminimax.sh
+require_text "auto_approved_when_gates_pass" scripts/opusminimax.sh
 require_text "spec_qa" scripts/opusminimax.sh
 require_text "spec qa: required after SPEC.md and before implementation" scripts/opusworkflow.sh
 require_text "--model-profile" scripts/opusworkflow.sh
+require_text "--plan-mode-policy" scripts/opusworkflow.sh
+require_text "plan-mode auto-approval" scripts/opusworkflow.sh
 require_text "anthropic" scripts/opusworkflow.sh
 require_text "claude-sonnet" scripts/opusworkflow.sh
 require_text "claude-sonnet-4-6" .claude/settings.opussonnet.example.json
@@ -170,6 +176,7 @@ for raw_path, contract in zip(sys.argv[1:], expected):
     assert data.get("fallback_status") == "none"
     assert data.get("model_profile") == "minimax"
     spec_qa = data.get("spec_qa", {})
+    plan_mode = data.get("plan_mode", {})
     assert spec_qa.get("required") is True
     assert spec_qa.get("runs_after_spec_creation") is True
     assert spec_qa.get("before_implementation") is True
@@ -177,6 +184,26 @@ for raw_path, contract in zip(sys.argv[1:], expected):
     assert spec_qa.get("identity_status") == "blocked"
     assert spec_qa.get("claims_opus_review") is False
     assert spec_qa.get("source_ledger_required_for_sota") is True
+    assert plan_mode.get("enabled") is True
+    assert plan_mode.get("policy") == "auto"
+    assert plan_mode.get("checkpoint") == "pre-implementation-plan-approval"
+    assert plan_mode.get("approval_scope") == "workflow-transition-only"
+    auto_approval = plan_mode.get("auto_approval", {})
+    assert auto_approval.get("default") is True
+    assert auto_approval.get("status") == "auto_approved_when_gates_pass"
+    required_gates = {
+        "research_brief_recorded",
+        "code_audit_recorded",
+        "pre_plan_introspection_pass",
+        "agent_native_estimate_recorded",
+        "spec_created_updated_or_reused",
+        "specqa_execution_allowed",
+    }
+    assert required_gates.issubset(set(auto_approval.get("execution_allowed_after", [])))
+    assert "specqa_fix_required_or_blocked" in set(auto_approval.get("blocks", []))
+    assert "/specqa" in set(plan_mode.get("does_not_replace", []))
+    assert "/introspect" in set(plan_mode.get("does_not_replace", []))
+    assert "/verify" in set(plan_mode.get("does_not_replace", []))
     assert models.get("executor_requested") == "MiniMax-M2.7-highspeed"
     assert capacity.get("provider_ceiling") == 1
     assert capacity.get("effective_concurrency") == 1

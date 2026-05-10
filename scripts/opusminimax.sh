@@ -15,14 +15,16 @@ PLANNER_MODEL="${OPUSMINIMAX_PLANNER_MODEL:-}"
 EXECUTOR_PROVIDER="${OPUSMINIMAX_EXECUTOR_PROVIDER:-minimax}"
 EXECUTOR_MODEL="${OPUSMINIMAX_EXECUTOR_MODEL:-}"
 MODEL_PROFILE="${OPUSMINIMAX_MODEL_PROFILE:-}"
+PLAN_MODE_POLICY="${OPUSMINIMAX_PLAN_MODE_POLICY:-}"
 PLANNER_MODEL_SET=0
 EXECUTOR_MODEL_SET=0
 EXECUTOR_PROVIDER_SET=0
+PLAN_MODE_POLICY_SET=0
 
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--execute-planner] [--planner-settings PATH]
+  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--execute-planner] [--planner-settings PATH]
 
 Default behavior prepares no-secret run artifacts and prints the next command.
 --execute-planner is the explicit Claude runtime opt-in.
@@ -36,7 +38,7 @@ Model profiles are governed routing presets, not runtime identity proof:
   custom      Explicit --planner-model and --executor-model values
 
 CONTRACT may be workflow, agentfactory, hiveworkflow, parallel, defineicp,
-deepretaste, demo, or visualizeworkflow.
+digestaste, deepretaste, demo, or visualizeworkflow.
 EOF
 }
 
@@ -85,6 +87,11 @@ while [ "$#" -gt 0 ]; do
       MODEL_PROFILE="${2:-}"
       shift 2
       ;;
+    "--plan-mode-policy")
+      PLAN_MODE_POLICY="${2:-}"
+      PLAN_MODE_POLICY_SET=1
+      shift 2
+      ;;
     "--execute-planner")
       EXECUTE_PLANNER=1
       shift
@@ -110,8 +117,20 @@ case "$OUTER_ROUTE" in
   *) echo "[opusminimax] invalid outer route: $OUTER_ROUTE" >&2; exit 2 ;;
 esac
 case "$INNER_CONTRACT" in
-  workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow) ;;
+  workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow) ;;
   *) echo "[opusminimax] invalid inner contract: $INNER_CONTRACT" >&2; exit 2 ;;
+esac
+
+if [ -z "$PLAN_MODE_POLICY" ]; then
+  if [ "$OUTER_ROUTE" = "opusworkflow" ]; then
+    PLAN_MODE_POLICY="${OPUSWORKFLOW_PLAN_MODE_POLICY:-auto}"
+  else
+    PLAN_MODE_POLICY="off"
+  fi
+fi
+case "$PLAN_MODE_POLICY" in
+  auto|manual|off) ;;
+  *) echo "[opusminimax] invalid plan mode policy: $PLAN_MODE_POLICY" >&2; exit 2 ;;
 esac
 
 if [ -z "$MODEL_PROFILE" ]; then
@@ -200,12 +219,12 @@ mkdir -p "$PACKET_DIR"
 PACKET="$PACKET_DIR/P1.json"
 RUN_ARTIFACT="$RUN_DIR/opusminimax-run.json"
 
-python3 - "$TASK" "$MODE" "$OUTER_ROUTE" "$INNER_CONTRACT" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" "$EXECUTOR_PROVIDER" "$MODEL_PROFILE" <<'PY'
+python3 - "$TASK" "$MODE" "$OUTER_ROUTE" "$INNER_CONTRACT" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" "$EXECUTOR_PROVIDER" "$MODEL_PROFILE" "$PLAN_MODE_POLICY" <<'PY'
 import json
 import pathlib
 import sys
 
-task, mode, outer_route, inner_contract, run_id, packet_path, run_artifact, planner_model, executor_model, executor_provider, model_profile = sys.argv[1:12]
+task, mode, outer_route, inner_contract, run_id, packet_path, run_artifact, planner_model, executor_model, executor_provider, model_profile, plan_mode_policy = sys.argv[1:13]
 packet_path = pathlib.Path(packet_path)
 run_artifact = pathlib.Path(run_artifact)
 if executor_provider == "claude-sonnet":
@@ -306,6 +325,57 @@ run = {
             "json": f".taste/specqa/{run_id}/spec-qa.json",
         },
     },
+    "plan_mode": {
+        "enabled": outer_route == "opusworkflow" and plan_mode_policy != "off",
+        "policy": plan_mode_policy,
+        "checkpoint": "pre-implementation-plan-approval",
+        "native_permission_mode": "plan",
+        "native_permission_mode_status": "runtime-dependent",
+        "approval_scope": "workflow-transition-only",
+        "auto_approval": {
+            "default": plan_mode_policy == "auto",
+            "status": (
+                "auto_approved_when_gates_pass"
+                if plan_mode_policy == "auto"
+                else "manual_required"
+                if plan_mode_policy == "manual"
+                else "disabled"
+            ),
+            "execution_allowed_after": [
+                "research_brief_recorded",
+                "code_audit_recorded",
+                "pre_plan_introspection_pass",
+                "agent_native_estimate_recorded",
+                "spec_created_updated_or_reused",
+                "specqa_execution_allowed",
+            ],
+            "blocks": [
+                "missing_research_brief",
+                "missing_code_audit",
+                "pre_plan_introspection_not_pass",
+                "missing_agent_native_estimate",
+                "missing_spec",
+                "specqa_fix_required_or_blocked",
+                "operator_boundary_requires_review",
+                "secret_or_protected_path_risk",
+            ],
+        },
+        "does_not_replace": [
+            "SPEC.md",
+            "/specqa",
+            "/introspect",
+            "/verify",
+            "runtime_model_identity_proof",
+            "visualizeworkflow_human_approval",
+        ],
+        "human_approval_required_when": [
+            "policy_manual",
+            "visualizeworkflow_waiting_for_visual_approval",
+            "critical_specqa_findings",
+            "operator_boundary_requires_review",
+            "unsafe_external_infrastructure_action",
+        ],
+    },
     "capacity": {
         "local_ceiling": 10,
         "provider_ceiling": 1,
@@ -342,7 +412,7 @@ echo "[opusminimax] run artifact: $RUN_ARTIFACT"
 
 if [ "$EXECUTE_PLANNER" -eq 0 ]; then
   echo "[opusminimax] runtime not executed. To launch planner explicitly:"
-  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --outer-route $OUTER_ROUTE --inner-contract $INNER_CONTRACT --model-profile $MODEL_PROFILE --executor-provider $EXECUTOR_PROVIDER --planner-model $PLANNER_MODEL --executor-model $EXECUTOR_MODEL --execute-planner"
+  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --outer-route $OUTER_ROUTE --inner-contract $INNER_CONTRACT --model-profile $MODEL_PROFILE --executor-provider $EXECUTOR_PROVIDER --planner-model $PLANNER_MODEL --executor-model $EXECUTOR_MODEL --plan-mode-policy $PLAN_MODE_POLICY --execute-planner"
   exit 0
 fi
 
@@ -415,7 +485,7 @@ if [ ! -f "$PLANNER_SETTINGS" ]; then
   exit 1
 fi
 
-PROMPT="/opusminimax outer_route=$OUTER_ROUTE inner_contract=$INNER_CONTRACT mode=$MODE task=$TASK run_dir=$RUN_DIR model_profile=$MODEL_PROFILE planner_model=$PLANNER_MODEL executor_provider=$EXECUTOR_PROVIDER executor_model=$EXECUTOR_MODEL"
+PROMPT="/opusminimax outer_route=$OUTER_ROUTE inner_contract=$INNER_CONTRACT mode=$MODE task=$TASK run_dir=$RUN_DIR model_profile=$MODEL_PROFILE planner_model=$PLANNER_MODEL executor_provider=$EXECUTOR_PROVIDER executor_model=$EXECUTOR_MODEL plan_mode_policy=$PLAN_MODE_POLICY"
 CLAUDE_ARGS=()
 if [ "$PLANNER_MODEL" != "default" ]; then
   CLAUDE_ARGS+=(--model "$PLANNER_MODEL")

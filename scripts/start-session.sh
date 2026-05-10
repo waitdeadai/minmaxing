@@ -40,6 +40,7 @@ echo ""
 echo "[3/5] Version information..."
 echo "Claude Code: $(claude --version 2>/dev/null || echo 'not found')"
 echo "Default mode: /opusworkflow for all mutating work (Claude/Opus judgment + MiniMax-M2.7-highspeed executor)"
+echo "OpusWorkflow plan mode: default --plan-mode-policy auto records auto_approved_when_gates_pass only after research/audit/introspection/estimate/SPEC/Spec QA gates pass"
 echo "Optional mode: /opussonnet for Claude-only opusplan (Opus 4.7 planning + Sonnet 4.6 execution)"
 echo "Provider profiles: shared settings are provider-neutral; planner/executor use ignored local profiles"
 if [ -f "$SCRIPT_DIR/parallel-capacity.sh" ]; then
