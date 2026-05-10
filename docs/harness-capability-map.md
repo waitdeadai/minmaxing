@@ -8,14 +8,14 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 37
+- Skills: 38
 - Rules: 15
-- Scripts: 59
-- Static eval tasks: 24
+- Scripts: 60
+- Static eval tasks: 25
 - Hook entries: 12
 - Codex config files: 4
 - Codex repo skills: 1
-- Core routes: 17
+- Core routes: 18
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
   runtime secrets.
@@ -26,7 +26,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `debugging`: `/codesearch`, `/investigate`
 - `design`: `/visualize`
 - `execution`: `/demo`, `/hiveworkflow`, `/opusminimax`, `/opusworkflow`, `/visualizeworkflow`, `/workflow`
-- `kernel`: `/align`, `/deepretaste`, `/tastebootstrap`
+- `kernel`: `/align`, `/deepretaste`, `/digestaste`, `/tastebootstrap`
 - `knowledge`: `/claudeproduct`
 - `memory`: `/memory`
 - `operations`: `/overnight`, `/remote-control`
@@ -54,6 +54,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/deepretaste` | `kernel` | manual | yes | `.claude/skills/deepretaste/SKILL.md` | Detect product intent, run SOTA-2026 deepresearch with a capacity-bound parallel or hive budget, define ICPs, and bootstrap or propose/apply taste.md, taste.vision, and ICP artifacts. Use when the user invokes /deepretaste or asks to retaste a product from intent and customer research. |
 | `/defineicp` | `research` | manual | no | `.claude/skills/defineicp/SKILL.md` | Define the ICP or ICPs for the current product with deepresearch, then draft or apply ICP-driven updates to taste.md and taste.vision. Use when the user invokes /defineicp or asks to tailor the product kernel to ideal customer profiles. |
 | `/demo` | `execution` | manual | yes | `.claude/skills/demo/SKILL.md` | Produce governed recorded product demos with bilingual voiceover, captions, browser evidence, safety gates, and artifact manifests. |
+| `/digestaste` | `kernel` | manual | yes | `.claude/skills/digestaste/SKILL.md` | Digest one or more Deep Research markdown reports into a sanitized goal and taste bootstrap packet for a new or existing project. Use when the user invokes /digestaste, provides a .md deepresearch result, or asks to turn research into bootstrap text for taste.md, taste.vision, ICP, goal setup, or project direction. |
 | `/digestflow` | `research` | manual | no | `.claude/skills/digestflow/SKILL.md` | Run the full minmaxing workflow from external AI research reports. Use when the task begins with Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, or similar reports that must be digested before the repo's own deepresearch and governed workflow. |
 | `/hive` | `parallelism` | manual | yes | `.claude/skills/hive/SKILL.md` | Coordinate a governed hive of specialized agents for broad research, planning, review, or implementation work when roles, blackboard state, dissent, synthesis, and verification materially improve the outcome. |
 | `/hiveworkflow` | `execution` | manual | yes | `.claude/skills/hiveworkflow/SKILL.md` | Run the full minmaxing workflow with governed hive coordination: metacognitive route, deepresearch, role map, blackboard, packet DAG, aggregation, introspection, verification, and closeout. |
@@ -115,6 +116,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `deepretaste-smoke` | intent-to-ICP-to-taste bootstrap contract gate | `scripts/deepretaste-smoke.sh` |
 | `defineicp-smoke` | ICP-to-taste evolution contract gate | `scripts/defineicp-smoke.sh` |
 | `demo-smoke` | recorded demo contract and manifest gate | `scripts/demo-smoke.sh` |
+| `digestaste-smoke` | research-to-taste bootstrap text contract gate | `scripts/digestaste-smoke.sh` |
 | `harness-capability-map` | capability map freshness gate | `scripts/harness-capability-map.sh` |
 | `harness-eval` | static eval pack runner | `scripts/harness-eval.sh` |
 | `hive-aggregate` | hive run aggregate validator | `scripts/hive-aggregate.sh` |
@@ -141,6 +143,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `m11-deepretaste-intent-icp-bootstrap` | `scripts/deepretaste-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m11-deepretaste-intent-icp-bootstrap.yaml` | `evals/harness/golden/m11-deepretaste-intent-icp-bootstrap.json` |
 | `m12-remote-control-smoke` | `scripts/remote-control-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m12-remote-control-smoke.yaml` | `evals/harness/golden/m12-remote-control-smoke.json` |
 | `m13-specqa-sota-gate` | `scripts/specqa-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m13-specqa-sota-gate.yaml` | `evals/harness/golden/m13-specqa-sota-gate.json` |
+| `m14-digestaste-research-to-bootstrap-text` | `scripts/digestaste-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m14-digestaste-research-to-bootstrap-text.yaml` | `evals/harness/golden/m14-digestaste-research-to-bootstrap-text.json` |
 | `m4-agentfactory-kill-switch-evidence` | `scripts/agentfactory-smoke.sh` | `pass` | `evals/harness/tasks/m4-agentfactory-kill-switch-evidence.yaml` | `evals/harness/golden/m4-agentfactory-kill-switch-evidence.json` |
 | `m4-artifact-sidecar-lint` | `scripts/artifact-lint.sh --fixtures` | `pass` | `evals/harness/tasks/m4-artifact-sidecar-lint.yaml` | `evals/harness/golden/m4-artifact-sidecar-lint.json` |
 | `m4-codex-run-artifact-proof` | `scripts/codex-run-smoke.sh` | `pass` | `evals/harness/tasks/m4-codex-run-artifact-proof.yaml` | `evals/harness/golden/m4-codex-run-artifact-proof.json` |

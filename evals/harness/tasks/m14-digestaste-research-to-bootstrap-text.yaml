@@ -1,0 +1,6 @@
+id: m14-digestaste-research-to-bootstrap-text
+title: /digestaste research-to-taste bootstrap text gate
+gate: scripts/digestaste-smoke.sh --fixtures
+expected_result: reject
+golden: evals/harness/golden/m14-digestaste-research-to-bootstrap-text.json
+evidence: statically proves digestaste turns Deep Research markdown into sanitized bootstrap text, keeps report claims report-derived, preserves no-persist report-body handling, routes fresh kernels through tastebootstrap, and routes existing-kernel mutation through defineicp proposal/apply semantics

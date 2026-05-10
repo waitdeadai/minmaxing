@@ -45,7 +45,7 @@ for pattern in \
   "MiniMax-M2.7-highspeed is the executor" \
   "Default executor concurrency is 1" \
   "Do not claim Opus planned" \
-  "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow" \
+  "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow" \
   "ANTHROPIC_API_KEY" \
   "80-90% mechanical work"; do
   require_text "$pattern" ".claude/skills/opusworkflow/SKILL.md"
@@ -88,7 +88,7 @@ require_text "Then use the definitive workflow command" README.md
 require_text "Both install commands land on the same simple UX: use \`/opusworkflow\`" README.md
 require_text "\`/opusminimax\` is the advanced engine underneath" README.md
 require_text "verified result, partial result, or blocked repair path" README.md
-require_text "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow" README.md
+require_text "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow" README.md
 require_text 'Definitive route: /opusworkflow' setup.sh
 require_text 'Advanced engine mode selected; normal route remains /opusworkflow.' setup.sh
 require_text '$Mode = "opusworkflow"' setup.ps1

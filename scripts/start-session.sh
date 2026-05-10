@@ -54,11 +54,11 @@ FAIL=0
 
 # Check skills
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 37 ]; then
+if [ "$SKILL_COUNT" -ge 38 ]; then
     echo "  [PASS] $SKILL_COUNT skills found"
     PASS=$((PASS+1))
 else
-    echo "  [FAIL] Expected 37 skills, found $SKILL_COUNT"
+    echo "  [FAIL] Expected 38 skills, found $SKILL_COUNT"
     FAIL=$((FAIL+1))
 fi
 
@@ -104,8 +104,8 @@ echo "[5/5] Ready"
 echo "Philosophy: governed autonomy — delegate execution, keep judgment, require evidence"
 echo "Planning: Agent-Native Estimate before non-trivial plan or SPEC freeze"
 echo "Fresh repos: run /tastebootstrap before /opusworkflow"
-echo "Mutating specialist work: keep /opusworkflow outside and record inner_contract=agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow"
-echo "Skills: /tastebootstrap, /workflow, /opusworkflow, /opusminimax, /digestflow, /deepretaste, /defineicp, /align, /autoplan, /verify,"
+echo "Mutating specialist work: keep /opusworkflow outside and record inner_contract=agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow"
+echo "Skills: /tastebootstrap, /workflow, /opusworkflow, /opusminimax, /digestflow, /digestaste, /deepretaste, /defineicp, /align, /autoplan, /verify,"
 echo "        /review, /qa, /ship, /investigate, /sprint, /overnight, /council,"
 echo "        /audit, /deepresearch, /icpweek, /webresearch, /browse, /introspect, /codesearch,"
 echo "        /memory, /agentfactory, /parallel, /metacognition, /claudeproduct,"

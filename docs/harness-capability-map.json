@@ -65,10 +65,10 @@
   ],
   "counts": {
     "codex_skills": 1,
-    "eval_tasks": 24,
+    "eval_tasks": 25,
     "rules": 15,
-    "scripts": 59,
-    "skills": 37
+    "scripts": 60,
+    "skills": 38
   },
   "evals": [
     {
@@ -106,6 +106,15 @@
       "id": "m13-specqa-sota-gate",
       "task_path": "evals/harness/tasks/m13-specqa-sota-gate.yaml",
       "title": "Automated SOTA Spec QA gate"
+    },
+    {
+      "expected_result": "reject",
+      "gate": "scripts/digestaste-smoke.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m14-digestaste-research-to-bootstrap-text.json",
+      "id": "m14-digestaste-research-to-bootstrap-text",
+      "task_path": "evals/harness/tasks/m14-digestaste-research-to-bootstrap-text.yaml",
+      "title": "/digestaste research-to-taste bootstrap text gate"
     },
     {
       "expected_result": "pass",
@@ -480,6 +489,14 @@
       "sha256": "566b7dc26e1bc33874c57dbbad028efac66f8ccef7d02fcaec79b676b6fd1ccf"
     },
     {
+      "line_count": 102,
+      "name": "digestaste-smoke",
+      "path": "scripts/digestaste-smoke.sh",
+      "purpose": "research-to-taste bootstrap text contract gate",
+      "required_gate": true,
+      "sha256": "47a9de7579c271896812cad2873e1806cf44e3ab2ca083edaf618f2abb1466f1"
+    },
+    {
       "line_count": 117,
       "name": "digestflow-smoke",
       "path": "scripts/digestflow-smoke.sh",
@@ -504,12 +521,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 722,
+      "line_count": 726,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "4d1243b7d8fedf4078cc2412b7fa67314918c83521510dbbde5f902d64e45d77"
+      "sha256": "6b484071f7127e644f9cccd28d949b4ed86d878367eb03f619a6b16fa2e05d41"
     },
     {
       "line_count": 640,
@@ -528,12 +545,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 820,
+      "line_count": 829,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "8b76734422d3dbb928e2c7204775efc99c98deaf8fd1929e1b876ba1faec4c70"
+      "sha256": "f8f5b2234076ce2d64703125dbbb1f3e42812418b4f2498adf968bddaac5da0c"
     },
     {
       "line_count": 322,
@@ -661,7 +678,7 @@
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "4c28a87af707c5767fabc59824abdd78b1fa1009924ee3d993282d2c1ca9cb45"
+      "sha256": "368e908590099916626d3d6afe4b86fda48ee2905d597fb22f50b4c33cdbf891"
     },
     {
       "line_count": 144,
@@ -712,12 +729,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 94,
+      "line_count": 95,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "df6ef044c668995cd6394f974a62a57a34a70513ae5171310c75168766291af6"
+      "sha256": "ce6cc11c67c8b4a4aa315766466bc6dd9af27535f4b7875df56f28d4592e524e"
     },
     {
       "line_count": 311,
@@ -805,7 +822,7 @@
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "3a58203df2ff9c1b9486a13f91bf73f97755c1ee61da88a2510dd5be69208e6e"
+      "sha256": "23da629e44112e82f4725fabe393189edbd6d8ce7d8361c2d5523b65fe01f606"
     },
     {
       "line_count": 400,
@@ -824,12 +841,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 2063,
+      "line_count": 2114,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "51889d87435b9455e6fd10a4be132d0c4e3752d7d73a47f3280aac3bc917b325"
+      "sha256": "e4410d05176b5550572f412b383060b5e745a0bad737643c19deb28d6c3714e6"
     },
     {
       "line_count": 127,
@@ -853,7 +870,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "d30b520305b7049244485bfd9c7007a9716186de18bf61d1543d7c6e40ddf9a1"
+      "sha256": "21e684f7cd74c17b391d8a40d060d091fbbae9f2ec41336a1404c28cfe6c2513"
     },
     {
       "line_count": 117,
@@ -1285,6 +1302,26 @@
       "user_invocable": true
     },
     {
+      "argument_hint": "[goal/product scope] [1-10 .md/.txt research inputs] [mode: text|bootstrap|proposal|apply]",
+      "core_route": true,
+      "description": "Digest one or more Deep Research markdown reports into a sanitized goal and taste bootstrap packet for a new or existing project. Use when the user invokes /digestaste, provides a .md deepresearch result, or asks to turn research into bootstrap text for taste.md, taste.vision, ICP, goal setup, or project direction.",
+      "group": "kernel",
+      "line_count": 326,
+      "model_invocation": false,
+      "name": "digestaste",
+      "path": ".claude/skills/digestaste/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m14-digestaste-research-to-bootstrap-text.yaml"
+      ],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/digestaste-smoke.sh"
+      ],
+      "sha256": "01dbb6589b811aaf5396f9dd9aaf111d6653bdb40d928dfef4973d6c65c0f691",
+      "slash": "/digestaste",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "[task] [1-10 report inputs]",
       "core_route": false,
       "description": "Run the full minmaxing workflow from external AI research reports. Use when the task begins with Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, or similar reports that must be digested before the repo's own deepresearch and governed workflow.",
@@ -1504,7 +1541,7 @@
         "scripts/opussonnetworkflow.sh",
         "scripts/specqa-smoke.sh"
       ],
-      "sha256": "05b4d84374cb81b69444f499c97c722a6ccec4eca3934969da9d9a7dd9050cb0",
+      "sha256": "bbacf212d28e19f0b14832f677e09f9d774cb1fd475062e5d8777357ce6fd522",
       "slash": "/opusworkflow",
       "user_invocable": true
     },
@@ -1814,8 +1851,8 @@
   "summary": {
     "codex_file_count": 4,
     "codex_skill_count": 1,
-    "core_route_count": 17,
-    "eval_task_count": 24,
+    "core_route_count": 18,
+    "eval_task_count": 25,
     "groups": {
       "agent-systems": [
         "/agentfactory"
@@ -1838,6 +1875,7 @@
       "kernel": [
         "/align",
         "/deepretaste",
+        "/digestaste",
         "/tastebootstrap"
       ],
       "knowledge": [
@@ -1887,7 +1925,7 @@
     },
     "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 59,
-    "skill_count": 37
+    "script_count": 60,
+    "skill_count": 38
   }
 }

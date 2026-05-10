@@ -253,7 +253,7 @@ for pattern in \
     "cost-aware" \
     "Default executor concurrency is 1" \
     "Do not claim Opus planned" \
-    "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow" \
+    "inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow" \
     "80-90% mechanical work" \
     "ANTHROPIC_API_KEY"; do
     if ! grep -Fq "$pattern" .claude/skills/opusworkflow/SKILL.md 2>/dev/null; then
@@ -503,7 +503,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "37 skills" README.md 2>/dev/null && \
+   grep -Fq "38 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -832,7 +832,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 37 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 38 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -876,8 +876,59 @@ else
     test_fail "/digestflow report intake contract is incomplete"
 fi
 
-# Test 3j: Surgical Diff Discipline Contract
-echo "[3j] Surgical Diff Discipline"
+# Test 3j: DigesTaste Research-To-Bootstrap Contract
+echo "[3j] DigesTaste Bootstrap Packet Contract"
+DIGESTASTE_OK=true
+for required_file in \
+    ".claude/skills/digestaste/SKILL.md" \
+    "scripts/digestaste-smoke.sh" \
+    "evals/harness/tasks/m14-digestaste-research-to-bootstrap-text.yaml" \
+    "evals/harness/golden/m14-digestaste-research-to-bootstrap-text.json"; do
+    if [ ! -e "$required_file" ]; then
+        DIGESTASTE_OK=false
+    fi
+done
+if [ ! -x "scripts/digestaste-smoke.sh" ]; then
+    DIGESTASTE_OK=false
+fi
+for pattern in \
+    "DigesTaste Bootstrap Packet" \
+    "Goal Bootstrap Text" \
+    "Tastebootstrap Answers" \
+    "Existing-Kernel Proposal" \
+    "untrusted candidate evidence" \
+    "report-derived" \
+    "no-persist report bodies" \
+    "Injection Quarantine" \
+    "/tastebootstrap" \
+    "/defineicp" \
+    "DIGESTASTE_TEXT_READY" \
+    "DIGESTASTE_BLOCKED"; do
+    if ! grep -Fq "$pattern" .claude/skills/digestaste/SKILL.md 2>/dev/null; then
+        DIGESTASTE_OK=false
+    fi
+done
+for pattern in \
+    "digestaste-smoke" \
+    "m14-digestaste-research-to-bootstrap-text"; do
+    if ! grep -Fq -- "$pattern" scripts/harness-eval.sh scripts/release-check.sh scripts/harness-capability-map.sh evals/harness/tasks/m14-digestaste-research-to-bootstrap-text.yaml evals/harness/golden/m14-digestaste-research-to-bootstrap-text.json 2>/dev/null; then
+        DIGESTASTE_OK=false
+    fi
+done
+for file in README.md CLAUDE.md AGENTS.md scripts/start-session.sh; do
+    if ! grep -Fq "/digestaste" "$file" 2>/dev/null; then
+        DIGESTASTE_OK=false
+    fi
+done
+if [ "$DIGESTASTE_OK" = true ] && \
+   bash scripts/digestaste-smoke.sh --fixtures >/dev/null 2>&1; then
+    test_pass "/digestaste converts Deep Research markdown into governed bootstrap text"
+else
+    test_fail "/digestaste skill, docs, eval, or static gate is incomplete"
+fi
+
+# Test 3k: Surgical Diff Discipline Contract
+echo "[3k] Surgical Diff Discipline"
 if grep -Fq "changed-line trace" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "no drive-by refactors" .claude/skills/workflow/SKILL.md 2>/dev/null && \
    grep -Fq "no speculative abstractions" .claude/skills/workflow/SKILL.md 2>/dev/null && \
@@ -1606,25 +1657,25 @@ else
 fi
 
 # ========================================
-# Skills (37 Expected)
+# Skills (38 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 37 Expected]"
+echo "[Skills - 38 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 37 ]; then
+if [ "$SKILL_COUNT" -ge 38 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 37+ skills, found $SKILL_COUNT"
+    test_fail "Expected 38+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control specqa deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow digestaste deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control specqa deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1694,7 +1745,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

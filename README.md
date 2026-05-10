@@ -172,7 +172,7 @@ above from the project root. In `/opusworkflow` split mode, MiniMax is configure
 in the ignored executor profile `.claude/settings.minimax-executor.local.json`;
 it is not automatically added as a user-scope Claude MCP server.
 
-That's it. Memory system, governed runtime profiles, and 37 skills are
+That's it. Memory system, governed runtime profiles, and 38 skills are
 configured.
 
 ### Suggested Claude-Only Install
@@ -599,7 +599,7 @@ Think of minmaxing as an operating system:
 
 **Skills are system calls.** Each skill does one thing well. They are still useful directly, but `/opusworkflow` is the default daily entrypoint for mutating work and `/workflow` is responsible for finishing the underlying end-to-end lifecycle itself.
 
-**/opusworkflow is the definitive shell.** It is the default top-level route for normal build/plan work and mutating specialist work: Opus 4.7 high/xhigh is requested for judgment checkpoints when proven available, and MiniMax-M2.7-highspeed handles bounded execution packets. Specialist routes are recorded as `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow`, and closeout must be verified, partial, or blocked-with-repair. `/opussonnet` is the optional Claude-only sibling for operators who want Opus 4.7 planning plus Sonnet 4.6 execution without MiniMax.
+**/opusworkflow is the definitive shell.** It is the default top-level route for normal build/plan work and mutating specialist work: Opus 4.7 high/xhigh is requested for judgment checkpoints when proven available, and MiniMax-M2.7-highspeed handles bounded execution packets. Specialist routes are recorded as `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow`, and closeout must be verified, partial, or blocked-with-repair. `/opussonnet` is the optional Claude-only sibling for operators who want Opus 4.7 planning plus Sonnet 4.6 execution without MiniMax.
 
 **/opusminimax is the engine, not the product command.** Use it directly for
 provider split debugging, packet control, repair mode, or benchmark mode. For
@@ -782,6 +782,7 @@ between `/opusworkflow` and `/opusminimax`:
 | `/visualizeworkflow` | **Approval-first workflow** — drafts SPEC + visualization, stops at `WAITING_FOR_VISUAL_APPROVAL`, then continues only with `--continue` |
 | `/demo` | **Governed recorded demo pipeline** — produces product recordings with Playwright evidence, bilingual voiceover, captions, manifests, and safety gates |
 | `/digestflow` | **External-report-informed workflow** — digests 1-10 AI research reports as untrusted candidate evidence, then runs the full governed workflow |
+| `/digestaste` | **Research-to-bootstrap text** — digests Deep Research `.md` reports into a sanitized DigesTaste Bootstrap Packet for a new or existing project |
 | `/deepretaste` | **Intent-to-ICP-to-taste bootstrap** — detects product intent, uses `/deepresearch` for taste-driving evidence, defines ICPs, and bootstraps or proposes/applies taste changes through `/tastebootstrap` or `/defineicp` semantics |
 | `/defineicp` | **ICP-to-taste evolution** — defines primary/secondary/anti-ICPs with deepresearch, drafts taste.md + taste.vision changes, and applies only with explicit approval |
 | `/icpweek` | **ICP week-in-the-life stress test** — simulates Monday-Sunday real usage with ideal-user, CTO, and senior product-engineer lenses, then delivers the A-J product diagnosis |
@@ -825,6 +826,7 @@ The routing ladder is:
 ```text
 /opusworkflow as the definitive workflow command and daily default for mutating build/plan/specialist work
 -> local /workflow when the hybrid provider split is unavailable or explicitly bypassed
+-> /digestaste when a Deep Research .md should become goal/taste bootstrap text before fresh or existing kernel decisions
 -> /deepretaste when product intent, ICP, and taste kernel need a SOTA-2026 research-backed bootstrap or retaste
 -> /defineicp when the product kernel needs ICP research before taste changes
 -> /opusminimax only for advanced engine work: provider split, packet, repair, or benchmark debugging
@@ -850,6 +852,7 @@ Use this rule of thumb:
 | `/opussonnet` | You want the whole governed harness without MiniMax for a repo, and you are okay spending Claude subscription or extra usage on execution. | `setup.sh --mode opussonnet`, Claude Code `opusplan`, pinned `claude-opus-4-7` + `claude-sonnet-4-6`, no MiniMax base URL, same hooks and workflow gates. |
 | `/opusworkflow --model-profile sonnet|opus|default|custom` | You intentionally want Claude Code model freedom for one governed run. | Same workflow artifacts and gates, no MiniMax leakage for Anthropic-only profiles, requested model IDs recorded, and runtime identity claims blocked until proven. |
 | local `/workflow` | Explicit user override, provider split unavailable, one tight reasoning loop, one shared file, unclear ownership, or coordination would slow the work down. | One supervisor does the governed lifecycle and records why the hybrid outer route was not used. |
+| `/digestaste` | You have one or more Deep Research `.md` reports and want bootstrap text for a goal, fresh repo kernel, or existing project retaste. | Report Intake, no-persist report bodies, prompt-injection quarantine, claim/source/conflict ledgers, DigesTaste Bootstrap Packet, `/tastebootstrap` for missing kernels, and `/defineicp` proposal/apply semantics for existing kernels. |
 | `/deepretaste` | You need to detect product intent, define ICPs, and bootstrap or retaste the project kernel from research-backed customer evidence. | `/deepresearch` remains general-purpose; `/deepretaste` uses it only for taste-driving evidence, then routes fresh kernels through `/tastebootstrap` and existing kernels through `/defineicp` proposal/apply semantics. |
 | `/defineicp` | You need to define the ICP or ICPs and tailor `taste.md` / `taste.vision` to that customer profile. | Deepresearch plan, primary/secondary/anti-ICPs, source and claim ledgers, taste patch proposal, explicit apply approval, backups, hashes, validation, and rollback evidence. |
 | `/opusminimax` | You are maintaining the engine itself: provider split, packet control, repair mode, benchmark mode, or low-level routing evidence. | Provider split doctor, Opus planner artifact, MiniMax executor packets, quota-aware concurrency, parent verification, and no benchmark overclaims. |
@@ -972,6 +975,18 @@ claude
 ```
 
 `/digestflow` starts with Report Intake. It treats external AI reports as untrusted candidate evidence, labels imported claims `report-derived`, quarantines prompt-like instructions, records contradictions, and then runs the repo's own deepresearch plus the full workflow before any implementation is trusted.
+
+**Research-to-taste bootstrap text:**
+```bash
+/digestaste "bootstrap the operating kernel for this roofing ops agent" ./deepresearch-result.md
+```
+
+`/digestaste` is lighter than `/digestflow`: it turns Deep Research markdown
+into a sanitized DigesTaste Bootstrap Packet with goal text, claim/source
+ledgers, `/tastebootstrap` answers, draft taste text, existing-kernel proposal
+handling, and verification gaps. It does not run implementation. Fresh kernels
+route through `/tastebootstrap`; existing kernels route through `/defineicp`
+proposal/apply semantics.
 
 **Direct skill invocation (advanced):**
 ```bash
@@ -1137,7 +1152,7 @@ minmaxing/
 │   ├── settings.opussonnet.example.json
 │   ├── settings.sonnet-executor.example.json
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 37 skills (system calls)
+│   ├── skills/                 # 38 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── opusworkflow/       # One normal Opus + MiniMax product route
 │   │   ├── opusminimax/        # Advanced provider/packet engine
@@ -1146,6 +1161,7 @@ minmaxing/
 │   │   ├── visualizeworkflow/  # Approval-first workflow route
 │   │   ├── demo/               # Recorded product demo route
 │   │   ├── digestflow/         # External report intake + governed workflow
+│   │   ├── digestaste/         # Deep Research markdown to bootstrap text
 │   │   ├── deepretaste/        # Intent-to-ICP-to-taste bootstrap/retaste
 │   │   ├── defineicp/          # ICP-to-taste evolution route
 │   │   ├── icpweek/            # ICP week-in-the-life product stress test

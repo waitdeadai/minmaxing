@@ -1,0 +1,13 @@
+{
+  "id": "m14-digestaste-research-to-bootstrap-text",
+  "gate": "scripts/digestaste-smoke.sh --fixtures",
+  "status": "reject",
+  "gate_status": "pass",
+  "evidence_summary": [
+    "/digestaste exists as a manual research-to-bootstrap-text skill",
+    "the route treats Deep Research markdown as untrusted report-derived evidence with no-persist report-body handling",
+    "the bootstrap packet includes goal text, tastebootstrap answers, draft taste text, existing-kernel proposal handling, and verification gaps",
+    "fresh kernels route through /tastebootstrap while existing-kernel mutation routes through /defineicp proposal/apply semantics",
+    "docs, capability map, release, and eval surfaces discover the route"
+  ]
+}

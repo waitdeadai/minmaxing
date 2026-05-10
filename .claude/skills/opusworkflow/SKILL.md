@@ -77,13 +77,13 @@ Model-profile selector:
 - Allow explicit model freedom through `--model-profile`; treat it as a
   governed route request, not runtime identity proof.
 - Record the specialist being executed as
-  `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|deepretaste|demo|visualizeworkflow`.
+  `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow`.
 - Run `/specqa` after `SPEC.md` is created, updated, or reused and before
   implementation. Spec QA is an Opus 4.7 high/xhigh judgment gate when runtime
   identity is proven; otherwise record the missing proof and downgrade or block
   honestly.
-- If the task asks for Hermes, Hive, ICP/taste mutation, approved
-  visualization implementation, demo artifact production, or dense packet work,
+- If the task asks for Hermes, Hive, ICP/taste mutation, digest-to-taste
+  bootstrap text, approved visualization implementation, demo artifact production, or dense packet work,
   preserve that specialist contract under the `/opusworkflow` outer route.
 - Do not claim Opus planned, reviewed, or verified unless auth/model evidence or
   the run artifact proves it.
