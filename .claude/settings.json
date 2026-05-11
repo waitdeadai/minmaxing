@@ -1,253 +1,423 @@
 {
-    "profile": "project-governance",
-    "profileNotes": [
-        "Provider-neutral trusted-local project settings.",
-        "TRUSTED-LOCAL WARNING: this workspace defaults to bypassPermissions for the operator's solo workflow.",
-        "Use .claude/settings.team-safe.example.json for shared, reviewed, client-visible, or less trusted work.",
-        "Do not put Anthropic, Claude subscription, MiniMax, or other provider credentials in this file.",
-        "Use ignored local profiles for planner/executor identity.",
-        "Remote Control compatible: do not set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, DISABLE_TELEMETRY, disableRemoteControl, or provider auth variables in shared project settings."
+  "profile": "project-governance",
+  "profileNotes": [
+    "Provider-neutral trusted-local project settings.",
+    "TRUSTED-LOCAL WARNING: this workspace defaults to bypassPermissions for the operator's solo workflow.",
+    "Use .claude/settings.team-safe.example.json for shared, reviewed, client-visible, or less trusted work.",
+    "Do not put Anthropic, Claude subscription, MiniMax, or other provider credentials in this file.",
+    "Use ignored local profiles for planner/executor identity.",
+    "Remote Control compatible: do not set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, DISABLE_TELEMETRY, disableRemoteControl, or provider auth variables in shared project settings."
+  ],
+  "env": {
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_FEEDBACK_COMMAND": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "DISABLE_AUTO_COMPACT": "0",
+    "CLAUDE_CODE_NO_FLICKER": "1"
+  },
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "mcp__MiniMax__web_search",
+      "Bash(bash *.sh)"
     ],
-    "env": {
-        "DISABLE_AUTOUPDATER": "1",
-        "DISABLE_FEEDBACK_COMMAND": "1",
-        "DISABLE_ERROR_REPORTING": "1",
-        "DISABLE_AUTO_COMPACT": "0",
-        "CLAUDE_CODE_NO_FLICKER": "1"
-    },
-    "permissions": {
-        "allow": [
-            "WebFetch(domain:github.com)",
-            "WebSearch",
-            "mcp__MiniMax__web_search",
-            "Bash(bash *.sh)"
-        ],
-        "deny": [
-            "Read(./.claude/settings.local.json)",
-            "Read(./.claude/*.local.json)",
-            "Read(./.env)",
-            "Read(./.env.*)",
-            "Read(./secrets/**)"
-        ],
-        "defaultMode": "bypassPermissions"
-    },
-    "hooks": {
-        "PreToolUse": [
-            {
-                "matcher": "Bash",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
-                        "timeout": 5
-                    }
-                ]
-            },
-            {
-                "matcher": "Edit|Write|MultiEdit|NotebookEdit",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
-                        "timeout": 5
-                    }
-                ]
-            }
-        ],
-        "PostToolUse": [
-            {
-                "matcher": "Edit|Write|MultiEdit|NotebookEdit",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
-                        "timeout": 5
-                    }
-                ]
-            }
-        ],
-        "PostToolUseFailure": [
-            {
-                "matcher": "*",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
-                        "timeout": 5
-                    }
-                ]
-            }
-        ],
-        "TaskCreated": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
-                        "timeout": 5
-                    }
-                ]
-            }
-        ],
-        "TaskCompleted": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
-                        "timeout": 5
-                    }
-                ]
-            }
-        ],
-        "UserPromptSubmit": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh\"",
-                        "timeout": 3
-                    }
-                ]
-            }
-        ],
-        "SessionStart": [
-            {
-                "matcher": "startup|resume|compact",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh\"",
-                        "timeout": 3
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-sessionstart.sh\"",
-                        "timeout": 5
-                    }
-                ]
-            }
-        ],
-        "PreCompact": [
-            {
-                "matcher": "manual|auto",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-precompact.sh\"",
-                        "timeout": 10
-                    }
-                ]
-            }
-        ],
-        "PostCompact": [
-            {
-                "matcher": "manual|auto",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-postcompact.sh\"",
-                        "timeout": 10
-                    }
-                ]
-            }
-        ],
-        "Stop": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-stop.sh\"",
-                        "timeout": 10
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-curfew.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-sycophancy.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-cliffhanger.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/honest-eta.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-recall.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-stats.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-cite.sh\"",
-                        "timeout": 5
-                    }
-                ]
-            }
-        ],
-        "SubagentStop": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-curfew.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-sycophancy.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-cliffhanger.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/honest-eta.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-recall.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-stats.sh\"",
-                        "timeout": 5
-                    },
-                    {
-                        "type": "command",
-                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-cite.sh\"",
-                        "timeout": 5
-                    }
-                ]
-            }
+    "deny": [
+      "Read(./.claude/settings.local.json)",
+      "Read(./.claude/*.local.json)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
+    ],
+    "defaultMode": "bypassPermissions"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5
+          }
         ]
-    }
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-approval-sneak.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "TaskCreated": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-handoff-loop.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-credential-leak-in-handoff.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-ownership-violation.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh\"",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-sessionstart.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-precompact.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-postcompact.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-stop.sh\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-curfew.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-sycophancy.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-cliffhanger.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/honest-eta.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-recall.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-stats.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-cite.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-wrap-up.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-aggregator-hallucination.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-silent-worker-success.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-cherry-pick-rollup.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-credential-leak-in-handoff.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-phantom-tool-call.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-sandbagging-disguise.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-rollback-claim-without-evidence.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-emoji-spam.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-tldr-bait.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-meta-commentary.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-prompt-restate.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-disclaimer-spam.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-ai-tells.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-roleplay-drift.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-curfew.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-sycophancy.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-cliffhanger.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/honest-eta.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-recall.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-stats.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-cite.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-wrap-up.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-aggregator-hallucination.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-silent-worker-success.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-cherry-pick-rollup.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-credential-leak-in-handoff.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-phantom-tool-call.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-sandbagging-disguise.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-rollback-claim-without-evidence.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-emoji-spam.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-tldr-bait.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-meta-commentary.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-prompt-restate.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-disclaimer-spam.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-ai-tells.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-roleplay-drift.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
 }
