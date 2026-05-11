@@ -235,6 +235,10 @@ Claude Code lifecycle hooks keep working state fresh by default:
 
 Treat working state as a continuity hint, not ground truth. Before editing, reconcile it with live `git status`, `SPEC.md`, and the latest `.taste/workflow-runs/*-workflow.md` artifact.
 
+## LLM Dark Patterns Hooks Suite
+
+The harness now ships ten Stop hooks under the [LLM Dark Patterns Hooks](https://github.com/waitdeadai/llm-dark-patterns) suite. They are wired by default in `.claude/settings.json` and live in `.claude/hooks/`. See [`docs/llm-dark-patterns-suite.md`](docs/llm-dark-patterns-suite.md) for the per-hook table, what each catches, and links to the standalone repos. The methodology behind the suite is at [`waitdeadai/llm-dark-patterns/METHODOLOGY.md`](https://github.com/waitdeadai/llm-dark-patterns/blob/main/METHODOLOGY.md).
+
 ## Quick Start
 ```bash
 ./scripts/start-session.sh
