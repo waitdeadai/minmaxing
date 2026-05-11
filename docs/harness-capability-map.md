@@ -181,8 +181,8 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `PreToolUse` | `Bash` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
 | `PreToolUse` | `Edit|Write|MultiEdit|NotebookEdit` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
 | `SessionStart` | `startup|resume|compact` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/state-sessionstart.sh"` |
-| `Stop` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/state-stop.sh"` |
-| `SubagentStop` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
+| `Stop` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/state-stop.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-curfew.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-sycophancy.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-cliffhanger.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/honest-eta.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-recall.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-stats.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-cite.sh"` |
+| `SubagentStop` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-curfew.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-sycophancy.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-cliffhanger.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/honest-eta.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-recall.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-stats.sh"`<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-cite.sh"` |
 | `TaskCompleted` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
 | `TaskCreated` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh"` |
 | `UserPromptSubmit` | `` | `bash "$CLAUDE_PROJECT_DIR/.claude/hooks/time-anchor.sh"` |

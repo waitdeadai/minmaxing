@@ -1009,6 +1009,41 @@
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-stop.sh\"",
             "timeout": 10,
             "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-curfew.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-sycophancy.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-cliffhanger.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/honest-eta.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-recall.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-stats.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-cite.sh\"",
+            "timeout": 5,
+            "type": "command"
           }
         ],
         "event": "Stop",
@@ -1018,6 +1053,41 @@
         "commands": [
           {
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-curfew.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-sycophancy.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-cliffhanger.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/honest-eta.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-recall.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-stats.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-fake-cite.sh\"",
             "timeout": 5,
             "type": "command"
           }
