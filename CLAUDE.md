@@ -49,6 +49,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 
 **When you say `/defineicp`:** define primary, secondary, and anti-ICPs with deepresearch discipline, then draft ICP-driven updates to `taste.md` and `taste.vision`; apply those rewrites only with explicit approval, backups, hashes, changed-line trace, validation, and rollback evidence.
 
+**When you say `/leveragepath` or ask "what's the highest-leverage move I can make right now?":** scan the current taste.md, taste.vision, SPEC.md, and recent workflow artifacts; run `/deepresearch` on the project's distribution surface (communities, marketplaces, influencers, time-sensitive windows, adjacent collaborators, academic surfaces); rank moves by RICE (Reach × Impact × Confidence / Effort) with four orthogonal tags (auto/manual, community/mass, time-sensitive/evergreen, reversible/hard-to-reverse); surface moats and blind spots the dev is not articulating; write the artifact to `.taste/leveragepath/<run_id>/leveragepath.md` with the Top 5 punch list, auto-by-Claude-Code with exact tool calls, manual-by-operator with copy-paste assets, communities to target with verified URLs, and (opt-in `kernel-propose` mode only) proposed `taste.md`/`taste.vision` diffs using `/defineicp` proposal/apply semantics. The skill is read-only by default; mutation requires explicit operator opt-in.
+
 **When you say `/deepretaste`:** detect product intent, run SOTA-2026 deepresearch only for taste-driving evidence, define ICPs, and bootstrap or retaste the kernel. `/deepresearch` remains the general research engine for architecture, debugging, benchmarks, providers, markets, and product strategy; `/deepretaste` routes fresh kernels through `/tastebootstrap` and existing-kernel mutation through `/defineicp` proposal/apply semantics.
 
 **When you say `/opusminimax`:** treat this as an advanced engine request, not normal product work. Use it directly for provider split, packet, repair, or benchmark debugging; otherwise route the same need through `/opusworkflow`.
@@ -81,6 +83,7 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /deepretaste | Detect product intent, define ICPs, and bootstrap or retaste taste.md, taste.vision, and ICP artifacts through governed deepresearch plus /tastebootstrap or /defineicp semantics |
 | /defineicp | Define primary, secondary, and anti-ICPs with deepresearch, then draft or explicitly apply ICP-driven updates to taste.md and taste.vision |
 | /icpweek | Research-backed ICP week-in-the-life product stress test with parallel lenses and A-J diagnosis |
+| /leveragepath | Identify highest-leverage actions for the current product (taste/SPEC-aware), with deepresearch-backed channel scanning, RICE+orthogonal-tag scoring, auto-vs-manual classification, community targets with verified URLs, moat/blind-spot surfacing, and (opt-in kernel-propose mode) /defineicp-style proposals when research surfaces things the dev was not seeing |
 | /audit | Deep codebase audit with efficacy-first parallelism |
 | /align | Validate idea against taste.md + vision before building. Gates /workflow on taste mismatch. |
 | /autoplan | Create SPEC.md with efficacy-first parallel planning and Agent-Native Estimate |

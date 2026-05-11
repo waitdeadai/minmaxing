@@ -8,7 +8,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 38
+- Skills: 39
 - Rules: 15
 - Scripts: 60
 - Static eval tasks: 25
@@ -36,7 +36,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `release`: `/ship`
 - `research`: `/browse`, `/deepresearch`, `/defineicp`, `/digestflow`, `/icpweek`, `/webresearch`
 - `routing`: `/metacognition`
-- `support`: `/opussonnet`
+- `support`: `/leveragepath`, `/opussonnet`
 
 ## Skills
 
@@ -61,6 +61,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/icpweek` | `research` | manual | no | `.claude/skills/icpweek/SKILL.md` | Run a research-backed ICP week-in-the-life product stress test. Use when the user invokes /icpweek or asks to simulate a full week of real-world product usage by an ideal customer and diagnose product, UX, automation, and technical gaps. |
 | `/introspect` | `quality` | yes | yes | `.claude/skills/introspect/SKILL.md` | /introspect |
 | `/investigate` | `debugging` | yes | no | `.claude/skills/investigate/SKILL.md` | /investigate |
+| `/leveragepath` | `support` | manual | no | `.claude/skills/leveragepath/SKILL.md` | Identify the highest-leverage actions for the current product based on taste.md, taste.vision, and SPEC.md, with deepresearch-backed channel scanning, RICE+categorization scoring, auto-vs-manual classification, community targets with verified URLs, and (when research surfaces moats or blind spots) a /defineicp-style proposal to update the kernel. Use when the user invokes /leveragepath or asks "what's the highest-leverage move I can make right now? |
 | `/memory` | `memory` | yes | no | `.claude/skills/memory/SKILL.md` | minmaxing 5-tier memory system management |
 | `/metacognition` | `routing` | manual | yes | `.claude/skills/metacognition/SKILL.md` | Route and calibrate work with model-agnostic metacognitive control. Use when the user asks for thinking-about-thinking, harness effectiveness, task routing, self-correction, confidence calibration, or strategy improvement before execution. |
 | `/opusminimax` | `execution` | manual | yes | `.claude/skills/opusminimax/SKILL.md` | Advanced engine behind /opusworkflow for provider split, packet, repair, and benchmark work. Normal build/fix/refactor work should use /opusworkflow, which asks Opus 4.7 to plan/review when proven available and MiniMax-M2.7-highspeed to execute. |

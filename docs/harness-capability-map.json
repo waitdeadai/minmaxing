@@ -68,7 +68,7 @@
     "eval_tasks": 25,
     "rules": 15,
     "scripts": 60,
-    "skills": 38
+    "skills": 39
   },
   "evals": [
     {
@@ -1509,6 +1509,22 @@
       "user_invocable": true
     },
     {
+      "argument_hint": "[mode: scan|apply <move_id>|kernel-propose]",
+      "core_route": false,
+      "description": "Identify the highest-leverage actions for the current product based on taste.md, taste.vision, and SPEC.md, with deepresearch-backed channel scanning, RICE+categorization scoring, auto-vs-manual classification, community targets with verified URLs, and (when research surfaces moats or blind spots) a /defineicp-style proposal to update the kernel. Use when the user invokes /leveragepath or asks \"what's the highest-leverage move I can make right now?",
+      "group": "support",
+      "line_count": 273,
+      "model_invocation": false,
+      "name": "leveragepath",
+      "path": ".claude/skills/leveragepath/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [],
+      "sha256": "8eb169824bfb4795a1cb73a218c8ed1697778696f879342e30cc91c538cc05d3",
+      "slash": "/leveragepath",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "",
       "core_route": false,
       "description": "minmaxing 5-tier memory system management",
@@ -1990,12 +2006,13 @@
         "/metacognition"
       ],
       "support": [
+        "/leveragepath",
         "/opussonnet"
       ]
     },
     "hook_event_count": 12,
     "rule_count": 15,
     "script_count": 60,
-    "skill_count": 38
+    "skill_count": 39
   }
 }
