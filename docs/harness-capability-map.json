@@ -65,10 +65,10 @@
   ],
   "counts": {
     "codex_skills": 1,
-    "eval_tasks": 26,
+    "eval_tasks": 27,
     "rules": 15,
-    "scripts": 62,
-    "skills": 40
+    "scripts": 64,
+    "skills": 41
   },
   "evals": [
     {
@@ -124,6 +124,15 @@
       "id": "m15-agent-view-smoke",
       "task_path": "evals/harness/tasks/m15-agent-view-smoke.yaml",
       "title": "Native Claude Code Agent View static readiness smoke"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/goal-mode-smoke.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m16-goal-mode-smoke.json",
+      "id": "m16-goal-mode-smoke",
+      "task_path": "evals/harness/tasks/m16-goal-mode-smoke.yaml",
+      "title": "Native Claude Code /goal static readiness smoke"
     },
     {
       "expected_result": "pass",
@@ -310,10 +319,10 @@
   "generated_by": "scripts/harness-capability-map.sh",
   "rules": [
     {
-      "line_count": 50,
+      "line_count": 51,
       "name": "claudeproduct",
       "path": ".claude/rules/claudeproduct.rules.md",
-      "sha256": "a9829fd4269ac150880009bcce7e0d842c10d270a7d1beac7a9173079c571d04",
+      "sha256": "e4f6248c326d0860d18911a9db43700e5dcf37c00d4a8ab9aae2084e467de63a",
       "title": "Claude Product Knowledge Rules"
     },
     {
@@ -546,12 +555,28 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 731,
+      "line_count": 389,
+      "name": "goal-mode-doctor",
+      "path": "scripts/goal-mode-doctor.sh",
+      "purpose": "Static readiness doctor for native Claude Code /goal usage.",
+      "required_gate": false,
+      "sha256": "4fba883ac505621ebe49950b03b0f31caaa06f002711780ddd50ab2e402b7ab5"
+    },
+    {
+      "line_count": 440,
+      "name": "goal-mode-smoke",
+      "path": "scripts/goal-mode-smoke.sh",
+      "purpose": "native Claude Code /goal static readiness gate",
+      "required_gate": true,
+      "sha256": "787cff95f1f912ba22c8aabbf22bce7d05ef41858ef3fddbd4dc028e5110c30b"
+    },
+    {
+      "line_count": 736,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "0b70556831e9e33dd70f4ef796be905e070854d64d3dff59e3f1eb320f3dea3c"
+      "sha256": "d7585de2b3ab0b1a80408ce0eb8588ffbac8351ebc7ccc3e266eccddf10e98cb"
     },
     {
       "line_count": 640,
@@ -570,12 +595,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 838,
+      "line_count": 847,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "386c91da2af4e5027cc66d34963c33f911a9fa07db6676345518740270ffa644"
+      "sha256": "6840d7ad78471cc73d0c5f627412765108f31bfd188ae9991bc32371e2be66d3"
     },
     {
       "line_count": 322,
@@ -682,12 +707,12 @@
       "sha256": "cb5fe25369342ebe8d517507170a5b64b01fba48e69b85f827ce38335dccbcbd"
     },
     {
-      "line_count": 493,
+      "line_count": 515,
       "name": "opusminimax",
       "path": "scripts/opusminimax.sh",
       "purpose": "Prepare or explicitly launch the /opusminimax planner workflow.",
       "required_gate": false,
-      "sha256": "153dcd404508fa8bea49dc15b4325fa2c21d7614e51127132f1ff4cd023f7e67"
+      "sha256": "ff3faa351982495071d93787c9e56bb2995ade9a923bd58f43dd0dd4b194e407"
     },
     {
       "line_count": 30,
@@ -698,12 +723,12 @@
       "sha256": "199a1e495da27067db293bda488b10b8938968565b2d96646380d88c187728c4"
     },
     {
-      "line_count": 263,
+      "line_count": 285,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "b07558361d8027d6689a4f1c2e6b4bd6d74953c5d7f9e9cd47299ec021054953"
+      "sha256": "d5a07e739a1139e67fef43d4e443e264f1f80022781febb96997ff357adc7adc"
     },
     {
       "line_count": 178,
@@ -754,12 +779,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 96,
+      "line_count": 97,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "8bcd6cbe5577f9db99bd89e94ba0448b8e99e645f51bb0cac1e37eca012a7426"
+      "sha256": "7a6014056f03dc743f5727428fa44333d74d704ae7efbb11a5f62eebc023fd2b"
     },
     {
       "line_count": 311,
@@ -866,12 +891,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 2207,
+      "line_count": 2293,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "33d7badbb44ca95747bb80c1dbff5276ddaceca2fd6e979fe1400dc34375809a"
+      "sha256": "6d7239d587e93f08e5c9be14210ef5391633aa75f60a26378a458e6523483612"
     },
     {
       "line_count": 127,
@@ -1349,7 +1374,7 @@
       "core_route": true,
       "description": "Diagnose Claude Code Agent View readiness safely inside the minmaxing harness. This route is static readiness and troubleshooting only; open the live Agent View TUI manually with claude agents.",
       "group": "operations",
-      "line_count": 148,
+      "line_count": 157,
       "model_invocation": false,
       "name": "agent-view",
       "path": ".claude/skills/agent-view/SKILL.md",
@@ -1361,7 +1386,7 @@
         "scripts/agent-view-doctor.sh",
         "scripts/agent-view-smoke.sh"
       ],
-      "sha256": "5b6df7d2472bd1653842b500238aedb1443bbbb86e69d40fd0b678f57e40dd8e",
+      "sha256": "4052cb7e0c815a5d749dcc4694eb05ea49b2f89758d97818c4d5589c361fd2e8",
       "slash": "/agent-view",
       "user_invocable": true
     },
@@ -1461,7 +1486,7 @@
       "core_route": true,
       "description": "Answer Claude, Claude Code, Anthropic API, skills, connectors, plugins, and Claude product questions using official current docs.",
       "group": "knowledge",
-      "line_count": 194,
+      "line_count": 195,
       "model_invocation": true,
       "name": "claudeproduct",
       "path": ".claude/skills/claudeproduct/SKILL.md",
@@ -1475,7 +1500,7 @@
         "scripts/claudeproduct-scorecard.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "eced554b732e07e3c991e59e895c6d9e905bd1045515bb999e0f3438c2b672e5",
+      "sha256": "238f80597d02c5075b9ec06a71a32c101169230116c2f224203014e784ff2fc9",
       "slash": "/claudeproduct",
       "user_invocable": true
     },
@@ -1628,11 +1653,32 @@
       "user_invocable": true
     },
     {
+      "argument_hint": "[status/troubleshoot/template]",
+      "core_route": true,
+      "description": "Diagnose and document native Claude Code /goal readiness safely inside the minmaxing harness. This route is static readiness and effectiveness guidance only; set native goals manually with /goal inside Claude Code.",
+      "group": "operations",
+      "line_count": 242,
+      "model_invocation": false,
+      "name": "goal-mode",
+      "path": ".claude/skills/goal-mode/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m16-goal-mode-smoke.yaml"
+      ],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/goal-mode-doctor.sh",
+        "scripts/goal-mode-smoke.sh"
+      ],
+      "sha256": "0e10b469df0b4b0cd37329213a5067c0a00c4d98fe5c1dea1a4058e5396eb897",
+      "slash": "/goal-mode",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "[task]",
       "core_route": true,
       "description": "Coordinate a governed hive of specialized agents for broad research, planning, review, or implementation work when roles, blackboard state, dissent, synthesis, and verification materially improve the outcome.",
       "group": "parallelism",
-      "line_count": 257,
+      "line_count": 266,
       "model_invocation": false,
       "name": "hive",
       "path": ".claude/skills/hive/SKILL.md",
@@ -1650,7 +1696,7 @@
         "scripts/hive-aggregate.sh",
         "scripts/artifact-lint.sh"
       ],
-      "sha256": "eafd1e4668e810a26bcbf2c522dca47d2e75a56dcefc68e8cb9043172d5229cc",
+      "sha256": "38159d277690ccad5474dfc00fcdfa2a20a990f28b0db6c3692391d44c5054a0",
       "slash": "/hive",
       "user_invocable": true
     },
@@ -1827,7 +1873,7 @@
       "core_route": true,
       "description": "Use this as the definitive workflow command for mutating work: Opus 4.7 high/xhigh plans and reviews when proven available, MiniMax-M2.7-highspeed executes bounded packets, and plan-mode auto-approval starts execution only when gates pass. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.",
       "group": "execution",
-      "line_count": 277,
+      "line_count": 287,
       "model_invocation": false,
       "name": "opusworkflow",
       "path": ".claude/skills/opusworkflow/SKILL.md",
@@ -1843,7 +1889,7 @@
         "scripts/opussonnetworkflow.sh",
         "scripts/specqa-smoke.sh"
       ],
-      "sha256": "f27627df7aa30c967b1da5a8d9871b772bd48b88ba6782ce2c84d039b0139324",
+      "sha256": "6e36bbe8d6ffa0e0bb6a9a09955411dfe5e2a3d2c291f38b0be92fe5d61a2b19",
       "slash": "/opusworkflow",
       "user_invocable": true
     },
@@ -1868,7 +1914,7 @@
       "core_route": true,
       "description": "Run dense minmaxing work as a hardware-aware, main-orchestrated parallel workflow with bounded packets, explicit ownership, sync barriers, aggregation, and independent verification.",
       "group": "parallelism",
-      "line_count": 483,
+      "line_count": 492,
       "model_invocation": false,
       "name": "parallel",
       "path": ".claude/skills/parallel/SKILL.md",
@@ -1886,7 +1932,7 @@
         "scripts/parallel-aggregate.sh",
         "scripts/artifact-lint.sh"
       ],
-      "sha256": "eca7e27f2b3b417f933a4e5605f6e1928fdf6366770021d76e402268321ed030",
+      "sha256": "31a18aa2a704085a8309081f5514e1e5d0a4c0dc68cc7292e72c88e76e569906",
       "slash": "/parallel",
       "user_invocable": true
     },
@@ -2105,7 +2151,7 @@
       "core_route": true,
       "description": "Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.",
       "group": "execution",
-      "line_count": 835,
+      "line_count": 836,
       "model_invocation": false,
       "name": "workflow",
       "path": ".claude/skills/workflow/SKILL.md",
@@ -2128,7 +2174,7 @@
         "scripts/test-harness.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "4df36ce99d139bd6a380749cc7939f83292d7849410a2b89da6e90beb707189f",
+      "sha256": "d67b5d5209d2d35dc401353183c9081d889230f70833af8fdcc76e78e368f542",
       "slash": "/workflow",
       "user_invocable": true
     }
@@ -2153,8 +2199,8 @@
   "summary": {
     "codex_file_count": 4,
     "codex_skill_count": 1,
-    "core_route_count": 19,
-    "eval_task_count": 26,
+    "core_route_count": 20,
+    "eval_task_count": 27,
     "groups": {
       "agent-systems": [
         "/agentfactory"
@@ -2188,6 +2234,7 @@
       ],
       "operations": [
         "/agent-view",
+        "/goal-mode",
         "/overnight",
         "/remote-control"
       ],
@@ -2229,7 +2276,7 @@
     },
     "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 62,
-    "skill_count": 40
+    "script_count": 64,
+    "skill_count": 41
   }
 }

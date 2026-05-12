@@ -806,6 +806,92 @@ else
     test_fail "/agent-view contract, docs, fixtures, or static checks are incomplete"
 fi
 
+# Test 3g-goal-mode: Native Claude Code Goal Mode Contract
+echo "[3g-goal-mode] Native Claude Code Goal Mode Contract"
+GOAL_MODE_OK=true
+for required_file in \
+    ".claude/skills/goal-mode/SKILL.md" \
+    "scripts/goal-mode-doctor.sh" \
+    "scripts/goal-mode-smoke.sh" \
+    "evals/harness/tasks/m16-goal-mode-smoke.yaml" \
+    "evals/harness/golden/m16-goal-mode-smoke.json" \
+    ".taste/fixtures/goal-mode/green/valid-static-blocked-by-cli.json"; do
+    if [ ! -e "$required_file" ]; then
+        GOAL_MODE_OK=false
+    fi
+done
+if [ -e ".claude/skills/goal/SKILL.md" ]; then
+    GOAL_MODE_OK=false
+fi
+for required_script in goal-mode-doctor goal-mode-smoke; do
+    if [ ! -x "scripts/$required_script.sh" ]; then
+        GOAL_MODE_OK=false
+    fi
+done
+for pattern in \
+    "Native /goal" \
+    "/goal-mode" \
+    "/goal <condition>" \
+    "/goal clear" \
+    "increases persistence, not correctness" \
+    "parent verification" \
+    "does not replace" \
+    "git diff --check" \
+    "make it production ready" \
+    "disableAllHooks" \
+    "bypassPermissions"; do
+    if ! grep -Fq "$pattern" .claude/skills/goal-mode/SKILL.md README.md CLAUDE.md AGENTS.md 2>/dev/null; then
+        GOAL_MODE_OK=false
+    fi
+done
+for pattern in \
+    "goal-mode-readiness" \
+    "runtime_goal_started" \
+    "runtime_goal_proof_status" \
+    "official_minimum_required_version" \
+    "minimum_observed_launch_version" \
+    "native_goal_shadowed_by_project_skill" \
+    "goal_evaluator_is_verifier" \
+    "goal_evaluator_runs_tools" \
+    "goal_replaces_opusworkflow" \
+    "goal_replaces_parallel" \
+    "goal_replaces_verify" \
+    "trusted_local_bypass_goal_loop_safe" \
+    "source_ledger"; do
+    if ! grep -Fq "$pattern" scripts/goal-mode-doctor.sh scripts/goal-mode-smoke.sh .taste/fixtures/goal-mode/green/valid-static-blocked-by-cli.json 2>/dev/null; then
+        GOAL_MODE_OK=false
+    fi
+done
+if ! python3 - <<'PY' >/dev/null 2>&1; then
+import json
+import pathlib
+
+data = json.loads(pathlib.Path(".claude/settings.json").read_text(encoding="utf-8"))
+notes = "\n".join(data.get("profileNotes") or [])
+assert "/goal" in notes
+assert "disableAllHooks" in notes
+assert data.get("disableAllHooks") is not True
+for rule in [
+    "Read(./.env)",
+    "Read(./.env.*)",
+    "Read(./.claude/settings.local.json)",
+    "Read(./.claude/*.local.json)",
+    "Read(./secrets/**)",
+]:
+    assert rule in data.get("permissions", {}).get("deny", [])
+PY
+    GOAL_MODE_OK=false
+fi
+if [ "$GOAL_MODE_OK" = true ] && \
+   grep -Fq "goal-mode" scripts/harness-capability-map.sh 2>/dev/null && \
+   grep -Fq "goal-mode-smoke" scripts/harness-eval.sh scripts/release-check.sh 2>/dev/null && \
+   bash scripts/goal-mode-doctor.sh --static --json >/dev/null 2>&1 && \
+   bash scripts/goal-mode-smoke.sh --fixtures >/dev/null 2>&1; then
+    test_pass "/goal-mode documents native /goal without static runtime overclaims"
+else
+    test_fail "/goal-mode contract, docs, fixtures, or static checks are incomplete"
+fi
+
 # Test 3g-specqa: Automated SOTA Spec QA Contract
 echo "[3g-specqa] Automated SOTA Spec QA Contract"
 SPECQA_OK=true
@@ -1750,25 +1836,25 @@ else
 fi
 
 # ========================================
-# Skills (40 Expected)
+# Skills (41 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 40 Expected]"
+echo "[Skills - 41 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 40 ]; then
+if [ "$SKILL_COUNT" -ge 41 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 40+ skills, found $SKILL_COUNT"
+    test_fail "Expected 41+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow digestaste deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control agent-view specqa deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow digestaste deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control agent-view goal-mode specqa deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1838,7 +1924,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke agent-view-doctor agent-view-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke agent-view-doctor agent-view-smoke goal-mode-doctor goal-mode-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

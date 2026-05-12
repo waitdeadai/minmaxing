@@ -108,6 +108,7 @@ ROUTE_GROUPS = {
     "overnight": "operations",
     "remote-control": "operations",
     "agent-view": "operations",
+    "goal-mode": "operations",
     "council": "planning",
     "visualize": "design",
 }
@@ -131,6 +132,7 @@ CORE_ROUTES = {
     "demo",
     "remote-control",
     "agent-view",
+    "goal-mode",
     "specqa",
 }
 
@@ -154,6 +156,7 @@ REQUIRED_COMMANDS = {
     "opussonnetworkflow": "optional Claude-only Opus plus Sonnet workflow wrapper",
     "remote-control-smoke": "native Claude Code Remote Control compatibility gate",
     "agent-view-smoke": "native Claude Code Agent View static readiness gate",
+    "goal-mode-smoke": "native Claude Code /goal static readiness gate",
     "specqa-smoke": "automated SOTA Spec QA gate",
     "parallel-capacity": "local parallel capacity profile",
     "parallel-aggregate": "parallel worker aggregate validator",
@@ -202,6 +205,8 @@ SCRIPT_OWNERS = {
     "remote-control-smoke": ["remote-control"],
     "agent-view-doctor": ["agent-view"],
     "agent-view-smoke": ["agent-view"],
+    "goal-mode-doctor": ["goal-mode"],
+    "goal-mode-smoke": ["goal-mode"],
     "specqa-smoke": ["specqa", "workflow", "opusworkflow", "digestflow", "verify"],
     "harness-eval": ["workflow"],
     "release-check": ["ship", "workflow"],

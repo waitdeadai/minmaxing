@@ -28,6 +28,10 @@ aggregation instead of inventing a second worker format.
 - `/agent-view`: optional operator-managed visibility for independent Claude Code
   background sessions. It is not hive coordination and does not satisfy
   blackboard, dissent, aggregation, or verification requirements.
+- `/goal-mode`: static readiness and safe-template guidance for native `/goal`.
+  Native `/goal` can continue an already-owned packet, but it is not hive
+  coordination and does not satisfy blackboard, dissent, synthesis, aggregation,
+  or verification requirements.
 - `/workflow`: remains the default single-supervisor lifecycle.
 - `/introspect`: remains the hard-gate audit. Hive consensus never replaces it.
 
@@ -229,6 +233,11 @@ sessions used outside the hive or as manually managed `parallel-instances`, but
 the hive still needs its own queen/supervisor, blackboard, dissent log, sidecars,
 aggregation, and verification evidence. Agent View rows are operator status, not
 verified hive claims.
+
+Native `/goal` can make one Claude Code session persistent inside an already
+owned packet, but it does not create hive memory, blackboard state, dissent, or
+verified synthesis. Treat every `/goal` completion as a claim until the
+queen/supervisor verifies command evidence and repo state.
 
 ## Output
 

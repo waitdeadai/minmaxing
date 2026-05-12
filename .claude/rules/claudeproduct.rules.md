@@ -3,7 +3,8 @@
 Use these rules for `/claudeproduct` and for any `/workflow`, `/webresearch`,
 `/deepresearch`, or `/metacognition` route that depends on Claude, Claude Code,
 Claude.ai, Anthropic API, connector, plugin, skill, subagent, Agent View,
-background session, or supervisor behavior.
+native `/goal`, goal evaluator behavior, background session, or supervisor
+behavior.
 
 ## Official Evidence First
 

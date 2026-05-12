@@ -304,6 +304,53 @@ Agent View usage is high-risk unless the operator intentionally accepts that
 authority. Shared settings avoid `disableAgentView` and
 `CLAUDE_CODE_DISABLE_AGENT_VIEW`, but no static gate claims live runtime proof.
 
+### Native /goal / Goal Mode
+
+Claude Code `/goal` is a native session-scoped continuation command. In this
+harness, `/goal-mode` is the static readiness and effectiveness route; it never
+sets a live goal, never runs `claude -p`, never starts Remote Control, never
+opens Agent View, and never dispatches `claude --bg`.
+
+Use native `/goal` manually inside Claude Code:
+
+```text
+/goal <condition>
+/goal
+/goal clear
+```
+
+Before using it, run the no-secret static doctor and fixture gate:
+
+```bash
+bash scripts/goal-mode-doctor.sh --static --json
+bash scripts/goal-mode-smoke.sh --fixtures
+```
+
+Native `/goal` increases persistence, not correctness. It can keep Claude Code
+working across turns, but the goal evaluator is not an independent verifier and
+does not replace command evidence, parent verification, `/specqa`,
+`/introspect`, `/verify`, release checks, provider identity proof, `/parallel`
+aggregation, or CI.
+
+The safe harness pattern is bounded and evidence-first:
+
+```text
+/goal bash scripts/release-check.sh --static-only exits 0 and git diff --check exits 0, or stop after 6 turns with a blocker summary
+```
+
+Goal Assist is the `/opusworkflow`-adjacent use of this feature: when a
+deterministic gate has already failed, `/goal-mode` may produce copy-paste
+native `/goal` text with the failed command, owned scope, forbidden
+paths/actions, transcript evidence, stop bound, blocker fallback, and parent
+verification. It remains suggest-only and never runs `/goal` for the operator.
+
+Do not create `.claude/skills/goal/SKILL.md`; that can shadow or confuse the
+native Claude Code command. Do not use broad conditions like "make it
+production ready" or "fix everything" unless they include measurable checks,
+stop bounds, forbidden files, and evidence requirements. Because this repo
+defaults to trusted-local `bypassPermissions`, unattended `/goal` loops in the
+real repo are high-risk unless the operator explicitly accepts that authority.
+
 **Shared settings are committed on purpose, but they are provider-neutral.** `.claude/settings.json` contains governance hooks, deny rules, and the trusted-local `bypassPermissions` default. This is an explicit operator-speed choice, not a team-safety recommendation. Real credentials and provider identity belong in ignored local files such as `.claude/settings.opusminimax-planner.local.json` and `.claude/settings.minimax-executor.local.json`.
 
 **Fresh repos should start with `/tastebootstrap`.** It asks the 10 kernel questions, writes `taste.md` + `taste.vision`, and gives `/workflow` explicit taste to follow before anything is built.
@@ -803,7 +850,7 @@ Now you can use any workflow pattern:
 
 ---
 
-## The 36 Skills
+## The 41 Skills
 
 ### Definitive Workflow Command
 
@@ -841,9 +888,10 @@ between `/opusworkflow` and `/opusminimax`:
 | `/agentfactory` | Create governed runtime-bound Hermes agents with manifest, `hermes.runtime.json`, capability stack, memory seed, verification, registry, and tested kill switch |
 | `/parallel` | Run hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | `/metacognition` | Parallel-aware control plane for task routing, evidence-grounded reflection, confidence calibration, and verified learning |
-| `/claudeproduct` | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, Agent View, background sessions, and setup |
+| `/claudeproduct` | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, Agent View, native `/goal`, background sessions, and setup |
 | `/remote-control` | Native Claude Code Remote Control route with a static doctor, no custom network control plane, and no API-key auth fallback |
 | `/agent-view` | Native Claude Code Agent View readiness route with a static doctor/smoke, manual `claude agents` launch, and no static runtime-proof claim |
+| `/goal-mode` | Native `/goal` readiness and effectiveness route with a static doctor/smoke, bounded continuation templates, no project `/goal` shadow skill, and no static runtime-proof claim |
 | `/specqa` | Spec QA Agent for every active `SPEC.md`: requirements quality, SOTA/currentness webresearch, Opus 4.7 identity-proof boundary, and improvement suggestions before implementation |
 | `/hive` | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
 | `/hiveworkflow` | Full workflow mode for hive-coordinated planning, execution, aggregation, introspection, and verification |
@@ -889,6 +937,8 @@ The routing ladder is:
    claude.ai/code or mobile without building a custom control plane
 -> /agent-view when the operator wants native Claude Code Agent View readiness
    for manual background-session monitoring, not governed packet execution
+-> /goal-mode when the operator wants native /goal readiness, bounded
+   continuation templates, or safety diagnostics without setting a live goal
 -> /specqa after SPEC.md and before implementation when the active spec needs
    SOTA/currentness, requirements quality, and improvement-suggestion review
 -> /hive for read-only coordination, or /opusworkflow with inner_contract=hiveworkflow
@@ -912,6 +962,7 @@ Use this rule of thumb:
 | `/claudeproduct` | The question is about Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, Agent View, background sessions, availability, limits, models, or setup. | Official Anthropic/Claude docs first, surface separation, source ledger, connector permission/trust caveats, confidence downgrade when current docs are missing. |
 | `/remote-control` | You want to diagnose Claude Code native Remote Control for an already trusted local harness session. | `/remote-control` runs the harness readiness skill; `claude remote-control` starts the live native server; claude.ai subscription login; no custom server; no static runtime-proof claim. |
 | `/agent-view` | You want to diagnose Claude Code native Agent View for manual background-session monitoring. | `/agent-view` runs static readiness checks; `claude agents` starts the live native TUI manually; Claude Code `2.1.139+`; no `claude --bg` automation; no `/parallel` replacement; no static runtime-proof claim. |
+| `/goal-mode` | You want to diagnose Claude Code native `/goal` or write a bounded continuation condition around known checks. | `/goal-mode` runs static readiness checks; native `/goal <condition>` is typed manually inside Claude Code; no project `/goal` skill; no `claude -p` runtime in static gates; no `/workflow`, `/parallel`, or `/verify` replacement. |
 | `/specqa` | A `SPEC.md` was created, updated, or reused before implementation. | Spec QA Agent checks requirements quality, SOTA 2026/currentness source ledger, critical blockers, Opus 4.7 proof boundary, and concrete improvement suggestions before execution. |
 | `/parallel` | The work splits into independent packets with clear owned files/surfaces and aggregate verification. | Packet DAG, ownership matrix, sync barriers, worker sidecars, `parallel-aggregate`. |
 | `/hive` | The task needs multiple perspectives but may not need a full file-changing workflow: research branches, adversarial review, planning alternatives, risk ranking, or synthesis. | Queen/supervisor, role map, blackboard, dissent/conflict log, evidence-backed synthesis. |
@@ -976,6 +1027,22 @@ verification. Background sessions are local, quota-consuming, stopped by sleep
 or shutdown, and may use `.claude/worktrees/`; this repo's trusted-local
 `bypassPermissions` default makes unattended use a deliberate operator risk.
 
+**Native /goal / Goal Mode:** in this harness, `/goal-mode` runs readiness and
+troubleshooting checks for Claude Code native `/goal`. Use `/goal <condition>`,
+`/goal`, or `/goal clear` manually inside Claude Code; static checks never set a
+goal, never run `claude -p`, never open Remote Control, never open Agent View,
+and never claim runtime proof. `/goal` is a bounded continuation helper, not
+verification: the evaluator judges surfaced transcript evidence and does not
+run tools or inspect repo state. Use conditions that name real commands and a
+stop bound, such as `/goal bash scripts/release-check.sh --static-only exits 0
+and git diff --check exits 0, or stop after 6 turns with a blocker summary`.
+
+Do not create `.claude/skills/goal/SKILL.md`. Do not treat `/goal` as
+`/opusworkflow`, `/workflow`, `/parallel`, `/hive`, `/specqa`, `/introspect`,
+`/verify`, release checks, provider identity proof, or CI. Agent View can
+monitor independent sessions where an operator manually uses `/goal`, but Agent
+View plus `/goal` is still not governed packet execution.
+
 **Spec QA Agent:** `/specqa` runs after `SPEC.md` and before implementation in
 the governed workflow. It blocks critical spec defects, requires current
 webresearch source ledgers for SOTA 2026 or time-sensitive claims, writes
@@ -1013,7 +1080,7 @@ OpenAI API keys or API-priced fallbacks unless you explicitly change that
 billing route. If the runtime cannot generate an image, the harness writes a
 handoff prompt and marks the asset blocked rather than pretending a file exists.
 
-**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, stale Claude product answers, unsafe Agent View claims, missing Spec QA, shallow hive consensus, and linear lane-scaling claims. The Stop hook uses Claude Code's intentional blocking path: a blocked closeout is repair feedback, not a crash. Positive closeout must cite commands or verification; read-only/audit closeout may cite files inspected or sources reviewed. "Tests not run", "unverified", or equivalent wording must close as partial/blocked rather than done. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/claudeproduct-scorecard.sh --fixtures --json`, `bash scripts/agent-view-smoke.sh --fixtures`, `bash scripts/specqa-smoke.sh --fixtures`, `bash scripts/hive-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
+**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, stale Claude product answers, unsafe Agent View claims, unsafe `/goal` claims, missing Spec QA, shallow hive consensus, and linear lane-scaling claims. The Stop hook uses Claude Code's intentional blocking path: a blocked closeout is repair feedback, not a crash. Positive closeout must cite commands or verification; read-only/audit closeout may cite files inspected or sources reviewed. "Tests not run", "unverified", or equivalent wording must close as partial/blocked rather than done. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/claudeproduct-scorecard.sh --fixtures --json`, `bash scripts/agent-view-smoke.sh --fixtures`, `bash scripts/goal-mode-smoke.sh --fixtures`, `bash scripts/specqa-smoke.sh --fixtures`, `bash scripts/hive-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
 
 **Artifact sidecars:** Markdown remains the human contract, but machine gates can consume minimal JSON sidecars for agent-native estimates, verification results, and worker results. Validate the local fixtures with `bash scripts/artifact-lint.sh --fixtures`.
 
@@ -1247,6 +1314,7 @@ minmaxing/
 │   │   ├── claudeproduct/      # Official Claude product knowledge router
 │   │   ├── remote-control/     # Native Claude Code Remote Control route
 │   │   ├── agent-view/         # Native Claude Code Agent View readiness route
+│   │   ├── goal-mode/          # Native Claude Code /goal readiness route
 │   │   ├── hive/               # Governed multi-agent coordination
 │   │   ├── hiveworkflow/       # Full hive-coordinated workflow
 │   │   ├── sprint/             # Ownership-safe parallel executor
@@ -1276,6 +1344,8 @@ minmaxing/
 │   ├── remote-control-smoke.sh # Native RC compatibility smoke gate
 │   ├── agent-view-doctor.sh    # Static native Agent View readiness doctor
 │   ├── agent-view-smoke.sh     # Native Agent View compatibility smoke gate
+│   ├── goal-mode-doctor.sh     # Static native /goal readiness doctor
+│   ├── goal-mode-smoke.sh      # Native /goal compatibility smoke gate
 │   ├── parallel-capacity.sh     # Hardware-aware parallel budget profile
 │   ├── parallel-smoke.sh        # Parallel mode production-contract smoke test
 │   ├── agentfactory-smoke.sh    # Agent Factory production-contract smoke test

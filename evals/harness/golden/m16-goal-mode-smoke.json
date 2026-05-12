@@ -1,0 +1,12 @@
+{
+  "expected_evidence": "scripts/goal-mode-smoke.sh --fixtures validates the /goal-mode readiness skill contract, native /goal no-shadow boundary, no-live-runtime proof boundary, bounded continuation policy, docs-backed source ledger, fixtures, and release wiring",
+  "expected_result": "pass",
+  "gate": "goal-mode-smoke",
+  "id": "m16-goal-mode-smoke",
+  "requires": [
+    ".claude/skills/goal-mode/SKILL.md",
+    "scripts/goal-mode-doctor.sh",
+    "scripts/goal-mode-smoke.sh",
+    ".taste/fixtures/goal-mode"
+  ]
+}

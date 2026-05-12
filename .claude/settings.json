@@ -7,7 +7,8 @@
     "Do not put Anthropic, Claude subscription, MiniMax, or other provider credentials in this file.",
     "Use ignored local profiles for planner/executor identity.",
     "Remote Control compatible: do not set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, DISABLE_TELEMETRY, disableRemoteControl, or provider auth variables in shared project settings.",
-    "Agent View compatible: do not set disableAgentView or CLAUDE_CODE_DISABLE_AGENT_VIEW in shared project settings; live Agent View still starts manually with claude agents."
+    "Agent View compatible: do not set disableAgentView or CLAUDE_CODE_DISABLE_AGENT_VIEW in shared project settings; live Agent View still starts manually with claude agents.",
+    "Native /goal compatible: do not set disableAllHooks in shared project settings; workspace trust is runtime-only, and trusted-local bypassPermissions makes unattended /goal loops high-risk."
   ],
   "env": {
     "DISABLE_AUTOUPDATER": "1",

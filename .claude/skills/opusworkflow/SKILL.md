@@ -101,6 +101,14 @@ SPEC.md, and /specqa all allow execution.
   replacement for `SPEC.md`, `/specqa`, `/introspect`, `/verify`, runtime model
   identity proof, or `/visualizeworkflow` human approval. Record the artifact
   state as `plan_mode.auto_approval.status=auto_approved_when_gates_pass`.
+- Treat native `/goal` as optional bounded continuation around already-known
+  checks, not as a workflow gate. `/goal-mode` owns Goal Assist: copy-paste
+  native `/goal` text for concrete repairable failed gates with exact command,
+  owned scope, forbidden paths/actions, transcript evidence, stop bound,
+  blocker fallback, and parent verification. The harness must only suggest this
+  text; native `/goal` never replaces research, code audit, `/introspect
+  pre-plan`, Agent-Native Estimate, `SPEC.md`, `/specqa`, `/verify`, provider
+  identity proof, or this route's verified/partial/blocked closeout policy.
 - Use `--plan-mode-policy manual` when the operator wants a human review after
   the plan checkpoint, and `--plan-mode-policy off` only for advanced engine
   debugging.
@@ -274,4 +282,6 @@ can set `claims_opus_review=true`.
 - `/specqa` skipped after `SPEC.md` and before execution.
 - Plan-mode auto-approval used to skip research, audit, `/introspect`,
   `SPEC.md`, `/specqa`, or `/verify`.
+- Native `/goal` used as a substitute for `/opusworkflow`, `/specqa`,
+  `/introspect`, `/verify`, release checks, or command evidence.
 - Pay-as-you-go fallback enabled silently.

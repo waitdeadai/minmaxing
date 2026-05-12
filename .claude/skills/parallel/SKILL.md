@@ -45,6 +45,10 @@ inner_contract: parallel
   `parallel-instances`, but it is not a substrate value and does not satisfy
   packet DAG, ownership matrix, worker sidecar, aggregation, `/introspect`,
   `/verify`, or parent-verification requirements.
+- Native `/goal` can be used manually inside an already-owned packet to keep
+  one Claude Code session working toward bounded command evidence, but it does
+  not create packet governance and does not satisfy ownership, aggregation, or
+  verification requirements.
 - Treat agent teams as opt-in experimental. Agent teams are opt-in experimental
   and must not be required for default `/parallel` behavior.
 - Record all packet ownership, dependencies, sync barriers, and returned
@@ -175,6 +179,11 @@ operator-managed `parallel-instances` at a glance. It does not make a
 `parallel-instances` run governed; this route still needs explicit packet
 ownership, sidecars, sync barriers, aggregation, and parent verification before
 any worker claim is accepted.
+
+Native Claude Code `/goal` may keep one packet session persistent after the
+packet contract already exists. Use only bounded conditions with command
+evidence and a stop clause. `/goal` status is not a worker result, not a sidecar,
+not aggregation, and not parent verification.
 
 Selection rule:
 - Prefer `local` for small or coupled work.

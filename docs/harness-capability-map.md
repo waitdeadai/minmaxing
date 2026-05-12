@@ -8,14 +8,14 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 40
+- Skills: 41
 - Rules: 15
-- Scripts: 62
-- Static eval tasks: 26
+- Scripts: 64
+- Static eval tasks: 27
 - Hook entries: 12
 - Codex config files: 4
 - Codex repo skills: 1
-- Core routes: 19
+- Core routes: 20
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
   runtime secrets.
@@ -29,7 +29,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `kernel`: `/align`, `/deepretaste`, `/digestaste`, `/tastebootstrap`
 - `knowledge`: `/claudeproduct`
 - `memory`: `/memory`
-- `operations`: `/agent-view`, `/overnight`, `/remote-control`
+- `operations`: `/agent-view`, `/goal-mode`, `/overnight`, `/remote-control`
 - `parallelism`: `/hive`, `/parallel`, `/sprint`
 - `planning`: `/autoplan`, `/council`
 - `quality`: `/audit`, `/introspect`, `/qa`, `/review`, `/specqa`, `/verify`
@@ -57,6 +57,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/demo` | `execution` | manual | yes | `.claude/skills/demo/SKILL.md` | Produce governed recorded product demos with bilingual voiceover, captions, browser evidence, safety gates, and artifact manifests. |
 | `/digestaste` | `kernel` | manual | yes | `.claude/skills/digestaste/SKILL.md` | Digest one or more Deep Research markdown reports into a sanitized goal and taste bootstrap packet for a new or existing project. Use when the user invokes /digestaste, provides a .md deepresearch result, or asks to turn research into bootstrap text for taste.md, taste.vision, ICP, goal setup, or project direction. |
 | `/digestflow` | `research` | manual | no | `.claude/skills/digestflow/SKILL.md` | Run the full minmaxing workflow from external AI research reports. Use when the task begins with Gemini Deep Research, NotebookLM, ChatGPT Deep Research, Perplexity, or similar reports that must be digested before the repo's own deepresearch and governed workflow. |
+| `/goal-mode` | `operations` | manual | yes | `.claude/skills/goal-mode/SKILL.md` | Diagnose and document native Claude Code /goal readiness safely inside the minmaxing harness. This route is static readiness and effectiveness guidance only; set native goals manually with /goal inside Claude Code. |
 | `/hive` | `parallelism` | manual | yes | `.claude/skills/hive/SKILL.md` | Coordinate a governed hive of specialized agents for broad research, planning, review, or implementation work when roles, blackboard state, dissent, synthesis, and verification materially improve the outcome. |
 | `/hiveworkflow` | `execution` | manual | yes | `.claude/skills/hiveworkflow/SKILL.md` | Run the full minmaxing workflow with governed hive coordination: metacognitive route, deepresearch, role map, blackboard, packet DAG, aggregation, introspection, verification, and closeout. |
 | `/icpweek` | `research` | manual | no | `.claude/skills/icpweek/SKILL.md` | Run a research-backed ICP week-in-the-life product stress test. Use when the user invokes /icpweek or asks to simulate a full week of real-world product usage by an ideal customer and diagnose product, UX, automation, and technical gaps. |
@@ -93,7 +94,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 | Rule | Contract | Lines |
 | --- | --- | --- |
-| `claudeproduct` | `.claude/rules/claudeproduct.rules.md` | 50 |
+| `claudeproduct` | `.claude/rules/claudeproduct.rules.md` | 51 |
 | `context` | `.claude/rules/context.rules.md` | 109 |
 | `delegation` | `.claude/rules/delegation.rules.md` | 111 |
 | `estimation` | `.claude/rules/estimation.rules.md` | 129 |
@@ -120,6 +121,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `defineicp-smoke` | ICP-to-taste evolution contract gate | `scripts/defineicp-smoke.sh` |
 | `demo-smoke` | recorded demo contract and manifest gate | `scripts/demo-smoke.sh` |
 | `digestaste-smoke` | research-to-taste bootstrap text contract gate | `scripts/digestaste-smoke.sh` |
+| `goal-mode-smoke` | native Claude Code /goal static readiness gate | `scripts/goal-mode-smoke.sh` |
 | `harness-capability-map` | capability map freshness gate | `scripts/harness-capability-map.sh` |
 | `harness-eval` | static eval pack runner | `scripts/harness-eval.sh` |
 | `hive-aggregate` | hive run aggregate validator | `scripts/hive-aggregate.sh` |
@@ -148,6 +150,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `m13-specqa-sota-gate` | `scripts/specqa-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m13-specqa-sota-gate.yaml` | `evals/harness/golden/m13-specqa-sota-gate.json` |
 | `m14-digestaste-research-to-bootstrap-text` | `scripts/digestaste-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m14-digestaste-research-to-bootstrap-text.yaml` | `evals/harness/golden/m14-digestaste-research-to-bootstrap-text.json` |
 | `m15-agent-view-smoke` | `scripts/agent-view-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m15-agent-view-smoke.yaml` | `evals/harness/golden/m15-agent-view-smoke.json` |
+| `m16-goal-mode-smoke` | `scripts/goal-mode-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m16-goal-mode-smoke.yaml` | `evals/harness/golden/m16-goal-mode-smoke.json` |
 | `m4-agentfactory-kill-switch-evidence` | `scripts/agentfactory-smoke.sh` | `pass` | `evals/harness/tasks/m4-agentfactory-kill-switch-evidence.yaml` | `evals/harness/golden/m4-agentfactory-kill-switch-evidence.json` |
 | `m4-artifact-sidecar-lint` | `scripts/artifact-lint.sh --fixtures` | `pass` | `evals/harness/tasks/m4-artifact-sidecar-lint.yaml` | `evals/harness/golden/m4-artifact-sidecar-lint.json` |
 | `m4-codex-run-artifact-proof` | `scripts/codex-run-smoke.sh` | `pass` | `evals/harness/tasks/m4-codex-run-artifact-proof.yaml` | `evals/harness/golden/m4-codex-run-artifact-proof.json` |

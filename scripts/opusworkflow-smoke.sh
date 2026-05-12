@@ -74,6 +74,8 @@ require_text "fallback_status" scripts/opusminimax.sh
 require_text "executor_provider" scripts/opusminimax.sh
 require_text "model_profile" scripts/opusminimax.sh
 require_text "plan_mode" scripts/opusminimax.sh
+require_text "goal_assist" scripts/opusminimax.sh
+require_text "copy_paste_template_only" scripts/opusminimax.sh
 require_text "auto_approved_when_gates_pass" scripts/opusminimax.sh
 require_text "spec_qa" scripts/opusminimax.sh
 require_text "spec qa: required after SPEC.md and before implementation" scripts/opusworkflow.sh
@@ -177,6 +179,7 @@ for raw_path, contract in zip(sys.argv[1:], expected):
     assert data.get("model_profile") == "minimax"
     spec_qa = data.get("spec_qa", {})
     plan_mode = data.get("plan_mode", {})
+    goal_assist = data.get("goal_assist", {})
     assert spec_qa.get("required") is True
     assert spec_qa.get("runs_after_spec_creation") is True
     assert spec_qa.get("before_implementation") is True
@@ -204,6 +207,25 @@ for raw_path, contract in zip(sys.argv[1:], expected):
     assert "/specqa" in set(plan_mode.get("does_not_replace", []))
     assert "/introspect" in set(plan_mode.get("does_not_replace", []))
     assert "/verify" in set(plan_mode.get("does_not_replace", []))
+    assert goal_assist.get("policy") == "copy_paste_template_only"
+    assert goal_assist.get("status") == "suggest_only"
+    assert goal_assist.get("runtime_goal_started") is False
+    assert {"not_eligible", "suggest_only", "eligible_bounded"}.issubset(set(goal_assist.get("eligibility_states", [])))
+    assert goal_assist.get("parent_verification_required") is True
+    assert goal_assist.get("evaluator_is_verifier") is False
+    assert goal_assist.get("evaluator_runs_tools") is False
+    goal_non_replacements = set(goal_assist.get("does_not_replace", []))
+    for required in {
+        "/specqa",
+        "/introspect",
+        "/verify",
+        "release checks",
+        "provider identity proof",
+        "CI",
+        "/parallel",
+        "/hive",
+    }:
+        assert required in goal_non_replacements
     assert models.get("executor_requested") == "MiniMax-M2.7-highspeed"
     assert capacity.get("provider_ceiling") == 1
     assert capacity.get("effective_concurrency") == 1

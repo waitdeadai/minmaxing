@@ -90,9 +90,10 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /agentfactory | Create governed runtime-bound Hermes agents with manifest, runtime contract, capability stack, memory seed, verification, registry, and kill switch |
 | /parallel | Hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | /metacognition | Parallel-aware routing and evidence-grounded self-calibration before execution |
-| /claudeproduct | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, Agent View, background sessions, and setup |
+| /claudeproduct | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, Agent View, native `/goal`, background sessions, and setup |
 | /remote-control | Native Claude Code Remote Control readiness skill; live server starts with `claude remote-control`, without custom network control planes |
 | /agent-view | Native Claude Code Agent View readiness skill; live TUI starts manually with `claude agents`, without static runtime-proof claims |
+| /goal-mode | Native `/goal` readiness skill; live goals are set manually with `/goal <condition>`, without project `/goal` shadowing or static runtime-proof claims |
 | /specqa | Spec QA Agent for every active `SPEC.md`: requirements quality, SOTA/currentness source ledger, Opus 4.7 identity-proof boundary, and improvement suggestions before implementation |
 | /hive | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
 | /hiveworkflow | Full workflow mode that uses hive coordination before packet execution, aggregation, introspection, and verify |
@@ -142,6 +143,27 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
   no `disableAgentView`, and no `CLAUDE_CODE_DISABLE_AGENT_VIEW`; this repo's
   trusted-local `bypassPermissions` posture makes unattended background sessions
   high-risk unless the operator explicitly accepts that authority.
+- **Native /goal / Goal Mode**: `/goal-mode` is the harness readiness and
+  troubleshooting skill for Claude Code native `/goal`. It must not create
+  `.claude/skills/goal/SKILL.md`, set a live `/goal`, run `claude -p`, open
+  Remote Control, open Agent View, dispatch `claude --bg`, or claim static
+  runtime proof. Native `/goal` is typed manually as `/goal <condition>`,
+  `/goal`, or `/goal clear`; it increases persistence, not correctness. The
+  goal evaluator judges surfaced transcript evidence and does not run tools or
+  inspect repo state, so parent verification and command evidence still decide
+  done. Good conditions wrap existing checks and stop bounds, for example
+  `/goal bash scripts/release-check.sh --static-only exits 0 and git diff
+  --check exits 0, or stop after 6 turns with a blocker summary`. Goal Assist
+  is the copy-paste-only `/opusworkflow` pattern for a concrete failed gate: it
+  must name the failed command, owned scope, forbidden paths/actions,
+  transcript evidence, stop bound, blocker fallback, and parent verification,
+  while leaving runtime `/goal` manual. Do not use
+  broad goals like "make it production ready" or "fix everything" without
+  measurable checks, forbidden files, stop bounds, and evidence requirements.
+  `/goal` never replaces `/opusworkflow`, `/workflow`, `/parallel`, `/hive`,
+  `/specqa`, `/introspect`, `/verify`, release checks, provider identity proof,
+  or CI; this repo's trusted-local `bypassPermissions` posture makes unattended
+  `/goal` loops high-risk unless explicitly accepted by the operator.
 - **Harness Capability Map**: `docs/harness-capability-map.md` and
   `docs/harness-capability-map.json` are generated from repo truth and are the
   canonical self-lookup index for skills, route groups, rules, script gates,
@@ -161,8 +183,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Planning Time Awareness**: Non-trivial plans estimate in agent-native wall-clock by default before the plan or `SPEC.md` is frozen. Every estimate must state whether it is `agent-native`, `human-equivalent`, or `blocked/unknown`; cite `scripts/parallel-capacity.sh --json` or another capacity source; separate agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence; and treat human-equivalent estimates as secondary only.
 - **Visualization Approval**: `/workflow` remains autonomous. Use `/visualize` for standalone comprehension artifacts and `/visualizeworkflow` when the user wants to approve a visual or operational understanding before implementation.
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
-- **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile. Agent View may be used manually by the operator to monitor independent `parallel-instances`, but it is not a `/parallel` substrate and does not satisfy packet DAG, ownership matrix, sidecar, aggregation, parent verification, or `/introspect` gates.
-- **Hive Coordination**: `/hive` and `/hiveworkflow` coordinate specialized agents through a queen/supervisor, role map, blackboard, dissent/conflict log, and evidence-backed synthesis. Hive reuses `/parallel` for packet execution and aggregation, writes `.taste/hive/{run_id}/hive-run.json` for durable runs, and validates with `artifact-lint` plus `hive-aggregate`; Agent View monitoring never replaces those artifacts, and consensus never replaces `/introspect` or `/verify`.
+- **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile. Agent View may be used manually by the operator to monitor independent `parallel-instances`, and native `/goal` may be used manually inside already-owned packets with explicit stop bounds and command evidence, but neither is a `/parallel` substrate and neither satisfies packet DAG, ownership matrix, sidecar, aggregation, parent verification, or `/introspect` gates.
+- **Hive Coordination**: `/hive` and `/hiveworkflow` coordinate specialized agents through a queen/supervisor, role map, blackboard, dissent/conflict log, and evidence-backed synthesis. Hive reuses `/parallel` for packet execution and aggregation, writes `.taste/hive/{run_id}/hive-run.json` for durable runs, and validates with `artifact-lint` plus `hive-aggregate`; Agent View monitoring and native `/goal` continuation never replace those artifacts, and consensus never replaces `/introspect` or `/verify`.
 - **Runtime Effectiveness Hooks**: `.claude/settings.json` wires `.claude/hooks/govern-effectiveness.sh` into Claude Code `PreToolUse`, `Stop`, and `SubagentStop` events. A Stop hook block is repair feedback: positive closeout needs commands or verification evidence; read-only closeout may cite files inspected or sources reviewed; "tests not run" or "unverified" must close as partial/blocked, not done. Do not claim hook enforcement unless `bash scripts/hook-smoke.sh` passes.
 - **Temporal Anchor Hooks**: `.claude/settings.json` wires `.claude/hooks/time-anchor.sh` into `SessionStart` and `UserPromptSubmit`. The anchor comes from the local system clock and is the current date/hour source for research. For SOTA 2026 and current-fact claims, cite live sources and access dates.
 - **Artifact Lint**: Minimal sidecars for agent-native estimates, verification results, and worker results live under `schemas/` and are checked with `bash scripts/artifact-lint.sh --fixtures`.

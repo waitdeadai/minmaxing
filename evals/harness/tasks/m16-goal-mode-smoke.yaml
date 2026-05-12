@@ -1,0 +1,6 @@
+id: m16-goal-mode-smoke
+title: Native Claude Code /goal static readiness smoke
+gate: scripts/goal-mode-smoke.sh --fixtures
+expected_result: pass
+golden: evals/harness/golden/m16-goal-mode-smoke.json
+evidence: validates /goal-mode diagnostic skill, native /goal no-shadow boundary, no-live-runtime proof boundary, bounded continuation policy, docs-backed source ledger, fixtures, and release wiring

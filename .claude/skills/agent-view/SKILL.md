@@ -37,6 +37,10 @@ Agent View is separate from:
 - `/parallel`: minmaxing packet orchestration. Agent View can help an operator
   monitor independent sessions, but it does not satisfy packet DAG, ownership
   matrix, sidecar, aggregation, `/introspect`, or `/verify` requirements.
+- `/goal-mode`: readiness and safety guidance for native Claude Code `/goal`.
+  Agent View can monitor independent sessions where the operator manually uses
+  `/goal`, but Agent View plus `/goal` is still not `/parallel` and still does
+  not satisfy parent verification.
 
 Do not build a custom dashboard, websocket bridge, browser backdoor, MCP control
 plane, or API-key fallback for this route.
@@ -63,6 +67,11 @@ owned files or read-only surfaces, a required output artifact, stop conditions,
 and a parent verification path. Move on to `/opusworkflow`, `/parallel`, or
 local work when the task is tightly coupled, touches shared files, involves
 secrets/security-sensitive authority, or needs one shared reasoning loop.
+
+If a background session uses native `/goal`, the goal condition must inherit the
+same packet contract: owned files or worktree, forbidden paths, expected
+artifact, command evidence, stop bound, and parent verification. A `/goal`
+success message is not a verified worker result.
 
 ## Prerequisites
 
