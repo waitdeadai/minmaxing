@@ -27,6 +27,8 @@ The two names:
 /opusworkflow = the product command humans should use.
 /opusminimax is the advanced engine inside /opusworkflow.
 They are not competing commands.
+/sonnetminimax is the Opus-saving shortcut for the same governance with
+Sonnet 4.6 judgment and MiniMax-M2.7-highspeed Token Plan execution.
 ```
 
 Mode banner:
@@ -90,6 +92,9 @@ SPEC.md, and /specqa all allow execution.
   planning/review/judgment plus MiniMax execution. Use `/opussonnet` or
   `--executor-provider claude-sonnet` only when the operator explicitly wants
   the optional Claude-only route.
+- Use `/sonnetminimax` when the operator wants the short power-user route for
+  saving Opus quota; it is equivalent to this route with
+  `--model-profile sonnetminimax --effort max`.
 - Use `/opusolo` only when the operator explicitly wants the all-Opus premium
   route. It pins Opus for planner, executor, Spec QA, adversary, and final
   judge, defaults effort to `high`, and accepts `--effort max` as the explicit

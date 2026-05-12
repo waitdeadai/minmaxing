@@ -293,6 +293,41 @@ else
     test_fail "/opusworkflow skill, setup alias, scripts, docs, eval, or static gate is incomplete"
 fi
 
+# Test 3d-sonnetminimax: Power-User Sonnet + MiniMax Token Plan Workflow
+echo "[3d-sonnetminimax] Power-User SonnetMiniMax Workflow"
+SONNETMINIMAX_OK=true
+for required_file in \
+    ".claude/skills/sonnetminimax/SKILL.md" \
+    "scripts/sonnetminimaxworkflow.sh"; do
+    if [ ! -e "$required_file" ]; then
+        SONNETMINIMAX_OK=false
+    fi
+done
+if [ ! -x "scripts/sonnetminimaxworkflow.sh" ]; then
+    SONNETMINIMAX_OK=false
+fi
+for pattern in \
+    "power-user route" \
+    "claude-sonnet-4-6" \
+    "MiniMax-M2.7-highspeed" \
+    "Token Plan" \
+    "model-profile sonnetminimax" \
+    "effort max" \
+    "/opusworkflow remains the main route"; do
+    if ! grep -Fq -- "$pattern" scripts/sonnetminimaxworkflow.sh .claude/skills/sonnetminimax/SKILL.md README.md CLAUDE.md AGENTS.md 2>/dev/null; then
+        SONNETMINIMAX_OK=false
+    fi
+done
+if [ "$SONNETMINIMAX_OK" = true ] && \
+   bash scripts/sonnetminimaxworkflow.sh --task "power-user sonnet minimax smoke" --run-id "sonnetminimax-test-smoke" >/dev/null 2>&1 && \
+   bash scripts/artifact-lint.sh .taste/opusminimax/sonnetminimax-test-smoke/opusminimax-run.json >/dev/null 2>&1; then
+    rm -rf .taste/opusminimax/sonnetminimax-test-smoke
+    test_pass "/sonnetminimax exposes Sonnet judgment plus MiniMax Token Plan execution"
+else
+    rm -rf .taste/opusminimax/sonnetminimax-test-smoke
+    test_fail "/sonnetminimax skill, wrapper, docs, or static artifact path is incomplete"
+fi
+
 # Test 3d-opussonnet: Optional Claude-Only Opus + Sonnet Workflow Mode
 echo "[3d-opussonnet] Optional Opus + Sonnet Workflow"
 OPUSSONNET_OK=true
@@ -548,7 +583,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "42 skills" README.md 2>/dev/null && \
+   grep -Fq "43 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -1051,7 +1086,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 42 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 43 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -1878,25 +1913,25 @@ else
 fi
 
 # ========================================
-# Skills (41 Expected)
+# Skills (43 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 42 Expected]"
+echo "[Skills - 43 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 42 ]; then
+if [ "$SKILL_COUNT" -ge 43 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 42+ skills, found $SKILL_COUNT"
+    test_fail "Expected 43+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow opussonnet opusolo visualize visualizeworkflow demo digestflow digestaste deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control agent-view goal-mode specqa deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow sonnetminimax opussonnet opusolo visualize visualizeworkflow demo digestflow digestaste deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control agent-view goal-mode specqa deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1966,7 +2001,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opusoloworkflow opussonnetworkflow remote-control-doctor remote-control-smoke agent-view-doctor agent-view-smoke goal-mode-doctor goal-mode-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke sonnetminimaxworkflow opusoloworkflow opussonnetworkflow remote-control-doctor remote-control-smoke agent-view-doctor agent-view-smoke goal-mode-doctor goal-mode-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

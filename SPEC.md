@@ -1,4 +1,4 @@
-# SPEC: SonnetMiniMax `/opusworkflow` model profile
+# SPEC: SonnetMiniMax `/opusworkflow` profile and `/sonnetminimax` shortcut
 
 ## Problem Statement
 
@@ -10,9 +10,10 @@ executor.
 
 The current workaround is a fragile planner override on the `minimax` profile.
 That records mixed signals in banners, Spec QA metadata, docs, and lint rules.
-The harness needs an explicit `sonnetminimax` profile so the route can be
-requested, linted, smoked, and documented without overclaiming runtime model
-identity.
+The harness needs an explicit `sonnetminimax` profile and a short
+`/sonnetminimax` power-user route so the operator can save Opus quota without
+remembering profile flags. The route must still be requested, linted, smoked,
+and documented without overclaiming runtime model identity.
 
 ## Success Criteria
 
@@ -33,12 +34,15 @@ identity.
 - [x] README, CLAUDE, AGENTS, and `/opusworkflow` / `/opusminimax` skill docs
   describe `sonnetminimax` clearly and distinguish it from `/opussonnet`.
 - [x] `docs/harness-capability-map.md` and `.json` are regenerated and fresh.
+- [x] `/sonnetminimax` exists as an explicit shortcut for the same governed
+  Sonnet 4.6 judgment plus MiniMax-M2.7-highspeed Token Plan execution route,
+  while `/opusworkflow` remains the primary Opus 4.7 high/xhigh + MiniMax route.
 
 ## Scope
 
 In:
-- Add `sonnetminimax` as a model profile, not a new slash command or installer
-  mode.
+- Add `sonnetminimax` as a model profile and `/sonnetminimax` as a short
+  power-user shortcut. Do not add a new installer mode.
 - Update routing, artifact validation, static smokes, generated capability maps,
   and operator docs.
 - Preserve existing meanings for `minimax`, `opussonnet`, `sonnet`, `opus`,
@@ -47,7 +51,7 @@ In:
 Out:
 - Runtime model calls, live MiniMax packet execution, or provider identity
   claims.
-- New setup mode or new `.claude/skills/sonnetminimax` slash route.
+- New setup mode.
 - Changes to secret-bearing local profiles or `.env` files.
 
 ## Agent-Native Estimate
@@ -81,6 +85,8 @@ Out:
 
 4. Update docs and discoverability.
    - Update README, CLAUDE, AGENTS, and relevant skill docs.
+   - Add `.claude/skills/sonnetminimax/SKILL.md` and
+     `scripts/sonnetminimaxworkflow.sh`.
    - Regenerate capability map artifacts.
 
 5. Verify with the full static gate set.
@@ -91,6 +97,7 @@ Required:
 
 ```bash
 bash scripts/opusworkflow.sh --task "sonnet minimax smoke" --model-profile sonnetminimax --effort max --run-id opusworkflow-sonnetminimax-smoke
+bash scripts/sonnetminimaxworkflow.sh --task "power-user sonnet minimax smoke" --run-id sonnetminimax-smoke
 bash scripts/opusminimax-doctor.sh --static --model-profile sonnetminimax --executor-provider minimax --json
 bash scripts/opusworkflow-smoke.sh
 bash scripts/artifact-lint.sh --fixtures

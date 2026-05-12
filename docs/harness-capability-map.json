@@ -67,8 +67,8 @@
     "codex_skills": 1,
     "eval_tasks": 27,
     "rules": 15,
-    "scripts": 65,
-    "skills": 42
+    "scripts": 66,
+    "skills": 43
   },
   "evals": [
     {
@@ -571,12 +571,12 @@
       "sha256": "787cff95f1f912ba22c8aabbf22bce7d05ef41858ef3fddbd4dc028e5110c30b"
     },
     {
-      "line_count": 740,
+      "line_count": 744,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "c0c6ff172540de0cc9d0280e365a344d84e16a5caaa89e37626301cfc7a639e4"
+      "sha256": "37194cff9f1de1df106e09910270f485a277c6059ed8cf4d7d8427d4c26d1043"
     },
     {
       "line_count": 640,
@@ -851,6 +851,14 @@
       "sha256": "bd356ea4fd33af76645ac84350398708bae2017f520d6491f5f2a9fbd47bd8d7"
     },
     {
+      "line_count": 60,
+      "name": "sonnetminimaxworkflow",
+      "path": "scripts/sonnetminimaxworkflow.sh",
+      "purpose": "power-user Sonnet plus MiniMax Token Plan workflow wrapper",
+      "required_gate": true,
+      "sha256": "a2627e77e994138010b4f9f3a50968297a32fa5d1a0b0098fe941b470bfc1f57"
+    },
+    {
       "line_count": 186,
       "name": "spec-archive",
       "path": "scripts/spec-archive.sh",
@@ -875,12 +883,12 @@
       "sha256": "3e80abf5a2f2a5dc3532dbb294cf6f554c4acfa39189baaee2e46fcc3ff3a5f4"
     },
     {
-      "line_count": 121,
+      "line_count": 122,
       "name": "start-session",
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "fb7d61e87ac2c6a9a7623283dad4406372bf8dd378f654fad8a299c538f72f70"
+      "sha256": "170d2ccfaa99b87ec13ab1a1988771d9c0ace9878efdcc14ec4761b43331a4b2"
     },
     {
       "line_count": 400,
@@ -899,12 +907,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 2335,
+      "line_count": 2370,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "f8ec80adfa5c13536ff888788d05d7915a7f0d142615f0155f6d4cb2a7e49046"
+      "sha256": "392fcec193bc96bb806882e01bd21b7de12310c2f78dc5207e404834b007795b"
     },
     {
       "line_count": 127,
@@ -928,7 +936,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "cec1c00c8f575940fb74af6865340f4bafeeec08ab133958165deddf73e606e8"
+      "sha256": "7869f34eefcf44959ad22b2e95145c284a81cd6e133330a2c8ffb9bc93ea47e1"
     },
     {
       "line_count": 117,
@@ -1840,7 +1848,7 @@
       "core_route": true,
       "description": "Advanced engine behind /opusworkflow for provider split, packet, repair, and benchmark work, including the explicit sonnetminimax profile for Sonnet 4.6 judgment plus MiniMax-M2.7-highspeed execution. Normal build/fix/refactor work should use /opusworkflow.",
       "group": "execution",
-      "line_count": 322,
+      "line_count": 325,
       "model_invocation": false,
       "name": "opusminimax",
       "path": ".claude/skills/opusminimax/SKILL.md",
@@ -1854,7 +1862,7 @@
         "scripts/opusminimax-benchmark-smoke.sh",
         "scripts/opusminimax-doctor.sh"
       ],
-      "sha256": "f312f05d6de5634deabc1cc3342ff44b669321221b6cad63e2adc303139057da",
+      "sha256": "f41e3f107b8ef492354482f557b4fc9180343420948e49327961e595252aa80a",
       "slash": "/opusminimax",
       "user_invocable": true
     },
@@ -1899,7 +1907,7 @@
       "core_route": true,
       "description": "Use this as the definitive workflow command for mutating work: default Opus 4.7 high/xhigh planning and review with MiniMax-M2.7-highspeed execution, plus explicit governed model profiles such as sonnetminimax for Sonnet 4.6 judgment with MiniMax execution. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.",
       "group": "execution",
-      "line_count": 319,
+      "line_count": 324,
       "model_invocation": false,
       "name": "opusworkflow",
       "path": ".claude/skills/opusworkflow/SKILL.md",
@@ -1912,11 +1920,12 @@
         "scripts/opusminimax-doctor.sh",
         "scripts/opusworkflow.sh",
         "scripts/opusworkflow-smoke.sh",
+        "scripts/sonnetminimaxworkflow.sh",
         "scripts/opusoloworkflow.sh",
         "scripts/opussonnetworkflow.sh",
         "scripts/specqa-smoke.sh"
       ],
-      "sha256": "0bdea16d0d37029b0a7cad18711448793af898c13c782401483a9f146efd94f7",
+      "sha256": "b26e01f6ac2140cb6739dd90801fb7b95e73cacfbb3e8e1869a48f9edf5b2dcd",
       "slash": "/opusworkflow",
       "user_invocable": true
     },
@@ -2037,6 +2046,24 @@
       ],
       "sha256": "796a2e79521c4f0819663980eb05ee47ce3a77153ee7c49d6c589fe01a2bc1be",
       "slash": "/ship",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[task] [--effort high|xhigh|max]",
+      "core_route": true,
+      "description": "Run the power-user Sonnet 4.6 judgment plus MiniMax-M2.7-highspeed Token Plan executor route. Use when the operator wants to preserve Opus quota or has exhausted Opus, while keeping the same governed /opusworkflow lifecycle and MiniMax bounded execution.",
+      "group": "support",
+      "line_count": 91,
+      "model_invocation": false,
+      "name": "sonnetminimax",
+      "path": ".claude/skills/sonnetminimax/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/sonnetminimaxworkflow.sh"
+      ],
+      "sha256": "bec978fbfdd8ec3e19852dfb0551db8fc64c5b9b2b942edaf0c261d5857ac950",
+      "slash": "/sonnetminimax",
       "user_invocable": true
     },
     {
@@ -2226,7 +2253,7 @@
   "summary": {
     "codex_file_count": 4,
     "codex_skill_count": 1,
-    "core_route_count": 21,
+    "core_route_count": 22,
     "eval_task_count": 27,
     "groups": {
       "agent-systems": [
@@ -2299,12 +2326,13 @@
       "support": [
         "/leveragepath",
         "/opusolo",
-        "/opussonnet"
+        "/opussonnet",
+        "/sonnetminimax"
       ]
     },
     "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 65,
-    "skill_count": 42
+    "script_count": 66,
+    "skill_count": 43
   }
 }

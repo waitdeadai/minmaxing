@@ -8,14 +8,14 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 42
+- Skills: 43
 - Rules: 15
-- Scripts: 65
+- Scripts: 66
 - Static eval tasks: 27
 - Hook entries: 12
 - Codex config files: 4
 - Codex repo skills: 1
-- Core routes: 21
+- Core routes: 22
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
   runtime secrets.
@@ -36,7 +36,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `release`: `/ship`
 - `research`: `/browse`, `/deepresearch`, `/defineicp`, `/digestflow`, `/icpweek`, `/webresearch`
 - `routing`: `/metacognition`
-- `support`: `/leveragepath`, `/opusolo`, `/opussonnet`
+- `support`: `/leveragepath`, `/opusolo`, `/opussonnet`, `/sonnetminimax`
 
 ## Skills
 
@@ -76,6 +76,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `/remote-control` | `operations` | manual | yes | `.claude/skills/remote-control/SKILL.md` | Diagnose Claude Code native Remote Control safely inside the minmaxing harness. In this project, /remote-control is a readiness/troubleshooting skill; start the live native Remote Control server from a shell with claude remote-control. |
 | `/review` | `quality` | yes | no | `.claude/skills/review/SKILL.md` | /review |
 | `/ship` | `release` | yes | no | `.claude/skills/ship/SKILL.md` | /ship |
+| `/sonnetminimax` | `support` | manual | yes | `.claude/skills/sonnetminimax/SKILL.md` | Run the power-user Sonnet 4.6 judgment plus MiniMax-M2.7-highspeed Token Plan executor route. Use when the operator wants to preserve Opus quota or has exhausted Opus, while keeping the same governed /opusworkflow lifecycle and MiniMax bounded execution. |
 | `/specqa` | `quality` | manual | yes | `.claude/skills/specqa/SKILL.md` | QA every newly created, updated, or reused SPEC.md before implementation using current webresearch for SOTA/time-sensitive claims and an Opus 4.7 high/xhigh reviewer when runtime identity is proven. |
 | `/sprint` | `parallelism` | yes | no | `.claude/skills/sprint/SKILL.md` | /sprint |
 | `/tastebootstrap` | `kernel` | yes | no | `.claude/skills/tastebootstrap/SKILL.md` | /tastebootstrap |
@@ -139,6 +140,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `parallel-plan-lint` | parallel plan fixture lint | `scripts/parallel-plan-lint.sh` |
 | `release-check` | public release/static gate | `scripts/release-check.sh` |
 | `remote-control-smoke` | native Claude Code Remote Control compatibility gate | `scripts/remote-control-smoke.sh` |
+| `sonnetminimaxworkflow` | power-user Sonnet plus MiniMax Token Plan workflow wrapper | `scripts/sonnetminimaxworkflow.sh` |
 | `specqa-smoke` | automated SOTA Spec QA gate | `scripts/specqa-smoke.sh` |
 | `test-harness` | full local harness regression suite | `scripts/test-harness.sh` |
 

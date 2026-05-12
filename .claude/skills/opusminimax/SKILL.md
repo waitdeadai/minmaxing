@@ -53,6 +53,9 @@ Worker summaries are claims until verified by diffs, logs, tests, or artifacts.
   route: planner/reviewer requests `claude-sonnet-4-6`, executor provider is
   `minimax`, executor model is exactly `MiniMax-M2.7-highspeed`, and the planner
   profile must still have no MiniMax base URL or MiniMax credential fields.
+- If `/sonnetminimax` is explicit, treat it as the short power-user wrapper for
+  `model_profile=sonnetminimax` with default effort `max`, intended for saving
+  Opus quota while keeping MiniMax-M2.7-highspeed Token Plan execution.
 - If `/opusolo` or `model_profile=opus` is explicit, treat it as the optional
   all-Opus route: no MiniMax base URL, planner and executor must both request
   Opus, default effort is `high` for `/opusolo`, and `--effort max` is an
