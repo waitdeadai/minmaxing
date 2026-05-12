@@ -8,7 +8,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusworkflow.sh --task "..." [--inner-contract CONTRACT] [--run-id ID] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--effort high|xhigh|max] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
+  bash scripts/opusworkflow.sh --task "..." [--inner-contract CONTRACT] [--run-id ID] [--model-profile minimax|sonnetminimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--effort high|xhigh|max] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
 
 /opusworkflow is the definitive effectiveness-first workflow entrypoint. It
 reuses scripts/opusminimax.sh in workflow mode, requesting Opus 4.7 for
@@ -20,6 +20,7 @@ but uses Claude Code opusplan/Sonnet 4.6 instead of MiniMax.
 
 Model profiles:
   minimax     Opus judgment + MiniMax execution (default)
+  sonnetminimax Sonnet judgment + MiniMax execution
   opussonnet  Opus judgment + Sonnet execution, no MiniMax token
   sonnet      Sonnet for planning and execution
   opus        Opus for planning and execution
@@ -104,13 +105,12 @@ fi
 
 if [ "$EXECUTOR_PROVIDER_SET" -eq 0 ]; then
   case "$MODEL_PROFILE" in
-    minimax) EXECUTOR_PROVIDER="minimax" ;;
+    minimax|sonnetminimax) EXECUTOR_PROVIDER="minimax" ;;
     opussonnet) EXECUTOR_PROVIDER="claude-sonnet" ;;
     sonnet|opus|default|custom) EXECUTOR_PROVIDER="anthropic" ;;
   esac
 fi
 
-echo "[opusworkflow] definitive route: Opus 4.7 judgment + MiniMax-M2.7-highspeed execution"
 echo "[opusworkflow] closeout policy: verified, partial, or blocked-with-repair"
 echo "[opusworkflow] spec qa: required after SPEC.md and before implementation"
 
@@ -144,21 +144,31 @@ fi
 
 case "$MODEL_PROFILE" in
   minimax)
+    echo "[opusworkflow] definitive route: Opus 4.7 judgment + MiniMax-M2.7-highspeed execution"
     echo "[opusworkflow] model profile: minimax (Opus judgment, MiniMax-M2.7-highspeed execution)"
     ;;
+  sonnetminimax)
+    echo "[opusworkflow] definitive route: Sonnet 4.6 judgment + MiniMax-M2.7-highspeed execution"
+    echo "[opusworkflow] model profile: sonnetminimax (Sonnet 4.6 planning/review, MiniMax-M2.7-highspeed execution)"
+    ;;
   opussonnet)
+    echo "[opusworkflow] definitive route: Opus 4.7 judgment + Sonnet 4.6 execution"
     echo "[opusworkflow] model profile: opussonnet (Opus 4.7 planning, Sonnet 4.6 execution)"
     ;;
   sonnet)
+    echo "[opusworkflow] definitive route: Sonnet 4.6 planning and execution"
     echo "[opusworkflow] model profile: sonnet (Sonnet 4.6 planning and execution)"
     ;;
   opus)
+    echo "[opusworkflow] definitive route: Opus 4.7 planning and execution"
     echo "[opusworkflow] model profile: opus (Opus 4.7 planning and execution; explicit high-cost route)"
     ;;
   default)
+    echo "[opusworkflow] definitive route: Claude Code account default"
     echo "[opusworkflow] model profile: default (Claude Code account default; runtime identity remains unproven)"
     ;;
   custom)
+    echo "[opusworkflow] definitive route: custom explicit model request"
     echo "[opusworkflow] model profile: custom (explicit planner/executor model request)"
     ;;
   *)

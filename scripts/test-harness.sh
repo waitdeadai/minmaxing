@@ -1518,6 +1518,7 @@ for pattern in \
     "opusminimax-planner-minimax-base-url" \
     "opusworkflow-missing-plan-mode-gate" \
     "valid-sonnet-model-profile-run" \
+    "valid-sonnetminimax-run" \
     "opusminimax-benchmark-aggregate-without-per-task"; do
     if ! find .taste/fixtures/artifact-lint -type f -name "*$pattern*.json" 2>/dev/null | grep -q .; then
         ARTIFACT_LINT_OK=false

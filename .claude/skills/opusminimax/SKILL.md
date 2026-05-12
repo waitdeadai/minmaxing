@@ -1,6 +1,6 @@
 ---
 name: opusminimax
-description: Advanced engine behind /opusworkflow for provider split, packet, repair, and benchmark work. Normal build/fix/refactor work should use /opusworkflow, which asks Opus 4.7 to plan/review when proven available and MiniMax-M2.7-highspeed to execute.
+description: Advanced engine behind /opusworkflow for provider split, packet, repair, and benchmark work, including the explicit sonnetminimax profile for Sonnet 4.6 judgment plus MiniMax-M2.7-highspeed execution. Normal build/fix/refactor work should use /opusworkflow.
 argument-hint: [task, mode: workflow|benchmark|repair]
 disable-model-invocation: true
 ---
@@ -49,6 +49,10 @@ Worker summaries are claims until verified by diffs, logs, tests, or artifacts.
 - If `executor_provider=claude-sonnet` is explicit, treat it as the optional
   Claude-only `/opussonnet` route: no MiniMax base URL, executor model must be
   Sonnet, and the run artifact must not imply MiniMax executed anything.
+- If `model_profile=sonnetminimax` is explicit, treat it as the governed hybrid
+  route: planner/reviewer requests `claude-sonnet-4-6`, executor provider is
+  `minimax`, executor model is exactly `MiniMax-M2.7-highspeed`, and the planner
+  profile must still have no MiniMax base URL or MiniMax credential fields.
 - If `/opusolo` or `model_profile=opus` is explicit, treat it as the optional
   all-Opus route: no MiniMax base URL, planner and executor must both request
   Opus, default effort is `high` for `/opusolo`, and `--effort max` is an
@@ -280,6 +284,23 @@ When `/opusminimax` executes or prepares a real run, produce:
   "failures": [],
   "retries": 0,
   "final_confidence": "medium"
+}
+```
+
+For the SonnetMiniMax hybrid, the same schema records:
+
+```json
+{
+  "model_profile": "sonnetminimax",
+  "executor_provider": "minimax",
+  "model_ids": {
+    "planner_requested": "claude-sonnet-4-6",
+    "executor_requested": "MiniMax-M2.7-highspeed"
+  },
+  "spec_qa": {
+    "requested_reviewer": "claude-sonnet-4-6",
+    "identity_status": "blocked"
+  }
 }
 ```
 

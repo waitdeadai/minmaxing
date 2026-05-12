@@ -29,7 +29,7 @@
       "enum": ["minimax", "claude-sonnet", "anthropic"]
     },
     "model_profile": {
-      "enum": ["minimax", "opussonnet", "sonnet", "opus", "default", "custom"]
+      "enum": ["minimax", "sonnetminimax", "opussonnet", "sonnet", "opus", "default", "custom"]
     },
     "provider_profiles": {
       "type": "object",
@@ -124,5 +124,70 @@
       "enum": ["high", "medium", "low"]
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "model_profile": {
+            "const": "sonnetminimax"
+          }
+        },
+        "required": ["model_profile"]
+      },
+      "then": {
+        "required": ["executor_provider", "provider_profiles", "model_ids"],
+        "properties": {
+          "executor_provider": {
+            "const": "minimax"
+          },
+          "provider_profiles": {
+            "type": "object",
+            "required": ["planner", "executor"],
+            "properties": {
+              "planner": {
+                "type": "object",
+                "properties": {
+                  "anthropic_base_url": {
+                    "not": {
+                      "pattern": "api\\.minimax\\.io/anthropic"
+                    }
+                  },
+                  "model": {
+                    "not": {
+                      "pattern": "MiniMax-M2\\.7-highspeed"
+                    }
+                  }
+                }
+              },
+              "executor": {
+                "type": "object",
+                "properties": {
+                  "anthropic_base_url": {
+                    "const": "https://api.minimax.io/anthropic"
+                  },
+                  "model": {
+                    "const": "MiniMax-M2.7-highspeed"
+                  }
+                },
+                "required": ["anthropic_base_url", "model"]
+              }
+            }
+          },
+          "model_ids": {
+            "type": "object",
+            "required": ["planner_requested", "executor_requested"],
+            "properties": {
+              "planner_requested": {
+                "const": "claude-sonnet-4-6"
+              },
+              "executor_requested": {
+                "const": "MiniMax-M2.7-highspeed"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "additionalProperties": true
 }

@@ -25,13 +25,14 @@ PLAN_MODE_POLICY_SET=0
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--effort high|xhigh|max] [--execute-planner] [--planner-settings PATH]
+  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--model-profile minimax|sonnetminimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--effort high|xhigh|max] [--execute-planner] [--planner-settings PATH]
 
 Default behavior prepares no-secret run artifacts and prints the next command.
 --execute-planner is the explicit Claude runtime opt-in.
 
 Model profiles are governed routing presets, not runtime identity proof:
   minimax     Opus judgment + MiniMax execution (default)
+  sonnetminimax Sonnet judgment + MiniMax execution
   opussonnet  Opus judgment + Sonnet execution, no MiniMax token
   sonnet      Sonnet planning + Sonnet execution
   opus        Opus planning + Opus execution
@@ -157,13 +158,13 @@ if [ -z "$MODEL_PROFILE" ]; then
 fi
 
 case "$MODEL_PROFILE" in
-  minimax|opussonnet|sonnet|opus|default|custom) ;;
+  minimax|sonnetminimax|opussonnet|sonnet|opus|default|custom) ;;
   *) echo "[opusminimax] invalid model profile: $MODEL_PROFILE" >&2; exit 2 ;;
 esac
 
 if [ "$EXECUTOR_PROVIDER_SET" -eq 0 ]; then
   case "$MODEL_PROFILE" in
-    minimax) EXECUTOR_PROVIDER="minimax" ;;
+    minimax|sonnetminimax) EXECUTOR_PROVIDER="minimax" ;;
     opussonnet) EXECUTOR_PROVIDER="claude-sonnet" ;;
     sonnet|opus|default|custom) EXECUTOR_PROVIDER="anthropic" ;;
   esac
@@ -175,7 +176,7 @@ case "$EXECUTOR_PROVIDER" in
 esac
 
 case "$MODEL_PROFILE:$EXECUTOR_PROVIDER" in
-  minimax:minimax|opussonnet:claude-sonnet|sonnet:anthropic|opus:anthropic|default:anthropic|custom:anthropic) ;;
+  minimax:minimax|sonnetminimax:minimax|opussonnet:claude-sonnet|sonnet:anthropic|opus:anthropic|default:anthropic|custom:anthropic) ;;
   *)
     echo "[opusminimax] model profile '$MODEL_PROFILE' conflicts with executor provider '$EXECUTOR_PROVIDER'" >&2
     exit 2
@@ -185,6 +186,10 @@ esac
 case "$MODEL_PROFILE" in
   minimax)
     [ -n "$PLANNER_MODEL" ] || PLANNER_MODEL="claude-opus-4-7"
+    [ -n "$EXECUTOR_MODEL" ] || EXECUTOR_MODEL="MiniMax-M2.7-highspeed"
+    ;;
+  sonnetminimax)
+    [ -n "$PLANNER_MODEL" ] || PLANNER_MODEL="claude-sonnet-4-6"
     [ -n "$EXECUTOR_MODEL" ] || EXECUTOR_MODEL="MiniMax-M2.7-highspeed"
     ;;
   opussonnet)
@@ -212,7 +217,7 @@ case "$MODEL_PROFILE" in
 esac
 
 if [ "$EXECUTOR_PROVIDER" = "minimax" ] && [ "$EXECUTOR_MODEL" != "MiniMax-M2.7-highspeed" ]; then
-  echo "[opusminimax] minimax profile requires executor model MiniMax-M2.7-highspeed" >&2
+  echo "[opusminimax] MiniMax-backed profiles require executor model MiniMax-M2.7-highspeed" >&2
   exit 2
 fi
 if [ "$EXECUTOR_PROVIDER" != "minimax" ] && [[ "${EXECUTOR_MODEL,,}" == *"minimax"* ]]; then
@@ -266,6 +271,26 @@ else:
     }
     executor_label = "MiniMax executor"
 
+default_model_split_by_profile = {
+    "minimax": "claude-opus-4-7 high/xhigh planner-reviewer + MiniMax-M2.7-highspeed executor",
+    "sonnetminimax": "claude-sonnet-4-6 high/xhigh planner-reviewer + MiniMax-M2.7-highspeed executor",
+    "opussonnet": "claude-opus-4-7 planner-reviewer + claude-sonnet-4-6 executor",
+    "sonnet": "claude-sonnet-4-6 planner-reviewer + claude-sonnet-4-6 executor",
+    "opus": "claude-opus-4-7 planner-reviewer + claude-opus-4-7 executor",
+    "default": "Claude Code account default planner-reviewer + executor",
+    "custom": f"{planner_model} planner-reviewer + {executor_model} executor",
+}
+requested_reviewer_by_profile = {
+    "minimax": "claude-opus-4-7",
+    "sonnetminimax": "claude-sonnet-4-6",
+    "opussonnet": "claude-opus-4-7",
+    "sonnet": "claude-sonnet-4-6",
+    "opus": "claude-opus-4-7",
+    "default": "default",
+    "custom": planner_model,
+}
+requested_reviewer = requested_reviewer_by_profile.get(model_profile, planner_model)
+
 packet = {
     "artifact_type": "opusminimax-packet",
     "run_id": run_id,
@@ -291,7 +316,7 @@ run = {
         "definitive_command": outer_route == "opusworkflow",
         "route_role": "definitive_outer_route" if outer_route == "opusworkflow" else "advanced_engine",
         "effectiveness_policy": "continue_until_verified_partial_or_blocked",
-        "default_model_split": "claude-opus-4-7 high/xhigh planner-reviewer + MiniMax-M2.7-highspeed executor when model_profile=minimax",
+        "default_model_split": default_model_split_by_profile.get(model_profile, default_model_split_by_profile["custom"]),
         "allowed_closeout_statuses": ["verified", "partial", "blocked", "runtime-pending"],
         "blocked_requires_repair": True,
     },
@@ -340,7 +365,7 @@ run = {
         "required": outer_route == "opusworkflow",
         "runs_after_spec_creation": True,
         "before_implementation": True,
-        "requested_reviewer": "claude-opus-4-7",
+        "requested_reviewer": requested_reviewer,
         "identity_status": "blocked",
         "claims_opus_review": False,
         "source_ledger_required_for_sota": True,

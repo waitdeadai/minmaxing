@@ -17,7 +17,7 @@ Usage:
   bash scripts/opusminimax-doctor.sh --runtime [--fix-local-profiles] [--json]
 
 --static is no-secret and does not run provider model calls.
---model-profile minimax|opussonnet|sonnet|opus|default|custom selects the governed route.
+--model-profile minimax|sonnetminimax|opussonnet|sonnet|opus|default|custom selects the governed route.
 --executor-provider minimax|claude-sonnet|anthropic selects the executor profile contract.
 --runtime may inspect local Claude auth/version state, but still never prints secrets.
 --fix-local-profiles repairs ignored planner/executor local profile structure
@@ -63,7 +63,7 @@ while [ "$#" -gt 0 ]; do
 done
 
 case "$MODEL_PROFILE" in
-  minimax|opussonnet|sonnet|opus|default|custom) ;;
+  minimax|sonnetminimax|opussonnet|sonnet|opus|default|custom) ;;
   *) usage; exit 2 ;;
 esac
 
@@ -73,7 +73,7 @@ case "$EXECUTOR_PROVIDER" in
 esac
 
 case "$MODEL_PROFILE:$EXECUTOR_PROVIDER" in
-  minimax:minimax|opussonnet:claude-sonnet|sonnet:anthropic|opus:anthropic|default:anthropic|custom:anthropic) ;;
+  minimax:minimax|sonnetminimax:minimax|opussonnet:claude-sonnet|sonnet:anthropic|opus:anthropic|default:anthropic|custom:anthropic) ;;
   *) usage; exit 2 ;;
 esac
 
@@ -503,6 +503,20 @@ if any(item["status"] == "fail" for item in checks):
 elif any(item["status"] == "warn" for item in checks):
     status = "warn"
 
+claim_step_by_profile = {
+    "minimax": "verify Opus availability on the account before claiming Opus planned or reviewed",
+    "sonnetminimax": "verify Sonnet 4.6 availability on the account before claiming Sonnet planned or reviewed",
+    "opussonnet": "verify Opus and Sonnet availability on the account before claiming Opus/Sonnet runtime identity",
+    "sonnet": "verify Sonnet availability on the account before claiming Sonnet planned, executed, or reviewed",
+    "opus": "verify Opus availability on the account before claiming Opus planned, executed, or reviewed",
+    "default": "verify the selected Anthropic model identity before claiming runtime model provenance",
+    "custom": "verify the custom Anthropic model identity before claiming runtime model provenance",
+}
+runtime_repair_command = (
+    "rerun bash scripts/opusminimax-doctor.sh --runtime --fix-local-profiles "
+    f"--model-profile {MODEL_PROFILE} --executor-provider {EXECUTOR_PROVIDER}"
+)
+
 payload = {
     "artifact_type": "opusminimax-doctor-result",
     "mode": MODE,
@@ -515,8 +529,8 @@ payload = {
     "operator_repair_steps": [
         "run claude auth login if auth status is not pass",
         "unset ANTHROPIC_API_KEY when using Claude subscription billing",
-        "verify Opus availability on the account before claiming Opus planned",
-        "rerun bash scripts/opusminimax-doctor.sh --runtime --fix-local-profiles",
+        claim_step_by_profile.get(MODEL_PROFILE, claim_step_by_profile["default"]),
+        runtime_repair_command,
     ],
     "secret_policy": "does not read .env, .env.*, or key files; local profile repair never prints credential values",
 }

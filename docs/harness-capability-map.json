@@ -451,12 +451,12 @@
       "sha256": "4dcbd22f5493e69884e2918455ca1aa0964bd31490681ef49d80e9c5a4069742"
     },
     {
-      "line_count": 756,
+      "line_count": 763,
       "name": "artifact-lint",
       "path": "scripts/artifact-lint.sh",
       "purpose": "machine sidecar validator",
       "required_gate": true,
-      "sha256": "06c82684825f5354ff92b919765da5519aec08dcef269faf7f1b1b7f41d78901"
+      "sha256": "a8f128a933e6e238567694542eb5d82137329edbfe3e37416490ea8d2bbc2823"
     },
     {
       "line_count": 189,
@@ -699,20 +699,20 @@
       "sha256": "814fdc31e20687d24b8efbb2b44d67a3ec932aaef5be9a730d791c66bfc2ff03"
     },
     {
-      "line_count": 533,
+      "line_count": 547,
       "name": "opusminimax-doctor",
       "path": "scripts/opusminimax-doctor.sh",
       "purpose": "OpusMiniMax provider split doctor",
       "required_gate": true,
-      "sha256": "cb5fe25369342ebe8d517507170a5b64b01fba48e69b85f827ce38335dccbcbd"
+      "sha256": "173d2f038fae7f254b80982d826d81840daab6fb16fb3ae74169f575f636e0d6"
     },
     {
-      "line_count": 539,
+      "line_count": 564,
       "name": "opusminimax",
       "path": "scripts/opusminimax.sh",
       "purpose": "Prepare or explicitly launch the /opusminimax planner workflow.",
       "required_gate": false,
-      "sha256": "3f53e0539922cfa619677b2689fe4f6b01e42bcde96c4e3803694f7f263dc6ad"
+      "sha256": "6af44e41da5b7eda2dcb98bdc0d226d93781f20162ca1df3c39c9d0d66901cfe"
     },
     {
       "line_count": 58,
@@ -731,20 +731,20 @@
       "sha256": "199a1e495da27067db293bda488b10b8938968565b2d96646380d88c187728c4"
     },
     {
-      "line_count": 340,
+      "line_count": 383,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "99f1b5e474cbcd791ae142b3286931f964a172356eb379e331b22237b436ca3e"
+      "sha256": "8d904b8908a7983e55f10427df0533f32650163d53b135886d907898cd683418"
     },
     {
-      "line_count": 201,
+      "line_count": 211,
       "name": "opusworkflow",
       "path": "scripts/opusworkflow.sh",
       "purpose": "Prepare or explicitly launch the definitive /opusworkflow route.",
       "required_gate": false,
-      "sha256": "2e82cd500780542eb39528f08870614ef1331c70cfdd8e33cd3d884632375bf6"
+      "sha256": "ae618624391679cac5b4ba766dc36f9c243f1da610b4570e50979ada01114c8e"
     },
     {
       "line_count": 113,
@@ -899,12 +899,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 2334,
+      "line_count": 2335,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "3784f280123c14c67563001f1ae05df582831bb8b82ce97c6443fe6b011f75a5"
+      "sha256": "f8ec80adfa5c13536ff888788d05d7915a7f0d142615f0155f6d4cb2a7e49046"
     },
     {
       "line_count": 127,
@@ -1838,9 +1838,9 @@
     {
       "argument_hint": "[task, mode: workflow|benchmark|repair]",
       "core_route": true,
-      "description": "Advanced engine behind /opusworkflow for provider split, packet, repair, and benchmark work. Normal build/fix/refactor work should use /opusworkflow, which asks Opus 4.7 to plan/review when proven available and MiniMax-M2.7-highspeed to execute.",
+      "description": "Advanced engine behind /opusworkflow for provider split, packet, repair, and benchmark work, including the explicit sonnetminimax profile for Sonnet 4.6 judgment plus MiniMax-M2.7-highspeed execution. Normal build/fix/refactor work should use /opusworkflow.",
       "group": "execution",
-      "line_count": 301,
+      "line_count": 322,
       "model_invocation": false,
       "name": "opusminimax",
       "path": ".claude/skills/opusminimax/SKILL.md",
@@ -1854,7 +1854,7 @@
         "scripts/opusminimax-benchmark-smoke.sh",
         "scripts/opusminimax-doctor.sh"
       ],
-      "sha256": "a2f57a5fab19fa135f47ef36762976813c01af291257cd5daa52e6d10a6b65c9",
+      "sha256": "f312f05d6de5634deabc1cc3342ff44b669321221b6cad63e2adc303139057da",
       "slash": "/opusminimax",
       "user_invocable": true
     },
@@ -1897,9 +1897,9 @@
     {
       "argument_hint": "[task]",
       "core_route": true,
-      "description": "Use this as the definitive workflow command for mutating work: Opus 4.7 high/xhigh plans and reviews when proven available, MiniMax-M2.7-highspeed executes bounded packets, and plan-mode auto-approval starts execution only when gates pass. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.",
+      "description": "Use this as the definitive workflow command for mutating work: default Opus 4.7 high/xhigh planning and review with MiniMax-M2.7-highspeed execution, plus explicit governed model profiles such as sonnetminimax for Sonnet 4.6 judgment with MiniMax execution. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.",
       "group": "execution",
-      "line_count": 303,
+      "line_count": 319,
       "model_invocation": false,
       "name": "opusworkflow",
       "path": ".claude/skills/opusworkflow/SKILL.md",
@@ -1916,7 +1916,7 @@
         "scripts/opussonnetworkflow.sh",
         "scripts/specqa-smoke.sh"
       ],
-      "sha256": "de53176e4ffe1dbc1f932c7ff368d8883170edecfb8d00c1ccb78a0dd6c43356",
+      "sha256": "0bdea16d0d37029b0a7cad18711448793af898c13c782401483a9f146efd94f7",
       "slash": "/opusworkflow",
       "user_invocable": true
     },

@@ -1,6 +1,6 @@
 ---
 name: opusworkflow
-description: Use this as the definitive workflow command for mutating work: Opus 4.7 high/xhigh plans and reviews when proven available, MiniMax-M2.7-highspeed executes bounded packets, and plan-mode auto-approval starts execution only when gates pass. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.
+description: Use this as the definitive workflow command for mutating work: default Opus 4.7 high/xhigh planning and review with MiniMax-M2.7-highspeed execution, plus explicit governed model profiles such as sonnetminimax for Sonnet 4.6 judgment with MiniMax execution. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.
 argument-hint: [task]
 disable-model-invocation: true
 ---
@@ -52,6 +52,7 @@ Model-profile selector:
 
 ```text
 --model-profile minimax    # default: Opus judgment + MiniMax execution
+--model-profile sonnetminimax # Sonnet judgment + MiniMax execution
 --model-profile opussonnet # Opus judgment + Sonnet execution
 --model-profile sonnet     # Sonnet planning + Sonnet execution
 --model-profile opus       # Opus planning + Opus execution, explicit high-cost route
@@ -84,7 +85,9 @@ SPEC.md, and /specqa all allow execution.
   defaults. `/opusminimax` is the advanced packet/provider engine behind it.
 - Do not present `/opusminimax` as a second daily workflow choice unless the
   operator is debugging engine, provider, packet, repair, or benchmark behavior.
-- Keep MiniMax as the standard executor provider. Use `/opussonnet` or
+- Keep MiniMax as the standard executor provider. Use `--model-profile
+  sonnetminimax` only when the operator explicitly wants Sonnet 4.6
+  planning/review/judgment plus MiniMax execution. Use `/opussonnet` or
   `--executor-provider claude-sonnet` only when the operator explicitly wants
   the optional Claude-only route.
 - Use `/opusolo` only when the operator explicitly wants the all-Opus premium
@@ -124,6 +127,9 @@ SPEC.md, and /specqa all allow execution.
   preserve that specialist contract under the `/opusworkflow` outer route.
 - Do not claim Opus planned, reviewed, or verified unless auth/model evidence or
   the run artifact proves it.
+- Do not claim Sonnet planned, reviewed, or verified under `sonnetminimax`
+  unless `/status`, a sentinel, or a durable run artifact proves it for the
+  current account/session. Static artifacts only prove the requested route.
 - Do not read `.env`, `.env.*`, `.claude/settings.local.json`,
   `.claude/*.local.json`, `secrets/**`, private credentials, customer artifacts,
   or MiniMax key files.
@@ -161,6 +167,15 @@ Practical target for the $20 Claude + $40 MiniMax setup:
 80-90% mechanical work: MiniMax-M2.7-highspeed
 10-20% judgment work: Opus 4.7 high/xhigh when account state proves it
 executor lanes: 1 default, 2 only after explicit runtime proof
+```
+
+Optional `sonnetminimax` target:
+
+```text
+planner/judgment/review: claude-sonnet-4-6 through the provider-neutral planner profile
+execution: MiniMax-M2.7-highspeed through the MiniMax executor profile
+effort max: explicit request that maps to Claude CLI xhigh
+MiniMax token: required for executor runtime, but not read by static artifact prep
 ```
 
 Optional `opussonnet` target:
@@ -236,6 +251,7 @@ bash scripts/opusworkflow.sh --task "$ARGUMENTS" --executor-provider claude-sonn
 For explicit model profiles:
 
 ```bash
+bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile sonnetminimax --effort max
 bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile sonnet
 bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile opus
 bash scripts/opusworkflow.sh --task "$ARGUMENTS" --model-profile custom --planner-model claude-sonnet-4-6 --executor-model claude-sonnet-4-6
@@ -282,9 +298,9 @@ proven. If Claude Code falls back to Sonnet or the subscription does not expose
 Opus, record that honestly and continue with downgraded confidence or ask for
 runtime/account action.
 
-Spec QA uses the same proof rule. `requested_reviewer=claude-opus-4-7` is not
-runtime proof; only `/status`, a sentinel, or a durable model-identity artifact
-can set `claims_opus_review=true`.
+Spec QA uses the same proof rule. `requested_reviewer=claude-opus-4-7` or
+`requested_reviewer=claude-sonnet-4-6` is not runtime proof; only `/status`, a
+sentinel, or a durable model-identity artifact can set review identity claims.
 
 ## Anti-Patterns
 
