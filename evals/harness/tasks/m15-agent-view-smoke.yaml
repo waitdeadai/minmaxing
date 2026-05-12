@@ -1,0 +1,7 @@
+id: m15-agent-view-smoke
+title: Native Claude Code Agent View static readiness smoke
+gate: scripts/agent-view-smoke.sh --fixtures
+expected_result: pass
+golden: evals/harness/golden/m15-agent-view-smoke.json
+evidence: validates Agent View diagnostic skill, static doctor, no-live-runtime proof boundary, version minimum, docs-backed source ledger, fixtures, and release wiring
+

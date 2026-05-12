@@ -1,0 +1,13 @@
+{
+  "expected_evidence": "scripts/agent-view-smoke.sh --fixtures validates the /agent-view readiness skill contract, claude agents static diagnostics, no-live-runtime boundary, version minimum, docs-backed source ledger, fixtures, and release wiring",
+  "expected_result": "pass",
+  "gate": "agent-view-smoke",
+  "id": "m15-agent-view-smoke",
+  "requires": [
+    ".claude/skills/agent-view/SKILL.md",
+    "scripts/agent-view-doctor.sh",
+    "scripts/agent-view-smoke.sh",
+    ".taste/fixtures/agent-view"
+  ]
+}
+

@@ -6,7 +6,8 @@
     "Use .claude/settings.team-safe.example.json for shared, reviewed, client-visible, or less trusted work.",
     "Do not put Anthropic, Claude subscription, MiniMax, or other provider credentials in this file.",
     "Use ignored local profiles for planner/executor identity.",
-    "Remote Control compatible: do not set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, DISABLE_TELEMETRY, disableRemoteControl, or provider auth variables in shared project settings."
+    "Remote Control compatible: do not set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, DISABLE_TELEMETRY, disableRemoteControl, or provider auth variables in shared project settings.",
+    "Agent View compatible: do not set disableAgentView or CLAUDE_CODE_DISABLE_AGENT_VIEW in shared project settings; live Agent View still starts manually with claude agents."
   ],
   "env": {
     "DISABLE_AUTOUPDATER": "1",

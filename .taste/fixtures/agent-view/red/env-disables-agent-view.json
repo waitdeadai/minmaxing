@@ -1,0 +1,57 @@
+{
+  "agent_view_equals_remote_control": false,
+  "agent_view_replaces_parallel": false,
+  "api_key_only_auth_allowed": false,
+  "artifact_type": "agent-view-readiness",
+  "auth": {
+    "api_key_only_supported": false,
+    "requires_paid_claude_code_access": true,
+    "uses_interactive_claude_code_credentials": true
+  },
+  "background_sessions_cloud_durable": false,
+  "checks": [],
+  "claude_agents_help_kind": "agent_view",
+  "cli_version": "2.1.139",
+  "commands": [
+    "claude agents",
+    "claude --bg \"<prompt>\"",
+    "claude attach <id>",
+    "claude logs <id>",
+    "claude stop <id>",
+    "claude respawn --all"
+  ],
+  "custom_web_ui_or_proxy": false,
+  "linear_parallel_speedup_claim": false,
+  "manual_runtime_evidence_required": true,
+  "minimum_required_version": "2.1.139",
+  "native_claude_code_agent_view": true,
+  "operator_boundary": "manual_operator_monitor_only",
+  "runtime_agent_view_started": false,
+  "runtime_background_session_dispatched": false,
+  "runtime_proof_status": "ready_static_only",
+  "secrets": {
+    "read_claude_jobs": false,
+    "read_secret_files": false,
+    "read_transcripts": false,
+    "secret_values_redacted": true,
+    "tokens_in_url": false
+  },
+  "session_model": {
+    "local_supervisor_process": true,
+    "may_use_claude_worktrees": true,
+    "sessions_report_only_to_operator": true,
+    "stops_on_sleep_or_shutdown": true,
+    "subagents_report_to_parent_conversation": true
+  },
+  "shared_project_env_blockers": [
+    "CLAUDE_CODE_DISABLE_AGENT_VIEW"
+  ],
+  "source_ledger": [
+    "https://code.claude.com/docs/en/agent-view",
+    "https://code.claude.com/docs/en/agents",
+    "https://code.claude.com/docs/en/permissions",
+    "https://claude.com/blog/agent-view-in-claude-code"
+  ],
+  "status": "pass"
+}
+

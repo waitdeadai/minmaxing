@@ -216,6 +216,7 @@ allowed_roots = [
     ".claude/settings.sonnet-executor.example.json",
     ".claude/settings.team-safe.example.json",
     ".codex",
+    ".agents",
     ".github/workflows/harness-runtime.yml",
     "AGENTS.md",
     "CLAUDE.md",

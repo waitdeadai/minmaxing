@@ -72,6 +72,7 @@ KNOWN_GATES = {
     "opusminimax-benchmark-smoke",
     "opusworkflow-smoke",
     "remote-control-smoke",
+    "agent-view-smoke",
     "specqa-smoke",
     "spec-archive-smoke",
 }
@@ -287,6 +288,10 @@ def normalize_gate(value: str) -> str:
         "scripts/remote-control-smoke.sh": "remote-control-smoke",
         "scripts/remote-control-smoke.sh --fixtures": "remote-control-smoke",
         "bash scripts/remote-control-smoke.sh --fixtures": "remote-control-smoke",
+        "agent-view-smoke": "agent-view-smoke",
+        "scripts/agent-view-smoke.sh": "agent-view-smoke",
+        "scripts/agent-view-smoke.sh --fixtures": "agent-view-smoke",
+        "bash scripts/agent-view-smoke.sh --fixtures": "agent-view-smoke",
         "specqa-smoke": "specqa-smoke",
         "scripts/specqa-smoke.sh": "specqa-smoke",
         "scripts/specqa-smoke.sh --fixtures": "specqa-smoke",
@@ -666,6 +671,10 @@ run_gate() {
     "remote-control-smoke")
       require_gate_script "scripts/remote-control-smoke.sh" || return $?
       bash "$ROOT_DIR/scripts/remote-control-smoke.sh" --fixtures
+      ;;
+    "agent-view-smoke")
+      require_gate_script "scripts/agent-view-smoke.sh" || return $?
+      bash "$ROOT_DIR/scripts/agent-view-smoke.sh" --fixtures
       ;;
     "specqa-smoke")
       require_gate_script "scripts/specqa-smoke.sh" || return $?

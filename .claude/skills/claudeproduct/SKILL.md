@@ -67,12 +67,15 @@ Choose exactly one:
 ## Product Surface Map
 
 - Claude Code core: CLI, IDE, Desktop, Web, browser integration, CI/CD, Slack,
-  non-interactive runs, sessions, permissions, plan mode, routines, and `/loop`.
+  non-interactive runs, sessions, background sessions, Agent View, local
+  supervisor processes, worktree isolation, permissions, plan mode, routines,
+  and `/loop`.
 - Claude Code configuration: `.claude/settings.json`,
   `.claude/settings.local.json`, `~/.claude/settings.json`, managed settings,
   permissions, environment variables, sandboxing, and MCP config.
 - Claude Code instructions and extensibility: `CLAUDE.md`, rules, memory,
-  skills, legacy commands, plugins, hooks, subagents, agent teams, and Agent SDK.
+  skills, legacy commands, plugins, hooks, subagents, agent teams, Agent View,
+  background-session supervision, and Agent SDK.
 - Claude.ai apps: chats, Projects, project knowledge, instructions, styles,
   profile preferences, organization instructions, Artifacts, web search,
   Research, extended thinking, connectors, and mobile/desktop app behavior.

@@ -8,14 +8,14 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 ## Summary
 
-- Skills: 39
+- Skills: 40
 - Rules: 15
-- Scripts: 60
-- Static eval tasks: 25
+- Scripts: 62
+- Static eval tasks: 26
 - Hook entries: 12
 - Codex config files: 4
 - Codex repo skills: 1
-- Core routes: 18
+- Core routes: 19
 - Secret policy: generated from committed repo truth only; never reads `.env`,
   `.env.*`, `.claude/settings.local.json`, private customer artifacts, or
   runtime secrets.
@@ -29,7 +29,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - `kernel`: `/align`, `/deepretaste`, `/digestaste`, `/tastebootstrap`
 - `knowledge`: `/claudeproduct`
 - `memory`: `/memory`
-- `operations`: `/overnight`, `/remote-control`
+- `operations`: `/agent-view`, `/overnight`, `/remote-control`
 - `parallelism`: `/hive`, `/parallel`, `/sprint`
 - `planning`: `/autoplan`, `/council`
 - `quality`: `/audit`, `/introspect`, `/qa`, `/review`, `/specqa`, `/verify`
@@ -42,6 +42,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 | Skill | Group | Model Auto-Invocation | Core Route | Contract | Description |
 | --- | --- | --- | --- | --- | --- |
+| `/agent-view` | `operations` | manual | yes | `.claude/skills/agent-view/SKILL.md` | Diagnose Claude Code Agent View readiness safely inside the minmaxing harness. This route is static readiness and troubleshooting only; open the live Agent View TUI manually with claude agents. |
 | `/agentfactory` | `agent-systems` | manual | yes | `.claude/skills/agentfactory/SKILL.md` | Create governed Hermes agents as auditable enterprise operating units with manifest, capability stack, memory seed, deployment plan, verification contract, registry entry, and kill switch. |
 | `/align` | `kernel` | yes | no | `.claude/skills/align/SKILL.md` | /align |
 | `/audit` | `quality` | yes | no | `.claude/skills/audit/SKILL.md` | /audit |
@@ -92,7 +93,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 | Rule | Contract | Lines |
 | --- | --- | --- |
-| `claudeproduct` | `.claude/rules/claudeproduct.rules.md` | 49 |
+| `claudeproduct` | `.claude/rules/claudeproduct.rules.md` | 50 |
 | `context` | `.claude/rules/context.rules.md` | 109 |
 | `delegation` | `.claude/rules/delegation.rules.md` | 111 |
 | `estimation` | `.claude/rules/estimation.rules.md` | 129 |
@@ -112,6 +113,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 
 | Script | Purpose | Path |
 | --- | --- | --- |
+| `agent-view-smoke` | native Claude Code Agent View static readiness gate | `scripts/agent-view-smoke.sh` |
 | `artifact-lint` | machine sidecar validator | `scripts/artifact-lint.sh` |
 | `claudeproduct-scorecard` | Claude product answer scorecard | `scripts/claudeproduct-scorecard.sh` |
 | `deepretaste-smoke` | intent-to-ICP-to-taste bootstrap contract gate | `scripts/deepretaste-smoke.sh` |
@@ -145,6 +147,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `m12-remote-control-smoke` | `scripts/remote-control-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m12-remote-control-smoke.yaml` | `evals/harness/golden/m12-remote-control-smoke.json` |
 | `m13-specqa-sota-gate` | `scripts/specqa-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m13-specqa-sota-gate.yaml` | `evals/harness/golden/m13-specqa-sota-gate.json` |
 | `m14-digestaste-research-to-bootstrap-text` | `scripts/digestaste-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m14-digestaste-research-to-bootstrap-text.yaml` | `evals/harness/golden/m14-digestaste-research-to-bootstrap-text.json` |
+| `m15-agent-view-smoke` | `scripts/agent-view-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m15-agent-view-smoke.yaml` | `evals/harness/golden/m15-agent-view-smoke.json` |
 | `m4-agentfactory-kill-switch-evidence` | `scripts/agentfactory-smoke.sh` | `pass` | `evals/harness/tasks/m4-agentfactory-kill-switch-evidence.yaml` | `evals/harness/golden/m4-agentfactory-kill-switch-evidence.json` |
 | `m4-artifact-sidecar-lint` | `scripts/artifact-lint.sh --fixtures` | `pass` | `evals/harness/tasks/m4-artifact-sidecar-lint.yaml` | `evals/harness/golden/m4-artifact-sidecar-lint.json` |
 | `m4-codex-run-artifact-proof` | `scripts/codex-run-smoke.sh` | `pass` | `evals/harness/tasks/m4-codex-run-artifact-proof.yaml` | `evals/harness/golden/m4-codex-run-artifact-proof.json` |

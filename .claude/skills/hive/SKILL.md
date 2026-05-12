@@ -25,6 +25,9 @@ aggregation instead of inventing a second worker format.
 - `/parallel`: executes independent packets with ownership and aggregation.
 - `/hiveworkflow`: runs the full file-changing lifecycle with hive
   coordination.
+- `/agent-view`: optional operator-managed visibility for independent Claude Code
+  background sessions. It is not hive coordination and does not satisfy
+  blackboard, dissent, aggregation, or verification requirements.
 - `/workflow`: remains the default single-supervisor lifecycle.
 - `/introspect`: remains the hard-gate audit. Hive consensus never replaces it.
 
@@ -220,6 +223,12 @@ When hive work changes files or executes worker packets, reuse `/parallel`:
 
 Hive adds cognition and coordination; `/parallel` remains the execution and
 aggregation substrate.
+
+Claude Code Agent View can help an operator monitor independent background
+sessions used outside the hive or as manually managed `parallel-instances`, but
+the hive still needs its own queen/supervisor, blackboard, dissent log, sidecars,
+aggregation, and verification evidence. Agent View rows are operator status, not
+verified hive claims.
 
 ## Output
 

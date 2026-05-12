@@ -90,8 +90,9 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 | /agentfactory | Create governed runtime-bound Hermes agents with manifest, runtime contract, capability stack, memory seed, verification, registry, and kill switch |
 | /parallel | Hardware-aware whole-workflow parallel orchestration with packet DAG, ownership matrix, sync barriers, and aggregate verification |
 | /metacognition | Parallel-aware routing and evidence-grounded self-calibration before execution |
-| /claudeproduct | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, and subagents |
+| /claudeproduct | Official-source answers for Claude, Claude Code, Claude.ai, Anthropic API, connectors, plugins, skills, hooks, MCP, subagents, Agent View, background sessions, and setup |
 | /remote-control | Native Claude Code Remote Control readiness skill; live server starts with `claude remote-control`, without custom network control planes |
+| /agent-view | Native Claude Code Agent View readiness skill; live TUI starts manually with `claude agents`, without static runtime-proof claims |
 | /specqa | Spec QA Agent for every active `SPEC.md`: requirements quality, SOTA/currentness source ledger, Opus 4.7 identity-proof boundary, and improvement suggestions before implementation |
 | /hive | Governed multi-agent coordination with role map, blackboard, dissent, synthesis, and verified evidence |
 | /hiveworkflow | Full workflow mode that uses hive coordination before packet execution, aggregation, introspection, and verify |
@@ -130,6 +131,17 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
   Code CLI, workspace trust, and no blocker variables such as
   `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`, `DISABLE_TELEMETRY`,
   `ANTHROPIC_API_KEY`, or `CLAUDE_CODE_OAUTH_TOKEN`.
+- **Native Agent View**: `/agent-view` is the harness readiness and
+  troubleshooting skill for Claude Code Agent View. Start the live TUI manually
+  with `claude agents`; static checks never open Agent View, never dispatch
+  `claude --bg`, never read `~/.claude/jobs` or transcripts, and never prove a
+  paid-account runtime session. Agent View is separate from `/remote-control`,
+  `/agents`, subagents, agent teams, `/parallel`, and `/hive`: background
+  sessions report to the operator, while subagents report to a parent
+  conversation. Static harness evidence requires current Claude Code `2.1.139+`,
+  no `disableAgentView`, and no `CLAUDE_CODE_DISABLE_AGENT_VIEW`; this repo's
+  trusted-local `bypassPermissions` posture makes unattended background sessions
+  high-risk unless the operator explicitly accepts that authority.
 - **Harness Capability Map**: `docs/harness-capability-map.md` and
   `docs/harness-capability-map.json` are generated from repo truth and are the
   canonical self-lookup index for skills, route groups, rules, script gates,
@@ -149,8 +161,8 @@ We prioritize getting it right over getting it done fast. Parallel agents only h
 - **Planning Time Awareness**: Non-trivial plans estimate in agent-native wall-clock by default before the plan or `SPEC.md` is frozen. Every estimate must state whether it is `agent-native`, `human-equivalent`, or `blocked/unknown`; cite `scripts/parallel-capacity.sh --json` or another capacity source; separate agent wall-clock, agent-hours, human touch time, calendar blockers, critical path, and confidence; and treat human-equivalent estimates as secondary only.
 - **Visualization Approval**: `/workflow` remains autonomous. Use `/visualize` for standalone comprehension artifacts and `/visualizeworkflow` when the user wants to approve a visual or operational understanding before implementation.
 - **Efficacy-First Parallelism**: `MAX_PARALLEL_AGENTS` is a ceiling; use only the number of independent bounded packets that materially help
-- **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile.
-- **Hive Coordination**: `/hive` and `/hiveworkflow` coordinate specialized agents through a queen/supervisor, role map, blackboard, dissent/conflict log, and evidence-backed synthesis. Hive reuses `/parallel` for packet execution and aggregation, writes `.taste/hive/{run_id}/hive-run.json` for durable runs, and validates with `artifact-lint` plus `hive-aggregate`; consensus never replaces `/introspect` or `/verify`.
+- **Parallel Mode**: `/parallel` is the dense-work orchestrator. The main keeps taste, SPEC, architecture, security, aggregation, and verification; workers only execute bounded packets. It chooses `local`, `subagents`, `parallel-instances`, or opt-in experimental `agent-teams` after a hardware capacity profile. Agent View may be used manually by the operator to monitor independent `parallel-instances`, but it is not a `/parallel` substrate and does not satisfy packet DAG, ownership matrix, sidecar, aggregation, parent verification, or `/introspect` gates.
+- **Hive Coordination**: `/hive` and `/hiveworkflow` coordinate specialized agents through a queen/supervisor, role map, blackboard, dissent/conflict log, and evidence-backed synthesis. Hive reuses `/parallel` for packet execution and aggregation, writes `.taste/hive/{run_id}/hive-run.json` for durable runs, and validates with `artifact-lint` plus `hive-aggregate`; Agent View monitoring never replaces those artifacts, and consensus never replaces `/introspect` or `/verify`.
 - **Runtime Effectiveness Hooks**: `.claude/settings.json` wires `.claude/hooks/govern-effectiveness.sh` into Claude Code `PreToolUse`, `Stop`, and `SubagentStop` events. A Stop hook block is repair feedback: positive closeout needs commands or verification evidence; read-only closeout may cite files inspected or sources reviewed; "tests not run" or "unverified" must close as partial/blocked, not done. Do not claim hook enforcement unless `bash scripts/hook-smoke.sh` passes.
 - **Temporal Anchor Hooks**: `.claude/settings.json` wires `.claude/hooks/time-anchor.sh` into `SessionStart` and `UserPromptSubmit`. The anchor comes from the local system clock and is the current date/hour source for research. For SOTA 2026 and current-fact claims, cite live sources and access dates.
 - **Artifact Lint**: Minimal sidecars for agent-native estimates, verification results, and worker results live under `schemas/` and are checked with `bash scripts/artifact-lint.sh --fixtures`.

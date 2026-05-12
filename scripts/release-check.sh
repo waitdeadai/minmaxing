@@ -68,6 +68,7 @@ run bash scripts/opusminimax-doctor.sh --static >/dev/null
 run bash scripts/opusminimax-benchmark-smoke.sh --fixtures
 run bash scripts/opusworkflow-smoke.sh
 run bash scripts/remote-control-smoke.sh --fixtures
+run bash scripts/agent-view-smoke.sh --fixtures
 run bash scripts/specqa-smoke.sh --fixtures
 run bash scripts/artifact-lint.sh --fixtures
 run bash scripts/harness-eval.sh --json >/dev/null

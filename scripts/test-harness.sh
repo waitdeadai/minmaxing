@@ -606,6 +606,8 @@ for pattern in \
     "Do not assume feature parity" \
     "never reads \`.env\`" \
     "Claude product questions" \
+    "Agent View" \
+    "background sessions" \
     "/claudeproduct"; do
     if ! grep -Fq "$pattern" .claude/skills/claudeproduct/SKILL.md .claude/rules/claudeproduct.rules.md README.md CLAUDE.md AGENTS.md .claude/skills/workflow/SKILL.md .claude/skills/webresearch/SKILL.md .claude/skills/deepresearch/SKILL.md .claude/skills/metacognition/SKILL.md 2>/dev/null; then
         CLAUDEPRODUCT_OK=false
@@ -716,6 +718,92 @@ if [ "$REMOTE_CONTROL_OK" = true ] && \
     test_pass "/remote-control uses native Claude Code RC without static runtime overclaims"
 else
     test_fail "/remote-control contract, docs, fixtures, or static checks are incomplete"
+fi
+
+# Test 3g-agent-view: Native Claude Code Agent View Contract
+echo "[3g-agent-view] Native Claude Code Agent View Contract"
+AGENT_VIEW_OK=true
+for required_file in \
+    ".claude/skills/agent-view/SKILL.md" \
+    "scripts/agent-view-doctor.sh" \
+    "scripts/agent-view-smoke.sh" \
+    "evals/harness/tasks/m15-agent-view-smoke.yaml" \
+    "evals/harness/golden/m15-agent-view-smoke.json" \
+    ".taste/fixtures/agent-view/green/valid-static-blocked-by-cli.json"; do
+    if [ ! -e "$required_file" ]; then
+        AGENT_VIEW_OK=false
+    fi
+done
+for required_script in agent-view-doctor agent-view-smoke; do
+    if [ ! -x "scripts/$required_script.sh" ]; then
+        AGENT_VIEW_OK=false
+    fi
+done
+for pattern in \
+    "Agent View" \
+    "/agent-view" \
+    "claude agents" \
+    "claude --bg" \
+    "2.1.139" \
+    "readiness and troubleshooting" \
+    "/remote-control" \
+    "/agents" \
+    "subagents report back to the parent conversation" \
+    "sessions report only to the operator" \
+    ".claude/worktrees/" \
+    "quota" \
+    "stopped by sleep or shutdown" \
+    "does not satisfy packet DAG" \
+    "bypassPermissions"; do
+    if ! grep -Fq "$pattern" .claude/skills/agent-view/SKILL.md README.md CLAUDE.md AGENTS.md 2>/dev/null; then
+        AGENT_VIEW_OK=false
+    fi
+done
+for pattern in \
+    "agent-view-readiness" \
+    "runtime_agent_view_started" \
+    "runtime_background_session_dispatched" \
+    "blocked_by_cli_version" \
+    "ready_static_only" \
+    "manual_operator_monitor_only" \
+    "agent_view_replaces_parallel" \
+    "agent_view_equals_remote_control" \
+    "background_sessions_cloud_durable" \
+    "linear_parallel_speedup_claim" \
+    "CLAUDE_CODE_DISABLE_AGENT_VIEW" \
+    "disableAgentView" \
+    "source_ledger"; do
+    if ! grep -Fq "$pattern" scripts/agent-view-doctor.sh scripts/agent-view-smoke.sh .taste/fixtures/agent-view/green/valid-static-blocked-by-cli.json 2>/dev/null; then
+        AGENT_VIEW_OK=false
+    fi
+done
+if ! python3 - <<'PY' >/dev/null 2>&1; then
+import json
+import pathlib
+
+data = json.loads(pathlib.Path(".claude/settings.json").read_text(encoding="utf-8"))
+env = data.get("env") or {}
+assert "CLAUDE_CODE_DISABLE_AGENT_VIEW" not in env
+assert data.get("disableAgentView") is not True
+for rule in [
+    "Read(./.env)",
+    "Read(./.env.*)",
+    "Read(./.claude/settings.local.json)",
+    "Read(./.claude/*.local.json)",
+    "Read(./secrets/**)",
+]:
+    assert rule in data.get("permissions", {}).get("deny", [])
+PY
+    AGENT_VIEW_OK=false
+fi
+if [ "$AGENT_VIEW_OK" = true ] && \
+   grep -Fq "agent-view" scripts/harness-capability-map.sh 2>/dev/null && \
+   grep -Fq "agent-view-smoke" scripts/harness-eval.sh scripts/release-check.sh 2>/dev/null && \
+   bash scripts/agent-view-doctor.sh --static --json >/dev/null 2>&1 && \
+   bash scripts/agent-view-smoke.sh --fixtures >/dev/null 2>&1; then
+    test_pass "/agent-view uses native Claude Code Agent View readiness without static runtime overclaims"
+else
+    test_fail "/agent-view contract, docs, fixtures, or static checks are incomplete"
 fi
 
 # Test 3g-specqa: Automated SOTA Spec QA Contract
@@ -1662,25 +1750,25 @@ else
 fi
 
 # ========================================
-# Skills (38 Expected)
+# Skills (40 Expected)
 # ========================================
 
 echo ""
-echo "[Skills - 38 Expected]"
+echo "[Skills - 40 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 38 ]; then
+if [ "$SKILL_COUNT" -ge 40 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 38+ skills, found $SKILL_COUNT"
+    test_fail "Expected 40+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow digestaste deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control specqa deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow digestaste deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control agent-view specqa deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1750,7 +1838,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke agent-view-doctor agent-view-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

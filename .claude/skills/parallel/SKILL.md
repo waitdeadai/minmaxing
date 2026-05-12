@@ -41,6 +41,10 @@ inner_contract: parallel
 - Use subagents by default for bounded same-workspace sidecar packets.
 - Use parallel-instances only when disjoint ownership, speed need, and
   aggregation evidence justify the extra coordination cost.
+- Agent View can be an operator-managed monitor for independent
+  `parallel-instances`, but it is not a substrate value and does not satisfy
+  packet DAG, ownership matrix, worker sidecar, aggregation, `/introspect`,
+  `/verify`, or parent-verification requirements.
 - Treat agent teams as opt-in experimental. Agent teams are opt-in experimental
   and must not be required for default `/parallel` behavior.
 - Record all packet ownership, dependencies, sync barriers, and returned
@@ -165,6 +169,12 @@ Choose one substrate and justify it:
 | `subagents` | Default for bounded same-workspace research, audit, implementation, and review packets. | Packets need independent working trees or incompatible tool states. |
 | `parallel-instances` | Large disjoint work where separate sessions, shells, worktrees, or independent Claude/Codex instances materially reduce elapsed time. | Same files, permission storm, unowned state, or weak aggregation plan. |
 | `agent-teams` | Opt-in experimental peer coordination when `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and the task genuinely needs agents coordinating with each other. | Default use, production-critical path without fallback, or untested team behavior. |
+
+Claude Code Agent View (`claude agents`) may help the operator see
+operator-managed `parallel-instances` at a glance. It does not make a
+`parallel-instances` run governed; this route still needs explicit packet
+ownership, sidecars, sync barriers, aggregation, and parent verification before
+any worker claim is accepted.
 
 Selection rule:
 - Prefer `local` for small or coupled work.

@@ -65,10 +65,10 @@
   ],
   "counts": {
     "codex_skills": 1,
-    "eval_tasks": 25,
+    "eval_tasks": 26,
     "rules": 15,
-    "scripts": 60,
-    "skills": 39
+    "scripts": 62,
+    "skills": 40
   },
   "evals": [
     {
@@ -115,6 +115,15 @@
       "id": "m14-digestaste-research-to-bootstrap-text",
       "task_path": "evals/harness/tasks/m14-digestaste-research-to-bootstrap-text.yaml",
       "title": "/digestaste research-to-taste bootstrap text gate"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/agent-view-smoke.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m15-agent-view-smoke.json",
+      "id": "m15-agent-view-smoke",
+      "task_path": "evals/harness/tasks/m15-agent-view-smoke.yaml",
+      "title": "Native Claude Code Agent View static readiness smoke"
     },
     {
       "expected_result": "pass",
@@ -301,10 +310,10 @@
   "generated_by": "scripts/harness-capability-map.sh",
   "rules": [
     {
-      "line_count": 49,
+      "line_count": 50,
       "name": "claudeproduct",
       "path": ".claude/rules/claudeproduct.rules.md",
-      "sha256": "5142ec4c7ef80ad4c848aa85c3199a8f66a5561b4b4f4c60acb75e615e94d44d",
+      "sha256": "a9829fd4269ac150880009bcce7e0d842c10d270a7d1beac7a9173079c571d04",
       "title": "Claude Product Knowledge Rules"
     },
     {
@@ -408,6 +417,22 @@
   ],
   "schema_version": "minmaxing-harness-capabilities/v1",
   "scripts": [
+    {
+      "line_count": 395,
+      "name": "agent-view-doctor",
+      "path": "scripts/agent-view-doctor.sh",
+      "purpose": "Static readiness doctor for Claude Code Agent View.",
+      "required_gate": false,
+      "sha256": "8c86abad147069eecd2646330c1cad13378a93252cc25e8ed70541149db29c15"
+    },
+    {
+      "line_count": 370,
+      "name": "agent-view-smoke",
+      "path": "scripts/agent-view-smoke.sh",
+      "purpose": "native Claude Code Agent View static readiness gate",
+      "required_gate": true,
+      "sha256": "6743a16e3d13a9a41f64b209c0b467c63e12cd97aec412645d0a931f6f61b085"
+    },
     {
       "line_count": 488,
       "name": "agentfactory-smoke",
@@ -521,12 +546,12 @@
       "sha256": "1cf17ea423e2356079eac43da0c8db744b325302a8e88c935aa4fd0c0cb1bf2f"
     },
     {
-      "line_count": 726,
+      "line_count": 731,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "6b484071f7127e644f9cccd28d949b4ed86d878367eb03f619a6b16fa2e05d41"
+      "sha256": "0b70556831e9e33dd70f4ef796be905e070854d64d3dff59e3f1eb320f3dea3c"
     },
     {
       "line_count": 640,
@@ -545,12 +570,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 829,
+      "line_count": 838,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "f8f5b2234076ce2d64703125dbbb1f3e42812418b4f2498adf968bddaac5da0c"
+      "sha256": "386c91da2af4e5027cc66d34963c33f911a9fa07db6676345518740270ffa644"
     },
     {
       "line_count": 322,
@@ -729,12 +754,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 95,
+      "line_count": 96,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "ce6cc11c67c8b4a4aa315766466bc6dd9af27535f4b7875df56f28d4592e524e"
+      "sha256": "8bcd6cbe5577f9db99bd89e94ba0448b8e99e645f51bb0cac1e37eca012a7426"
     },
     {
       "line_count": 311,
@@ -841,12 +866,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 2119,
+      "line_count": 2207,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "c1d239adddb655e637d8926bd9ec5cab732d8c7dd9ba9775d03654738e5d0e54"
+      "sha256": "33d7badbb44ca95747bb80c1dbff5276ddaceca2fd6e979fe1400dc34375809a"
     },
     {
       "line_count": 127,
@@ -1320,6 +1345,27 @@
   },
   "skills": [
     {
+      "argument_hint": "[status/troubleshoot]",
+      "core_route": true,
+      "description": "Diagnose Claude Code Agent View readiness safely inside the minmaxing harness. This route is static readiness and troubleshooting only; open the live Agent View TUI manually with claude agents.",
+      "group": "operations",
+      "line_count": 148,
+      "model_invocation": false,
+      "name": "agent-view",
+      "path": ".claude/skills/agent-view/SKILL.md",
+      "related_eval_tasks": [
+        "evals/harness/tasks/m15-agent-view-smoke.yaml"
+      ],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/agent-view-doctor.sh",
+        "scripts/agent-view-smoke.sh"
+      ],
+      "sha256": "5b6df7d2472bd1653842b500238aedb1443bbbb86e69d40fd0b678f57e40dd8e",
+      "slash": "/agent-view",
+      "user_invocable": true
+    },
+    {
       "argument_hint": "[Hermes agent intent]",
       "core_route": true,
       "description": "Create governed Hermes agents as auditable enterprise operating units with manifest, capability stack, memory seed, deployment plan, verification contract, registry entry, and kill switch.",
@@ -1415,7 +1461,7 @@
       "core_route": true,
       "description": "Answer Claude, Claude Code, Anthropic API, skills, connectors, plugins, and Claude product questions using official current docs.",
       "group": "knowledge",
-      "line_count": 191,
+      "line_count": 194,
       "model_invocation": true,
       "name": "claudeproduct",
       "path": ".claude/skills/claudeproduct/SKILL.md",
@@ -1429,7 +1475,7 @@
         "scripts/claudeproduct-scorecard.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "9eeed7c989fd6d4e747d171b83877dfe064d8393d622956e90be48d42c51e916",
+      "sha256": "eced554b732e07e3c991e59e895c6d9e905bd1045515bb999e0f3438c2b672e5",
       "slash": "/claudeproduct",
       "user_invocable": true
     },
@@ -1586,7 +1632,7 @@
       "core_route": true,
       "description": "Coordinate a governed hive of specialized agents for broad research, planning, review, or implementation work when roles, blackboard state, dissent, synthesis, and verification materially improve the outcome.",
       "group": "parallelism",
-      "line_count": 248,
+      "line_count": 257,
       "model_invocation": false,
       "name": "hive",
       "path": ".claude/skills/hive/SKILL.md",
@@ -1604,7 +1650,7 @@
         "scripts/hive-aggregate.sh",
         "scripts/artifact-lint.sh"
       ],
-      "sha256": "a1ef7849a45a605af2c9f966e51f2b0972f41ec71c1c4dd8abab6d45c5e3f3f8",
+      "sha256": "eafd1e4668e810a26bcbf2c522dca47d2e75a56dcefc68e8cb9043172d5229cc",
       "slash": "/hive",
       "user_invocable": true
     },
@@ -1822,7 +1868,7 @@
       "core_route": true,
       "description": "Run dense minmaxing work as a hardware-aware, main-orchestrated parallel workflow with bounded packets, explicit ownership, sync barriers, aggregation, and independent verification.",
       "group": "parallelism",
-      "line_count": 473,
+      "line_count": 483,
       "model_invocation": false,
       "name": "parallel",
       "path": ".claude/skills/parallel/SKILL.md",
@@ -1840,7 +1886,7 @@
         "scripts/parallel-aggregate.sh",
         "scripts/artifact-lint.sh"
       ],
-      "sha256": "dcb9e75653db665924540e223e9f3af55924c28794d1732b8a0481410edd8a64",
+      "sha256": "eca7e27f2b3b417f933a4e5605f6e1928fdf6366770021d76e402268321ed030",
       "slash": "/parallel",
       "user_invocable": true
     },
@@ -2107,8 +2153,8 @@
   "summary": {
     "codex_file_count": 4,
     "codex_skill_count": 1,
-    "core_route_count": 18,
-    "eval_task_count": 25,
+    "core_route_count": 19,
+    "eval_task_count": 26,
     "groups": {
       "agent-systems": [
         "/agentfactory"
@@ -2141,6 +2187,7 @@
         "/memory"
       ],
       "operations": [
+        "/agent-view",
         "/overnight",
         "/remote-control"
       ],
@@ -2182,7 +2229,7 @@
     },
     "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 60,
-    "skill_count": 39
+    "script_count": 62,
+    "skill_count": 40
   }
 }
