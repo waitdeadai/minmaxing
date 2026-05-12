@@ -67,8 +67,8 @@
     "codex_skills": 1,
     "eval_tasks": 27,
     "rules": 15,
-    "scripts": 64,
-    "skills": 41
+    "scripts": 65,
+    "skills": 42
   },
   "evals": [
     {
@@ -571,12 +571,12 @@
       "sha256": "787cff95f1f912ba22c8aabbf22bce7d05ef41858ef3fddbd4dc028e5110c30b"
     },
     {
-      "line_count": 736,
+      "line_count": 740,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "d7585de2b3ab0b1a80408ce0eb8588ffbac8351ebc7ccc3e266eccddf10e98cb"
+      "sha256": "c0c6ff172540de0cc9d0280e365a344d84e16a5caaa89e37626301cfc7a639e4"
     },
     {
       "line_count": 640,
@@ -707,12 +707,20 @@
       "sha256": "cb5fe25369342ebe8d517507170a5b64b01fba48e69b85f827ce38335dccbcbd"
     },
     {
-      "line_count": 515,
+      "line_count": 539,
       "name": "opusminimax",
       "path": "scripts/opusminimax.sh",
       "purpose": "Prepare or explicitly launch the /opusminimax planner workflow.",
       "required_gate": false,
-      "sha256": "ff3faa351982495071d93787c9e56bb2995ade9a923bd58f43dd0dd4b194e407"
+      "sha256": "3f53e0539922cfa619677b2689fe4f6b01e42bcde96c4e3803694f7f263dc6ad"
+    },
+    {
+      "line_count": 58,
+      "name": "opusoloworkflow",
+      "path": "scripts/opusoloworkflow.sh",
+      "purpose": "optional all-Opus workflow wrapper",
+      "required_gate": true,
+      "sha256": "904f6d0d2f2a9855ed611c6c9051214a3f25e16c875ae10a7255463a8b87f6cf"
     },
     {
       "line_count": 30,
@@ -723,20 +731,20 @@
       "sha256": "199a1e495da27067db293bda488b10b8938968565b2d96646380d88c187728c4"
     },
     {
-      "line_count": 285,
+      "line_count": 340,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "d5a07e739a1139e67fef43d4e443e264f1f80022781febb96997ff357adc7adc"
+      "sha256": "99f1b5e474cbcd791ae142b3286931f964a172356eb379e331b22237b436ca3e"
     },
     {
-      "line_count": 178,
+      "line_count": 201,
       "name": "opusworkflow",
       "path": "scripts/opusworkflow.sh",
       "purpose": "Prepare or explicitly launch the definitive /opusworkflow route.",
       "required_gate": false,
-      "sha256": "de20ab15a3f7feea82d8d6f46073377118aaf17328c7b1034c9e99087084f8cf"
+      "sha256": "2e82cd500780542eb39528f08870614ef1331c70cfdd8e33cd3d884632375bf6"
     },
     {
       "line_count": 113,
@@ -779,12 +787,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 97,
+      "line_count": 100,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "7a6014056f03dc743f5727428fa44333d74d704ae7efbb11a5f62eebc023fd2b"
+      "sha256": "e0027ea4e75bcefdaa1a1b126abdec6cb8903318cca926c39bd065472bf4cc9c"
     },
     {
       "line_count": 311,
@@ -867,12 +875,12 @@
       "sha256": "3e80abf5a2f2a5dc3532dbb294cf6f554c4acfa39189baaee2e46fcc3ff3a5f4"
     },
     {
-      "line_count": 120,
+      "line_count": 121,
       "name": "start-session",
       "path": "scripts/start-session.sh",
       "purpose": "minmaxing Harness - Session Start",
       "required_gate": false,
-      "sha256": "3e1cf2a8015ac0727604fd06fd9c97ed6dc3f8e47f6d77278f308402a90a70d6"
+      "sha256": "fb7d61e87ac2c6a9a7623283dad4406372bf8dd378f654fad8a299c538f72f70"
     },
     {
       "line_count": 400,
@@ -891,12 +899,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 2293,
+      "line_count": 2334,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "6d7239d587e93f08e5c9be14210ef5391633aa75f60a26378a458e6523483612"
+      "sha256": "3784f280123c14c67563001f1ae05df582831bb8b82ce97c6443fe6b011f75a5"
     },
     {
       "line_count": 127,
@@ -920,7 +928,7 @@
       "path": "scripts/visualize-smoke.sh",
       "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
       "required_gate": false,
-      "sha256": "21e684f7cd74c17b391d8a40d060d091fbbae9f2ec41336a1404c28cfe6c2513"
+      "sha256": "cec1c00c8f575940fb74af6865340f4bafeeec08ab133958165deddf73e606e8"
     },
     {
       "line_count": 117,
@@ -1832,7 +1840,7 @@
       "core_route": true,
       "description": "Advanced engine behind /opusworkflow for provider split, packet, repair, and benchmark work. Normal build/fix/refactor work should use /opusworkflow, which asks Opus 4.7 to plan/review when proven available and MiniMax-M2.7-highspeed to execute.",
       "group": "execution",
-      "line_count": 297,
+      "line_count": 301,
       "model_invocation": false,
       "name": "opusminimax",
       "path": ".claude/skills/opusminimax/SKILL.md",
@@ -1846,8 +1854,26 @@
         "scripts/opusminimax-benchmark-smoke.sh",
         "scripts/opusminimax-doctor.sh"
       ],
-      "sha256": "1eadc7f37ee532d8ca57febe32ddcc4f360563da2900ce7615a83b9281dc4059",
+      "sha256": "a2f57a5fab19fa135f47ef36762976813c01af291257cd5daa52e6d10a6b65c9",
       "slash": "/opusminimax",
+      "user_invocable": true
+    },
+    {
+      "argument_hint": "[task] [--effort high|max]",
+      "core_route": true,
+      "description": "Run the optional all-Opus sibling of /opusworkflow. Use when the operator explicitly wants Opus 4.7 as planner, executor, reviewer, and final judge with default high effort and optional max effort.",
+      "group": "support",
+      "line_count": 106,
+      "model_invocation": false,
+      "name": "opusolo",
+      "path": ".claude/skills/opusolo/SKILL.md",
+      "related_eval_tasks": [],
+      "related_rules": [],
+      "related_scripts": [
+        "scripts/opusoloworkflow.sh"
+      ],
+      "sha256": "6c639edca60f510114b88c50bb01e1294ff6bd4e6001065eadc7cac24363f77f",
+      "slash": "/opusolo",
       "user_invocable": true
     },
     {
@@ -1873,7 +1899,7 @@
       "core_route": true,
       "description": "Use this as the definitive workflow command for mutating work: Opus 4.7 high/xhigh plans and reviews when proven available, MiniMax-M2.7-highspeed executes bounded packets, and plan-mode auto-approval starts execution only when gates pass. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.",
       "group": "execution",
-      "line_count": 287,
+      "line_count": 303,
       "model_invocation": false,
       "name": "opusworkflow",
       "path": ".claude/skills/opusworkflow/SKILL.md",
@@ -1886,10 +1912,11 @@
         "scripts/opusminimax-doctor.sh",
         "scripts/opusworkflow.sh",
         "scripts/opusworkflow-smoke.sh",
+        "scripts/opusoloworkflow.sh",
         "scripts/opussonnetworkflow.sh",
         "scripts/specqa-smoke.sh"
       ],
-      "sha256": "6e36bbe8d6ffa0e0bb6a9a09955411dfe5e2a3d2c291f38b0be92fe5d61a2b19",
+      "sha256": "de53176e4ffe1dbc1f932c7ff368d8883170edecfb8d00c1ccb78a0dd6c43356",
       "slash": "/opusworkflow",
       "user_invocable": true
     },
@@ -2151,7 +2178,7 @@
       "core_route": true,
       "description": "Run the full minmaxing workflow end to end for one request. Use when the user wants planning, implementation, verification, and closeout to happen automatically in one command.",
       "group": "execution",
-      "line_count": 836,
+      "line_count": 837,
       "model_invocation": false,
       "name": "workflow",
       "path": ".claude/skills/workflow/SKILL.md",
@@ -2174,7 +2201,7 @@
         "scripts/test-harness.sh",
         "scripts/harness-capability-map.sh"
       ],
-      "sha256": "d67b5d5209d2d35dc401353183c9081d889230f70833af8fdcc76e78e368f542",
+      "sha256": "75c0c18837b8832800c9923e1855f69aaa60edf3bb556c9ce1e58a8f7e97858a",
       "slash": "/workflow",
       "user_invocable": true
     }
@@ -2199,7 +2226,7 @@
   "summary": {
     "codex_file_count": 4,
     "codex_skill_count": 1,
-    "core_route_count": 20,
+    "core_route_count": 21,
     "eval_task_count": 27,
     "groups": {
       "agent-systems": [
@@ -2271,12 +2298,13 @@
       ],
       "support": [
         "/leveragepath",
+        "/opusolo",
         "/opussonnet"
       ]
     },
     "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 64,
-    "skill_count": 41
+    "script_count": 65,
+    "skill_count": 42
   }
 }

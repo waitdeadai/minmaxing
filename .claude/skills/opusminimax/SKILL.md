@@ -49,6 +49,10 @@ Worker summaries are claims until verified by diffs, logs, tests, or artifacts.
 - If `executor_provider=claude-sonnet` is explicit, treat it as the optional
   Claude-only `/opussonnet` route: no MiniMax base URL, executor model must be
   Sonnet, and the run artifact must not imply MiniMax executed anything.
+- If `/opusolo` or `model_profile=opus` is explicit, treat it as the optional
+  all-Opus route: no MiniMax base URL, planner and executor must both request
+  Opus, default effort is `high` for `/opusolo`, and `--effort max` is an
+  explicit highest-effort alias rather than the default.
 - If `model_profile=sonnet|opus|default|custom` is explicit, treat it as a
   governed Anthropic-only route: no MiniMax base URL, no MiniMax executor model,
   and no runtime model identity claim without `/status`, sentinel, or artifact

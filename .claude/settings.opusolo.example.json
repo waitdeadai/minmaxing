@@ -1,0 +1,18 @@
+{
+  "profile": "opusolo",
+  "model": "claude-opus-4-7",
+  "env": {
+    "ANTHROPIC_MODEL": "claude-opus-4-7",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-opus-4-7",
+    "CLAUDE_CODE_EFFORT_LEVEL": "high",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_FEEDBACK_COMMAND": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "DISABLE_AUTO_COMPACT": "0",
+    "CLAUDE_CODE_NO_FLICKER": "1"
+  },
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  }
+}

@@ -40,7 +40,7 @@ require_file "$RULES"
 require_file "$WORKFLOW"
 
 SKILL_COUNT="$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')"
-[ "$SKILL_COUNT" -ge 38 ] || fail "expected at least 38 skills, found $SKILL_COUNT"
+[ "$SKILL_COUNT" -ge 42 ] || fail "expected at least 42 skills, found $SKILL_COUNT"
 
 for pattern in \
   "taste.md" \
@@ -85,8 +85,8 @@ for file in README.md CLAUDE.md AGENTS.md scripts/start-session.sh; do
   require_grep "/visualizeworkflow" "$file"
 done
 
-require_grep "38 skills" README.md
-require_grep "Expected 38 skills" scripts/start-session.sh
+require_grep "42 skills" README.md
+require_grep "Expected 42 skills" scripts/start-session.sh
 
 if ! git check-ignore -q .taste/visualizations/probe/visualization.md; then
   fail ".taste/visualizations is not ignored by git"

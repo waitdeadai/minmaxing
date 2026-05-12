@@ -1,13 +1,13 @@
 # minmaxing Windows Setup
 # Bash/Git Bash remains the recommended installer. This PowerShell helper keeps
 # the same default: opusworkflow, with split ignored local profiles.
-# Optional suggested Claude-only mode: -Mode opussonnet.
+# Optional suggested Claude-only modes: -Mode opussonnet or -Mode opusolo.
 
 param(
     [Parameter(Position=0)]
     [string]$ApiKey = $env:MINIMAX_TOKEN_KEY,
 
-    [ValidateSet("minimax", "opusworkflow", "opusminimax", "opussonnet")]
+    [ValidateSet("minimax", "opusworkflow", "opusminimax", "opussonnet", "opusolo")]
     [string]$Mode = "opusworkflow",
 
     [string]$PlannerModel = "claude-opus-4-7",
@@ -19,6 +19,8 @@ $ErrorActionPreference = "Stop"
 if (-not $ExecutorModel) {
     if ($Mode -eq "opussonnet") {
         $ExecutorModel = "claude-sonnet-4-6"
+    } elseif ($Mode -eq "opusolo") {
+        $ExecutorModel = "claude-opus-4-7"
     } else {
         $ExecutorModel = "MiniMax-M2.7-highspeed"
     }
@@ -74,7 +76,7 @@ function Configure-ExecutorProfile($Path, $Key, $Model) {
     Write-Json $Path $data
 }
 
-function Configure-PlannerProfile($Path, $Model) {
+function Configure-PlannerProfile($Path, $Model, $Effort = "xhigh") {
     $default = '{"profile":"opusminimax-planner","env":{},"permissions":{"defaultMode":"acceptEdits"}}'
     $data = Read-JsonOrDefault $Path $default
     Ensure-ObjectProperty $data "env" ([pscustomobject]@{})
@@ -95,9 +97,9 @@ function Configure-PlannerProfile($Path, $Model) {
         $data.env | Add-Member -NotePropertyName "ANTHROPIC_DEFAULT_OPUS_MODEL" -NotePropertyValue $Model
     }
     if ($data.env.PSObject.Properties.Name -contains "CLAUDE_CODE_EFFORT_LEVEL") {
-        $data.env.CLAUDE_CODE_EFFORT_LEVEL = "xhigh"
+        $data.env.CLAUDE_CODE_EFFORT_LEVEL = $Effort
     } else {
-        $data.env | Add-Member -NotePropertyName "CLAUDE_CODE_EFFORT_LEVEL" -NotePropertyValue "xhigh"
+        $data.env | Add-Member -NotePropertyName "CLAUDE_CODE_EFFORT_LEVEL" -NotePropertyValue $Effort
     }
 
     Write-Json $Path $data
@@ -188,6 +190,8 @@ if ($Mode -eq "opusworkflow") {
     Write-Host "Advanced engine mode selected; normal route remains /opusworkflow." -ForegroundColor White
 } elseif ($Mode -eq "opussonnet") {
     Write-Host "Suggested route: /opusworkflow with Claude opusplan (Opus planning + Sonnet execution)" -ForegroundColor White
+} elseif ($Mode -eq "opusolo") {
+    Write-Host "Suggested route: /opusolo (Opus planning + Opus execution, high effort by default)" -ForegroundColor White
 }
 Write-Host ""
 
@@ -213,9 +217,33 @@ Write-Host ""
 Write-Step "[3/5] Preparing local provider profiles..."
 New-Item -ItemType Directory -Force -Path ".claude" | Out-Null
 
-$splitMode = ($Mode -eq "opusworkflow" -or $Mode -eq "opusminimax" -or $Mode -eq "opussonnet")
+$splitMode = ($Mode -eq "opusworkflow" -or $Mode -eq "opusminimax" -or $Mode -eq "opussonnet" -or $Mode -eq "opusolo")
 
-if ($Mode -eq "opussonnet") {
+if ($Mode -eq "opusolo") {
+    $opusoloPath = ".claude\settings.opusolo.local.json"
+    $plannerPath = ".claude\settings.opusminimax-planner.local.json"
+
+    if ((-not (Test-Path $opusoloPath)) -and (Test-Path ".claude\settings.opusolo.example.json")) {
+        Copy-Item ".claude\settings.opusolo.example.json" $opusoloPath
+    }
+    if ((-not (Test-Path $plannerPath)) -and (Test-Path ".claude\settings.opusminimax-planner.example.json")) {
+        Copy-Item ".claude\settings.opusminimax-planner.example.json" $plannerPath
+    }
+
+    Configure-PlannerProfile $opusoloPath $PlannerModel "high"
+    Configure-PlannerProfile $plannerPath $PlannerModel "high"
+
+    if (-not (Test-Path ".claude\settings.local.json")) {
+        Copy-Item $opusoloPath ".claude\settings.local.json"
+        Write-Host "  [PASS] Claude Code default local profile set to all-Opus" -ForegroundColor Green
+    } else {
+        Write-Host "  [INFO] Preserved existing .claude\settings.local.json" -ForegroundColor Gray
+        Write-Host "  [INFO] To launch explicitly: claude --settings .claude/settings.opusolo.local.json" -ForegroundColor Gray
+    }
+    Write-Host "  [PASS] Opus planner pinned to $PlannerModel" -ForegroundColor Green
+    Write-Host "  [PASS] Opus executor pinned to $ExecutorModel" -ForegroundColor Green
+    Write-Host "  [PASS] Default /opusolo effort is high; use /opusolo --effort max for highest effort" -ForegroundColor Green
+} elseif ($Mode -eq "opussonnet") {
     $opussonnetPath = ".claude\settings.opussonnet.local.json"
     $sonnetPath = ".claude\settings.sonnet-executor.local.json"
     $plannerPath = ".claude\settings.opusminimax-planner.local.json"
@@ -310,6 +338,8 @@ if ($Mode -eq "opusminimax") {
     Write-Host "  3. Legacy MiniMax-only override: /workflow 'build a REST API'" -ForegroundColor Gray
 } elseif ($Mode -eq "opussonnet") {
     Write-Host "  3. Then try: /opussonnet 'build a REST API'" -ForegroundColor Gray
+} elseif ($Mode -eq "opusolo") {
+    Write-Host "  3. Then try: /opusolo 'build a REST API'" -ForegroundColor Gray
 } else {
     Write-Host "  3. Then try: /opusworkflow 'build a REST API'" -ForegroundColor Gray
 }

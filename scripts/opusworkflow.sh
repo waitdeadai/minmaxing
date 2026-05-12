@@ -8,7 +8,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusworkflow.sh --task "..." [--inner-contract CONTRACT] [--run-id ID] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
+  bash scripts/opusworkflow.sh --task "..." [--inner-contract CONTRACT] [--run-id ID] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--effort high|xhigh|max] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
 
 /opusworkflow is the definitive effectiveness-first workflow entrypoint. It
 reuses scripts/opusminimax.sh in workflow mode, requesting Opus 4.7 for
@@ -42,10 +42,12 @@ ARGS=()
 EXECUTOR_PROVIDER="${OPUSWORKFLOW_EXECUTOR_PROVIDER:-minimax}"
 MODEL_PROFILE="${OPUSWORKFLOW_MODEL_PROFILE:-}"
 PLAN_MODE_POLICY="${OPUSWORKFLOW_PLAN_MODE_POLICY:-auto}"
+EFFORT="${OPUSWORKFLOW_EFFORT:-}"
 EXECUTOR_PROVIDER_SET=0
 EXECUTOR_MODEL_SET=0
 MODEL_PROFILE_SET=0
 PLAN_MODE_POLICY_SET=0
+EFFORT_SET=0
 while [ "$#" -gt 0 ]; do
   case "$1" in
     "--mode")
@@ -76,6 +78,12 @@ while [ "$#" -gt 0 ]; do
     "--plan-mode-policy")
       PLAN_MODE_POLICY="${2:-}"
       PLAN_MODE_POLICY_SET=1
+      ARGS+=("$1" "$2")
+      shift 2
+      ;;
+    "--effort")
+      EFFORT="${2:-}"
+      EFFORT_SET=1
       ARGS+=("$1" "$2")
       shift 2
       ;;
@@ -121,6 +129,18 @@ case "$PLAN_MODE_POLICY" in
     exit 2
     ;;
 esac
+
+if [ -n "$EFFORT" ]; then
+  case "$EFFORT" in
+    high|xhigh|max)
+      echo "[opusworkflow] effort: $EFFORT"
+      ;;
+    *)
+      echo "[opusworkflow] invalid effort: $EFFORT (expected high, xhigh, or max)" >&2
+      exit 2
+      ;;
+  esac
+fi
 
 case "$MODEL_PROFILE" in
   minimax)
@@ -174,5 +194,8 @@ if [ "$MODEL_PROFILE_SET" -eq 0 ]; then
 fi
 if [ "$PLAN_MODE_POLICY_SET" -eq 0 ]; then
   ARGS+=("--plan-mode-policy" "$PLAN_MODE_POLICY")
+fi
+if [ "$EFFORT_SET" -eq 0 ] && [ -n "$EFFORT" ]; then
+  ARGS+=("--effort" "$EFFORT")
 fi
 exec bash "$ROOT_DIR/scripts/opusminimax.sh" --mode workflow --outer-route opusworkflow "${ARGS[@]}"

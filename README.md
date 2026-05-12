@@ -164,7 +164,7 @@ failures, warnings, and conflict messages stay visible.
 
 Inline token commands can land in shell history. That is the intentional
 fast path for trusted solo work; environment-variable, hidden-input, key-file, and explicit
-`--mode minimax|opusworkflow|opusminimax|opussonnet` override forms still exist in
+`--mode minimax|opusworkflow|opusminimax|opussonnet|opusolo` override forms still exist in
 `bash setup.sh --help`, but they are not the default path.
 
 If an earlier install did not detect MiniMax, rerun the existing-project command
@@ -172,7 +172,7 @@ above from the project root. In `/opusworkflow` split mode, MiniMax is configure
 in the ignored executor profile `.claude/settings.minimax-executor.local.json`;
 it is not automatically added as a user-scope Claude MCP server.
 
-That's it. Memory system, governed runtime profiles, and 38 skills are
+That's it. Memory system, governed runtime profiles, and 42 skills are
 configured.
 
 ### Suggested Claude-Only Install
@@ -206,6 +206,33 @@ Use this as a suggested alternative, not the default budget strategy. Runtime
 Opus access still depends on your Claude account state; use `/status` or an
 explicit runtime check before claiming Opus 4.7 actually planned a run.
 
+### Suggested All-Opus Install
+
+If you explicitly want Opus 4.7 for planning, execution, Spec QA, adversarial
+review, and final judgment, use the optional `/opusolo` route:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusolo
+```
+
+Existing repo/updater form:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --mode opusolo
+```
+
+After install:
+
+```bash
+claude
+/opusolo "build or fix the thing"
+/opusolo "build or fix the thing" --effort max
+```
+
+`/opusolo` keeps the same `/opusworkflow` gates and closeout rules. Its default
+effort is `high`; `--effort max` is an explicit highest-effort alias. Runtime
+Opus identity still depends on current Claude account/session proof.
+
 You can also choose an explicit governed model profile per workflow without
 changing the default:
 
@@ -215,9 +242,10 @@ bash scripts/opusworkflow.sh --task "build or fix the thing" --model-profile opu
 bash scripts/opusworkflow.sh --task "build or fix the thing" --model-profile custom --planner-model claude-sonnet-4-6 --executor-model claude-sonnet-4-6
 ```
 
-`minimax` remains the default. `opussonnet`, `sonnet`, `opus`, `default`, and
-`custom` are explicit operator choices; static artifacts record the request, but
-runtime identity still depends on the current Claude Code account/session.
+`minimax` remains the default. `opussonnet`, `opusolo`, `sonnet`, `opus`,
+`default`, and `custom` are explicit operator choices; static artifacts record
+the request, but runtime identity still depends on the current Claude Code
+account/session.
 
 Claude subscription auth is separate account auth. Run `claude auth login` once
 if this machine is not already logged in; the setup command does not store or
@@ -591,6 +619,7 @@ For REVCLI/Revis-style products, `/agentfactory` treats Hermes as the role-scope
   benchmark, repair, provider, or lower-level packet control. It is not the
   day-to-day command.
 - **OpusSonnet option:** use `/opussonnet` when you want the same governed harness without a MiniMax token, via Claude Code `opusplan` with Opus 4.7 planning and Sonnet 4.6 execution.
+- **OpusSolo option:** use `/opusolo` when you explicitly want Opus 4.7 for planning, execution, Spec QA, adversarial review, and final judgment. It defaults to high effort and accepts `--effort max`.
 - If you want even more guardrails, switch your local Claude session to `plan` before high-risk work.
 
 ### OpenAI Codex Plugin
@@ -695,7 +724,7 @@ Think of minmaxing as an operating system:
 
 **Skills are system calls.** Each skill does one thing well. They are still useful directly, but `/opusworkflow` is the default daily entrypoint for mutating work and `/workflow` is responsible for finishing the underlying end-to-end lifecycle itself.
 
-**/opusworkflow is the definitive shell.** It is the default top-level route for normal build/plan work and mutating specialist work: Opus 4.7 high/xhigh is requested for judgment checkpoints when proven available, and MiniMax-M2.7-highspeed handles bounded execution packets. The default plan-mode policy auto-approves the transition to implementation only when research, code audit, `/introspect pre-plan`, Agent-Native Estimate, `SPEC.md`, and `/specqa` pass, recording `auto_approved_when_gates_pass` in the run artifact. Specialist routes are recorded as `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow`, and closeout must be verified, partial, or blocked-with-repair. `/opussonnet` is the optional Claude-only sibling for operators who want Opus 4.7 planning plus Sonnet 4.6 execution without MiniMax.
+**/opusworkflow is the definitive shell.** It is the default top-level route for normal build/plan work and mutating specialist work: Opus 4.7 high/xhigh is requested for judgment checkpoints when proven available, and MiniMax-M2.7-highspeed handles bounded execution packets. The default plan-mode policy auto-approves the transition to implementation only when research, code audit, `/introspect pre-plan`, Agent-Native Estimate, `SPEC.md`, and `/specqa` pass, recording `auto_approved_when_gates_pass` in the run artifact. Specialist routes are recorded as `inner_contract=workflow|agentfactory|hiveworkflow|parallel|defineicp|digestaste|deepretaste|demo|visualizeworkflow`, and closeout must be verified, partial, or blocked-with-repair. `/opussonnet` is the optional Claude-only sibling for operators who want Opus 4.7 planning plus Sonnet 4.6 execution without MiniMax; `/opusolo` is the explicit all-Opus sibling for operators who want Opus 4.7 to plan, execute, review, and judge.
 
 **/opusminimax is the engine, not the product command.** Use it directly for
 provider split debugging, packet control, repair mode, or benchmark mode. For
@@ -874,6 +903,7 @@ between `/opusworkflow` and `/opusminimax`:
 | `/opusworkflow` | **Definitive workflow command for mutating work** — Opus 4.7 high/xhigh planner/reviewer when proven available, plus MiniMax-M2.7-highspeed executor; auto-approves plan-to-execution only after gates pass; closes as verified, partial, or blocked-with-repair; supports explicit `--model-profile` overrides |
 | `/opusminimax` | **Advanced engine behind `/opusworkflow`** — use directly only for provider split, packet, repair, or benchmark debugging |
 | `/opussonnet` | **Optional Claude-only mode** — uses Claude Code `opusplan`, pins Opus 4.7 for planning/judgment and Sonnet 4.6 for execution, no MiniMax token required |
+| `/opusolo` | **Optional all-Opus mode** — pins Opus 4.7 for planning, execution, Spec QA, review, and final judgment; default effort high, optional `--effort max`, no MiniMax token required |
 | `/visualize` | **Taste-to-artifact comprehension check** — creates ignored visual, diagram, prompt, or narrative artifacts without implementation |
 | `/visualizeworkflow` | **Approval-first workflow** — drafts SPEC + visualization, stops at `WAITING_FOR_VISUAL_APPROVAL`, then continues only with `--continue` |
 | `/demo` | **Governed recorded demo pipeline** — produces product recordings with Playwright evidence, bilingual voiceover, captions, manifests, and safety gates |
@@ -929,6 +959,7 @@ The routing ladder is:
 -> /defineicp when the product kernel needs ICP research before taste changes
 -> /opusminimax only for advanced engine work: provider split, packet, repair, or benchmark debugging
 -> /opussonnet when the operator explicitly wants the optional Claude-only Opus 4.7 + Sonnet 4.6 route
+-> /opusolo when the operator explicitly wants the optional all-Opus 4.7 route with high effort by default
 -> /parallel when independent execution packets are enough
 -> /claudeproduct for Claude, Claude Code, Claude.ai, API, connector, plugin,
    skill, hook, MCP, subagent, Agent View, background session, availability,
@@ -953,6 +984,7 @@ Use this rule of thumb:
 | --- | --- | --- |
 | `/opusworkflow` | You want the definitive command for ordinary or specialist mutating work: Opus 4.7 high/xhigh planner/reviewer when proven available, plus MiniMax-M2.7-highspeed for bulk implementation. | One-command split setup, provider doctor, default executor concurrency 1, bounded packets, `outer_route` + `inner_contract` artifacts, `plan_mode.policy=auto`, `auto_approved_when_gates_pass`, `outcome_policy=verified-partial-or-blocked-with-repair`, parent verification, and no silent PAYG. |
 | `/opussonnet` | You want the whole governed harness without MiniMax for a repo, and you are okay spending Claude subscription or extra usage on execution. | `setup.sh --mode opussonnet`, Claude Code `opusplan`, pinned `claude-opus-4-7` + `claude-sonnet-4-6`, no MiniMax base URL, same hooks and workflow gates. |
+| `/opusolo` | You explicitly want Opus for the entire governed run and accept the cost/limit tradeoff. | `setup.sh --mode opusolo`, pinned `claude-opus-4-7` planner/executor/reviewer, default `--effort high`, optional `--effort max`, no MiniMax base URL, same hooks and workflow gates. |
 | `/opusworkflow --model-profile sonnet|opus|default|custom` | You intentionally want Claude Code model freedom for one governed run. | Same workflow artifacts and gates, no MiniMax leakage for Anthropic-only profiles, requested model IDs recorded, and runtime identity claims blocked until proven. |
 | local `/workflow` | Explicit user override, provider split unavailable, one tight reasoning loop, one shared file, unclear ownership, or coordination would slow the work down. | One supervisor does the governed lifecycle and records why the hybrid outer route was not used. |
 | `/digestaste` | You have one or more Deep Research `.md` reports and want bootstrap text for a goal, fresh repo kernel, or existing project retaste. | Report Intake, no-persist report bodies, prompt-injection quarantine, claim/source/conflict ledgers, DigesTaste Bootstrap Packet, `/tastebootstrap` for missing kernels, and `/defineicp` proposal/apply semantics for existing kernels. |
@@ -1289,13 +1321,15 @@ minmaxing/
 │   ├── settings.json           # Provider-neutral governance config
 │   ├── settings.opusminimax-planner.example.json
 │   ├── settings.minimax-executor.example.json
+│   ├── settings.opusolo.example.json
 │   ├── settings.opussonnet.example.json
 │   ├── settings.sonnet-executor.example.json
 │   ├── hooks/                  # Lifecycle hooks, including working-state rehydration
-│   ├── skills/                 # 38 skills (system calls)
+│   ├── skills/                 # 42 skills (system calls)
 │   │   ├── workflow/           # Central execution engine
 │   │   ├── opusworkflow/       # One normal Opus + MiniMax product route
 │   │   ├── opusminimax/        # Advanced provider/packet engine
+│   │   ├── opusolo/            # Optional all-Opus route
 │   │   ├── opussonnet/         # Optional Claude-only Opus + Sonnet route
 │   │   ├── visualize/          # Taste-to-artifact comprehension check
 │   │   ├── visualizeworkflow/  # Approval-first workflow route

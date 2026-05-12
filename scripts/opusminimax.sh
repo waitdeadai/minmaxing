@@ -16,6 +16,7 @@ EXECUTOR_PROVIDER="${OPUSMINIMAX_EXECUTOR_PROVIDER:-minimax}"
 EXECUTOR_MODEL="${OPUSMINIMAX_EXECUTOR_MODEL:-}"
 MODEL_PROFILE="${OPUSMINIMAX_MODEL_PROFILE:-}"
 PLAN_MODE_POLICY="${OPUSMINIMAX_PLAN_MODE_POLICY:-}"
+EFFORT="${OPUSMINIMAX_EFFORT:-xhigh}"
 PLANNER_MODEL_SET=0
 EXECUTOR_MODEL_SET=0
 EXECUTOR_PROVIDER_SET=0
@@ -24,7 +25,7 @@ PLAN_MODE_POLICY_SET=0
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--execute-planner] [--planner-settings PATH]
+  bash scripts/opusminimax.sh --task "..." [--mode workflow|benchmark|repair] [--outer-route ROUTE] [--inner-contract CONTRACT] [--model-profile minimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--effort high|xhigh|max] [--execute-planner] [--planner-settings PATH]
 
 Default behavior prepares no-secret run artifacts and prints the next command.
 --execute-planner is the explicit Claude runtime opt-in.
@@ -92,6 +93,10 @@ while [ "$#" -gt 0 ]; do
       PLAN_MODE_POLICY_SET=1
       shift 2
       ;;
+    "--effort")
+      EFFORT="${2:-}"
+      shift 2
+      ;;
     "--execute-planner")
       EXECUTE_PLANNER=1
       shift
@@ -132,6 +137,15 @@ case "$PLAN_MODE_POLICY" in
   auto|manual|off) ;;
   *) echo "[opusminimax] invalid plan mode policy: $PLAN_MODE_POLICY" >&2; exit 2 ;;
 esac
+
+case "$EFFORT" in
+  high|xhigh|max) ;;
+  *) echo "[opusminimax] invalid effort: $EFFORT (expected high, xhigh, or max)" >&2; exit 2 ;;
+esac
+CLAUDE_EFFORT="$EFFORT"
+if [ "$CLAUDE_EFFORT" = "max" ]; then
+  CLAUDE_EFFORT="xhigh"
+fi
 
 if [ -z "$MODEL_PROFILE" ]; then
   case "$EXECUTOR_PROVIDER" in
@@ -219,12 +233,12 @@ mkdir -p "$PACKET_DIR"
 PACKET="$PACKET_DIR/P1.json"
 RUN_ARTIFACT="$RUN_DIR/opusminimax-run.json"
 
-python3 - "$TASK" "$MODE" "$OUTER_ROUTE" "$INNER_CONTRACT" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" "$EXECUTOR_PROVIDER" "$MODEL_PROFILE" "$PLAN_MODE_POLICY" <<'PY'
+python3 - "$TASK" "$MODE" "$OUTER_ROUTE" "$INNER_CONTRACT" "$RUN_ID" "$PACKET" "$RUN_ARTIFACT" "$PLANNER_MODEL" "$EXECUTOR_MODEL" "$EXECUTOR_PROVIDER" "$MODEL_PROFILE" "$PLAN_MODE_POLICY" "$EFFORT" "$CLAUDE_EFFORT" <<'PY'
 import json
 import pathlib
 import sys
 
-task, mode, outer_route, inner_contract, run_id, packet_path, run_artifact, planner_model, executor_model, executor_provider, model_profile, plan_mode_policy = sys.argv[1:13]
+task, mode, outer_route, inner_contract, run_id, packet_path, run_artifact, planner_model, executor_model, executor_provider, model_profile, plan_mode_policy, effort, claude_effort = sys.argv[1:15]
 packet_path = pathlib.Path(packet_path)
 run_artifact = pathlib.Path(run_artifact)
 if executor_provider == "claude-sonnet":
@@ -311,6 +325,16 @@ run = {
             "identity_status": "configured",
         },
         "fallback_policy": "fail-closed-unless-explicit",
+        "effort": {
+            "requested": effort,
+            "claude_cli_value": claude_effort,
+            "max_alias_maps_to": "xhigh" if effort == "max" else "",
+        },
+    },
+    "runtime_effort": {
+        "requested": effort,
+        "claude_cli_value": claude_effort,
+        "runtime_started": False,
     },
     "spec_qa": {
         "required": outer_route == "opusworkflow",
@@ -434,7 +458,7 @@ echo "[opusminimax] run artifact: $RUN_ARTIFACT"
 
 if [ "$EXECUTE_PLANNER" -eq 0 ]; then
   echo "[opusminimax] runtime not executed. To launch planner explicitly:"
-  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --outer-route $OUTER_ROUTE --inner-contract $INNER_CONTRACT --model-profile $MODEL_PROFILE --executor-provider $EXECUTOR_PROVIDER --planner-model $PLANNER_MODEL --executor-model $EXECUTOR_MODEL --plan-mode-policy $PLAN_MODE_POLICY --execute-planner"
+  echo "  bash scripts/opusminimax.sh --task \"$TASK\" --mode $MODE --outer-route $OUTER_ROUTE --inner-contract $INNER_CONTRACT --model-profile $MODEL_PROFILE --executor-provider $EXECUTOR_PROVIDER --planner-model $PLANNER_MODEL --executor-model $EXECUTOR_MODEL --plan-mode-policy $PLAN_MODE_POLICY --effort $EFFORT --execute-planner"
   exit 0
 fi
 
@@ -507,9 +531,9 @@ if [ ! -f "$PLANNER_SETTINGS" ]; then
   exit 1
 fi
 
-PROMPT="/opusminimax outer_route=$OUTER_ROUTE inner_contract=$INNER_CONTRACT mode=$MODE task=$TASK run_dir=$RUN_DIR model_profile=$MODEL_PROFILE planner_model=$PLANNER_MODEL executor_provider=$EXECUTOR_PROVIDER executor_model=$EXECUTOR_MODEL plan_mode_policy=$PLAN_MODE_POLICY"
+PROMPT="/opusminimax outer_route=$OUTER_ROUTE inner_contract=$INNER_CONTRACT mode=$MODE task=$TASK run_dir=$RUN_DIR model_profile=$MODEL_PROFILE planner_model=$PLANNER_MODEL executor_provider=$EXECUTOR_PROVIDER executor_model=$EXECUTOR_MODEL plan_mode_policy=$PLAN_MODE_POLICY effort=$EFFORT"
 CLAUDE_ARGS=()
 if [ "$PLANNER_MODEL" != "default" ]; then
   CLAUDE_ARGS+=(--model "$PLANNER_MODEL")
 fi
-claude "${CLAUDE_ARGS[@]}" --effort xhigh --settings "$PLANNER_SETTINGS" -p "$PROMPT"
+claude "${CLAUDE_ARGS[@]}" --effort "$CLAUDE_EFFORT" --settings "$PLANNER_SETTINGS" -p "$PROMPT"

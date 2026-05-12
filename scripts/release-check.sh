@@ -51,6 +51,9 @@ run python3 -m json.tool .claude/settings.solo-fast.example.json >/dev/null
 run python3 -m json.tool .claude/settings.team-safe.example.json >/dev/null
 run python3 -m json.tool .claude/settings.opusminimax-planner.example.json >/dev/null
 run python3 -m json.tool .claude/settings.minimax-executor.example.json >/dev/null
+run python3 -m json.tool .claude/settings.opusolo.example.json >/dev/null
+run python3 -m json.tool .claude/settings.opussonnet.example.json >/dev/null
+run python3 -m json.tool .claude/settings.sonnet-executor.example.json >/dev/null
 run bash scripts/estimate-smoke.sh
 run bash scripts/parallel-smoke.sh
 run bash scripts/agentfactory-smoke.sh

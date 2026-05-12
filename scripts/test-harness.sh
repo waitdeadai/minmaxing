@@ -48,11 +48,13 @@ fi
 echo "[2] OpusMiniMax Provider Split"
 if [ -f ".claude/settings.opusminimax-planner.example.json" ] && \
    [ -f ".claude/settings.minimax-executor.example.json" ] && \
+   [ -f ".claude/settings.opusolo.example.json" ] && \
    [ -f ".claude/settings.opussonnet.example.json" ] && \
    [ -f ".claude/settings.sonnet-executor.example.json" ] && \
    ! grep -Fq "MiniMax-M2.7-highspeed" .claude/settings.json 2>/dev/null && \
    grep -Fq "claude-opus-4-7" .claude/settings.opusminimax-planner.example.json 2>/dev/null && \
    grep -Fq "MiniMax-M2.7-highspeed" .claude/settings.minimax-executor.example.json 2>/dev/null && \
+   grep -Fq "claude-opus-4-7" .claude/settings.opusolo.example.json 2>/dev/null && \
    grep -Fq "claude-sonnet-4-6" .claude/settings.opussonnet.example.json 2>/dev/null && \
    grep -Fq "claude-sonnet-4-6" .claude/settings.sonnet-executor.example.json 2>/dev/null; then
     test_pass "Opus planner, MiniMax executor, and optional Sonnet executor profiles are split"
@@ -78,6 +80,7 @@ if [ -f ".claude/settings.team-safe.example.json" ] && \
    grep -Fq '"defaultMode": "acceptEdits"' .claude/settings.team-safe.example.json 2>/dev/null && \
    python3 -m json.tool .claude/settings.opusminimax-planner.example.json >/dev/null 2>&1 && \
    python3 -m json.tool .claude/settings.minimax-executor.example.json >/dev/null 2>&1 && \
+   python3 -m json.tool .claude/settings.opusolo.example.json >/dev/null 2>&1 && \
    python3 -m json.tool .claude/settings.opussonnet.example.json >/dev/null 2>&1 && \
    python3 -m json.tool .claude/settings.sonnet-executor.example.json >/dev/null 2>&1; then
     test_pass "team-safe and OpusMiniMax/OpusSonnet settings examples are valid"
@@ -204,7 +207,7 @@ for pattern in \
     fi
 done
 for pattern in \
-    "--mode minimax|opusworkflow|opusminimax|opussonnet" \
+    "--mode minimax|opusworkflow|opusminimax|opussonnet|opusolo" \
     "MINIMAX_TOKEN_KEY" \
     "--import-existing" \
     "--minimax-key" \
@@ -263,7 +266,7 @@ for pattern in \
     fi
 done
 for pattern in \
-    "--mode minimax|opusworkflow|opusminimax|opussonnet" \
+    "--mode minimax|opusworkflow|opusminimax|opussonnet|opusolo" \
     'MODE="opusworkflow"' \
     "--import-existing" \
     "MINIMAX_TOKEN_KEY" \
@@ -325,6 +328,44 @@ if [ "$OPUSSONNET_OK" = true ] && \
 else
     rm -rf .taste/opusminimax/opussonnet-smoke
     test_fail "/opussonnet skill, setup mode, profile, or static artifact path is incomplete"
+fi
+
+# Test 3d-opusolo: Optional All-Opus Workflow Mode
+echo "[3d-opusolo] Optional All-Opus Workflow"
+OPUSOLO_OK=true
+for required_file in \
+    ".claude/skills/opusolo/SKILL.md" \
+    ".claude/settings.opusolo.example.json" \
+    "scripts/opusoloworkflow.sh"; do
+    if [ ! -e "$required_file" ]; then
+        OPUSOLO_OK=false
+    fi
+done
+if [ ! -x "scripts/opusoloworkflow.sh" ]; then
+    OPUSOLO_OK=false
+fi
+for pattern in \
+    "--mode opusolo" \
+    "claude-opus-4-7" \
+    "model_profile=opus" \
+    "--effort high|max" \
+    "Default effort is high" \
+    "max" \
+    "runtime_effort"; do
+    if ! grep -Fq -- "$pattern" setup.sh scripts/opusminimax.sh scripts/opusworkflow.sh scripts/opusoloworkflow.sh scripts/artifact-lint.sh .claude/skills/opusolo/SKILL.md 2>/dev/null; then
+        OPUSOLO_OK=false
+    fi
+done
+if [ "$OPUSOLO_OK" = true ] && \
+   bash scripts/opusoloworkflow.sh --task "optional all opus smoke" --run-id "opusolo-test-smoke" >/dev/null 2>&1 && \
+   bash scripts/opusoloworkflow.sh --task "optional all opus max smoke" --effort max --run-id "opusolo-test-max-smoke" >/dev/null 2>&1 && \
+   bash scripts/artifact-lint.sh .taste/opusminimax/opusolo-test-smoke/opusminimax-run.json >/dev/null 2>&1 && \
+   bash scripts/artifact-lint.sh .taste/opusminimax/opusolo-test-max-smoke/opusminimax-run.json >/dev/null 2>&1; then
+    rm -rf .taste/opusminimax/opusolo-test-smoke .taste/opusminimax/opusolo-test-max-smoke
+    test_pass "/opusolo exposes optional all-Opus workflow with high/default and max effort"
+else
+    rm -rf .taste/opusminimax/opusolo-test-smoke .taste/opusminimax/opusolo-test-max-smoke
+    test_fail "/opusolo skill, setup mode, profile, effort, or static artifact path is incomplete"
 fi
 
 # Test 3d-defineicp: ICP-To-Taste Evolution Mode
@@ -507,7 +548,7 @@ if grep -Fq "pre-plan" .claude/skills/introspect/SKILL.md 2>/dev/null && \
    grep -Fq "SPEC.md is frozen" .claude/skills/autoplan/SKILL.md 2>/dev/null && \
    grep -Fq 'not a substitute for `/introspect`' .claude/skills/review/SKILL.md 2>/dev/null && \
    grep -Fq "/introspect" README.md 2>/dev/null && \
-   grep -Fq "38 skills" README.md 2>/dev/null && \
+   grep -Fq "42 skills" README.md 2>/dev/null && \
    grep -Fq "Introspection Gate" CLAUDE.md 2>/dev/null && \
    grep -Fq "hard gate" AGENTS.md 2>/dev/null && \
    [ ! -f ".claude/skills/instrospect/SKILL.md" ] && \
@@ -1010,7 +1051,7 @@ if grep -Fq "Delegate execution. Keep judgment. Require evidence." README.md 2>/
    grep -Fq "Independent verification pass" .claude/skills/verify/SKILL.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" README.md 2>/dev/null && \
    grep -Fq "bash scripts/memory.sh health" CLAUDE.md 2>/dev/null && \
-   grep -Fq "Expected 38 skills" scripts/start-session.sh 2>/dev/null && \
+   grep -Fq "Expected 42 skills" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "Expected 6+ rules" scripts/start-session.sh 2>/dev/null && \
    grep -Fq "settings.team-safe.example.json" README.md 2>/dev/null && \
    ! grep -Fq "Expected 20 skills" scripts/start-session.sh 2>/dev/null && \
@@ -1840,21 +1881,21 @@ fi
 # ========================================
 
 echo ""
-echo "[Skills - 41 Expected]"
+echo "[Skills - 42 Expected]"
 echo ""
 
 # Test 4: Skills Count
 echo "[4] Skills Directory"
 SKILL_COUNT=$(find .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-if [ "$SKILL_COUNT" -ge 41 ]; then
+if [ "$SKILL_COUNT" -ge 42 ]; then
     test_pass "$SKILL_COUNT skills found"
 else
-    test_fail "Expected 41+ skills, found $SKILL_COUNT"
+    test_fail "Expected 42+ skills, found $SKILL_COUNT"
 fi
 
 # Test 5: Critical Skills Content
 echo "[5] Critical Skills Content"
-for skill in tastebootstrap workflow opussonnet visualize visualizeworkflow demo digestflow digestaste deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control agent-view goal-mode specqa deepresearch webresearch introspect verify review qa ship investigate; do
+for skill in tastebootstrap workflow opussonnet opusolo visualize visualizeworkflow demo digestflow digestaste deepretaste defineicp icpweek align audit autoplan agentfactory parallel metacognition claudeproduct hive hiveworkflow remote-control agent-view goal-mode specqa deepresearch webresearch introspect verify review qa ship investigate; do
     if [ -f ".claude/skills/$skill/SKILL.md" ]; then
         LINES=$(wc -l < ".claude/skills/$skill/SKILL.md" | tr -d ' ')
         if [ "$LINES" -gt 20 ]; then
@@ -1924,7 +1965,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opussonnetworkflow remote-control-doctor remote-control-smoke agent-view-doctor agent-view-smoke goal-mode-doctor goal-mode-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke opusoloworkflow opussonnetworkflow remote-control-doctor remote-control-smoke agent-view-doctor agent-view-smoke goal-mode-doctor goal-mode-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

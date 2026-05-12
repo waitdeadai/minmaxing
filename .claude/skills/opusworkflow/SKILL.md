@@ -43,6 +43,9 @@ Optional Claude-only sibling:
 ```text
 /opussonnet keeps the same workflow governance but requests Claude Code opusplan:
 Opus 4.7 planning/judgment and Sonnet 4.6 execution, with no MiniMax token.
+/opusolo keeps the same workflow governance but requests Opus 4.7 for
+planning, execution, Spec QA, review, and judgment. Default effort is high;
+use --effort max only when explicitly desired.
 ```
 
 Model-profile selector:
@@ -84,6 +87,10 @@ SPEC.md, and /specqa all allow execution.
 - Keep MiniMax as the standard executor provider. Use `/opussonnet` or
   `--executor-provider claude-sonnet` only when the operator explicitly wants
   the optional Claude-only route.
+- Use `/opusolo` only when the operator explicitly wants the all-Opus premium
+  route. It pins Opus for planner, executor, Spec QA, adversary, and final
+  judge, defaults effort to `high`, and accepts `--effort max` as the explicit
+  highest-effort alias.
 - Allow explicit model freedom through `--model-profile`; treat it as a
   governed route request, not runtime identity proof.
 - Record the specialist being executed as
@@ -161,6 +168,15 @@ Optional `opussonnet` target:
 ```text
 planner/judgment: claude-opus-4-7 through opusplan
 execution: claude-sonnet-4-6 through opusplan/Sonnet profile
+MiniMax token: not required
+```
+
+Optional `opusolo` target:
+
+```text
+planning/execution/review/judgment: claude-opus-4-7
+default effort: high
+max effort: explicit --effort max, mapped to the highest Claude CLI effort
 MiniMax token: not required
 ```
 

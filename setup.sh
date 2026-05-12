@@ -1,8 +1,9 @@
 #!/bin/bash
 # minmaxing - One-Command Setup
 # Default mode is opusworkflow: Opus 4.7 judgment + MiniMax execution.
-# Suggested Claude-only mode:
+# Suggested Claude-only modes:
 # curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opussonnet
+# curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusolo
 # Clean/new folder:
 # curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'
 # Existing project / updater:
@@ -75,10 +76,13 @@ Existing project / updater:
 Suggested Claude-only Opus + Sonnet:
   curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opussonnet
 
+Suggested all-Opus:
+  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusolo
+
 After setup finishes, run: claude
 
 Options:
-  --mode minimax|opusworkflow|opusminimax|opussonnet  (default: opusworkflow)
+  --mode minimax|opusworkflow|opusminimax|opussonnet|opusolo  (default: opusworkflow)
   --import-existing
   --minimax-key KEY
   --minimax-key-file PATH
@@ -98,7 +102,7 @@ EOF
 fi
 
 case "$MODE" in
-    "minimax"|"opusminimax"|"opusworkflow"|"opussonnet") ;;
+    "minimax"|"opusminimax"|"opusworkflow"|"opussonnet"|"opusolo") ;;
     *)
         echo "Unsupported --mode: $MODE" >&2
         exit 2
@@ -111,11 +115,17 @@ case "$MODE" in
         SPLIT_EXECUTION_MODE=1
         EXECUTOR_PROVIDER="claude-sonnet"
         ;;
+    "opusolo")
+        SPLIT_EXECUTION_MODE=1
+        EXECUTOR_PROVIDER="anthropic"
+        ;;
 esac
 
 if [ -z "$EXECUTOR_MODEL" ]; then
     if [ "$EXECUTOR_PROVIDER" = "claude-sonnet" ]; then
         EXECUTOR_MODEL="claude-sonnet-4-6"
+    elif [ "$EXECUTOR_PROVIDER" = "anthropic" ]; then
+        EXECUTOR_MODEL="claude-opus-4-7"
     else
         EXECUTOR_MODEL="MiniMax-M2.7-highspeed"
     fi
@@ -211,6 +221,7 @@ allowed_roots = [
     ".claude/settings.json",
     ".claude/settings.minimax-executor.example.json",
     ".claude/settings.opusminimax-planner.example.json",
+    ".claude/settings.opusolo.example.json",
     ".claude/settings.opussonnet.example.json",
     ".claude/settings.solo-fast.example.json",
     ".claude/settings.sonnet-executor.example.json",
@@ -376,6 +387,8 @@ elif [ "$MODE" = "opusminimax" ]; then
     echo "Advanced engine mode selected; normal route remains /opusworkflow."
 elif [ "$MODE" = "opussonnet" ]; then
     echo "Suggested route: /opusworkflow with Claude opusplan (Opus planning + Sonnet execution)"
+elif [ "$MODE" = "opusolo" ]; then
+    echo "Suggested route: /opusolo (Opus planning + Opus execution, high effort by default)"
 fi
 echo ""
 
@@ -476,7 +489,117 @@ echo ""
 echo "[4/7] Configuring executor profile..."
 echo ""
 
-if [ "$EXECUTOR_PROVIDER" = "claude-sonnet" ]; then
+if [ "$EXECUTOR_PROVIDER" = "anthropic" ]; then
+    mkdir -p .claude
+
+    if [ ! -f ".claude/settings.opusolo.local.json" ] && [ -f ".claude/settings.opusolo.example.json" ]; then
+        cp .claude/settings.opusolo.example.json .claude/settings.opusolo.local.json
+    fi
+    if [ ! -f ".claude/settings.opusminimax-planner.local.json" ] && [ -f ".claude/settings.opusminimax-planner.example.json" ]; then
+        cp .claude/settings.opusminimax-planner.example.json .claude/settings.opusminimax-planner.local.json 2>/dev/null || true
+    fi
+
+    python3 - ".claude/settings.opusolo.local.json" ".claude/settings.opusminimax-planner.local.json" "$PLANNER_MODEL" "$EXECUTOR_MODEL" "$PROFILE" <<'PY'
+import json
+import pathlib
+import sys
+
+opusolo_path, planner_path = map(pathlib.Path, sys.argv[1:3])
+planner_model, executor_model, profile = sys.argv[3:6]
+default_mode = "bypassPermissions" if profile == "solo-fast" else "acceptEdits"
+
+
+def read_json(path: pathlib.Path, fallback: dict) -> dict:
+    if path.is_file():
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                return data
+        except Exception:
+            pass
+    return json.loads(json.dumps(fallback))
+
+
+def scrub_minimax(env: dict) -> None:
+    for key in [
+        "ANTHROPIC_BASE_URL",
+        "ANTHROPIC_AUTH_TOKEN",
+        "MINIMAX_API_KEY",
+        "MINIMAX_API_HOST",
+    ]:
+        env.pop(key, None)
+
+
+def ensure_perms(data: dict) -> None:
+    perms = data.setdefault("permissions", {})
+    if isinstance(perms, dict):
+        perms["defaultMode"] = default_mode
+
+
+def ensure_env(data: dict) -> dict:
+    env = data.setdefault("env", {})
+    if not isinstance(env, dict):
+        env = {}
+        data["env"] = env
+    return env
+
+
+opusolo = read_json(opusolo_path, {"profile": "opusolo", "env": {}, "permissions": {}})
+opusolo["profile"] = "opusolo"
+opusolo["model"] = planner_model
+env = ensure_env(opusolo)
+scrub_minimax(env)
+env.update(
+    {
+        "ANTHROPIC_MODEL": planner_model,
+        "ANTHROPIC_DEFAULT_OPUS_MODEL": planner_model,
+        "CLAUDE_CODE_SUBAGENT_MODEL": executor_model,
+        "CLAUDE_CODE_EFFORT_LEVEL": "high",
+        "DISABLE_AUTOUPDATER": "1",
+        "DISABLE_FEEDBACK_COMMAND": "1",
+        "DISABLE_ERROR_REPORTING": "1",
+        "DISABLE_AUTO_COMPACT": "0",
+        "CLAUDE_CODE_NO_FLICKER": "1",
+    }
+)
+ensure_perms(opusolo)
+opusolo_path.write_text(json.dumps(opusolo, indent=2) + "\n", encoding="utf-8")
+
+planner = read_json(planner_path, {"profile": "opusminimax-planner", "env": {}, "permissions": {}})
+planner["profile"] = "opusminimax-planner"
+env = ensure_env(planner)
+scrub_minimax(env)
+for key in ["ANTHROPIC_MODEL", "ANTHROPIC_DEFAULT_SONNET_MODEL", "ANTHROPIC_DEFAULT_HAIKU_MODEL"]:
+    env.pop(key, None)
+env.update(
+    {
+        "ANTHROPIC_DEFAULT_OPUS_MODEL": planner_model,
+        "CLAUDE_CODE_SUBAGENT_MODEL": executor_model,
+        "CLAUDE_CODE_EFFORT_LEVEL": "high",
+        "DISABLE_AUTOUPDATER": "1",
+        "DISABLE_FEEDBACK_COMMAND": "1",
+        "DISABLE_ERROR_REPORTING": "1",
+        "DISABLE_AUTO_COMPACT": "0",
+        "CLAUDE_CODE_NO_FLICKER": "1",
+    }
+)
+ensure_perms(planner)
+planner_path.write_text(json.dumps(planner, indent=2) + "\n", encoding="utf-8")
+PY
+
+    if [ ! -f ".claude/settings.local.json" ]; then
+        cp .claude/settings.opusolo.local.json .claude/settings.local.json
+        echo "  [PASS] Claude Code default local profile set to all-Opus"
+    else
+        echo "  [INFO] Preserved existing .claude/settings.local.json"
+        echo "  [INFO] To launch this profile explicitly: claude --settings .claude/settings.opusolo.local.json"
+    fi
+
+    echo "  [PASS] Opus planner pinned to $PLANNER_MODEL"
+    echo "  [PASS] Opus executor pinned to $EXECUTOR_MODEL"
+    echo "  [PASS] Default /opusolo effort is high; use /opusolo --effort max for highest effort"
+    echo "  [PASS] No MiniMax token or base URL is required for --mode opusolo"
+elif [ "$EXECUTOR_PROVIDER" = "claude-sonnet" ]; then
     mkdir -p .claude
 
     if [ ! -f ".claude/settings.opussonnet.local.json" ] && [ -f ".claude/settings.opussonnet.example.json" ]; then
@@ -950,6 +1073,9 @@ elif [ "$MODE" = "opusminimax" ]; then
 elif [ "$MODE" = "opussonnet" ]; then
     echo "  3. Then try: /opusworkflow 'build a REST API'"
     echo "     This uses the optional Claude-only opusplan profile: Opus planning + Sonnet execution."
+elif [ "$MODE" = "opusolo" ]; then
+    echo "  3. Then try: /opusolo 'build a REST API'"
+    echo "     This uses Opus for planning, execution, review, and judgment at high effort by default."
 else
     echo "  3. Legacy MiniMax-only override: /workflow 'build a REST API'"
 fi
