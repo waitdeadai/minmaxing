@@ -913,7 +913,7 @@ data = json.loads(path.read_text())
 env = data.setdefault("env", {})
 env.pop("ANTHROPIC_BASE_URL", None)
 env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = sys.argv[2]
-env["CLAUDE_CODE_EFFORT_LEVEL"] = "xhigh"
+env["CLAUDE_CODE_EFFORT_LEVEL"] = "high"
 path.write_text(json.dumps(data, indent=2) + "\n")
 PY
         echo "  [PASS] Planner profile prepared in .claude/settings.opusminimax-planner.local.json"

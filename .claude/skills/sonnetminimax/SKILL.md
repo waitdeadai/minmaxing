@@ -17,7 +17,7 @@ Mode banner:
 Sonnet 4.6 is requested for planning, Spec QA/review, adversarial judgment, and final decision work.
 MiniMax-M2.7-highspeed from the MiniMax Token Plan is requested for bounded execution packets.
 Default effort is max, which records max and maps to Claude CLI xhigh.
-/opusworkflow remains the main route: Opus 4.7 high/xhigh judgment + MiniMax execution.
+/opusworkflow remains the main route: Opus 4.7 high judgment + MiniMax-M2.7-highspeed Token Plan execution.
 ```
 
 ## Contract

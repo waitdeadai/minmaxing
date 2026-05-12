@@ -1,6 +1,6 @@
 ---
 name: opusworkflow
-description: Use this as the definitive workflow command for mutating work: default Opus 4.7 high/xhigh planning and review with MiniMax-M2.7-highspeed execution, plus explicit governed model profiles such as sonnetminimax for Sonnet 4.6 judgment with MiniMax execution. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.
+description: Use this as the definitive workflow command for mutating work: default Opus 4.7 high planning and review with MiniMax-M2.7-highspeed Token Plan execution, plus explicit governed model profiles such as sonnetminimax for Sonnet 4.6 judgment with MiniMax execution. It must drive to a verified result, partial result, or blocked repair path; /opusminimax is the advanced engine underneath, not a competing daily command.
 argument-hint: [task]
 disable-model-invocation: true
 ---
@@ -15,8 +15,8 @@ Definitive workflow command:
 
 ```text
 Use /opusworkflow for normal build, fix, refactor, docs, and specialist work.
-It means: Opus 4.7 high/xhigh thinks and reviews when proven available.
-MiniMax-M2.7-highspeed is the executor for the bulk implementation work.
+It means: Opus 4.7 high thinks and reviews when proven available.
+MiniMax-M2.7-highspeed is the executor for the bulk implementation work through the MiniMax Token Plan.
 The run must end as a verified result, partial result, or blocked repair path.
 Use /opusworkflow unless you are debugging the engine.
 ```
@@ -34,8 +34,9 @@ Sonnet 4.6 judgment and MiniMax-M2.7-highspeed Token Plan execution.
 Mode banner:
 
 ```text
-Opus 4.7 high/xhigh is planner, adversary, and final reviewer when proven available.
-MiniMax-M2.7-highspeed is the executor for bulk coding and repair.
+Opus 4.7 high is planner, adversary, and final reviewer when proven available.
+MiniMax-M2.7-highspeed Token Plan is the executor for bulk coding and repair.
+Default /opusworkflow effort is high; xhigh/max are explicit overrides.
 Default executor concurrency is 1 until provider evidence proves otherwise.
 Closeout policy is verified, partial, or blocked-with-repair. No vibes.
 ```
@@ -75,7 +76,8 @@ SPEC.md, and /specqa all allow execution.
 ## Contract
 
 - Treat `/opusworkflow` as the definitive workflow command and the one normal
-  command for mutating work.
+  command for mutating work. It is the primary best-results route while Opus
+  quota is available.
 - Optimize for results, not only cost: keep going through research, plan,
   packet execution, repair loops, verification, and introspection until the run
   can honestly close as `verified`, `partial`, or `blocked`.
@@ -172,6 +174,15 @@ Practical target for the $20 Claude + $40 MiniMax setup:
 80-90% mechanical work: MiniMax-M2.7-highspeed
 10-20% judgment work: Opus 4.7 high/xhigh when account state proves it
 executor lanes: 1 default, 2 only after explicit runtime proof
+```
+
+Primary `/opusworkflow` target:
+
+```text
+planner/judgment/review: claude-opus-4-7 through the provider-neutral planner profile
+planner effort: high by default; xhigh/max only when explicitly requested
+execution: MiniMax-M2.7-highspeed through the MiniMax Token Plan executor profile
+use first while Opus quota is available; switch to /sonnetminimax when saving Opus
 ```
 
 Optional `sonnetminimax` target:

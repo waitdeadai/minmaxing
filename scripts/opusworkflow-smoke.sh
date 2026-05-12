@@ -200,6 +200,13 @@ for raw_path, contract in zip(sys.argv[1:], expected):
     assert data.get("executor_identity_status") == "configured"
     assert data.get("fallback_status") == "none"
     assert data.get("model_profile") == "minimax"
+    effort = data.get("runtime_effort", {})
+    route_effort = data.get("model_route", {}).get("effort", {})
+    assert effort.get("requested") == "high"
+    assert effort.get("claude_cli_value") == "high"
+    assert effort.get("runtime_started") is False
+    assert route_effort.get("requested") == "high"
+    assert route_effort.get("claude_cli_value") == "high"
     spec_qa = data.get("spec_qa", {})
     plan_mode = data.get("plan_mode", {})
     goal_assist = data.get("goal_assist", {})

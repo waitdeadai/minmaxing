@@ -249,6 +249,7 @@ done
 for pattern in \
     "Definitive workflow command" \
     "Opus 4.7 high/xhigh" \
+    "primary best-results route" \
     "verified result, partial result, or blocked repair path" \
     "outcome_policy=verified-partial-or-blocked-with-repair" \
     "/opusminimax is the advanced engine" \
@@ -279,6 +280,7 @@ for pattern in \
     "fallback_status" \
     "model_profile" \
     "plan_mode" \
+    "CLAUDE_CODE_EFFORT_LEVEL" \
     "--plan-mode-policy" \
     "--model-profile" \
     "opusworkflow-smoke"; do

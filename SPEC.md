@@ -37,12 +37,18 @@ and documented without overclaiming runtime model identity.
 - [x] `/sonnetminimax` exists as an explicit shortcut for the same governed
   Sonnet 4.6 judgment plus MiniMax-M2.7-highspeed Token Plan execution route,
   while `/opusworkflow` remains the primary Opus 4.7 high/xhigh + MiniMax route.
+- [x] `/opusworkflow` records the primary best-results route explicitly:
+  Opus 4.7 high judgment by default plus MiniMax-M2.7-highspeed Token Plan
+  execution, with `xhigh` and `max` available only as explicit overrides.
 
 ## Scope
 
 In:
 - Add `sonnetminimax` as a model profile and `/sonnetminimax` as a short
   power-user shortcut. Do not add a new installer mode.
+- Keep `/opusworkflow` as the primary best-results route while Opus quota is
+  available: Opus 4.7 high judgment plus MiniMax-M2.7-highspeed Token Plan
+  execution by default.
 - Update routing, artifact validation, static smokes, generated capability maps,
   and operator docs.
 - Preserve existing meanings for `minimax`, `opussonnet`, `sonnet`, `opus`,
@@ -97,6 +103,7 @@ Required:
 
 ```bash
 bash scripts/opusworkflow.sh --task "sonnet minimax smoke" --model-profile sonnetminimax --effort max --run-id opusworkflow-sonnetminimax-smoke
+bash scripts/opusworkflow.sh --task "primary opus workflow smoke" --run-id opusworkflow-primary-high-smoke
 bash scripts/sonnetminimaxworkflow.sh --task "power-user sonnet minimax smoke" --run-id sonnetminimax-smoke
 bash scripts/opusminimax-doctor.sh --static --model-profile sonnetminimax --executor-provider minimax --json
 bash scripts/opusworkflow-smoke.sh

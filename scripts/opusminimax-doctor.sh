@@ -210,7 +210,7 @@ def repair_local_profiles(
             "DISABLE_FEEDBACK_COMMAND": "1",
             "DISABLE_ERROR_REPORTING": "1",
             "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
-            "CLAUDE_CODE_EFFORT_LEVEL": "xhigh",
+            "CLAUDE_CODE_EFFORT_LEVEL": "high",
             "DISABLE_AUTO_COMPACT": "0",
             "CLAUDE_CODE_NO_FLICKER": "1",
         }.items():

@@ -11,9 +11,10 @@ Usage:
   bash scripts/opusworkflow.sh --task "..." [--inner-contract CONTRACT] [--run-id ID] [--model-profile minimax|sonnetminimax|opussonnet|sonnet|opus|default|custom] [--executor-provider minimax|claude-sonnet|anthropic] [--plan-mode-policy auto|manual|off] [--effort high|xhigh|max] [--execute-planner] [--planner-settings PATH] [--planner-model MODEL] [--executor-model MODEL]
 
 /opusworkflow is the definitive effectiveness-first workflow entrypoint. It
-reuses scripts/opusminimax.sh in workflow mode, requesting Opus 4.7 for
-judgment and MiniMax-M2.7-highspeed for bounded execution packets. A real
-closeout must be verified, partial, or blocked-with-repair.
+reuses scripts/opusminimax.sh in workflow mode, requesting Opus 4.7 high by
+default for judgment and MiniMax-M2.7-highspeed from the MiniMax Token Plan for
+bounded execution packets. A real closeout must be verified, partial, or
+blocked-with-repair.
 
 The optional claude-sonnet executor provider keeps the same workflow governance
 but uses Claude Code opusplan/Sonnet 4.6 instead of MiniMax.
@@ -36,6 +37,11 @@ Plan mode policy:
           and Spec QA gates allow execution.
   manual  Record the same checkpoint but require explicit human approval.
   off     Disable the plan-mode checkpoint for advanced/manual debugging.
+
+Effort:
+  high   Default for /opusworkflow, the primary best-results route.
+  xhigh  Explicit higher-effort judgment request.
+  max    Explicit alias that records max and maps to Claude CLI xhigh.
 EOF
 }
 
@@ -43,7 +49,7 @@ ARGS=()
 EXECUTOR_PROVIDER="${OPUSWORKFLOW_EXECUTOR_PROVIDER:-minimax}"
 MODEL_PROFILE="${OPUSWORKFLOW_MODEL_PROFILE:-}"
 PLAN_MODE_POLICY="${OPUSWORKFLOW_PLAN_MODE_POLICY:-auto}"
-EFFORT="${OPUSWORKFLOW_EFFORT:-}"
+EFFORT="${OPUSWORKFLOW_EFFORT:-high}"
 EXECUTOR_PROVIDER_SET=0
 EXECUTOR_MODEL_SET=0
 MODEL_PROFILE_SET=0
@@ -130,22 +136,20 @@ case "$PLAN_MODE_POLICY" in
     ;;
 esac
 
-if [ -n "$EFFORT" ]; then
-  case "$EFFORT" in
-    high|xhigh|max)
-      echo "[opusworkflow] effort: $EFFORT"
-      ;;
-    *)
-      echo "[opusworkflow] invalid effort: $EFFORT (expected high, xhigh, or max)" >&2
-      exit 2
-      ;;
-  esac
-fi
+case "$EFFORT" in
+  high|xhigh|max)
+    echo "[opusworkflow] effort: $EFFORT"
+    ;;
+  *)
+    echo "[opusworkflow] invalid effort: $EFFORT (expected high, xhigh, or max)" >&2
+    exit 2
+    ;;
+esac
 
 case "$MODEL_PROFILE" in
   minimax)
-    echo "[opusworkflow] definitive route: Opus 4.7 judgment + MiniMax-M2.7-highspeed execution"
-    echo "[opusworkflow] model profile: minimax (Opus judgment, MiniMax-M2.7-highspeed execution)"
+    echo "[opusworkflow] definitive route: Opus 4.7 high judgment + MiniMax-M2.7-highspeed Token Plan execution"
+    echo "[opusworkflow] model profile: minimax (primary best-results route: Opus judgment, MiniMax-M2.7-highspeed execution)"
     ;;
   sonnetminimax)
     echo "[opusworkflow] definitive route: Sonnet 4.6 judgment + MiniMax-M2.7-highspeed execution"
