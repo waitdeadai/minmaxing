@@ -65,6 +65,10 @@ require_text "--mode minimax|opusworkflow|opusminimax|opussonnet|opusolo" setup.
 require_text 'MODE="opusworkflow"' setup.sh
 require_text "--mode opusolo" README.md
 require_text "--mode opussonnet" README.md
+require_text "MiniMax-only mode" README.md
+require_text "MiniMax-only mode" setup.sh
+require_text "MiniMax-only mode" setup.ps1
+require_text "Claude Code shell, MiniMax-M2.7-highspeed for model routing" setup.sh
 require_text "--import-existing" setup.sh
 require_text "MINIMAX_TOKEN_KEY" setup.sh
 require_text "TOKEN_KEY" setup.sh
@@ -99,6 +103,11 @@ require_text "import-manifest.tsv" setup.sh
 require_text "skipped_conflicts" setup.sh
 require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md
 require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md
+require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md
+require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'" README.md
+require_text "curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --mode minimax --prompt-minimax-key" README.md
+require_text "MiniMax-only workflow: /workflow" setup.sh
+require_text "MiniMax-only workflow: /workflow" setup.ps1
 require_text "After install, start Claude yourself when you are ready" README.md
 require_text "Existing project or harness update" README.md
 require_text "Then use the definitive workflow command" README.md
@@ -120,8 +129,13 @@ require_text "opusolo" scripts/harness-capability-map.sh
 
 HELP_OUTPUT="$(env -u MINIMAX_TOKEN_KEY -u TOKEN_KEY bash setup.sh --help)"
 printf '%s' "$HELP_OUTPUT" | grep -Fq "(default: opusworkflow)" || fail "setup --help must show opusworkflow as the default"
+printf '%s' "$HELP_OUTPUT" | grep -Fq "MiniMax-only mode" || fail "setup --help must document MiniMax-only mode"
+printf '%s' "$HELP_OUTPUT" | grep -Fq -- "--mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'" || fail "setup --help must show the MiniMax-only install command"
 if printf '%s' "$HELP_OUTPUT" | grep -Fq "[0/7]"; then
   fail "setup --help must not execute the installer"
+fi
+if grep -Fq "Legacy MiniMax-only" setup.sh setup.ps1 README.md 2>/dev/null; then
+  fail "MiniMax-only mode must not be described as legacy"
 fi
 if grep -Fq "Then try: /workflow" setup.sh setup.ps1 README.md 2>/dev/null; then
   fail "default-facing setup/docs must not suggest /workflow as the normal next route"

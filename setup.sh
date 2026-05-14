@@ -1,6 +1,9 @@
 #!/bin/bash
 # minmaxing - One-Command Setup
 # Default mode is opusworkflow: Opus 4.7 judgment + MiniMax execution.
+# MiniMax-only mode:
+# curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'
+# curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'
 # Suggested Claude-only modes:
 # curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opussonnet
 # curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opusolo
@@ -72,6 +75,15 @@ Clean/new folder:
 
 Existing project / updater:
   curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'
+
+MiniMax-only mode:
+  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'
+
+Existing project / updater, MiniMax-only:
+  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'
+
+Safer interactive MiniMax-only update:
+  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --mode minimax --prompt-minimax-key
 
 Suggested Claude-only Opus + Sonnet:
   curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode opussonnet
@@ -381,7 +393,9 @@ echo "=========================================="
 echo "  minmaxing Setup"
 echo "=========================================="
 echo "Mode: $MODE"
-if [ "$MODE" = "opusworkflow" ]; then
+if [ "$MODE" = "minimax" ]; then
+    echo "MiniMax-only mode: Claude Code shell, MiniMax-M2.7-highspeed for model routing"
+elif [ "$MODE" = "opusworkflow" ]; then
     echo "Definitive route: /opusworkflow (Opus 4.7 judgment + MiniMax execution)"
 elif [ "$MODE" = "opusminimax" ]; then
     echo "Advanced engine mode selected; normal route remains /opusworkflow."
@@ -876,7 +890,7 @@ EOF
         TARGET_SETTINGS=".claude/settings.minimax-executor.local.json"
     fi
 
-    python3 - "$API_KEY" "$TARGET_SETTINGS" "$EXECUTOR_MODEL" <<'PY'
+    python3 - "$API_KEY" "$TARGET_SETTINGS" "$EXECUTOR_MODEL" "$MODE" <<'PY'
 import json
 import pathlib
 import sys
@@ -886,6 +900,7 @@ data = json.loads(path.read_text())
 env = data.setdefault("env", {})
 key = sys.argv[1]
 executor_model = sys.argv[3]
+mode = sys.argv[4]
 
 env["ANTHROPIC_BASE_URL"] = "https://api.minimax.io/anthropic"
 env["ANTHROPIC_AUTH_TOKEN"] = key
@@ -896,11 +911,18 @@ env["ANTHROPIC_SMALL_FAST_MODEL"] = executor_model
 env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = executor_model
 env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = executor_model
 env["CLAUDE_CODE_SUBAGENT_MODEL"] = executor_model
+if mode == "minimax":
+    env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = executor_model
+elif env.get("ANTHROPIC_DEFAULT_OPUS_MODEL") == executor_model:
+    env.pop("ANTHROPIC_DEFAULT_OPUS_MODEL", None)
 
 path.write_text(json.dumps(data, indent=2) + "\n")
 PY
 
     echo "  [PASS] API key configured in $TARGET_SETTINGS"
+    if [ "$MODE" = "minimax" ]; then
+        echo "  [PASS] MiniMax-only local model routing pinned to $EXECUTOR_MODEL"
+    fi
 
     if [ "$SPLIT_EXECUTION_MODE" -eq 1 ] && [ -f ".claude/settings.opusminimax-planner.local.json" ]; then
         python3 - ".claude/settings.opusminimax-planner.local.json" "$PLANNER_MODEL" <<'PY'
@@ -969,6 +991,12 @@ else
     echo ""
     echo "Existing project / updater:"
     echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --minimax-key 'YOUR_TOKEN_PLAN_KEY'"
+    echo ""
+    echo "MiniMax-only mode:"
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'"
+    echo ""
+    echo "Existing project / updater, MiniMax-only:"
+    echo "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --mode minimax --prompt-minimax-key"
     echo ""
     echo "Get your key from: platform.minimax.io"
 fi
@@ -1065,7 +1093,10 @@ echo ""
 echo "Next steps:"
 echo "  1. Run: claude"
 echo "  2. If this is a fresh repo, run: /tastebootstrap"
-if [ "$MODE" = "opusworkflow" ]; then
+if [ "$MODE" = "minimax" ]; then
+    echo "  3. MiniMax-only workflow: /workflow 'build a REST API'"
+    echo "     Claude Code stays the shell; MiniMax-M2.7-highspeed handles local model routing."
+elif [ "$MODE" = "opusworkflow" ]; then
     echo "  3. Then try: /opusworkflow 'build a REST API'"
 elif [ "$MODE" = "opusminimax" ]; then
     echo "  3. Then try: /opusworkflow 'build a REST API'"
@@ -1076,8 +1107,6 @@ elif [ "$MODE" = "opussonnet" ]; then
 elif [ "$MODE" = "opusolo" ]; then
     echo "  3. Then try: /opusolo 'build a REST API'"
     echo "     This uses Opus for planning, execution, review, and judgment at high effort by default."
-else
-    echo "  3. Legacy MiniMax-only override: /workflow 'build a REST API'"
 fi
 echo "  4. Check memory: bash scripts/memory.sh stats"
 echo ""

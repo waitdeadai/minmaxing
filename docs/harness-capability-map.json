@@ -731,12 +731,12 @@
       "sha256": "199a1e495da27067db293bda488b10b8938968565b2d96646380d88c187728c4"
     },
     {
-      "line_count": 390,
+      "line_count": 404,
       "name": "opusworkflow-smoke",
       "path": "scripts/opusworkflow-smoke.sh",
       "purpose": "OpusWorkflow cost-optimized route gate",
       "required_gate": true,
-      "sha256": "f4fad1de8dcc45f42a01aca260517c11c2662682ae363a2507a25b13df2f138f"
+      "sha256": "fae12e470e00976f7b2337b6abdf25c58200c52200858feed51c7c4cdc1bd020"
     },
     {
       "line_count": 215,

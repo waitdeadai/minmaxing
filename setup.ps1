@@ -1,6 +1,7 @@
 # minmaxing Windows Setup
 # Bash/Git Bash remains the recommended installer. This PowerShell helper keeps
 # the same default: opusworkflow, with split ignored local profiles.
+# MiniMax-only mode keeps Claude Code as the shell and routes local model env to MiniMax-M2.7-highspeed.
 # Optional suggested Claude-only modes: -Mode opussonnet or -Mode opusolo.
 
 param(
@@ -47,7 +48,7 @@ function Write-Json($Path, $Data) {
     $Data | ConvertTo-Json -Depth 32 | Set-Content -Path $Path -Encoding UTF8
 }
 
-function Configure-ExecutorProfile($Path, $Key, $Model) {
+function Configure-ExecutorProfile($Path, $Key, $Model, [bool]$IncludeOpusAlias = $false) {
     $default = '{"profile":"minimax-executor","env":{},"permissions":{"defaultMode":"acceptEdits"}}'
     $data = Read-JsonOrDefault $Path $default
     Ensure-ObjectProperty $data "env" ([pscustomobject]@{})
@@ -71,6 +72,15 @@ function Configure-ExecutorProfile($Path, $Key, $Model) {
         } else {
             $envObj | Add-Member -NotePropertyName $name -NotePropertyValue $values[$name]
         }
+    }
+    if ($IncludeOpusAlias) {
+        if ($envObj.PSObject.Properties.Name -contains "ANTHROPIC_DEFAULT_OPUS_MODEL") {
+            $envObj.ANTHROPIC_DEFAULT_OPUS_MODEL = $Model
+        } else {
+            $envObj | Add-Member -NotePropertyName "ANTHROPIC_DEFAULT_OPUS_MODEL" -NotePropertyValue $Model
+        }
+    } elseif (($envObj.PSObject.Properties.Name -contains "ANTHROPIC_DEFAULT_OPUS_MODEL") -and $envObj.ANTHROPIC_DEFAULT_OPUS_MODEL -eq $Model) {
+        $envObj.PSObject.Properties.Remove("ANTHROPIC_DEFAULT_OPUS_MODEL")
     }
 
     Write-Json $Path $data
@@ -184,7 +194,9 @@ Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "  minmaxing Setup (Windows)" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "Mode: $Mode" -ForegroundColor White
-if ($Mode -eq "opusworkflow") {
+if ($Mode -eq "minimax") {
+    Write-Host "MiniMax-only mode: Claude Code shell, MiniMax-M2.7-highspeed for model routing" -ForegroundColor White
+} elseif ($Mode -eq "opusworkflow") {
     Write-Host "Definitive route: /opusworkflow (Opus 4.7 judgment + MiniMax execution)" -ForegroundColor White
 } elseif ($Mode -eq "opusminimax") {
     Write-Host "Advanced engine mode selected; normal route remains /opusworkflow." -ForegroundColor White
@@ -283,7 +295,7 @@ if ($Mode -eq "opusolo") {
             Copy-Item ".claude\settings.opusminimax-planner.example.json" $plannerPath
         }
 
-        Configure-ExecutorProfile $executorPath $ApiKey $ExecutorModel
+        Configure-ExecutorProfile $executorPath $ApiKey $ExecutorModel $false
         Configure-PlannerProfile $plannerPath $PlannerModel
 
         Write-Host "  [PASS] MiniMax token written to ignored executor profile" -ForegroundColor Green
@@ -294,13 +306,16 @@ if ($Mode -eq "opusolo") {
         if ((-not (Test-Path $localPath)) -and (Test-Path ".claude\settings.minimax-executor.example.json")) {
             Copy-Item ".claude\settings.minimax-executor.example.json" $localPath
         }
-        Configure-ExecutorProfile $localPath $ApiKey $ExecutorModel
-        Write-Host "  [PASS] Legacy MiniMax-only local settings prepared" -ForegroundColor Green
+        Configure-ExecutorProfile $localPath $ApiKey $ExecutorModel ($Mode -eq "minimax")
+        Write-Host "  [PASS] MiniMax-only local settings prepared" -ForegroundColor Green
+        Write-Host "  [PASS] Claude Code shell will route models to $ExecutorModel" -ForegroundColor Green
     }
 } else {
     Write-Host "  [WARN] MiniMax token not provided; local executor profile was not credentialed" -ForegroundColor Yellow
     Write-Host "  Use the default Bash/Git Bash command:" -ForegroundColor Gray
     Write-Host "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --minimax-key 'YOUR_TOKEN_PLAN_KEY'" -ForegroundColor Cyan
+    Write-Host "  Or MiniMax-only:" -ForegroundColor Gray
+    Write-Host "  curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'" -ForegroundColor Cyan
 }
 Write-Host ""
 
@@ -335,7 +350,8 @@ if ($Mode -eq "opusminimax") {
     Write-Host "  3. Then try: /opusworkflow 'build a REST API'" -ForegroundColor Gray
     Write-Host "     /opusminimax is the advanced engine for provider, packet, repair, or benchmark debugging." -ForegroundColor Gray
 } elseif ($Mode -eq "minimax") {
-    Write-Host "  3. Legacy MiniMax-only override: /workflow 'build a REST API'" -ForegroundColor Gray
+    Write-Host "  3. MiniMax-only workflow: /workflow 'build a REST API'" -ForegroundColor Gray
+    Write-Host "     Claude Code stays the shell; MiniMax-M2.7-highspeed handles local model routing." -ForegroundColor Gray
 } elseif ($Mode -eq "opussonnet") {
     Write-Host "  3. Then try: /opussonnet 'build a REST API'" -ForegroundColor Gray
 } elseif ($Mode -eq "opusolo") {

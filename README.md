@@ -18,6 +18,26 @@ curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh 
 
 Get your key from [platform.minimax.io](https://platform.minimax.io).
 
+MiniMax-only mode, when you want Claude Code as the shell but
+MiniMax-M2.7-highspeed for planner, reviewer, executor, and subagent model
+routing:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'
+```
+
+Existing project or harness update, MiniMax-only:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --mode minimax --minimax-key 'YOUR_TOKEN_PLAN_KEY'
+```
+
+Safer interactive token entry for MiniMax-only updates:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/waitdeadai/minmaxing/main/setup.sh | bash -s -- --import-existing --mode minimax --prompt-minimax-key
+```
+
 Optional Claude-only suggested install, no MiniMax key:
 
 ```bash
@@ -34,6 +54,13 @@ Then use the definitive workflow command:
 
 ```bash
 /opusworkflow "build or fix the thing"
+```
+
+If you installed with `--mode minimax`, use the same underlying governed
+lifecycle directly:
+
+```bash
+/workflow "build or fix the thing"
 ```
 
 Power-user Opus-saving route:
@@ -57,6 +84,9 @@ Mental model:
 - `/sonnetminimax` is the explicit fallback/shortcut when you want Sonnet 4.6
   judgment plus MiniMax-M2.7-highspeed Token Plan execution without spending
   Opus.
+- MiniMax-only mode is explicit: `--mode minimax` keeps Claude Code as the
+  shell, but routes planner, reviewer, executor, and subagent model env to
+  MiniMax-M2.7-highspeed.
 - `/opusminimax` is the advanced engine underneath. Use it directly only when
   debugging provider split, packet, repair, or benchmark behavior.
 
@@ -172,9 +202,19 @@ provider-clean, uses the default trusted-local `bypassPermissions` posture, and
 then exits. Open Claude yourself with `claude` after setup finishes, so install
 failures, warnings, and conflict messages stay visible.
 
+When you explicitly use `--mode minimax`, the installer prepares
+`.claude/settings.local.json` for a MiniMax-only Claude Code session:
+`ANTHROPIC_BASE_URL=https://api.minimax.io/anthropic`,
+`ANTHROPIC_AUTH_TOKEN`, `MINIMAX_API_KEY`, `ANTHROPIC_MODEL`,
+`ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`,
+`ANTHROPIC_DEFAULT_HAIKU_MODEL`, and `CLAUDE_CODE_SUBAGENT_MODEL` all point at
+`MiniMax-M2.7-highspeed`. In that mode, start `claude` yourself and use
+`/workflow "build or fix the thing"` so the same governed lifecycle runs under
+the MiniMax-only local model routing.
+
 Inline token commands can land in shell history. That is the intentional
 fast path for trusted solo work; environment-variable, hidden-input, key-file, and explicit
-`--mode minimax|opusworkflow|opusminimax|opussonnet|opusolo` override forms still exist in
+`--mode minimax|opusworkflow|opusminimax|opussonnet|opusolo` forms are supported in
 `bash setup.sh --help`, but they are not the default path.
 
 If an earlier install did not detect MiniMax, rerun the existing-project command
