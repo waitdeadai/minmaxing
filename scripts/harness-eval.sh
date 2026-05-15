@@ -61,6 +61,7 @@ KNOWN_GATES = {
     "hive-aggregate",
     "claudeproduct-scorecard",
     "harness-capability-map",
+    "visualize-smoke",
     "demo-smoke",
     "artifact-lint",
     "codex-run-smoke",
@@ -248,6 +249,11 @@ def normalize_gate(value: str) -> str:
         "scripts/harness-capability-map.sh --check --json": "harness-capability-map",
         "bash scripts/harness-capability-map.sh --check": "harness-capability-map",
         "bash scripts/harness-capability-map.sh --check --json": "harness-capability-map",
+        "visualize-smoke": "visualize-smoke",
+        "scripts/visualize-smoke.sh": "visualize-smoke",
+        "scripts/visualize-smoke.sh --fixtures": "visualize-smoke",
+        "bash scripts/visualize-smoke.sh": "visualize-smoke",
+        "bash scripts/visualize-smoke.sh --fixtures": "visualize-smoke",
         "demo-smoke": "demo-smoke",
         "scripts/demo-smoke.sh": "demo-smoke",
         "scripts/demo-smoke.sh --fixtures": "demo-smoke",
@@ -637,6 +643,10 @@ run_gate() {
     "demo-smoke")
       require_gate_script "scripts/demo-smoke.sh" || return $?
       bash "$ROOT_DIR/scripts/demo-smoke.sh" --fixtures
+      ;;
+    "visualize-smoke")
+      require_gate_script "scripts/visualize-smoke.sh" || return $?
+      bash "$ROOT_DIR/scripts/visualize-smoke.sh" --fixtures
       ;;
     "artifact-lint")
       require_gate_script "scripts/artifact-lint.sh" || return $?

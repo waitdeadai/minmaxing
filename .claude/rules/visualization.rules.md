@@ -11,6 +11,10 @@ mentions visualization artifacts.
   unless the user explicitly asked for approval-first behavior.
 - Visualization artifacts are exploratory unless the user explicitly promotes
   them into product assets.
+- HTML visualization artifacts are presentation and review companions. They may
+  render, explain, compare, or make the canonical contract easier to inspect,
+  but they must not be the only place where requirements, approval state, source
+  ledgers, implementation decisions, or verification evidence live.
 
 ## Required Inputs
 
@@ -35,6 +39,31 @@ Use image generation only when the current runtime exposes a real image
 generation capability. If image generation is unavailable, produce a precise
 image prompt, storyboard, schematic, Mermaid, HTML, SVG, or markdown artifact
 instead.
+
+## HTML Companion Artifacts
+
+Use HTML when the operator needs a richer human-facing surface: side-by-side
+comparisons, annotated diffs, system diagrams, report navigation, decision
+tables, or a throwaway editor that exports Markdown/JSON back into the harness.
+
+HTML packages must:
+
+- live under ignored `.taste/visualizations/` unless explicitly promoted
+- point back to canonical Markdown/JSON files such as `visualization.md`,
+  `draft-SPEC.md`, `approval.json`, source ledgers, or verification sidecars
+- stay self-contained by default with no remote scripts, remote stylesheets,
+  remote fonts, analytics, or external asset fetches
+- avoid absolute local paths and `..` traversal in artifact references
+- include no credentials, `.env` values, private customer data, private
+  connector payloads, audit logs, or secret-like material
+- include basic document metadata such as `<!doctype html>`, `<html lang=...>`,
+  `<title>`, and a visible reference to the canonical source files
+- export operator edits back to Markdown, JSON, or a prompt when the artifact is
+  interactive
+
+Do not treat a polished HTML artifact as proof. Proof still comes from source
+ledgers, `SPEC.md`, approval JSON, command evidence, verification sidecars, and
+the relevant smoke or release gates.
 
 ## Codex Subscription Image Lane
 

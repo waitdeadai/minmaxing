@@ -1,0 +1,9 @@
+{
+  "artifact_type": "visualization-package",
+  "route": "/visualizeworkflow",
+  "run_dir": ".taste/visualizations/20260515-red-implementation-started",
+  "status": "WAITING_FOR_VISUAL_APPROVAL",
+  "mode": "HTML",
+  "implementation_started": true,
+  "root_spec_promoted": false
+}

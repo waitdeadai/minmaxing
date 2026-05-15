@@ -11,7 +11,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 - Skills: 43
 - Rules: 15
 - Scripts: 68
-- Static eval tasks: 27
+- Static eval tasks: 28
 - Hook entries: 12
 - Codex config files: 4
 - Codex repo skills: 1
@@ -110,7 +110,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `spec` | `.claude/rules/spec.rules.md` | 150 |
 | `speed` | `.claude/rules/speed.rules.md` | 3 |
 | `verify` | `.claude/rules/verify.rules.md` | 127 |
-| `visualization` | `.claude/rules/visualization.rules.md` | 109 |
+| `visualization` | `.claude/rules/visualization.rules.md` | 138 |
 
 ## Required Script Gates
 
@@ -144,6 +144,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `sonnetminimaxworkflow` | power-user Sonnet plus MiniMax Token Plan workflow wrapper | `scripts/sonnetminimaxworkflow.sh` |
 | `specqa-smoke` | automated SOTA Spec QA gate | `scripts/specqa-smoke.sh` |
 | `test-harness` | full local harness regression suite | `scripts/test-harness.sh` |
+| `visualize-smoke` | visualization and HTML companion artifact gate | `scripts/visualize-smoke.sh` |
 
 ## Static Eval Gates
 
@@ -156,6 +157,7 @@ choose, which scripts prove a claim, or where the detailed contract lives.
 | `m14-digestaste-research-to-bootstrap-text` | `scripts/digestaste-smoke.sh --fixtures` | `reject` | `evals/harness/tasks/m14-digestaste-research-to-bootstrap-text.yaml` | `evals/harness/golden/m14-digestaste-research-to-bootstrap-text.json` |
 | `m15-agent-view-smoke` | `scripts/agent-view-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m15-agent-view-smoke.yaml` | `evals/harness/golden/m15-agent-view-smoke.json` |
 | `m16-goal-mode-smoke` | `scripts/goal-mode-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m16-goal-mode-smoke.yaml` | `evals/harness/golden/m16-goal-mode-smoke.json` |
+| `m17-visualize-html-artifact` | `scripts/visualize-smoke.sh --fixtures` | `pass` | `evals/harness/tasks/m17-visualize-html-artifact.yaml` | `evals/harness/golden/m17-visualize-html-artifact.json` |
 | `m4-agentfactory-kill-switch-evidence` | `scripts/agentfactory-smoke.sh` | `pass` | `evals/harness/tasks/m4-agentfactory-kill-switch-evidence.yaml` | `evals/harness/golden/m4-agentfactory-kill-switch-evidence.json` |
 | `m4-artifact-sidecar-lint` | `scripts/artifact-lint.sh --fixtures` | `pass` | `evals/harness/tasks/m4-artifact-sidecar-lint.yaml` | `evals/harness/golden/m4-artifact-sidecar-lint.json` |
 | `m4-codex-run-artifact-proof` | `scripts/codex-run-smoke.sh` | `pass` | `evals/harness/tasks/m4-codex-run-artifact-proof.yaml` | `evals/harness/golden/m4-codex-run-artifact-proof.json` |

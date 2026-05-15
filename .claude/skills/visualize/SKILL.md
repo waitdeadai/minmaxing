@@ -31,6 +31,9 @@ mkdir -p "$RUN_DIR"
   mutate `SPEC.md`.
 - Keep the package no-secret: do not include credentials, private customer
   artifacts, or raw environment values.
+- When the chosen mode is `HTML`, write the HTML as a companion artifact inside
+  `RUN_DIR` and keep `visualization.md` as the canonical human contract. The
+  HTML must reference the canonical source files it renders or explains.
 
 ## Understanding Card
 
@@ -80,6 +83,19 @@ Record the chosen surface and a one-sentence reason.
   API experience narrative, Mermaid diagram, or HTML/SVG artifact.
 - `docs/brand`: produce a brand/page/content system visualization or narrative
   structure.
+
+For `HTML` mode:
+
+- prefer static, self-contained HTML with inline CSS
+- avoid remote scripts, remote stylesheets, remote fonts, analytics, and external
+  asset fetches unless the user explicitly asks for a shareable hosted artifact
+- include `<!doctype html>`, `<html lang=...>`, `<title>`, and visible links or
+  labels for canonical files such as `visualization.md`, `draft-SPEC.md`, or
+  `approval.json`
+- do not put requirements, approvals, source ledgers, or verification evidence
+  only in HTML
+- if the HTML is interactive, include a copy/export affordance that emits
+  Markdown, JSON, or prompt text the operator can paste back into the harness
 
 If an image is generated, save or reference it inside `RUN_DIR` and record the
 actual path. If only a prompt, diagram, or markdown artifact is produced, say so

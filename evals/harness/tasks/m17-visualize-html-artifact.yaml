@@ -1,0 +1,6 @@
+id: m17-visualize-html-artifact
+title: HTML companion visualization artifact gate
+gate: scripts/visualize-smoke.sh --fixtures
+expected_result: pass
+golden: evals/harness/golden/m17-visualize-html-artifact.json
+evidence: validates /visualize and /visualizeworkflow HTML companion policy, ignored run-dir semantics, approval JSON state, static HTML structure, no remote assets, no absolute paths, and no secret-like material

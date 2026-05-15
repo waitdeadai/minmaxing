@@ -1,140 +1,102 @@
-# SPEC: SonnetMiniMax `/opusworkflow` profile and `/sonnetminimax` shortcut
+# SPEC: HTML companion artifact hardening
 
 ## Problem Statement
 
-`/opusworkflow` has first-class routes for Opus+MiniMax, Opus+Sonnet,
-all-Sonnet, all-Opus, default Claude, and custom Anthropic-only routing. It
-does not have a clean governed profile for operators who want Sonnet 4.6 for
-planning and review while keeping MiniMax-M2.7-highspeed as the bounded
-executor.
+The harness already allows `HTML` as a visualization mode, but the current gate
+mostly checks that the route text exists. The recent audit of "The Unreasonable
+Effectiveness of HTML" showed that HTML can improve human comprehension for
+plans, diagrams, PR explainers, and interactive review, but it must not replace
+the canonical Markdown/JSON contracts that drive implementation and verification.
 
-The current workaround is a fragile planner override on the `minimax` profile.
-That records mixed signals in banners, Spec QA metadata, docs, and lint rules.
-The harness needs an explicit `sonnetminimax` profile and a short
-`/sonnetminimax` power-user route so the operator can save Opus quota without
-remembering profile flags. The route must still be requested, linted, smoked,
-and documented without overclaiming runtime model identity.
+The repo needs a surgical hardening pass: keep `/visualize` and
+`/visualizeworkflow` as the existing surfaces, make HTML explicitly
+companion-only unless promoted, and add fixture-backed validation for safe HTML
+artifact packages.
 
 ## Success Criteria
 
-- [x] `scripts/opusworkflow.sh`, `scripts/opusminimax.sh`, and
-  `scripts/opusminimax-doctor.sh` accept `--model-profile sonnetminimax` only
-  with `--executor-provider minimax`.
-- [x] `sonnetminimax` defaults to `planner_model=claude-sonnet-4-6` and
-  `executor_model=MiniMax-M2.7-highspeed`.
-- [x] Run artifacts record Sonnet as the requested planner and Spec QA reviewer,
-  MiniMax as the requested executor, and keep planner/reviewer runtime identity
-  blocked until proven.
-- [x] `schemas/opusminimax-run.schema.json` and `scripts/artifact-lint.sh`
-  accept valid `sonnetminimax` artifacts and still reject invalid provider/model
-  combinations.
-- [x] `scripts/opusworkflow-smoke.sh` creates and validates a
-  `sonnetminimax` artifact, including `--effort max` mapping to Claude CLI
-  `xhigh`.
-- [x] README, CLAUDE, AGENTS, and `/opusworkflow` / `/opusminimax` skill docs
-  describe `sonnetminimax` clearly and distinguish it from `/opussonnet`.
-- [x] `docs/harness-capability-map.md` and `.json` are regenerated and fresh.
-- [x] `/sonnetminimax` exists as an explicit shortcut for the same governed
-  Sonnet 4.6 judgment plus MiniMax-M2.7-highspeed Token Plan execution route,
-  while `/opusworkflow` remains the primary Opus 4.7 high/xhigh + MiniMax route.
-- [x] `/opusworkflow` records the primary best-results route explicitly:
-  Opus 4.7 high judgment by default plus MiniMax-M2.7-highspeed Token Plan
-  execution, with `xhigh` and `max` available only as explicit overrides.
+- [x] Visualization rules state that HTML artifacts are presentation/review
+  companions and cannot be the sole source of requirements, approvals, source
+  ledgers, or verification evidence.
+- [x] `/visualize` and `/visualizeworkflow` docs require HTML packages to point
+  back to canonical Markdown/JSON files and stay no-secret/no-private by default.
+- [x] `scripts/visualize-smoke.sh` validates green/red HTML package fixtures,
+  including ignored run-dir policy, `approval.json` semantics, static HTML
+  structure, no remote scripts/assets, no absolute paths, and no secret-like text.
+- [x] `visualize-smoke` is visible in the harness eval metadata and capability
+  map as a static gate.
+- [x] Release/static gates remain green after the change.
 
 ## Scope
 
 In:
-- Add `sonnetminimax` as a model profile and `/sonnetminimax` as a short
-  power-user shortcut. Do not add a new installer mode.
-- Keep `/opusworkflow` as the primary best-results route while Opus quota is
-  available: Opus 4.7 high judgment plus MiniMax-M2.7-highspeed Token Plan
-  execution by default.
-- Update routing, artifact validation, static smokes, generated capability maps,
-  and operator docs.
-- Preserve existing meanings for `minimax`, `opussonnet`, `sonnet`, `opus`,
-  `default`, and `custom`.
+- Existing `/visualize` and `/visualizeworkflow` contracts.
+- Visualization rules.
+- `visualize-smoke` fixture validation.
+- Static eval metadata and generated capability-map refresh.
 
 Out:
-- Runtime model calls, live MiniMax packet execution, or provider identity
-  claims.
-- New setup mode.
-- Changes to secret-bearing local profiles or `.env` files.
+- A new `/html` route or skill.
+- Browser hosting, upload, S3/GitHub Pages publishing, or live preview servers.
+- Replacing `SPEC.md`, source ledgers, approval JSON, or verification sidecars
+  with HTML.
+- Runtime Claude, MiniMax, or image-generation calls.
 
 ## Agent-Native Estimate
 
-- Estimate type: agent-native wall-clock
-- Capacity evidence: `scripts/parallel-capacity.sh --json` reported a local
-  ceiling of 10 lanes on a workstation profile during planning.
-- Effective lanes: 5 implementation packets
-- Critical path: active SPEC -> routing scripts -> artifact/schema/lint ->
-  smoke/tests -> docs -> capability map -> release gates
-- Agent wall-clock: optimistic 45m / likely 90m / pessimistic 150m
-- Human touch time: 0 unless a runtime proof lane is requested later
-- Confidence: medium-high; several allowlists and docs must stay synchronized.
+- Estimate type: agent-native wall-clock.
+- Capacity evidence: `bash scripts/parallel-capacity.sh --json` reported
+  `codex_max_threads=10` and `recommended_ceiling=10`; this slice is tightly
+  coupled and uses one local implementation lane.
+- Agent wall-clock: optimistic 35m / likely 70m / pessimistic 120m.
+- Human touch time: 0 unless the operator wants wording changes.
+- Critical path: contract docs -> fixture validator -> eval registration ->
+  capability map -> release gates.
+- Confidence: medium-high; main risk is stale generated capability-map artifacts.
 
 ## Implementation Plan
 
-1. Add the route contract to routing scripts.
-   - Extend profile allowlists and provider compatibility.
-   - Default `sonnetminimax` models.
-   - Make selected-profile banners and Spec QA reviewer metadata accurate.
-
-2. Add artifact validation.
-   - Extend schema enum and artifact lint profile logic.
-   - Add a valid SonnetMiniMax fixture.
-   - Keep negative provider-boundary checks intact.
-
-3. Add smoke coverage.
-   - Extend `scripts/opusworkflow-smoke.sh` with a SonnetMiniMax artifact run.
-   - Assert Sonnet planner/reviewer, MiniMax executor, provider-neutral planner,
-     MiniMax executor profile, blocked identity claims, and max->xhigh effort.
-
-4. Update docs and discoverability.
-   - Update README, CLAUDE, AGENTS, and relevant skill docs.
-   - Add `.claude/skills/sonnetminimax/SKILL.md` and
-     `scripts/sonnetminimaxworkflow.sh`.
-   - Regenerate capability map artifacts.
-
-5. Verify with the full static gate set.
+1. Tighten the visualization rules and skill docs around the dual-artifact
+   policy: Markdown/JSON canonical, HTML companion.
+2. Extend `scripts/visualize-smoke.sh` with `--fixtures` and `--manifest`
+   validation while keeping the no-arg release-check behavior.
+3. Add tracked `.taste/fixtures/visualize-html` green/red packages.
+4. Register `visualize-smoke` in `scripts/harness-eval.sh` and add eval
+   task/golden files.
+5. Regenerate `docs/harness-capability-map.md` and `.json`.
+6. Verify with focused gates, then the static release gate.
 
 ## Verification
 
 Required:
 
 ```bash
-bash scripts/opusworkflow.sh --task "sonnet minimax smoke" --model-profile sonnetminimax --effort max --run-id opusworkflow-sonnetminimax-smoke
-bash scripts/opusworkflow.sh --task "primary opus workflow smoke" --run-id opusworkflow-primary-high-smoke
-bash scripts/sonnetminimaxworkflow.sh --task "power-user sonnet minimax smoke" --run-id sonnetminimax-smoke
-bash scripts/opusminimax-doctor.sh --static --model-profile sonnetminimax --executor-provider minimax --json
-bash scripts/opusworkflow-smoke.sh
-bash scripts/artifact-lint.sh --fixtures
-bash scripts/security-smoke.sh
-bash scripts/harness-capability-map.sh --check --json
+bash scripts/visualize-smoke.sh --fixtures
+bash scripts/harness-eval.sh --metadata-json
 bash scripts/harness-eval.sh --json
-env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh
+bash scripts/harness-capability-map.sh --write
+bash scripts/harness-capability-map.sh --check --json
+bash scripts/agentcloseout-physics-smoke.sh
 bash scripts/release-check.sh --static-only
 git diff --check
 ```
 
-Verified static closeout on 2026-05-12:
+Verified static closeout on 2026-05-15:
 
-- `bash scripts/opusworkflow.sh --task "sonnet minimax smoke" --model-profile sonnetminimax --effort max --run-id opusworkflow-sonnetminimax-final-smoke`
-- `bash scripts/opusminimax-doctor.sh --static --model-profile sonnetminimax --executor-provider minimax --json` exited 0 with an existing obvious-secret fixture-string warning only.
-- `bash scripts/opusworkflow-smoke.sh`
-- `bash scripts/artifact-lint.sh --fixtures`
-- `bash scripts/security-smoke.sh`
+- `bash scripts/visualize-smoke.sh --fixtures`
+- `bash scripts/harness-eval.sh --metadata-json`
+- `bash scripts/harness-eval.sh --json`
 - `bash scripts/harness-capability-map.sh --write`
 - `bash scripts/harness-capability-map.sh --check --json`
-- `bash scripts/harness-eval.sh --json`
-- `env HARNESS_STATIC_CI=1 bash scripts/test-harness.sh`
+- `bash scripts/agentcloseout-physics-smoke.sh`
 - `bash scripts/release-check.sh --static-only`
 - `git diff --check`
 
-Optional runtime proof requires explicit operator opt-in and must not be implied
-by static verification.
+`bash scripts/release-check.sh --static-only` reported `167 passed, 0 failed`
+and `static-only release gate passed`.
 
 ## Rollback Plan
 
-1. Revert the SonnetMiniMax profile commit.
-2. Restore the archived `/leveragepath` spec if that work needs to resume.
-3. Rerun `bash scripts/release-check.sh --static-only`.
+1. Revert the HTML companion hardening commit.
+2. Rerun `bash scripts/release-check.sh --static-only`.
+3. Restore the archived SonnetMiniMax spec if that previous task needs to resume.

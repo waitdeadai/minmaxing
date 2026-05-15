@@ -1,0 +1,13 @@
+{
+  "id": "m17-visualize-html-artifact",
+  "expected_result": "pass",
+  "gate": "visualize-smoke",
+  "expected_evidence": "scripts/visualize-smoke.sh --fixtures validates the /visualize and /visualizeworkflow contracts plus HTML companion artifact fixtures for ignored run-dir semantics, approval state, canonical Markdown/JSON sources, static HTML structure, no remote assets, no absolute paths, and no secret-like material",
+  "requires": [
+    ".claude/skills/visualize/SKILL.md",
+    ".claude/skills/visualizeworkflow/SKILL.md",
+    ".claude/rules/visualization.rules.md",
+    "scripts/visualize-smoke.sh",
+    ".taste/fixtures/visualize-html"
+  ]
+}

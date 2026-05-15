@@ -89,6 +89,7 @@ All new and revised artifacts live under ignored `.taste/visualizations/`:
   approval.json
   prompt.txt              # when an image prompt is produced
   diagram.md|html|svg     # when a schematic is produced
+  index.html              # optional HTML companion for human review
   image.png|webp|jpg      # only when an image is actually generated
 ```
 
@@ -138,3 +139,9 @@ Revise:
 - Backend, API, infra, and agent-runtime tasks may use diagrams or operational
   narratives instead of fake UI mockups.
 - Do not read or persist secrets, private customer artifacts, or `.env` files.
+- HTML artifacts are companion review surfaces. Keep `draft-SPEC.md`,
+  `visualization.md`, and `approval.json` as the canonical implementation and
+  approval sources, and make the HTML point back to them.
+- HTML must stay local and self-contained by default: no remote scripts, remote
+  stylesheets, remote fonts, analytics, absolute local paths, `..` traversal, or
+  secret-like material.

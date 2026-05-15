@@ -1,0 +1,7 @@
+{
+  "artifact_type": "visualization-package",
+  "route": "/visualizeworkflow",
+  "run_dir": "/tmp/visualization",
+  "status": "WAITING_FOR_VISUAL_APPROVAL",
+  "mode": "HTML"
+}

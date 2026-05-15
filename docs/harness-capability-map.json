@@ -65,7 +65,7 @@
   ],
   "counts": {
     "codex_skills": 1,
-    "eval_tasks": 27,
+    "eval_tasks": 28,
     "rules": 15,
     "scripts": 68,
     "skills": 43
@@ -133,6 +133,15 @@
       "id": "m16-goal-mode-smoke",
       "task_path": "evals/harness/tasks/m16-goal-mode-smoke.yaml",
       "title": "Native Claude Code /goal static readiness smoke"
+    },
+    {
+      "expected_result": "pass",
+      "gate": "scripts/visualize-smoke.sh --fixtures",
+      "golden_exists": "true",
+      "golden_path": "evals/harness/golden/m17-visualize-html-artifact.json",
+      "id": "m17-visualize-html-artifact",
+      "task_path": "evals/harness/tasks/m17-visualize-html-artifact.yaml",
+      "title": "HTML companion visualization artifact gate"
     },
     {
       "expected_result": "pass",
@@ -417,10 +426,10 @@
       "title": "Verify Rules"
     },
     {
-      "line_count": 109,
+      "line_count": 138,
       "name": "visualization",
       "path": ".claude/rules/visualization.rules.md",
-      "sha256": "9a1829f5c06bbe0547c46e06a25fd93ceb7d47cd9dbcdebda2ff3122b8192a24",
+      "sha256": "fbaa324169bbf34402906d90dc1305fb065228566e0ac13e720084e793a8abbe",
       "title": "Visualization Rules"
     }
   ],
@@ -587,12 +596,12 @@
       "sha256": "787cff95f1f912ba22c8aabbf22bce7d05ef41858ef3fddbd4dc028e5110c30b"
     },
     {
-      "line_count": 747,
+      "line_count": 748,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "71c7771f277f749842010b16c018da13495911a935ea70a52443c67fbd63553b"
+      "sha256": "d1608a09fa10c69b38eb5a2262acff232e1bce3d20af10e525b809eefb081d48"
     },
     {
       "line_count": 640,
@@ -611,12 +620,12 @@
       "sha256": "00eae7491bb379f3ff338f854e532eabcab9053ba2f4e0dcb5fc40b2c5d1b3ab"
     },
     {
-      "line_count": 847,
+      "line_count": 857,
       "name": "harness-eval",
       "path": "scripts/harness-eval.sh",
       "purpose": "static eval pack runner",
       "required_gate": true,
-      "sha256": "6840d7ad78471cc73d0c5f627412765108f31bfd188ae9991bc32371e2be66d3"
+      "sha256": "f5e86b64d4da7c08a09e08dcb817d79e71982813d8309fb6d47484184947fc32"
     },
     {
       "line_count": 322,
@@ -947,12 +956,12 @@
       "sha256": "fa2f280325aaeabb1392236eceb265811074a8b22c5b8924eb47edc6956eef3d"
     },
     {
-      "line_count": 95,
+      "line_count": 333,
       "name": "visualize-smoke",
       "path": "scripts/visualize-smoke.sh",
-      "purpose": "Smoke the /visualize and /visualizeworkflow contracts without secrets or image providers.",
-      "required_gate": false,
-      "sha256": "7869f34eefcf44959ad22b2e95145c284a81cd6e133330a2c8ffb9bc93ea47e1"
+      "purpose": "visualization and HTML companion artifact gate",
+      "required_gate": true,
+      "sha256": "e57ad4a580acc72d44bde15ba597e5b04452c8b469692e7e605ffba0cec0617f"
     },
     {
       "line_count": 117,
@@ -2177,18 +2186,20 @@
       "core_route": false,
       "description": "Create a taste-to-artifact visualization package for a project, task, draft SPEC, UI, backend, agent runtime, dashboard, game, or product idea without implementing it. Use when the user asks to visualize taste.md, taste.vision, what the model thinks is being built, a product experience, UI mockup, architecture schematic, operator journey, or comprehension check before execution.",
       "group": "design",
-      "line_count": 131,
+      "line_count": 147,
       "model_invocation": false,
       "name": "visualize",
       "path": ".claude/skills/visualize/SKILL.md",
-      "related_eval_tasks": [],
+      "related_eval_tasks": [
+        "evals/harness/tasks/m17-visualize-html-artifact.yaml"
+      ],
       "related_rules": [
         ".claude/rules/visualization.rules.md"
       ],
       "related_scripts": [
         "scripts/visualize-smoke.sh"
       ],
-      "sha256": "57ff9c66737bf1a52141b3fa8d0b21bba106ccdf61aab7be252adaa4aa3baf1f",
+      "sha256": "cb7d59b977b41f8879bad316344699b8dbdc7ac2e7889811e0e03ef3d5851248",
       "slash": "/visualize",
       "user_invocable": true
     },
@@ -2197,7 +2208,7 @@
       "core_route": false,
       "description": "Run an approval-first variant of the minmaxing workflow: research, audit, plan, estimate, draft SPEC, visualize the intended product or operator experience, then stop with WAITING_FOR_VISUAL_APPROVAL before implementation. Use when the user wants to see and approve the model's understanding before code changes, or wants to continue or revise a saved visualization workflow.",
       "group": "execution",
-      "line_count": 140,
+      "line_count": 147,
       "model_invocation": false,
       "name": "visualizeworkflow",
       "path": ".claude/skills/visualizeworkflow/SKILL.md",
@@ -2208,7 +2219,7 @@
       "related_scripts": [
         "scripts/visualize-smoke.sh"
       ],
-      "sha256": "8a87b6c2d202e9360b90b50d685b34166fab15588b479416d47c8baf38bb3cd8",
+      "sha256": "9b48808bf9e2a54d63a6c23c31811e2bef48ff5472b065240c92c61c23c64c3a",
       "slash": "/visualizeworkflow",
       "user_invocable": true
     },
@@ -2284,7 +2295,7 @@
     "codex_file_count": 4,
     "codex_skill_count": 1,
     "core_route_count": 22,
-    "eval_task_count": 27,
+    "eval_task_count": 28,
     "groups": {
       "agent-systems": [
         "/agentfactory"

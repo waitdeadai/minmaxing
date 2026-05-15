@@ -145,6 +145,7 @@ REQUIRED_COMMANDS = {
     "test-harness": "full local harness regression suite",
     "harness-eval": "static eval pack runner",
     "harness-capability-map": "capability map freshness gate",
+    "visualize-smoke": "visualization and HTML companion artifact gate",
     "demo-smoke": "recorded demo contract and manifest gate",
     "defineicp-smoke": "ICP-to-taste evolution contract gate",
     "digestaste-smoke": "research-to-taste bootstrap text contract gate",

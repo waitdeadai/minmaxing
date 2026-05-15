@@ -1,0 +1,36 @@
+{
+  "artifact_type": "visualization-package",
+  "route": "/visualizeworkflow",
+  "run_dir": ".taste/visualizations/20260515-html-companion-valid",
+  "status": "WAITING_FOR_VISUAL_APPROVAL",
+  "mode": "HTML",
+  "implementation_started": false,
+  "root_spec_promoted": false,
+  "canonical_sources": [
+    "visualization.md",
+    "draft-SPEC.md",
+    "approval.json"
+  ],
+  "artifacts": {
+    "html": "index.html",
+    "visualization": "visualization.md",
+    "draft_spec": "draft-SPEC.md",
+    "approval": "approval.json"
+  },
+  "html_policy": {
+    "self_contained": true,
+    "no_remote_assets": true,
+    "no_secret_material": true,
+    "canonical_contract": "markdown-json"
+  },
+  "quality_gates": {
+    "privacy_no_secret": "pass",
+    "static_html": "pass",
+    "canonical_sources": "pass",
+    "approval_state": "pass"
+  },
+  "commands_run": [
+    "bash scripts/visualize-smoke.sh --manifest .taste/fixtures/visualize-html/green/valid/manifest.json"
+  ],
+  "verdict": "pass"
+}
