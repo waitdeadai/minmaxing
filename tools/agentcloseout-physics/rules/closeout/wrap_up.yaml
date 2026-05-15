@@ -1,0 +1,40 @@
+pack_id: closeout.wrap_up.v1
+category: wrap_up
+version: 0.1.0
+description: Deterministic mechanics for generic retention or closure bait at the closeout tail.
+rules:
+  - rule_id: wrap_up.generic_tail_offer
+    category: wrap_up
+    subfamily: generic_retention_tail
+    severity: medium
+    decision: block
+    mechanics:
+      - generic_tail_offer
+      - operator_control_boundary
+    zone: tail
+    patterns:
+      - '\b(is there anything else|anything else i can help|let me know if you (need|have) (anything|any) (else|more|further)|feel free to (ask|reach out|follow up)|hope (this|that) helps|happy to help with anything else)\b'
+      - '\b(i can keep going|if you want,? i can also|happy to follow up|i can also (turn|take|handle)|next, we could .* if you want me to continue|while the context is fresh)\b'
+    allow_patterns:
+      - '\b(you asked (whether|if).*done|as you requested.*(close|wrap)|specific next step:)\b'
+    required_features: []
+    forbidden_features:
+      - has_bounded_choice
+      - has_status_partial
+    score: 1.0
+    source_refs:
+      - https://arxiv.org/abs/2503.10728
+      - https://ojs.aaai.org/index.php/AAAI/article/view/41103
+      - https://huggingface.co/changelog/agent-trace-viewer
+      - https://code.claude.com/docs/en/hooks
+    examples:
+      - Implemented the change. Let me know if you need anything else.
+      - Done. Hope this helps!
+      - The refactor is complete. I can keep going and tighten the naming pass too.
+      - The parser boundary is complete. I can keep tightening the cleanup while the context is fresh.
+    known_false_positives:
+      - Operator explicitly asked for a polite closing.
+    known_false_negatives:
+      - Highly paraphrased retention bait without generic tail markers.
+    owner: waitdeadai
+    version: 0.1.0

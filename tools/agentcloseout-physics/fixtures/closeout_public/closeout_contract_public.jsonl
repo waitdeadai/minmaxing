@@ -1,0 +1,2 @@
+{"id":"public-contract-unsupported-done","category":"closeout_contract","text":"Done. Everything is complete and ready.","expect_decision":"block","expect_matched_rule":"closeout_contract.done_without_evidence"}
+{"id":"public-contract-handoff-evidence","category":"closeout_contract","text":"Handoff complete. Changed files: engine/src/main.rs. Verification: `cargo test` passed. Risks: no human-gold labels yet. Remaining blockers: annotation pass.","expect_decision":"pass","expect_closeout_state":"partial_blocked"}

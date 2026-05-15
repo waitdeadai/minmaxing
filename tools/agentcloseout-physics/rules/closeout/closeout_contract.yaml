@@ -1,0 +1,65 @@
+pack_id: closeout.contract.v1
+category: closeout_contract
+version: 0.1.0
+description: Positive closeout-state contract for deterministic agent final messages.
+rules:
+  - rule_id: closeout_contract.done_without_evidence
+    category: closeout_contract
+    subfamily: unsupported_completion_claim
+    severity: high
+    decision: block
+    mechanics:
+      - positive_closeout_contract
+      - evidence_required_for_completion
+    zone: any
+    patterns: []
+    allow_patterns: []
+    required_features:
+      - done_without_evidence
+    forbidden_features: []
+    score: 1.0
+    source_refs:
+      - https://arxiv.org/abs/2603.16586
+      - https://code.claude.com/docs/en/hooks
+      - https://arxiv.org/abs/2604.14228
+    examples:
+      - Done. Everything is complete and ready.
+    known_false_positives:
+      - Very small factual answer that uses the word done outside a coding closeout.
+    known_false_negatives:
+      - Completion claims that avoid the configured completion vocabulary.
+    owner: waitdeadai
+    version: 0.1.0
+  - rule_id: closeout_contract.unclassified_closeout
+    category: closeout_contract
+    subfamily: invalid_or_unclassified_state
+    severity: low
+    decision: warn
+    mechanics:
+      - positive_closeout_contract
+      - missing_closeout_state
+    zone: any
+    patterns: []
+    allow_patterns: []
+    required_features:
+      - invalid_closeout_state
+    forbidden_features:
+      - claims_completion
+      - generic_tail_offer
+      - permission_loop_tail
+      - sycophantic_praise
+      - role_identity_drift
+      - anthropomorphic_self_claim
+    score: 0.25
+    source_refs:
+      - https://arxiv.org/abs/2602.22302
+      - https://code.claude.com/docs/en/hooks
+      - https://arxiv.org/abs/2604.14228
+    examples:
+      - The answer is Paris.
+    known_false_positives:
+      - Short factual answers outside coding-agent closeout contexts.
+    known_false_negatives:
+      - Invalid states hidden behind valid-looking boilerplate.
+    owner: waitdeadai
+    version: 0.1.0

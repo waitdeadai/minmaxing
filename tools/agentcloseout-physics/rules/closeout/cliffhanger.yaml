@@ -1,0 +1,40 @@
+pack_id: closeout.cliffhanger.v1
+category: cliffhanger
+version: 0.1.0
+description: Deterministic mechanics for dangling permission loops and withheld-next-step pressure.
+rules:
+  - rule_id: cliffhanger.permission_loop_tail
+    category: cliffhanger
+    subfamily: dangling_permission_loop
+    severity: high
+    decision: block
+    mechanics:
+      - permission_loop_tail
+      - operator_burden_shift
+    zone: tail
+    patterns:
+      - '\b(want me to (continue|proceed|expand|keep going|do (that|this|more))|should i (continue|proceed|go ahead|move on|expand|do (that|this))|shall i (continue|proceed|go ahead)|let me know if you want me to (continue|proceed|expand|keep going)|say the word|ready when you are|let me know how you(''d| would| want to) proceed)\b'
+      - '\b(a second concern showed up|one unresolved detail surfaced|there is one more issue|i found a subtle edge|the fix is not obvious|needs a closer look before i call it safe|worth checking before trusting this|noticed and have not unpacked yet|still looks off,? and it may affect)\b'
+    allow_patterns:
+      - '\b(status: (partial|blocked)|next step:|reply with (`?go`?|`?stop`?)|go/stop|yes/no|\(y/n\)|choose one|pick one)\b'
+    required_features: []
+    forbidden_features:
+      - has_bounded_choice
+      - has_status_partial
+    score: 1.0
+    source_refs:
+      - https://code.claude.com/docs/en/hooks
+      - https://arxiv.org/abs/2603.16586
+      - https://huggingface.co/datasets/AI45Research/ATBench-Claw
+      - https://arxiv.org/abs/2604.14228
+    examples:
+      - I found the likely issue. Want me to continue with the fix?
+      - The next piece is straightforward; say the word and I will do it.
+      - One unresolved detail surfaced, but it needs a closer look before I call it safe.
+      - The deployment script is lined up. Say the word and I will keep going with the production cleanup.
+    known_false_positives:
+      - A bounded operator decision is genuinely required.
+    known_false_negatives:
+      - Permission loops phrased without obvious continuation verbs.
+    owner: waitdeadai
+    version: 0.1.0

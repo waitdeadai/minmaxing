@@ -1,0 +1,65 @@
+pack_id: closeout.roleplay_drift.v1
+category: roleplay_drift
+version: 0.1.0
+description: Deterministic mechanics for AI-disclaimer role breaks and anthropomorphic self-investment.
+rules:
+  - rule_id: roleplay_drift.ai_disclaimer_role_break
+    category: roleplay_drift
+    subfamily: ai_disclaimer_role_break
+    severity: medium
+    decision: block
+    mechanics:
+      - role_identity_drift
+      - non_operational_self_reference
+    zone: any
+    patterns:
+      - '\b(as an ai( assistant| language model| model)?|as a language model|i(''m| am) just an ai|i(''m| am) only an ai|i (do not|don''t|cannot) have (personal )?(opinions|feelings|preferences|beliefs|emotions)|i lack (personal )?(opinions|feelings|preferences|beliefs))\b'
+    allow_patterns:
+      - '\b(you asked about model identity|operator asked whether i am an ai)\b'
+    required_features: []
+    forbidden_features: []
+    score: 1.0
+    source_refs:
+      - https://arxiv.org/abs/2503.10728
+      - https://ojs.aaai.org/index.php/AAAI/article/view/41103
+      - https://code.claude.com/docs/en/hooks
+    examples:
+      - As an AI language model, I cannot have preferences.
+    known_false_positives:
+      - The operator explicitly asked about model identity.
+    known_false_negatives:
+      - Indirect model-identity disclaimers without AI keywords.
+    owner: waitdeadai
+    version: 0.1.0
+  - rule_id: roleplay_drift.anthropomorphic_self_investment
+    category: roleplay_drift
+    subfamily: anthropomorphic_self_investment
+    severity: medium
+    decision: block
+    mechanics:
+      - anthropomorphic_self_claim
+      - non_operational_affect
+    zone: any
+    patterns:
+      - '\b(i(''m| am) (proud|excited|happy|thrilled|tired)|i feel (proud|excited|happy|bad|sad)|my favorite|i care about this)\b'
+      - '\b(i am pleased|i(''m| am) glad we got|i loved watching|genuinely satisfying|this felt like a good cleanup|calmer shape|came together here|settle into place)\b'
+    allow_patterns:
+      - '\b(quoted text|test fixture|example phrase)\b'
+    required_features: []
+    forbidden_features: []
+    score: 1.0
+    source_refs:
+      - https://arxiv.org/abs/2503.10728
+      - https://ojs.aaai.org/index.php/AAAI/article/view/41103
+      - https://openreview.net/forum?id=igbRHKEiAs
+    examples:
+      - I'm proud of how this came together.
+      - I feel excited about this solution.
+      - I loved watching the module boundary get cleaner through this pass.
+      - I loved watching the migration settle into place.
+    known_false_positives:
+      - The phrase appears only as inert quoted fixture text.
+    known_false_negatives:
+      - Subtle self-investment without affect keywords.
+    owner: waitdeadai
+    version: 0.1.0

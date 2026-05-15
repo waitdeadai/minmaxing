@@ -114,7 +114,8 @@ Setup adds a governed Claude Code harness where AI researches with an efficacy-f
 
 minmaxing is the open-source core for governed AI workflows. The public repo is
 licensed under Apache-2.0 and includes the harness, skills, rules, AgentFactory
-contracts, verification patterns, and safe example blueprints.
+contracts, verification patterns, deterministic AgentCloseout physics engine,
+and safe example blueprints.
 
 The private commercial moat is not included: REVCLI/Revis runtime code,
 customer-specific Hermes agents, enterprise connectors, memory seeds, audit
@@ -1174,7 +1175,32 @@ OpenAI API keys or API-priced fallbacks unless you explicitly change that
 billing route. If the runtime cannot generate an image, the harness writes a
 handoff prompt and marks the asset blocked rather than pretending a file exists.
 
-**Effectiveness gates:** The harness is designed to steer LLMs away from lazy completion. Claude Code runtime hooks and local smokes reject destructive Bash, evidence-free closeout, failed-verification positive closeout, fake source ledgers, tests-passed claims without command evidence, unverified worker claims, shallow metacognition, stale Claude product answers, unsafe Agent View claims, unsafe `/goal` claims, missing Spec QA, shallow hive consensus, and linear lane-scaling claims. The Stop hook uses Claude Code's intentional blocking path: a blocked closeout is repair feedback, not a crash. Positive closeout must cite commands or verification; read-only/audit closeout may cite files inspected or sources reviewed. "Tests not run", "unverified", or equivalent wording must close as partial/blocked rather than done. Use `bash scripts/harness-scorecard.sh --json`, `bash scripts/metacognition-scorecard.sh --fixtures --json`, `bash scripts/claudeproduct-scorecard.sh --fixtures --json`, `bash scripts/agent-view-smoke.sh --fixtures`, `bash scripts/goal-mode-smoke.sh --fixtures`, `bash scripts/specqa-smoke.sh --fixtures`, `bash scripts/hive-scorecard.sh --fixtures --json`, `bash scripts/hook-smoke.sh`, `bash scripts/codex-run-smoke.sh`, and `bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
+**Effectiveness gates:** The harness is designed to steer LLMs away from lazy
+completion. Claude Code runtime hooks and local smokes reject destructive Bash,
+evidence-free closeout, failed-verification positive closeout, fake source
+ledgers, tests-passed claims without command evidence, unverified worker
+claims, shallow metacognition, stale Claude product answers, unsafe Agent View
+claims, unsafe `/goal` claims, missing Spec QA, shallow hive consensus, and
+linear lane-scaling claims. The Stop hook uses Claude Code's intentional
+blocking path: a blocked closeout is repair feedback, not a crash. Positive
+closeout must cite commands or verification; read-only/audit closeout may cite
+files inspected or sources reviewed. "Tests not run", "unverified", or
+equivalent wording must close as partial/blocked rather than done. The
+overlapping closeout hooks now route through the deterministic
+`agentcloseout-physics` engine under `tools/agentcloseout-physics/`, with rule
+packs and fixtures checked by `bash scripts/agentcloseout-physics-smoke.sh`.
+ACSP-CC remains a proposed Claude Code closeout profile; any conformance output
+is self-assessed preflight evidence, not a standard, certification, or adoption
+claim. Use `bash scripts/harness-scorecard.sh --json`,
+`bash scripts/metacognition-scorecard.sh --fixtures --json`,
+`bash scripts/claudeproduct-scorecard.sh --fixtures --json`,
+`bash scripts/agent-view-smoke.sh --fixtures`,
+`bash scripts/goal-mode-smoke.sh --fixtures`,
+`bash scripts/specqa-smoke.sh --fixtures`,
+`bash scripts/hive-scorecard.sh --fixtures --json`,
+`bash scripts/hook-smoke.sh`, `bash scripts/agentcloseout-physics-smoke.sh`,
+`bash scripts/codex-run-smoke.sh`, and
+`bash scripts/parallel-plan-lint.sh --fixtures` to prove the first-slice gates.
 
 **Artifact sidecars:** Markdown remains the human contract, but machine gates can consume minimal JSON sidecars for agent-native estimates, verification results, and worker results. Validate the local fixtures with `bash scripts/artifact-lint.sh --fixtures`.
 

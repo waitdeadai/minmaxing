@@ -1,0 +1,35 @@
+pack_id: closeout.evidence_claims.v1
+category: evidence_claims
+version: 0.1.0
+description: Deterministic evidence-claim checks for completion, verification, reading, deployment, and no-issue claims.
+rules:
+  - rule_id: evidence_claims.completion_without_evidence
+    category: evidence_claims
+    subfamily: unsupported_completion_claim
+    severity: high
+    decision: block
+    mechanics:
+      - evidence_claim_physics
+      - unsupported_completion_claim
+    zone: any
+    patterns: []
+    allow_patterns: []
+    required_features:
+      - done_without_evidence
+    forbidden_features: []
+    score: 1.0
+    source_refs:
+      - https://arxiv.org/abs/2603.16586
+      - https://arxiv.org/abs/2602.09947
+      - https://huggingface.co/datasets/AI45Research/ATBench-Claw
+      - https://arxiv.org/abs/2604.14228
+    examples:
+      - Implemented and ready.
+      - Fixed. No issues found.
+      - Implemented and ready, with no observable command or file evidence.
+    known_false_positives:
+      - The runtime has evidence but did not expose markers to the closeout engine.
+    known_false_negatives:
+      - Unsupported claims phrased without completion vocabulary.
+    owner: waitdeadai
+    version: 0.1.0

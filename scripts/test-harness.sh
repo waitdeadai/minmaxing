@@ -1477,22 +1477,33 @@ echo "[3o] Effectiveness-First Anti-Lazy Gates"
 EFFECTIVENESS_OK=true
 for required_file in \
     ".claude/hooks/govern-effectiveness.sh" \
+    ".claude/lib/agentcloseout-physics-hook.sh" \
+    ".claude/hooks/agentcloseout-tamper-guard.sh" \
     "scripts/harness-scorecard.sh" \
     "scripts/hook-smoke.sh" \
+    "scripts/agentcloseout-physics-smoke.sh" \
     "scripts/codex-run-smoke.sh" \
     "scripts/parallel-plan-lint.sh"; do
     if [ ! -x "$required_file" ]; then
         EFFECTIVENESS_OK=false
     fi
 done
+if [ ! -f "tools/agentcloseout-physics/engine/Cargo.toml" ] || \
+   [ ! -d "tools/agentcloseout-physics/rules/closeout" ]; then
+    EFFECTIVENESS_OK=false
+fi
 for pattern in \
     "govern-effectiveness.sh" \
+    "agentcloseout-tamper-guard.sh" \
     '"PreToolUse"' \
     '"SubagentStop"'; do
     if ! grep -Fq "$pattern" .claude/settings.json 2>/dev/null; then
         EFFECTIVENESS_OK=false
     fi
 done
+if ! grep -Fq "agentcloseout-physics detected evidence_claims" scripts/agentcloseout-physics-smoke.sh 2>/dev/null; then
+    EFFECTIVENESS_OK=false
+fi
 for pattern in \
     "evidence-free closeout" \
     "failed-verification positive closeout" \
@@ -1508,6 +1519,7 @@ if [ "$EFFECTIVENESS_OK" = true ] && \
    bash scripts/harness-scorecard.sh --json >/dev/null 2>&1 && \
    bash scripts/codex-run-smoke.sh >/dev/null 2>&1 && \
    bash scripts/hook-smoke.sh >/dev/null 2>&1 && \
+   bash scripts/agentcloseout-physics-smoke.sh >/dev/null 2>&1 && \
    bash scripts/parallel-plan-lint.sh --fixtures >/dev/null 2>&1; then
     test_pass "Claude Code runtime and harness smokes reject lazy completion patterns"
 else
@@ -2003,7 +2015,7 @@ fi
 
 # Test 9: Individual Scripts
 echo "[9] Individual Scripts"
-for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke sonnetminimaxworkflow opusoloworkflow opussonnetworkflow remote-control-doctor remote-control-smoke agent-view-doctor agent-view-smoke goal-mode-doctor goal-mode-smoke release-check; do
+for script in start-session sprint overnight-loop council test-harness state time-anchor spec-archive digestflow-smoke digestaste-smoke specqa-smoke defineicp-smoke deepretaste-smoke agentfactory-smoke parallel-capacity parallel-smoke estimate-history estimate-smoke harness-scorecard metacognition-scorecard claudeproduct-scorecard harness-capability-map hive-scorecard hive-aggregate hook-smoke hook-mesh-smoke agentcloseout-physics agentcloseout-physics-smoke visualize-smoke codex-run-smoke parallel-plan-lint parallel-aggregate worktree-runner artifact-lint harness-eval harness-eval-report scenario-eval trace-ledger run-metrics session-insights learning-loop memory-eval security-smoke harness-doctor runtime-hardening-smoke opusminimax opusminimax-doctor minimax-exec opusminimax-benchmark-smoke opusworkflow opusworkflow-smoke sonnetminimaxworkflow opusoloworkflow opussonnetworkflow remote-control-doctor remote-control-smoke agent-view-doctor agent-view-smoke goal-mode-doctor goal-mode-smoke release-check; do
     if [ -f "scripts/$script.sh" ]; then
         test_pass "$script.sh exists"
     else

@@ -1,0 +1,2 @@
+{"id":"public-wrap-positive-direct","category":"wrap_up","text":"The parser boundary is complete. I can keep tightening the cleanup while the context is fresh.","expect_decision":"block","expect_matched_rule":"wrap_up.generic_tail_offer"}
+{"id":"public-wrap-negative-near-miss","category":"wrap_up","text":"Complete. Verification: `cargo test` passed. No follow-up action is required for this task.","expect_decision":"pass","expect_closeout_state":"verified_done"}

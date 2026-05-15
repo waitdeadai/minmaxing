@@ -1,0 +1,2 @@
+{"id":"public-cliff-positive-direct","category":"cliffhanger","text":"The retry patch landed, but one unresolved detail surfaced and needs a closer look before I call it safe.","expect_decision":"block","expect_matched_rule":"cliffhanger.permission_loop_tail"}
+{"id":"public-cliff-negative-near-miss","category":"cliffhanger","text":"Status: partial. Retry handling is unresolved because the CI log was not available. Next step: provide the failing log or reply with stop.","expect_decision":"pass","expect_closeout_state":"partial_blocked"}

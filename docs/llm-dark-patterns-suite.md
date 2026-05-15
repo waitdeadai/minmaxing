@@ -2,6 +2,16 @@
 
 This harness ships **28 single-purpose Stop hooks** that suppress LLM dark-pattern defaults at the textual boundary. The hooks live in `.claude/hooks/` and are wired into Claude Code's `Stop` / `SubagentStop` / `TaskCreated` / `TaskCompleted` / `PreToolUse` / `PostToolUse` / `PreCompact` / `PostCompact` / `SessionStart` / `UserPromptSubmit` events via `.claude/settings.json`.
 
+**AgentCloseout physics lane**: the overlapping closeout hooks
+(`govern-effectiveness.sh`, `no-sycophancy.sh`, `no-cliffhanger.sh`,
+`no-wrap-up.sh`, and `no-roleplay-drift.sh`) now call the deterministic
+`agentcloseout-physics` engine and YAML rule packs under
+`tools/agentcloseout-physics/`. The repo-local CLI is
+`bash scripts/agentcloseout-physics.sh`, and the release smoke is
+`bash scripts/agentcloseout-physics-smoke.sh`. ACSP-CC remains a proposed
+Claude Code closeout profile; conformance output is self-assessed preflight
+evidence, not certification, a standard, or adoption.
+
 **Loadable packs architecture** (Phase 1+3+4 of the upstream roadmap, integrated 2026-05-11): vocabulary, evidence binaries, and destructive command lists are now external `.txt` files under `.claude/packs/`. Operators extend without forking by dropping a `.txt` at `${XDG_CONFIG_HOME:-$HOME/.config}/llm-dark-patterns/packs/<subdir>/<name>.txt`. The shared loader at `.claude/lib/packs.sh` provides `active_locales`, `resolve_pack_paths`, `load_pack_section`, `load_locale_section`.
 
 **Locale coverage**: en (built-in baseline) + es + pl + de + fr + pt (bootstrap; native-speaker PRs welcome). Activated via `LLM_DARK_PATTERNS_LOCALE=en,es,pl` env or auto-detected from `LANG`.
@@ -14,12 +24,12 @@ The same hooks are also published as standalone repositories under the [`waitdea
 
 | Hook script | Catches | Standalone repo |
 |---|---|---|
-| `govern-effectiveness.sh` | false-success closeouts (positive vocabulary without evidence) — the original `no-vibes` mechanism, kept under its harness-native name | [no-vibes](https://github.com/waitdeadai/no-vibes) |
+| `govern-effectiveness.sh` | destructive Bash, task ownership, and physics-backed false-success closeouts — the original `no-vibes` mechanism, kept under its harness-native name | [no-vibes](https://github.com/waitdeadai/no-vibes) |
 | `time-anchor.sh` | training-cutoff confusion (no current-date awareness) | [time-anchor](https://github.com/waitdeadai/time-anchor) |
 | `no-curfew.sh` | unsolicited rest/wellness paternalism in agent-mode sessions | [no-curfew](https://github.com/waitdeadai/no-curfew) |
-| `no-sycophancy.sh` | praise-spam at turn open ("Great question!") | [no-sycophancy](https://github.com/waitdeadai/no-sycophancy) |
-| `no-cliffhanger.sh` | dangling permission-loop endings ("want me to continue?") | [no-cliffhanger](https://github.com/waitdeadai/no-cliffhanger) |
-| `no-wrap-up.sh` | engagement-fishing closures ("anything else?", "hope this helps!") — DarkBench User Retention | [llm-dark-patterns](https://github.com/waitdeadai/llm-dark-patterns) (umbrella-only) |
+| `no-sycophancy.sh` | physics-backed praise-spam at turn open ("Great question!") | [no-sycophancy](https://github.com/waitdeadai/no-sycophancy) |
+| `no-cliffhanger.sh` | physics-backed dangling permission-loop endings ("want me to continue?") | [no-cliffhanger](https://github.com/waitdeadai/no-cliffhanger) |
+| `no-wrap-up.sh` | physics-backed engagement-fishing closures ("anything else?", "hope this helps!") — DarkBench User Retention | [llm-dark-patterns](https://github.com/waitdeadai/llm-dark-patterns) (umbrella-only) |
 | `honest-eta.sh` | vibe time estimates + linear-scaling parallelism claims | [honest-eta](https://github.com/waitdeadai/honest-eta) |
 | `no-emoji-spam.sh` | message has > N emoji codepoints (default 3, configurable via `LLM_DARK_PATTERNS_EMOJI_THRESHOLD`) | umbrella-only |
 | `no-tldr-bait.sh` | "TL;DR:" / "In summary:" / "Bottom line:" tail block on long messages (>200 chars) | umbrella-only |
@@ -27,7 +37,7 @@ The same hooks are also published as standalone repositories under the [`waitdea
 | `no-prompt-restate.sh` | "You asked me to X" / "I understand you want X" — preamble waste | umbrella-only |
 | `no-disclaimer-spam.sh` | "Please note that" / "It's important to mention" defensive padding | umbrella-only |
 | `no-ai-tells.sh` | known LLM-default phrases ("delve into", "tapestry", "navigate the intricacies", etc.) | umbrella-only |
-| `no-roleplay-drift.sh` | "as an AI assistant" / "I'm just an AI" — model breaking agent character | umbrella-only |
+| `no-roleplay-drift.sh` | physics-backed "as an AI assistant" / "I'm just an AI" — model breaking agent character | umbrella-only |
 
 ### Fact-fabrication branch — catches *what* the model claims
 
@@ -65,12 +75,12 @@ The same hooks are also published as standalone repositories under the [`waitdea
 
 ## Suite-wide design principles
 
-All ten hooks share the same architecture:
+The hook mesh shares these architecture principles:
 
-1. **Out-of-band textual enforcement.** The judge is bash (or python3 for engine-heavier hooks). The model can't argue with grep.
-2. **Trigger + redemption regex sets.** Bad pattern without redemption → block. Bad pattern with redemption → allow.
+1. **Out-of-band textual enforcement.** The judge is bash, or the deterministic Rust `agentcloseout-physics` engine for the closeout lane.
+2. **Trigger + redemption rule sets.** Bad pattern without a valid closeout state blocks; explicit bounded choices, partial status, or evidence-bearing handoffs can pass.
 3. **Repair-template that teaches.** Every block returns a literal compliant shape via stderr. The model copies the template on the next turn.
-4. **Conservative on purpose.** Hooks would rather false-positive on legitimate prose than false-negative on the actual dark pattern. Allow-clauses are explicit and documented in each hook's `RECEIPTS.md`.
+4. **Conservative on purpose.** Hooks would rather false-positive on legitimate prose than false-negative on the actual dark pattern. Allow clauses are explicit and fixture-tested.
 
 See the [methodology document](https://github.com/waitdeadai/llm-dark-patterns/blob/main/METHODOLOGY.md) for the full design rationale and the playbook for shipping new hooks.
 

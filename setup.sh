@@ -228,8 +228,11 @@ manifest_path.parent.mkdir(parents=True, exist_ok=True)
 
 allowed_roots = [
     ".claude/hooks",
+    ".claude/lib",
+    ".claude/packs",
     ".claude/rules",
     ".claude/skills",
+    ".claude/agentcloseout.env.example",
     ".claude/settings.json",
     ".claude/settings.minimax-executor.example.json",
     ".claude/settings.opusminimax-planner.example.json",
@@ -263,6 +266,7 @@ allowed_roots = [
     "setup.sh",
     "setup.ps1",
     "settings.json",
+    "tools/agentcloseout-physics",
 ]
 
 never = {

@@ -26,6 +26,9 @@ __pycache__/
 
 # Claude Code
 .claude/scheduled_tasks.lock
+.claude/agentcloseout.env
+.claude/agentcloseout-loop-guard.jsonl
+.claude/agentcloseout-telemetry.jsonl
 
 # MiniMaxing Memory (SQLite DB)
 .minimaxing/
@@ -41,6 +44,7 @@ memory/memory.db-*
 .taste/opusminimax/
 
 # Generated demo media and recordings
+tools/agentcloseout-physics/engine/target/
 .taste/demo-recordings/
 demo-recordings/
 recordings/

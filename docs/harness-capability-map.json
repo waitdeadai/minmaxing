@@ -67,7 +67,7 @@
     "codex_skills": 1,
     "eval_tasks": 27,
     "rules": 15,
-    "scripts": 66,
+    "scripts": 68,
     "skills": 43
   },
   "evals": [
@@ -443,6 +443,22 @@
       "sha256": "6743a16e3d13a9a41f64b209c0b467c63e12cd97aec412645d0a931f6f61b085"
     },
     {
+      "line_count": 123,
+      "name": "agentcloseout-physics-smoke",
+      "path": "scripts/agentcloseout-physics-smoke.sh",
+      "purpose": "deterministic AgentCloseout physics hook and rule-pack smoke",
+      "required_gate": true,
+      "sha256": "f539b7cc9f43494ab25b525aa9c801afe1029ce708039c36bc1f5ec4bda8f4b1"
+    },
+    {
+      "line_count": 28,
+      "name": "agentcloseout-physics",
+      "path": "scripts/agentcloseout-physics.sh",
+      "purpose": "Repo-local wrapper for the deterministic AgentCloseout physics engine.",
+      "required_gate": false,
+      "sha256": "ee985613fea535e5cf2d5b3ee97aa8f810011b2d8f8e0cad2e04842736c7bf2d"
+    },
+    {
       "line_count": 488,
       "name": "agentfactory-smoke",
       "path": "scripts/agentfactory-smoke.sh",
@@ -571,12 +587,12 @@
       "sha256": "787cff95f1f912ba22c8aabbf22bce7d05ef41858ef3fddbd4dc028e5110c30b"
     },
     {
-      "line_count": 744,
+      "line_count": 747,
       "name": "harness-capability-map",
       "path": "scripts/harness-capability-map.sh",
       "purpose": "capability map freshness gate",
       "required_gate": true,
-      "sha256": "37194cff9f1de1df106e09910270f485a277c6059ed8cf4d7d8427d4c26d1043"
+      "sha256": "71c7771f277f749842010b16c018da13495911a935ea70a52443c67fbd63553b"
     },
     {
       "line_count": 640,
@@ -787,12 +803,12 @@
       "sha256": "51abd2accac23466bd68bea9876970fdfa1cdd0985d11146699db7a16ffa5302"
     },
     {
-      "line_count": 100,
+      "line_count": 101,
       "name": "release-check",
       "path": "scripts/release-check.sh",
       "purpose": "public release/static gate",
       "required_gate": true,
-      "sha256": "e0027ea4e75bcefdaa1a1b126abdec6cb8903318cca926c39bd065472bf4cc9c"
+      "sha256": "669eb5fe5d07598c586a413d18af6eff6f1a5af18795e7832109441998c50d58"
     },
     {
       "line_count": 311,
@@ -907,12 +923,12 @@
       "sha256": "18c827b8746916ccd198045f0e8c6e4cd30ca714ca2b1c0dc05f6f47b6f3d263"
     },
     {
-      "line_count": 2372,
+      "line_count": 2384,
       "name": "test-harness",
       "path": "scripts/test-harness.sh",
       "purpose": "full local harness regression suite",
       "required_gate": true,
-      "sha256": "727dc335cbfeab9349c2cc3da9482579f7dbafd3bfcba62557f9317fdcdab2b1"
+      "sha256": "afe667e90415310f60a8220b4fc81ff259ddb90cefdbbc51cfe190b469806f20"
     },
     {
       "line_count": 127,
@@ -1032,6 +1048,11 @@
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/govern-effectiveness.sh\"",
             "timeout": 5,
             "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/agentcloseout-tamper-guard.sh\"",
+            "timeout": 5,
+            "type": "command"
           }
         ],
         "event": "PreToolUse",
@@ -1046,6 +1067,11 @@
           },
           {
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-approval-sneak.sh\"",
+            "timeout": 5,
+            "type": "command"
+          },
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/agentcloseout-tamper-guard.sh\"",
             "timeout": 5,
             "type": "command"
           }
@@ -2138,6 +2164,8 @@
         ".claude/rules/verify.rules.md"
       ],
       "related_scripts": [
+        "scripts/agentcloseout-physics.sh",
+        "scripts/agentcloseout-physics-smoke.sh",
         "scripts/specqa-smoke.sh"
       ],
       "sha256": "75f571854e05280d26955efd4a766df61e3978c942cd502ac2a93985c9205af9",
@@ -2221,6 +2249,8 @@
       "related_scripts": [
         "scripts/parallel-capacity.sh",
         "scripts/estimate-smoke.sh",
+        "scripts/agentcloseout-physics.sh",
+        "scripts/agentcloseout-physics-smoke.sh",
         "scripts/artifact-lint.sh",
         "scripts/specqa-smoke.sh",
         "scripts/harness-eval.sh",
@@ -2332,7 +2362,7 @@
     },
     "hook_event_count": 12,
     "rule_count": 15,
-    "script_count": 66,
+    "script_count": 68,
     "skill_count": 43
   }
 }

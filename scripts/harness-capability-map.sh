@@ -168,6 +168,7 @@ REQUIRED_COMMANDS = {
     "parallel-aggregate": "parallel worker aggregate validator",
     "parallel-plan-lint": "parallel plan fixture lint",
     "hook-smoke": "Claude Code hook enforcement smoke",
+    "agentcloseout-physics-smoke": "deterministic AgentCloseout physics hook and rule-pack smoke",
 }
 
 RULE_OWNERS = {
@@ -199,6 +200,8 @@ SCRIPT_OWNERS = {
     "parallel-plan-lint": ["parallel"],
     "parallel-aggregate": ["parallel"],
     "estimate-smoke": ["workflow", "autoplan"],
+    "agentcloseout-physics": ["workflow", "verify"],
+    "agentcloseout-physics-smoke": ["workflow", "verify"],
     "artifact-lint": ["parallel", "hive", "workflow"],
     "minimax-exec": ["opusminimax", "opusworkflow"],
     "opusminimax": ["opusminimax"],

@@ -58,6 +58,7 @@ run bash scripts/estimate-smoke.sh
 run bash scripts/parallel-smoke.sh
 run bash scripts/agentfactory-smoke.sh
 run bash scripts/hook-smoke.sh
+run bash scripts/agentcloseout-physics-smoke.sh
 run bash scripts/metacognition-scorecard.sh --fixtures --json >/dev/null
 run bash scripts/hive-scorecard.sh --fixtures --json >/dev/null
 run bash scripts/hive-aggregate.sh --fixtures

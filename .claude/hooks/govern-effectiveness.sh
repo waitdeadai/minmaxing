@@ -6,6 +6,13 @@ set -euo pipefail
 
 INPUT="$(cat)"
 
+_HOOK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_AGENTCLOSEOUT_LIB="$_HOOK_DIR/../lib/agentcloseout-physics-hook.sh"
+if [ -f "$_AGENTCLOSEOUT_LIB" ]; then
+  # shellcheck source=../lib/agentcloseout-physics-hook.sh
+  source "$_AGENTCLOSEOUT_LIB"
+fi
+
 if ! command -v jq >/dev/null 2>&1; then
   echo "NOTE: minmaxing governance hook requires jq; fail-open for this event." >&2
   exit 0
@@ -365,6 +372,14 @@ if [ "$event" = "Stop" ] || [ "$event" = "SubagentStop" ]; then
   if has_positive_closeout "$message" && ! has_closeout_evidence "$message"; then
     block "closeout needs concrete evidence." "$(missing_evidence_repair)"
   fi
+
+  if ! declare -F run_agentcloseout_physics_hook >/dev/null 2>&1; then
+    block "agentcloseout-physics evidence_claims hook is not available." \
+"- Restore .claude/lib/agentcloseout-physics-hook.sh and scripts/agentcloseout-physics.sh.
+- Run bash scripts/agentcloseout-physics-smoke.sh before trusting closeout enforcement."
+  fi
+
+  printf '%s' "$INPUT" | run_agentcloseout_physics_hook evidence_claims
 fi
 
 exit 0
